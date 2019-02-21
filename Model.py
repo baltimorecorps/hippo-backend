@@ -1,9 +1,8 @@
-#from app import db
-
 from flask_sqlalchemy import SQLAlchemy
 import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
+from sqlalchemy_enum34 import EnumType
 
 db = SQLAlchemy()
 
@@ -29,8 +28,8 @@ class Contact(db.Model):
     email_primary = db.Column(db.String(100), nullable=False)
     phone_primary = db.Column(db.String(25), nullable=False)
     current_profile = db.Column(db.Integer, nullable=False)
-    gender = db.Column(db.Enum(Gender))
-    race_all = db.Column(db.Enum(Race))
+    gender = db.Column(EnumType(Gender))
+    race_all = db.Column(EnumType(Race))
     birthdate = db.Column(db.Date)
 
 
@@ -43,4 +42,4 @@ class ContactSchema(Schema):
     current_profile = fields.Integer(required=True)
     gender = EnumField(Gender, by_value=True)
     race_all = EnumField(Race, by_value=True)
-    birthdate = fields.DateTime(required=True)
+    birthdate = fields.Date(required=True)
