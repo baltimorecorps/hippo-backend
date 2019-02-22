@@ -1,9 +1,9 @@
 from flask_restful import Resource,request
-from Model import Contact, ContactSchema, Gender, Race
+from Model import db, Contact, ContactSchema, Gender, Race
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-db = SQLAlchemy()
+#db = SQLAlchemy()
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
