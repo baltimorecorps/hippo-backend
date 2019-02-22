@@ -39,26 +39,46 @@ class Contacts(Resource):
             birthdate=json_data['birthdate']
         )
 
-        # print(contact.first_name, type(contact.first_name))
-        # print(contact.last_name, type(contact.last_name))
-        # print(contact.email_primary, type(contact.email_primary))
-        # print(contact.phone_primary, type(contact.phone_primary))
-        # print(contact.current_profile, type(contact.current_profile))
-        # print(contact.gender, type(contact.gender))
-        # print(contact.race_all, type(contact.race_all))
-        # print(contact.birthdate, type(contact.birthdate))
-
-        # db.session.add(Contact(id=223, first_name='amsa', last_name='arq', email_primary='s1@cv.com',
-        #                        phone_primary='3455323', current_profile=213, gender='Male', race_all='Asian',
-        #                        birthdate='2012-04-23'))
-
-        # db.session.add("INSERT INTO contact (id, first_name, last_name, email_primary, phone_primary, current_profile, gender, "\
-        #                "race_all, birthdate) VALUES (223, 'amsa', 'arq', 's1@cv.com', '3455323', 213, 'Male', 'Asian', 2012-04-23)")
         db.session.add(contact)
         db.session.commit()
 
+        result = contact_schema.dump(contact).data
 
-        #result = contact_schema.dump(contact).data
+        return {"status": 'success', 'data': result}, 201
 
-        return {"status": 'success', 'data': json_data}, 201
+    def put(self):
+        json_data = request.get_json(force=True)
+        if not json_data:
+            return {'message': 'No input data provided'}, 400
+        # Validate and deserialize input
+        data, errors = contact_schema.load(json_data)
+        if errors:
+            return errors, 422
+        contact = Contact.query.filter_by(id=data['id'])
+        print(contact)
+        if not contact:
+            return {'message': 'Contact does not exist'}, 400
+        contact.first_name = data['first_name']
+        db.session.commit()
+
+        result = contact_schema.dump(contact).data
+
+        return {"status": 'success', 'data': result}, 204
+
+    def delete(self):
+        json_data = request.get_json(force=True)
+        if not json_data:
+            return {'message': 'No input data provided'}, 400
+        # Validate and deserialize input
+        data, errors = contact_schema.load(json_data)
+        if errors:
+            return errors, 422
+        contact = Contact.query.filter_by(id=data['id']).delete()
+        if not contact:
+            return {'message': 'Contact does not exist'}, 400
+        db.session.commit()
+
+        result = contact_schema.dump(contact).data
+
+        return {"status": 'success', 'data': result}, 204
 
