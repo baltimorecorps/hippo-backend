@@ -5,13 +5,22 @@ contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
 
 
-class Contacts(Resource):
+class ContactAll(Resource):
     def get(self):
         contacts = Contact.query.all()
         contacts = contacts_schema.dump(contacts).data
         return {'status': 'success', 'data': contacts}, 200
 
-    def post(self):
+
+class ContactOne(Resource):
+
+    def get(self, contact_id):
+        contact = Contact.query.filter_by(id=contact_id).first()
+        if contact:
+            contact = contact_schema.dump(contact).data
+            return {'status': 'success', 'data': contact}, 200
+
+    def post(self, contact_id):
         json_data = request.get_json(force=True)
 
         if not json_data:
@@ -20,11 +29,12 @@ class Contacts(Resource):
         data, errors = contact_schema.load(json_data)
         if errors:
             return errors, 422
-        contact = Contact.query.filter_by(first_name=data['first_name']).first()
+        contact = Contact.query.filter_by(id=contact_id).first()
         if contact:
             return {'message': 'Contact already exists'}, 400
 
         contact = Contact(
+            id = contact_id,
             first_name=json_data['first_name'],
             last_name =json_data['last_name'],
             email_primary=json_data['email_primary'],
@@ -42,7 +52,7 @@ class Contacts(Resource):
 
         return {"status": 'success', 'data': result}, 201
 
-    def put(self):
+    def put(self, contact_id):
         json_data = request.get_json(force=True)
         if not json_data:
             return {'message': 'No input data provided'}, 400
@@ -50,18 +60,19 @@ class Contacts(Resource):
         data, errors = contact_schema.load(json_data)
         if errors:
             return errors, 422
-        contact = Contact.query.filter_by(id=data['id'])
-        print(contact)
+
+        contact = Contact.query.filter_by(id=contact_id).first()
         if not contact:
             return {'message': 'Contact does not exist'}, 400
+        #What fields must we update?
         contact.first_name = data['first_name']
         db.session.commit()
 
         result = contact_schema.dump(contact).data
-
+        print(result)
         return {"status": 'success', 'data': result}, 204
 
-    def delete(self):
+    def delete(self, contact_id):
         json_data = request.get_json(force=True)
         if not json_data:
             return {'message': 'No input data provided'}, 400
