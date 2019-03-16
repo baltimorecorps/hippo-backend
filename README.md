@@ -1,7 +1,7 @@
 # Resumer Builder API
 ## Run on local server
 
-###Getting Started:
+### Getting Started:
 - Install Python 3.7
 
 - Clone the repository
