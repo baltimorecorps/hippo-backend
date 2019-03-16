@@ -8,7 +8,7 @@ def create_app(config_filename):
     from app import api_bp
     app.register_blueprint(api_bp, url_prefix='/api')
 
-    from Model import db
+    from models.contact_model import db
     db.init_app(app)
 
     return app

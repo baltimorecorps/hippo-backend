@@ -1,5 +1,5 @@
-from flask_restful import Resource,request
-from Model import db, Contact, ContactSchema, Gender, Race
+from flask_restful import Resource, request
+from models.contact_model import db, Contact, ContactSchema
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
@@ -7,65 +7,21 @@ contacts_schema = ContactSchema(many=True)
 
 class ContactAll(Resource):
     def get(self):
-        data = [
-          {
-            "id": "1",
-            "first_name": "Candy",
-            "last_name": "Huber",
-            "email": "candyhuber@zounds.com"
-          },
-          {
-            "id": "2",
-            "first_name": "Goldie",
-            "last_name": "Mcmahon",
-            "email": "goldiemcmahon@zounds.com"
-          },
-          {
-            "id": "3",
-            "first_name": "Morgan",
-            "last_name": "Larson",
-            "email": "morganlarson@zounds.com"
-          },
-          {
-            "id": "4",
-            "first_name": "Kimberley",
-            "last_name": "Cash",
-            "email": "kimberleycash@zounds.com"
-          },
-          {
-            "id": "5",
-            "first_name": "Stacey",
-            "last_name": "Holder",
-            "email": "staceyholder@zounds.com"
-          },
-          {
-            "id": "6",
-            "first_name": "Benson",
-            "last_name": "Alexander",
-            "email": "bensonalexander@zounds.com"
-          }
-        ]
-        return data, 200
+        contacts = Contact.query.with_entities(Contact.id, Contact.first_name, Contact.last_name, Contact.email_primary)
+        contacts = contacts_schema.dump(contacts).data
+
+        return {'status': 'success', 'data': contacts}, 200
 
 
 class ContactOne(Resource):
 
     def get(self, contact_id):
 
-        contact = {
-        "id": 1,
-        "first_name": "Benson",
-        "last_name": "Alexander",
-        "email": "bensonalexander@zounds.com",
-        "phone_primary": "401-111-2222",
-        "profile_id": 111,
-        "gender": "Male",
-        "race_all": "Asian",
-        "birthdate": "1990-01-02"
-
-        }
-
-        return {'status': 'success', 'data': contact}, 200
+        contact = Contact.query.with_entities(Contact.id, Contact.first_name, Contact.last_name, Contact.email_primary)\
+            .filter_by(id=contact_id).first()
+        if contact:
+            contact = contact_schema.dump(contact).data
+            return {'status': 'success', 'data': contact}, 200
 
     def post(self):
         json_data = request.get_json(force=True)
@@ -73,7 +29,18 @@ class ContactOne(Resource):
         if not json_data:
             return {'message': 'No input data provided'}, 400
 
-        return {"status": 'success', 'data': json_data}, 201
+        # Validate and deserialize input
+        data, errors = contact_schema.load(json_data)
+        if errors:
+            return errors, 422
+
+        contact = Contact(**data)
+
+        db.session.add(contact)
+        db.session.commit()
+        result = contact_schema.dump(contact).data
+
+        return {"status": 'success', 'data': result}, 201
 
 
 class Profile(Resource):
