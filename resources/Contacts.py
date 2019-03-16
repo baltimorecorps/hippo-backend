@@ -7,85 +7,158 @@ contacts_schema = ContactSchema(many=True)
 
 class ContactAll(Resource):
     def get(self):
-        contacts = Contact.query.all()
-        contacts = contacts_schema.dump(contacts).data
-        return {'status': 'success', 'data': contacts}, 200
+        data = [
+          {
+            "id": "1",
+            "first_name": "Candy",
+            "last_name": "Huber",
+            "email": "candyhuber@zounds.com"
+          },
+          {
+            "id": "2",
+            "first_name": "Goldie",
+            "last_name": "Mcmahon",
+            "email": "goldiemcmahon@zounds.com"
+          },
+          {
+            "id": "3",
+            "first_name": "Morgan",
+            "last_name": "Larson",
+            "email": "morganlarson@zounds.com"
+          },
+          {
+            "id": "4",
+            "first_name": "Kimberley",
+            "last_name": "Cash",
+            "email": "kimberleycash@zounds.com"
+          },
+          {
+            "id": "5",
+            "first_name": "Stacey",
+            "last_name": "Holder",
+            "email": "staceyholder@zounds.com"
+          },
+          {
+            "id": "6",
+            "first_name": "Benson",
+            "last_name": "Alexander",
+            "email": "bensonalexander@zounds.com"
+          }
+        ]
+        return data, 200
 
 
 class ContactOne(Resource):
 
     def get(self, contact_id):
-        contact = Contact.query.filter_by(id=contact_id).first()
-        if contact:
-            contact = contact_schema.dump(contact).data
-            return {'status': 'success', 'data': contact}, 200
 
-    def post(self, contact_id):
+        contact = {
+        "id": 1,
+        "first_name": "Benson",
+        "last_name": "Alexander",
+        "email": "bensonalexander@zounds.com",
+        "phone_primary": "401-111-2222",
+        "profile_id": 111,
+        "gender": "Male",
+        "race_all": "Asian",
+        "birthdate": "1990-01-02"
+
+        }
+
+        return {'status': 'success', 'data': contact}, 200
+
+    def post(self):
         json_data = request.get_json(force=True)
 
         if not json_data:
             return {'message': 'No input data provided'}, 400
-        # Validate and deserialize input
-        data, errors = contact_schema.load(json_data)
-        if errors:
-            return errors, 422
-        contact = Contact.query.filter_by(id=contact_id).first()
-        if contact:
-            return {'message': 'Contact already exists'}, 400
 
-        contact = Contact(
-            id = contact_id,
-            first_name=json_data['first_name'],
-            last_name =json_data['last_name'],
-            email_primary=json_data['email_primary'],
-            phone_primary=json_data['phone_primary'],
-            current_profile=json_data['current_profile'],
-            gender=Gender(json_data['gender']),
-            race_all=Race(json_data['race_all']),
-            birthdate=json_data['birthdate']
-        )
+        return {"status": 'success', 'data': json_data}, 201
 
-        db.session.add(contact)
-        db.session.commit()
 
-        result = contact_schema.dump(contact).data
+class Profile(Resource):
 
-        return {"status": 'success', 'data': result}, 201
+    def get(self, contact_id):
 
-    def put(self, contact_id):
-        json_data = request.get_json(force=True)
-        if not json_data:
-            return {'message': 'No input data provided'}, 400
-        # Validate and deserialize input
-        data, errors = contact_schema.load(json_data)
-        if errors:
-            return errors, 422
+        data = {
+          "id": "1",
+          "first_name": "Amy",
+          "last_name": "Smith",
+          "email_primary": "amy@yahoo.com",
+          "phone_primary": "401-234-1124",
+          "current_profile": "11",
+          "gender": "Female",
+          "race_all": "White",
+          "birthdate": "1983-02-09",
+          "work_experiences": [
+            {
+              "id": "1",
+              "host": "Kayak",
+              "title": "Intern",
+              "date_start": "2010-05-25",
+              "date_end": "2010-12-13",
+              "type": "Intern"
+            },
+            {
+              "id": "2",
+              "host": "Wayfair",
+              "title": "Software Engineer",
+              "date_start": "2011-01-05",
+              "date_end": "2011-04-03",
+              "type": "SDE"
+            }
+          ],
+          "education_experiences": [
+            {
+              "id": "3",
+              "host": "Brown University",
+              "title": "Student",
+              "date_start": "2000-09-05",
+              "date_end": "2005-05-03",
+              "type": "University"
+            }
+          ],
+          "service_experiences": [
+            {
+              "id": "4",
+              "host": "Happy Tails",
+              "title": "Volunteer",
+              "date_start": "2001-10-19",
+              "date_end": "2002-08-13",
+              "type": "NGO"
+            }
+          ],
+          "accomplishments": [
+            {
+              "host": "Brown University",
+              "title": "Academic Excellence Award",
+              "date": "2003-05-25",
+              "type": "Award"
+            }
+          ],
+          "tags": {
+            "function_tags": [
+              {
+                "id": "1",
+                "name": "abc",
+                "type": "xyz"
+              }
+            ],
+            "skill_tags": [
+              {
+                "id": "2",
+                "name": "abc",
+                "type": "xyz"
+              }
+            ],
+            "topic_tags": [
+              {
+                "id": "3",
+                "name": "abc",
+                "type": "xyz"
+              }
+            ]
+          }
+        }
 
-        contact = Contact.query.filter_by(id=contact_id).first()
-        if not contact:
-            return {'message': 'Contact does not exist'}, 400
-        #What fields must we update?
-        contact.first_name = data['first_name']
-        db.session.commit()
-
-        result = contact_schema.dump(contact).data
-        print(result)
-        return {"status": 'success', 'data': result}, 204
-
-    def delete(self, contact_id):
-        json_data = request.get_json(force=True)
-        if not json_data:
-            return {'message': 'No input data provided'}, 400
-        # Validate and deserialize input
-        data, errors = contact_schema.load(json_data)
-        if errors:
-            return errors, 422
-        contact = Contact.query.filter_by(id=data['id']).delete()
-        if not contact:
-            return {'message': 'Contact does not exist'}, 400
-        db.session.commit()
-
-        result = contact_schema.dump(contact).data
-
-        return {"status": 'success', 'data': result}, 204
-
+        return {'status': 'success', 'data': data}, 200

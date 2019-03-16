@@ -1,42 +1,80 @@
-# Contacts REST API
-1) Requirements
+# Resumer Builder API
+## Run on local server
 
-python 3.7
+###Getting Started:
+- Install Python 3.7
 
-2) Clone the repo
+- Clone the repository
 
-3) Create virtual environment 
+- Create virtual environment and activate it
 
 `python3 -m venv`
 
 `source venv/bin/activate`
 
+- Install required python packages
+
 `pip install -r requirements.txt`
 
-4) Execute `python run.py` to interact with the API
+- Run the API server 
 
-## Test API
+`python run.py` 
 
-Open browser and go to URL: 
-### ContactAll
-GET 
+### Using the API
 
-`http://<IP>:5000/api/contacts`
+**View all contacts**
 
-### ContactOne
-GET 
+URL
 
-`http://<IP>:5000/api/contacts/<int:contact_id>`
+```
+curl --request GET http://<IP>:5000/api/contacts 
+```
 
-POST 
+Sample call
+```
+curl --request GET http://127.0.0.1:5000/api/contacts 
+```
 
-`curl --header "Content-Type: application/json"
- --request POST 
- --data '{"first_name":"<first_name>","last_name": "<last_name>", "email_primary": "<email_primary>", "phone_primary":"<phone_primary>", "current_profile":<current_profile>, "gender": "<gender>", "race_all": "<race_all>", "birthdate": "<yyyy-mm-dd>"}'
-http://<IP>:5000/api/contacts/<id>`
+Output
+```
+[
+    {
+        "id": "6",
+        "first_name": "Benson",
+        "last_name": "Alexander",
+        "email": "bensonalexander@zounds.com"
+    }
+]
+```
 
-PUT 
+**View one contact**
 
-DELETE 
+URL
 
+```
+http://<IP>:5000/api/contacts/<int:contact_id>
+```
 
+Sample call
+```
+curl --request GET http://127.0.0.1:5000/api/contacts/1 
+```
+
+Output
+
+```
+{
+    "status": "success",
+    "data": {
+        "id": 1,
+        "first_name": "Benson",
+        "last_name": "Alexander",
+        "email": "bensonalexander@zounds.com",
+        "phone_primary": "401-111-2222",
+        "profile_id": 111,
+        "gender": "Male",
+        "race_all": "Asian",
+        "birthdate": "1990-01-02"
+    }
+}
+```
