@@ -42,11 +42,7 @@ class ExperienceOne(Resource):
     def get(self, contact_id, experience_id):
         data = {
                 "id": 2,
-                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididu\
-                nt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris\
-                 nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit ess\
-                 e cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culp\
-                 a qui officia deserunt mollit anim id est laborum.",
+                "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incidi.",
                 "host": "ABC",
                 "title": "Lawyer",
                 "date_start": "2014-04-03",
