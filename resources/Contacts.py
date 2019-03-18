@@ -46,7 +46,14 @@ class ContactOne(Resource):
 
 class Profile(Resource):
 
+
     def get(self, contact_id):
+
+        contact = Contact.query.filter_by(id = contact_id).first()
+        print(contact)
+        if contact:
+            contact = contact_schema.dump(contact).data
+            return {'status': 'success', 'data': contact}, 200
 
         data = {
           "id": "1",
@@ -66,67 +73,14 @@ class Profile(Resource):
               "date_start": "2010-05-25",
               "date_end": "2010-12-13",
               "type": "Intern"
-            },
-            {
-              "id": "2",
-              "host": "Wayfair",
-              "title": "Software Engineer",
-              "date_start": "2011-01-05",
-              "date_end": "2011-04-03",
-              "type": "SDE"
-            }
-          ],
-          "education_experiences": [
-            {
-              "id": "3",
-              "host": "Brown University",
-              "title": "Student",
-              "date_start": "2000-09-05",
-              "date_end": "2005-05-03",
-              "type": "University"
             }
           ],
           "service_experiences": [
-            {
-              "id": "4",
-              "host": "Happy Tails",
-              "title": "Volunteer",
-              "date_start": "2001-10-19",
-              "date_end": "2002-08-13",
-              "type": "NGO"
-            }
+
           ],
           "accomplishments": [
-            {
-              "host": "Brown University",
-              "title": "Academic Excellence Award",
-              "date": "2003-05-25",
-              "type": "Award"
-            }
-          ],
-          "tags": {
-            "function_tags": [
-              {
-                "id": "1",
-                "name": "abc",
-                "type": "xyz"
-              }
-            ],
-            "skill_tags": [
-              {
-                "id": "2",
-                "name": "abc",
-                "type": "xyz"
-              }
-            ],
-            "topic_tags": [
-              {
-                "id": "3",
-                "name": "abc",
-                "type": "xyz"
-              }
-            ]
-          }
+
+          ]
         }
 
         return {'status': 'success', 'data': data}, 200

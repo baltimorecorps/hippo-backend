@@ -23,6 +23,7 @@ class Experience(db.Model):
     date_end = db.Column(db.Date)
     type = db.Column(EnumType(Type))
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
+    contact = db.relation('Contact')
 
 
 class ExperienceSchema(Schema):
