@@ -1,10 +1,10 @@
-from flask_sqlalchemy import SQLAlchemy
+from models.base_model import db
 import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
+from models.experience_model import ExperienceSchema
 
-db = SQLAlchemy()
 
 
 class Gender(enum.Enum):
@@ -40,7 +40,8 @@ class Contact(db.Model):
     race_all = db.Column(EnumType(Race))
     birthdate = db.Column(db.Date, nullable=False)
     salutation = db.Column(EnumType(Salutation))
-
+    work_experience = db.relationship("Experience",
+                 primaryjoin="and_(Contact.id==Experience.contact_id, Experience.type=='Work')")
 
 
 class ContactSchema(Schema):
@@ -54,3 +55,4 @@ class ContactSchema(Schema):
     race_all = EnumField(Race, by_value=True)
     birthdate = fields.Date(required=True)
     salutation = EnumField(Salutation, by_value=True)
+    work_experience = fields.Nested(ExperienceSchema)

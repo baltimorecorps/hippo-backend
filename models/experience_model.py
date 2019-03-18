@@ -1,11 +1,9 @@
-from flask_sqlalchemy import SQLAlchemy
+from models.base_model import db
 import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
-from models.contact_model import Contact
 
-db = SQLAlchemy()
 
 
 class Type(enum.Enum):
@@ -35,4 +33,4 @@ class ExperienceSchema(Schema):
     date_start = fields.Date(required=True)
     date_end = fields.Date()
     type = EnumField(Type, by_value=True)
-    contact_id = fields.Integer()
+    contact_id = fields.Integer(required=True)
