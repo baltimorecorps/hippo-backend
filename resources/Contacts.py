@@ -1,5 +1,6 @@
 from flask_restful import Resource, request
-from models.contact_model import db, Contact, ContactSchema
+from models.contact_model import Contact, ContactSchema
+from models.base_model import db
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
