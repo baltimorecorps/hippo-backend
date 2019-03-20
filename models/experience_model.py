@@ -5,7 +5,6 @@ from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
 
 
-
 class Type(enum.Enum):
     work = 'Work'
     service = 'Service'
@@ -23,7 +22,7 @@ class Experience(db.Model):
     date_end = db.Column(db.Date)
     type = db.Column(EnumType(Type))
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
-    contact = db.relation('Contact')
+    contact = db.relationship('Contact')
 
 
 class ExperienceSchema(Schema):

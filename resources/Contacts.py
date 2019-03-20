@@ -1,9 +1,11 @@
 from flask_restful import Resource, request
-from models.contact_model import Contact, ContactSchema
+from models.contact_model import Contact, ContactSchema, ProfileSchema
 from models.base_model import db
+
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
+profile_schema = ProfileSchema()
 
 
 class ContactAll(Resource):
@@ -46,41 +48,10 @@ class ContactOne(Resource):
 
 class Profile(Resource):
 
-
     def get(self, contact_id):
 
-        contact = Contact.query.filter_by(id = contact_id).first()
-        print(contact)
+        contact = Contact.query.filter_by(id=contact_id).first()
         if contact:
-            contact = contact_schema.dump(contact).data
+            print(profile_schema.dump(contact))
+            contact = profile_schema.dump(contact).data
             return {'status': 'success', 'data': contact}, 200
-
-        data = {
-          "id": "1",
-          "first_name": "Amy",
-          "last_name": "Smith",
-          "email_primary": "amy@yahoo.com",
-          "phone_primary": "401-234-1124",
-          "current_profile": "11",
-          "gender": "Female",
-          "race_all": "White",
-          "birthdate": "1983-02-09",
-          "work_experiences": [
-            {
-              "id": "1",
-              "host": "Kayak",
-              "title": "Intern",
-              "date_start": "2010-05-25",
-              "date_end": "2010-12-13",
-              "type": "Intern"
-            }
-          ],
-          "service_experiences": [
-
-          ],
-          "accomplishments": [
-
-          ]
-        }
-
-        return {'status': 'success', 'data': data}, 200

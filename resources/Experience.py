@@ -2,9 +2,10 @@ from flask_restful import Resource, request
 from models.experience_model import Experience, ExperienceSchema
 from models.base_model import db
 
-
 experience_schema = ExperienceSchema()
 experiences_schema = ExperienceSchema(many=True)
+
+
 class ExperienceAll(Resource):
 
     def get(self, contact_id):
