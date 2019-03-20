@@ -51,4 +51,30 @@ class ExperienceOne(Resource):
 
         return {"status": 'success', 'data': result}, 201
 
+    def delete(self, contact_id, experience_id):
+        exp = Experience.query.with_entities(Experience.id, Experience.description, Experience.host,
+                                                     Experience.title, Experience.date_start, Experience.date_end,
+                                                     Experience.type)\
+                        .filter_by(contact_id=contact_id)\
+                        .filter_by(id=experience_id)
+        if not exp.first():
+            return {'message': 'Experience does not exist'}, 400
+        exp.delete()
+        db.session.commit()
+        return {"status": 'success'}, 201
 
+    def put(self, contact_id, experience_id):
+        exp = Experience.query.with_entities(Experience.id, Experience.description, Experience.host,
+                                                     Experience.title, Experience.date_start, Experience.date_end,
+                                                     Experience.type)\
+                        .filter_by(contact_id=contact_id)\
+                        .filter_by(id=experience_id)
+        if not exp.first():
+            return {'message': 'Experience does not exist'}, 400
+        json_data = request.get_json(force=True)
+        data, errors = experience_schema.load(json_data)
+        if not data:
+            return {'message': 'No data provided to update'}, 400
+        exp.update(data)
+        db.session.commit()
+        return {"status": 'success'}, 201

@@ -16,9 +16,9 @@
 
 `pip install -r requirements.txt`
 
-- Run the API server 
+- Run the API server
 
-`python run.py` 
+`python run.py`
 
 ### Using the API
 
@@ -27,7 +27,7 @@
 URL
 
 ```
-http://<IP>:5000/api/contacts 
+http://<IP>:5000/api/contacts
 ```
 
 
@@ -73,7 +73,6 @@ http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
 ```
 
 
-
 **Add one experience**
 
 URL
@@ -81,3 +80,17 @@ URL
 http://<IP>:5000/api/contacts/<int:contact_id>/experiences/
 ```
 
+
+**Delete one experience**
+URL
+```
+http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
+```
+
+
+
+**Update one experience**
+URL
+```
+http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
+```
