@@ -41,7 +41,10 @@ Click the delete icon
 
 # Issues for future Iterations:
 ### PUT Experience endpoint
-When one edits the first item of experience, that new edited item will appear at the end of the experience column, rather than staying on its original location. My guess is that the current PUT experience method may change how the GET experience function returns the experience items. My suggestion for backend design is to fixed the order by which the GET experience function returns all experiences. If the results are ordered by experience_id, then when we call the put method to revise an experience item, it should stay in its original location.
+When one edited any item of experience, that item of experience, after being edited, will change its display location: now it will appear at the end of the experience column no matter where it is originally displayed. 
+A guess is that the current PUT experience method may change how the GET experience function returns the experience items. 
+A suggestion for backend design is to fixed the order by which the GET experience function returns all experiences. If the results are ordered by experience_id, then when we call the put method to revise an experience item, it should stay in its original location.
+
 ### How to design "Experience" table
 Currently the database design is having “experience” to consume education/workExperience/skills, and use field "type" to distinguish these. And when we call "GET", the api returns all three types of exeperiences mixed together. However, eventually, in the frontend, we may want to display these different types of experiences separately in different columns; so we may need GET/PUT/POST/DELETE for each type of experience. For example, we need GET Education endpoint to get all education experiences and use this data to display in the webpage’s “Education” Column. 
 
