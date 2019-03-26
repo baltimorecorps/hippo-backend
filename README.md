@@ -1,21 +1,22 @@
- #How to run the frontend and backend simultaneously
- ##(1) backend
-### Install Python 3.7
-###Clone the repository non-hc-api, branch resumeBuilder_v1.2
-o Difference between 1.2 and 1.1 version
+# How to run the frontend and backend simultaneously
+## (1) backend
+#I nstall Python 3.7
+# Clone the repository non-hc-api, branch resumeBuilder_v1.2
+
+Difference between 1.2 and 1.1 version
 * added lines to solve the cross-origin problem 
 * changed the endpoint of “add one experience” to use the url of api/contacts/:id/experiences instead of api/contacts/:id/experiences/:id
 
-###Create virtual environment and activate it
-o $mkdir ~/.virtualenvs
-o $python3 -m venv ~/.virtualenvs/myvenv
-o $source ~/.virtualenvs/myvenv/bin/activate
-###Install required python packages
-o pip install -r requirements.txt 
-### install flask_cors
-o $ pip install -U flask-cors
-### Run the API server
-o python run.py
+#Create virtual environment and activate it
+ $mkdir ~/.virtualenvs
+ $python3 -m venv ~/.virtualenvs/myvenv
+ $source ~/.virtualenvs/myvenv/bin/activate
+#Install required python packages
+ $pip install -r requirements.txt 
+#install flask_cors
+ $ pip install -U flask-cors
+#Run the API server
+ python run.py
 
 ##(2) frontend 
 ###Open a different terminal window:
