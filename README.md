@@ -20,28 +20,30 @@ Difference between branch 1.2 and branch 1.1 version
 
 ## (2) frontend 
 
-### Open a different terminal window
-### clone the branch wensi_resumeBuilder under baltimorecorps/webapp
-### cd to webapp-master folder
-### start the frontend react app:
+### ~ Open a different terminal window
+### ~ clone the branch wensi_resumeBuilder under baltimorecorps/webapp
+### ~ cd to webapp-master folder
+### ~ start the frontend react app:
 $npm start
-the website page should automatically display on your default browser with the url to be http://localhost:3000
+####  the website page should automatically display on your default browser with the url to be http://localhost:3000
 
 ### On the homepage’s nav bar, click “TalentProfile”.
-1Test add experience: 
+#### 1Test add experience: 
 click the plus icon on the right
 fill the form 
 click submit
-2 Test edit experience:
+#### 2 Test edit experience:
 Click the edit icon
 Fill out the form
 Click submit
-3 Test delete experience:
+#### 3 Test delete experience:
 Click the delete icon
 
-# Issues for future discussion:
-## When one edits the first item of experience, that new edited item will appear at the end of the experience column, rather than staying on its original location. My guess is that the current PUT experience method may change how the GET experience function returns the experience items. My suggestion for backend design is to fixed the order by which the GET experience function returns all experiences. If the results are ordered by experience_id, then when we call the put method to revise an experience item, it should stay in its original location.
-## Currently the database design is only having “experience” which consumes education/workExperience/skills. However, in the frontend, we may want to display these different types of experiences separately in different columns; so we may need GET/PUT/POST/DELETE for each type of experience. For example, we need GET Education endpoint to get all education experiences and use this data to display in the webpage’s “Education” Column. 
+# Issues for future Iterations:
+### PUT Experience endpoint
+When one edits the first item of experience, that new edited item will appear at the end of the experience column, rather than staying on its original location. My guess is that the current PUT experience method may change how the GET experience function returns the experience items. My suggestion for backend design is to fixed the order by which the GET experience function returns all experiences. If the results are ordered by experience_id, then when we call the put method to revise an experience item, it should stay in its original location.
+### How to design "Experience" table
+Currently the database design is having “experience” to consume education/workExperience/skills, and use field "type" to distinguish these. And when we call "GET", the api returns all three types of exeperiences mixed together. However, eventually, in the frontend, we may want to display these different types of experiences separately in different columns; so we may need GET/PUT/POST/DELETE for each type of experience. For example, we need GET Education endpoint to get all education experiences and use this data to display in the webpage’s “Education” Column. 
 
 
 
