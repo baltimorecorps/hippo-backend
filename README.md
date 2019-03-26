@@ -8,9 +8,9 @@ Difference between branch 1.2 and branch 1.1 version
 * changed the endpoint of “add one experience” to use the url of api/contacts/:id/experiences instead of api/contacts/:id/experiences/:id
 
 ### ~ Create virtual environment and activate it
- $mkdir ~/.virtualenvs
- $python3 -m venv ~/.virtualenvs/myvenv
- $source ~/.virtualenvs/myvenv/bin/activate
+ #### $mkdir ~/.virtualenvs
+ #### $python3 -m venv ~/.virtualenvs/myvenv
+ #### $source ~/.virtualenvs/myvenv/bin/activate
 ### ~ Install required python packages
  $pip install -r requirements.txt 
 ### ~ install flask_cors
