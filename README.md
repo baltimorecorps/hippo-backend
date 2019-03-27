@@ -29,13 +29,13 @@ $npm start
 
 ### On the homepage’s nav bar, click “TalentProfile”.
 #### 1Test add experience: 
-click the plus icon on the right
-fill the form 
-click submit
+##### click the plus icon on the right
+##### fill the form 
+##### click submit
 #### 2 Test edit experience:
-Click the edit icon
-Fill out the form
-Click submit
+##### Click the edit icon
+##### Fill out the form
+##### Click submit
 #### 3 Test delete experience:
 Click the delete icon
 
