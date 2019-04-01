@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Resource, reqparse, Api
 from resources.Contacts import ContactAll, ContactOne
+from resources.Experience import ExperienceAll, ExperienceOne
 
 application = Flask(__name__)
 api = Api(application)
@@ -13,7 +14,10 @@ db.init_app(application)
 
 api.add_resource(ContactAll, '/', '/contacts')
 api.add_resource(ContactOne, '/contacts/<int:contact_id>', '/contacts')
-
+api.add_resource(Profile, '/contacts/<int:contact_id>/profile')
+api.add_resource(ExperienceAll, '/contacts/<int:contact_id>/experiences/')
+api.add_resource(ExperienceOne, '/contacts/<int:contact_id>/experiences/',
+                 '/contacts/<int:contact_id>/experiences/<int:experience_id>')
 
 if __name__=='__main__':
     application.run(debug=True)
