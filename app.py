@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Resource, reqparse, Api
-from resources.Contacts import ContactAll
+from resources.Contacts import ContactAll, ContactOne
 
 application = Flask(__name__)
 api = Api(application)
@@ -11,7 +11,6 @@ application.config['PROPAGATE_EXCEPTIONS'] = True
 from models.base_model import db
 db.init_app(application)
 
-    
 api.add_resource(ContactAll, '/', '/contacts')
 api.add_resource(ContactOne, '/contacts/<int:contact_id>', '/contacts')
 
