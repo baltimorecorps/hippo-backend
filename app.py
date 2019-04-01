@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restful import Resource, reqparse, Api
-from resources.Contacts import ContactAll, ContactOne
+from resources.Contacts import ContactAll, ContactOne, Profile
 from resources.Experience import ExperienceAll, ExperienceOne
 
 application = Flask(__name__)
