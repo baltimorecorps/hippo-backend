@@ -13,7 +13,7 @@ class ContactAll(Resource):
         contacts = Contact.query.with_entities(Contact.id, Contact.first_name, Contact.last_name, Contact.email_primary)
         contacts = contacts_schema.dump(contacts).data
 
-        return {'status': 'success', 'data': contacts}
+        return {'status': 'success', 'data': contacts}, 200
 
 
 class ContactOne(Resource):
