@@ -11,8 +11,6 @@ application.config['PROPAGATE_EXCEPTIONS'] = True
 from models.base_model import db
 db.init_app(application)
 
-from app import api_bp
-application.register_blueprint(api_bp, url_prefix='/api')
     
 api.add_resource(ContactAll, '/', '/contacts')
 api.add_resource(ContactOne, '/contacts/<int:contact_id>', '/contacts')
