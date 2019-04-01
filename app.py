@@ -11,7 +11,8 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 from models.base_model import db
 db.init_app(app)
     
-api.add_resource(ContactAll, '/')
+api.add_resource(ContactAll, '/', '/contacts')
+api.add_resource(ContactOne, '/contacts/<int:contact_id>', '/contacts')
 
 if __name__=='__main__':
     app.run(debug=True)

@@ -52,18 +52,6 @@ class Contact(db.Model):
                                       primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.accomplishment),
                                       back_populates='contact')
 
-    def __init__(self, id, first_name, last_name, email_primary, phone_primary, current_profile, gender, race_all, birthdate, salutation, work_experience, education_experience, service_experience, accomplishment_experience):
-        self.id = id
-        self.first_name = first_name
-        self.last_name = last_name
-        self.email_primary = email_primary
-        
-    def toString(self):
-        return 'Id: {}, First Name: {}'.format(self.id, self.first_name)
-
-# 'First Name': self.first_name, 'Last Name': self.last_name, 'Primary Email': self.email_primary}
-
-
 class ContactSchema(Schema):
     id = fields.Integer()
     first_name = fields.String(required=True)
