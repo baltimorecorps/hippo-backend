@@ -12,7 +12,7 @@ class ExperienceAll(Resource):
         experiences = Experience.query.with_entities(Experience.id, Experience.description, Experience.host,
                                                   Experience.title, Experience.date_start, Experience.date_end,
                                                   Experience.type)\
-                                .filter_by(contact_id=contact_id)
+                                .filter_by(contact_id=contact_id).order_by(Experience.date_end.desc(), Experience.date_start.desc())
         exp_list = experiences_schema.dump(experiences).data
 
         return {'status': 'success', 'data': exp_list}, 200
