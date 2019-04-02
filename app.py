@@ -13,5 +13,3 @@ api.add_resource(Profile, '/contacts/<int:contact_id>/profile')
 api.add_resource(ExperienceAll, '/contacts/<int:contact_id>/experiences/')
 api.add_resource(ExperienceOne, '/contacts/<int:contact_id>/experiences/',
                  '/contacts/<int:contact_id>/experiences/<int:experience_id>')
-# TODO: Fix bug
-# api.add_resource(ExperienceOne, '/contacts/<int:contact_id>/experiences/<int:experience_id>')

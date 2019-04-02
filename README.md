@@ -29,7 +29,11 @@ URL
 ```
 http://<IP>:5000/api/contacts
 ```
+Sample call:
 
+```
+curl --request GET http://127.0.0.1:5000/api/contacts
+```
 
 **View one contact**
 
@@ -38,7 +42,11 @@ URL
 ```
 http://<IP>:5000/api/contacts/<int:contact_id>
 ```
+Sample call:
 
+```
+curl --request GET http://127.0.0.1:5000/api/contacts/1
+```
 
 **View Profile**
 
@@ -46,6 +54,12 @@ URL
 
 ```
 http://<IP>:5000/api/contacts/<int:contact_id>/profile
+```
+
+Sample call:
+
+```
+curl --request GET http://127.0.0.1:5000/api/contacts/1/profile
 ```
 
 
@@ -56,6 +70,11 @@ URL
 http://<IP>:5000/api/contacts
 ```
 
+Sample call:
+
+```
+curl --header "Content-Type: application/json" --request POST --data '{"first_name":"abc","last_name": "xyz", "email_primary": "p@gmail.com", "phone_primary":"111-111-1111", "gender": "Female", "race_all": "Asian", "birthdate": "2012-04-23"}' http://127.0.0.1:5000/api/contacts
+```
 
 **View all experiences**
 
@@ -64,6 +83,11 @@ URL
 http://<IP>:5000/api/contacts/<int:contact_id>/experiences/
 ```
 
+Sample call:
+
+```
+curl --request GET http://127.0.0.1:5000/api/contacts/1/experiences/
+```
 
 **View one experience**
 
@@ -72,6 +96,11 @@ URL
 http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
 ```
 
+Sample call:
+
+```
+curl --request GET http://127.0.0.1:5000/api/contacts/1/experiences/2
+```
 
 **Add one experience**
 
@@ -80,6 +109,11 @@ URL
 http://<IP>:5000/api/contacts/<int:contact_id>/experiences/
 ```
 
+Sample call:
+
+```
+curl --header "Content-Type: application/json" --request POST --data '{"description":"hello world hello world hello world hello world", "host": "abc", "title": "xyz", "date_start": "2000-01-01", "date_end":"2010-01-01", "type": "service"}' http://127.0.0.1:5000/api/contacts/1/experiences/
+```
 
 **Delete one experience**
 
@@ -88,6 +122,11 @@ URL
 http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
 ```
 
+Sample call:
+
+```
+curl -X DELETE http://127.0.0.1:5000/api/contacts/1/experiences/2
+```
 
 
 **Update one experience**
@@ -97,62 +136,23 @@ URL
 http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
 ```
 
-# How to run the frontend and backend simultaneously
-## (1) backend
-### ~ Install Python 3.7
-### ~ Clone the repository non-hc-api, branch: non-hc-api-resumeBuilder_v1.2
-
-Difference between branch 1.2 and branch 1.1 version
-* added lines to solve the cross-origin problem 
-* changed the endpoint of “add one experience” to use the url of api/contacts/:id/experiences instead of api/contacts/:id/experiences/:id
-
-### ~ Create virtual environment and activate it
- #### $mkdir ~/.virtualenvs
- #### $python3 -m venv ~/.virtualenvs/myvenv
- #### $source ~/.virtualenvs/myvenv/bin/activate
-### ~ Install required python packages
- $pip install -r requirements.txt 
-### ~ install flask_cors
- $ pip install -U flask-cors
-### ~ Run the API server
- $python run.py
-
-## (2) frontend 
-
-### ~ Open a different terminal window
-### ~ clone the branch wensi_resumeBuilder under baltimorecorps/webapp
-### ~ cd to webapp-master folder
-### ~ start the frontend react app:
-$npm start
-####  the website page should automatically display on your default browser with the url to be http://localhost:3000
-
-### On the homepage’s nav bar, click “TalentProfile”.
-#### 1Test add experience: 
-##### click the plus icon on the right
-##### fill the form 
-##### click submit
-#### 2 Test edit experience:
-##### Click the edit icon
-##### Fill out the form
-##### Click submit
-#### 3 Test delete experience:
-Click the delete icon
-
-# Issues for future Iterations:
-### PUT Experience endpoint
-Currently an unexpected condition is that when one edited any item of experience, that item of experience, after being edited, changed its display location: it appeared at the end of the experience column instead of its original location. However, users may not want to change its position. 
-A guess for this condition, is that when we call the current PUT experience method, it may have changed how the GET experience function returns the experience items. 
-A suggestion for backend design is to fixed the order by which the GET experience function returns all experiences. If the results are ordered by experience_id, then when we call the put method to revise an experience item, it should stay in its original location.
-
-### How to design "Experience" table
-Currently the database design is having “experience” to consume education/workExperience/skills, and use field "type" to distinguish these. And when we call "GET", the api returns all three types of exeperiences mixed together. However, eventually, in the frontend, we may want to display these different types of experiences separately in different columns; so we may need GET/PUT/POST/DELETE for each type of experience. For example, we need GET Education endpoint to get all education experiences and use this data to display in the webpage’s “Education” Column. 
-
-
-### id may need to be set to "AUTO_INCREMENT"
-Currently, to create a new experience, user needs to explicitly input an id that is not already in the database, or else the backend will report error and stop working. In future iterations, a suggestion is to set the experience_id to be AUTO_INCREMENT, so that users don't need to input the id themselves, but the database will assign a unique experience_id to that experience item.  The same also goes for user_id.
-
-
-
-
+Sample call:
 
 ```
+curl -X PUT -d '{"type": "Work"}' http://127.0.0.1:5000/api/contacts/1/experiences/2
+```
+
+### Frontend
+
+- Open a different terminal window
+- Clone the branch wensi_resumeBuilder under baltimorecorps/webapp
+- Go to webapp-master folder
+` cd webapp-master`
+- Start the frontend react app:
+`npm start`
+- The website page should automatically display on your default browser with the URL to be http://localhost:3000
+
+On the homepage’s nav bar, click “TalentProfile”.
+- Test add experience: click the plus icon on the right, fill the form, and click Submit
+- Test edit experience: click the edit icon, fill out the form, and click Submit
+- Test delete experience: click the delete icon
