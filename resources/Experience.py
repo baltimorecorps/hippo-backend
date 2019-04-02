@@ -17,6 +17,28 @@ class ExperienceAll(Resource):
 
         return {'status': 'success', 'data': exp_list}, 200
 
+    # TODO: Review from a API standpoint
+    def post(self, contact_id):
+
+        json_data = request.get_json(force=True)
+
+        if not json_data:
+            return {'message': 'No input data provided'}, 400
+        json_data['contact_id'] = contact_id
+
+        # Validate and deserialize input
+        data, errors = experience_schema.load(json_data)
+        if errors:
+            return errors, 422
+
+        exp = Experience(**data)
+
+        db.session.add(exp)
+        db.session.commit()
+        result = experience_schema.dump(exp).data
+
+        return {"status": 'success', 'data': result}, 201
+
 
 class ExperienceOne(Resource):
 
