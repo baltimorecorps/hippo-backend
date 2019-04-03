@@ -10,7 +10,7 @@ profile_schema = ProfileSchema()
 
 class ContactAll(Resource):
     def get(self):
-        contacts = Contact.query.with_entities(Contact.id, Contact.first_name, Contact.last_name, Contact.email_primary)
+        contacts = Contact.query.all()
         contacts = contacts_schema.dump(contacts).data
 
         return {'status': 'success', 'data': contacts}, 200
