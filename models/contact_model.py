@@ -4,7 +4,8 @@ from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
 from models.experience_model import Experience, ExperienceSchema, Type
-from models.email_model import Email
+from models.email_model import Email, EmailSchema
+from models.address_model import Address, AddressSchema
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -33,43 +34,38 @@ class Contact(db.Model):
     salutation = db.Column(EnumType(Salutation))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
-    email = db.relationship("email",
+    email = db.relationship("Email",
                                     primaryjoin=(id == Email.contact_id),
                                     back_populates='contact')
     #email_primary = db.Relationship()
-    address = db.relationship("address",
-                                    primaryjoin=(id == Email.contact_id),
-                                    back_populates='contact')
-    #address_primary = db.Relationship()
+    address = db.relationship("Address",
+                              primaryjoin=(id == Address.contact_id),
+                              back_populates='contact')
+    #address = db.Relationship()
     phone_primary = db.Column(db.String(25))
     gender = db.Column(EnumType(Gender))
     race_all = db.Column(EnumType(Race))
     birthdate = db.Column(db.Date)
-    work_experience = db.relationship("experience",
+    work_experience = db.relationship("Experience",
                                       primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.work),
                                       back_populates='contact')
-    education_experience = db.relationship("experience",
-                                      primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.education),
-                                      back_populates='contact')
-    service_experience = db.relationship("experience",
+    education_experience = db.relationship("Experience",
+                                           primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.education),
+                                           back_populates='contact')
+    service_experience = db.relationship("Experience",
                                       primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.service),
                                       back_populates='contact')
-    accomplishment_experience = db.relationship("experience",
+    accomplishment_experience = db.relationship("Experience",
                                       primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.accomplishment),
                                       back_populates='contact')
 
 
 class ContactSchema(Schema):
     id = fields.Integer()
-    salutation = EnumField(Salutation, by_value=True)
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
-    email = fields.Email(required=True)
-    phone_primary = fields.String()
-    gender = EnumField(Gender, by_value=True)
-    race_all = EnumField(Race, by_value=True)
-    birthdate = fields.Date()
-
+    email = fields.List(fields.Nested(EmailSchema))
+    address = fields.List(fields.Nested(AddressSchema))
 
 
 class ProfileSchema(Schema):
