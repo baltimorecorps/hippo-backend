@@ -33,13 +33,13 @@ class Contact(db.Model):
     salutation = db.Column(EnumType(Salutation))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
-    email = db.Relationship("email",
+    email = db.relationship("email",
                                     primaryjoin=(id == Email.contact_id),
                                     back_populates='contact')
     #email_primary = db.Relationship()
-    address = db.Relationship(db.Relationship("address",
+    address = db.relationship("address",
                                     primaryjoin=(id == Email.contact_id),
-                                    back_populates='contact'))
+                                    back_populates='contact')
     #address_primary = db.Relationship()
     phone_primary = db.Column(db.String(25))
     gender = db.Column(EnumType(Gender))
