@@ -35,7 +35,9 @@ class TagItem(db.Model):
     __tablename__ = "tag_item"
     id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
+    contact = db.relationship('Contact', backref = 'contact')
     tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), nullable=False)
+    tag = db.relationship('Tag', backref = 'tag')
     score = db.Column(db.DECIMAL)
     tag_item_order = db.Column(db.Integer, nullable=False)
 
