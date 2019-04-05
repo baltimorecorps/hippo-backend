@@ -37,11 +37,17 @@ class Contact(db.Model):
     email = db.relationship("Email",
                                     primaryjoin=(id == Email.contact_id),
                                     back_populates='contact')
-    #email_primary = db.Relationship()
+    email_primary = db.relationship("Email",
+                                    primaryjoin=db.and_(id == Email.contact_id, Email.is_primary == True),
+                                    back_populates='contact',
+                                    uselist=False)
     address = db.relationship("Address",
                               primaryjoin=(id == Address.contact_id),
                               back_populates='contact')
-    #address = db.Relationship()
+    address_primary = db.relationship("Address",
+                                    primaryjoin=db.and_(id == Address.contact_id, Address.is_primary == True),
+                                    back_populates='contact',
+                                    uselist=False)
     phone_primary = db.Column(db.String(25))
     gender = db.Column(EnumType(Gender))
     race_all = db.Column(EnumType(Race))
@@ -53,11 +59,11 @@ class Contact(db.Model):
                                            primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.education),
                                            back_populates='contact')
     service_experience = db.relationship("Experience",
-                                      primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.service),
-                                      back_populates='contact')
+                                         primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.service),
+                                         back_populates='contact')
     accomplishment_experience = db.relationship("Experience",
-                                      primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.accomplishment),
-                                      back_populates='contact')
+                                                primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.accomplishment),
+                                                back_populates='contact')
 
 
 class ContactSchema(Schema):
@@ -65,7 +71,9 @@ class ContactSchema(Schema):
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
     email = fields.List(fields.Nested(EmailSchema))
+    email_primary = fields.Nested(EmailSchema)
     address = fields.List(fields.Nested(AddressSchema))
+    address_primary = fields.Nested(AddressSchema)
 
 
 class ProfileSchema(Schema):

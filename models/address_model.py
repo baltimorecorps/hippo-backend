@@ -32,11 +32,12 @@ class Address(db.Model):
 
 class AddressSchema(Schema):
     id = fields.Integer()
-    contact_id = fields.Integer()
+    is_primary = fields.Boolean()
     street1 = fields.String(required=True)
     street2 = fields.String()
     city = fields.String(required=True)
     state = fields.String(required=True)
     country = fields.String(required=True)
+    postal_code = fields.String(required=True)
     type = EnumField(Type, by_value=True)
     status = EnumField(Status, by_value=True)

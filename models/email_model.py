@@ -22,7 +22,6 @@ class Email(db.Model):
 
 class EmailSchema(Schema):
     id = fields.Integer()
-    contact_id = fields.Integer()
-    is_primary = fields.Boolean(required=True)
-    email = fields.String(required=True)
+    is_primary = fields.Boolean()
+    email = fields.Email(required=True)
     type = EnumField(Type, by_value=True)
