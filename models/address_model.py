@@ -1,7 +1,8 @@
 from models.base_model import db
 import enum
 from sqlalchemy_enum34 import EnumType
-
+from marshmallow import Schema, fields
+from marshmallow_enum import EnumField
 
 class Type(enum.Enum):
     home = 'Home'
@@ -27,3 +28,16 @@ class Address(db.Model):
     type = db.Column(EnumType(Type), default=Type.home)
     status = db.Column(EnumType(Status), default=Status.active)
     contact = db.relationship('Contact')
+
+
+class AddressSchema(Schema):
+    id = fields.Integer()
+    is_primary = fields.Boolean()
+    street1 = fields.String(required=True)
+    street2 = fields.String()
+    city = fields.String(required=True)
+    state = fields.String(required=True)
+    country = fields.String(required=True)
+    postal_code = fields.String(required=True)
+    type = EnumField(Type, by_value=True)
+    status = EnumField(Status, by_value=True)
