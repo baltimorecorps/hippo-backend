@@ -78,3 +78,13 @@ class ExperienceOne(Resource):
         exp.update(data)
         db.session.commit()
         return {"status": 'success'}, 201
+
+
+class ExperienceList(Resource):
+    def post(self, contact_id):
+        pass
+
+
+class ExperienceType(Resource):
+    def get(self, contact_id):
+        pass

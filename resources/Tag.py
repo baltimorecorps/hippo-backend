@@ -86,3 +86,4 @@ class ContactWithThisTagSearch(Resource):
 		contacts_data = contacts_schema.dump(contacts).data
 		return {'status': 'success', 'data': contacts_data}, 200
 		
+
