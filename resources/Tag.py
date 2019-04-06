@@ -1,10 +1,10 @@
 from flask_restful import Resource, request
 from models.tag_model import Tag, TagSchema, TagItem, TagItemSchema
-from models.contact_model import Contact, ContactSchema
+from models.contact_model import Contact, ContactAllSchema
 from models.base_model import db
 
 
-contacts_schema = ContactSchema(many=True)
+contacts_schema = ContactAllSchema(many=True)
 tag_schema = TagSchema()
 tags_schema = TagSchema(many=True)
 tagitem_schema = TagItemSchema()
