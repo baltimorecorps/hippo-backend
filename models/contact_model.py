@@ -66,15 +66,21 @@ class Contact(db.Model):
                                                 back_populates='contact')
 
 
-class ContactSchema(Schema):
+class ContactAllSchema(Schema):
     id = fields.Integer()
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
-    email = fields.List(fields.Nested(EmailSchema))
     email_primary = fields.Nested(EmailSchema)
-    address = fields.List(fields.Nested(AddressSchema))
-    address_primary = fields.Nested(AddressSchema)
 
+class ContactOneSchema(Schema):
+    id = fields.Integer()
+    first_name = fields.String(required=True)
+    last_name = fields.String(required=True)
+    email_primary = fields.Nested(EmailSchema)
+    phone_primary= fields.String()
+    gender = EnumField(Gender, by_value=True)
+    race_all = EnumField(Race, by_value=True)
+    birthdate = fields.Date()
 
 class ProfileSchema(Schema):
     id = fields.Integer()
