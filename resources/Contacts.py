@@ -22,8 +22,7 @@ class ContactOne(Resource):
 
     def get(self, contact_id):
 
-        contact = Contact.query.with_entities(Contact.id, Contact.first_name, Contact.last_name, Contact.email_primary)\
-            .filter_by(id=contact_id).first()
+        contact = Contact.query.filter_by(id=contact_id).first()
         if contact:
             contact = contact_schema.dump(contact).data
             return {'status': 'success', 'data': contact}, 200
@@ -47,15 +46,6 @@ class ContactOne(Resource):
             emails = data.pop('email')
             data['email'] = []
 
-        # if 'email_primary' in data:
-        #     email_primary = data.pop('email_primary')
-        #     if 'is_primary' in email_primary:
-        #         if not email_primary['is_primary']:
-        #             return {'message': 'email_primary was set to False, cannot add this email as email_primary'}, 400
-        #     email_primary['is_primary'] = True
-        #
-        #     data['email_primary'] = Email(**email_primary)
-
         if 'address' in data:
             addresses = data.pop('address')
             data['address'] = []
@@ -73,7 +63,7 @@ class ContactOne(Resource):
 
         # Ensure number of primary addresses <= 1
         address_primary_cnt = len(
-            [address['is_primary'] for address in addresses if 'is_primary' in address and addresses['is_primary']])
+            [address['is_primary'] for address in addresses if 'is_primary' in address and address['is_primary']])
         if address_primary_cnt > 1:
             return {'message': 'Only one address can be set as primary'}, 400
 

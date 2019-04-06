@@ -66,6 +66,7 @@ cursor.execute("CREATE TYPE exp_type AS ENUM ('Work', 'Education', 'Service', 'A
 cursor.execute("CREATE TYPE exp_type_host AS ENUM ('Nonprofit', 'Education', 'Government', 'Corporate')")
 cursor.execute("CREATE TYPE exp_status AS ENUM ('Active', 'Inactive')")
 cursor.execute("CREATE TYPE exp_stage AS ENUM ('Current', 'Former')")
+cursor.execute("CREATE TYPE exp_degree AS ENUM ('High School','Associates','Undergraduate','Masters','Doctoral')")
 
 create_exp_query = '''
 CREATE TABLE experience
@@ -86,6 +87,7 @@ CREATE TABLE experience
      status       exp_status,
      stage        exp_stage,
      score        DECIMAL,
+     degree       exp_degree,
      FOREIGN KEY(contact_id) REFERENCES contact(id),
      FOREIGN KEY(address_id) REFERENCES address(id)
   );'''
