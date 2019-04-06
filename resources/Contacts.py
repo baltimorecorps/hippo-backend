@@ -1,12 +1,12 @@
 from flask_restful import Resource, request
-from models.contact_model import Contact, ContactSchema, ProfileSchema
+from models.contact_model import Contact, ContactAllSchema, ContactOneSchema, ProfileSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
 
 
-contact_schema = ContactSchema()
-contacts_schema = ContactSchema(many=True)
+contact_schema = ContactOneSchema()
+contacts_schema = ContactAllSchema(many=True)
 profile_schema = ProfileSchema()
 
 
@@ -14,16 +14,13 @@ class ContactAll(Resource):
     def get(self):
         contacts = Contact.query.all()
         contacts = contacts_schema.dump(contacts).data
-
         return {'status': 'success', 'data': contacts}, 200
 
 
 class ContactOne(Resource):
 
     def get(self, contact_id):
-
-        contact = Contact.query.with_entities(Contact.id, Contact.first_name, Contact.last_name, Contact.email_primary)\
-            .filter_by(id=contact_id).first()
+        contact = Contact.query.filter_by(id=contact_id).first()
         if contact:
             contact = contact_schema.dump(contact).data
             return {'status': 'success', 'data': contact}, 200
