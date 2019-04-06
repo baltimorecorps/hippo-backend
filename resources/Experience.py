@@ -1,5 +1,6 @@
 from flask_restful import Resource, request
 from models.experience_model import Experience, ExperienceSchema
+from models.achievement_model import Achievement
 from models.base_model import db
 
 experience_schema = ExperienceSchema()
@@ -9,10 +10,8 @@ experiences_schema = ExperienceSchema(many=True)
 class ExperienceAll(Resource):
 
     def get(self, contact_id):
-        experiences = Experience.query.with_entities(Experience.id, Experience.description, Experience.host,
-                                                  Experience.title, Experience.date_start, Experience.date_end,
-                                                  Experience.type)\
-                                .filter_by(contact_id=contact_id).order_by(Experience.date_end.desc(), Experience.date_start.desc())
+        experiences = Experience.query.filter_by(contact_id=contact_id).order_by(Experience.date_end.desc(),
+                                                                                 Experience.date_start.desc())
         exp_list = experiences_schema.dump(experiences).data
 
         return {'status': 'success', 'data': exp_list}, 200
@@ -21,11 +20,8 @@ class ExperienceAll(Resource):
 class ExperienceOne(Resource):
 
     def get(self, contact_id, experience_id):
-        exp = Experience.query.with_entities(Experience.id, Experience.description, Experience.host,
-                                                     Experience.title, Experience.date_start, Experience.date_end,
-                                                     Experience.type)\
-                        .filter_by(contact_id=contact_id)\
-                        .filter_by(id=experience_id).first()
+        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(id=experience_id).first()
+
         if exp:
             exp_data = experience_schema.dump(exp).data
             return {'status': 'success', 'data': exp_data}, 200
@@ -43,7 +39,17 @@ class ExperienceOne(Resource):
         if errors:
             return errors, 422
 
+        achievements = []
+
+        if 'achievements' in data:
+            achievements = data.pop('achievements')
+            data['achievements'] = []
+
         exp = Experience(**data)
+
+        for achievement in achievements:
+            # Create email object and append to contact email field
+            exp.achievements.append(Achievement(**achievement))
 
         db.session.add(exp)
         db.session.commit()
@@ -64,17 +70,32 @@ class ExperienceOne(Resource):
         return {"status": 'success'}, 201
 
     def put(self, contact_id, experience_id):
-        exp = Experience.query.with_entities(Experience.id, Experience.description, Experience.host,
-                                                     Experience.title, Experience.date_start, Experience.date_end,
-                                                     Experience.type)\
-                        .filter_by(contact_id=contact_id)\
-                        .filter_by(id=experience_id)
+        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(id=experience_id)
+
         if not exp.first():
             return {'message': 'Experience does not exist'}, 400
         json_data = request.get_json(force=True)
         data, errors = experience_schema.load(json_data)
         if not data:
             return {'message': 'No data provided to update'}, 400
+
+        achievements = []
+        if 'achievements' in data:
+            achievements = data.pop('achievements')
+
+        for achievement in achievements:
+            # Check if any achievement was updated
+            try:
+                ach = Achievement.query.filter_by(exp_id=experience_id).filter_by(id=achievement['id'])
+                if not ach.first():
+                    return {'message': 'Incorrect id. This achievement does not exist!'}, 400
+                else:
+                    ach.update(achievement)
+            except:
+                return {'message': 'Did not provide achievement id'}, 400
+
+        # q = dict((k, [Achievement(**x) for x in v]) if k == 'achievements' else (k, v) for k, v in data.items())
+
         exp.update(data)
         db.session.commit()
         return {"status": 'success'}, 201
