@@ -1,5 +1,5 @@
 from flask_restful import Resource, request
-from models.tag_model import Tag, TagSchema, TagItem, TagItemSchema
+from models.tag_model import Tag, TagSchema, TagItem, TagItemSchema, TagStatusType, TagType, ContactTagSchema
 from models.contact_model import Contact, ContactAllSchema
 from models.base_model import db
 
@@ -8,7 +8,10 @@ contacts_schema = ContactAllSchema(many=True)
 tag_schema = TagSchema()
 tags_schema = TagSchema(many=True)
 tagitem_schema = TagItemSchema()
+contacttag_schema = ContactTagSchema(many=True)
 
+
+# Returns a list of all tags
 class TagAll(Resource):
 
 	def get(self):
@@ -18,6 +21,7 @@ class TagAll(Resource):
 		return {'status': 'success', 'data': tags_list}, 200
 
 
+# Returns a specific tag
 class TagOne(Resource):
 
 	def get(self, tag_id):
@@ -76,14 +80,16 @@ class TagOne(Resource):
 		return {"status": 'success'}, 201
 
 
-class ContactWithThisTagSearch(Resource):
+class TagItemQuery(Resource):
+	# returns a list of tags associated with a given contact
+	def get(self, contact_id):
+		tags = db.session.query(Tag, Contact, TagItem)\
+						.with_entities(TagItem.contact_id, TagItem.tag_id, Tag.name, Tag.type)\
+						.filter(TagItem.contact_id==contact_id)\
+						.filter(TagItem.contact_id==Contact.id)\
+						.filter(TagItem.tag_id==Tag.id).all()
 
-	def get(self, tag_id):
-		contacts = Contact.query.join(TagItem, Contact.id==TagItem.contact_id) \
-						.filter_by(id=tag_id) \
-						.with_entities(Tag,Contact.id, Contact.first_name, Contact.last_name, Contact.email_primary)
-
-		contacts_data = contacts_schema.dump(contacts).data
-		return {'status': 'success', 'data': contacts_data}, 200
+		tags_list = contacttag_schema.dump(tags).data		
+		return {'status': 'success', 'data': tags_list}, 200
 		
 

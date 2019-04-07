@@ -35,9 +35,9 @@ class TagItem(db.Model):
     __tablename__ = "tag_item"
     id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
-    contact = db.relationship('Contact', backref = 'contact')
+    contact = db.relationship('Contact')
     tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), nullable=False)
-    tag = db.relationship('Tag', backref = 'tag')
+    address = db.relationship('Tag')
     score = db.Column(db.DECIMAL)
     tag_item_order = db.Column(db.Integer, nullable=False)
 
@@ -48,3 +48,12 @@ class TagItemSchema(Schema):
     tag_id = fields.Integer(required=True)
     score = fields.Decimal()
     tag_item_order = fields.Integer(required=True)
+
+
+class ContactTagSchema(Schema):
+    id = fields.Integer()
+    contact_id = fields.Integer(required=True)
+    tag_id = fields.Integer(required=True)
+    name = fields.String(required=True)
+    type = EnumField(TagType, by_value=True, required=True)
+
