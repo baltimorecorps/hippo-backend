@@ -91,5 +91,38 @@ class TagItemQuery(Resource):
 
 		tags_list = contacttag_schema.dump(tags).data		
 		return {'status': 'success', 'data': tags_list}, 200
-		
+
+
+	def post(self, contact_id):
+		json_data = request.get_json(force=True)
+
+		if not json_data:
+			return {'message': 'No input data provided'}, 400
+
+		# Validate and deserialize input
+		data, errors = tagitem_schema.load(json_data)
+		if errors:
+			return errors, 422
+
+		tagitem = TagItem(**data)
+
+		db.session.add(tagitem)
+		db.session.commit()
+		result = tagitem_schema.dump(tagitem).data
+
+		return {"status": 'success', 'data': result}, 201
+
+	def put(self, contact_id, tagitem_id):
+		tag = TagItem.query.with_entities(TagItem.id, TagItem.contact_id, TagItem.tag_id, TagItem.score, TagItem.tag_item_order)\
+						.filter_by(id=tagitem_id)
+
+		if not tag.first():
+			return {'message': 'TagItem does not exist'}, 400
+		json_data = request.get_json(force=True)
+		data, errors = tagitem_schema.load(json_data)
+		if not data:
+			return {'message': 'No data provided to update'}, 400
+		tag.update(data)
+		db.session.commit()
+		return {"status": 'success'}, 201
 

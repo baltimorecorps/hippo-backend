@@ -17,6 +17,6 @@ api.add_resource(ExperienceOne, '/contacts/<int:contact_id>/experiences/',
                  '/contacts/<int:contact_id>/experiences/<int:experience_id>')
 api.add_resource(TagAll, '/tags')
 api.add_resource(TagOne, '/tags/<int:tag_id>')
-api.add_resource(TagItemQuery, '/contacts/<int:contact_id>/tags/')
+api.add_resource(TagItemQuery, '/contacts/<int:contact_id>/tags/','/contacts/<int:contact_id>/tags/<int:tagitem_id>')
 api.add_resource(ExperienceType,'/contacts/<int:contact_id>/experiences/<type>')
 api.add_resource(ExperienceList, '/contacts/<int:contact_id>/experiences/addByList')
