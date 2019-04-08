@@ -1,5 +1,5 @@
 from flask_restful import Resource, request
-from models.experience_model import Experience, ExperienceSchema
+from models.experience_model import Experience, ExperienceSchema, Type
 from models.achievement_model import Achievement
 from models.base_model import db
 
@@ -107,5 +107,23 @@ class ExperienceList(Resource):
 
 
 class ExperienceType(Resource):
-    def get(self, contact_id):
-        pass
+    def get(self, contact_id, type):
+        type_str = type.strip().lower()
+            
+        if Type.work.value.lower() == type_str:
+            type = Type.work
+        elif Type.service.value.lower() == type_str:
+            type = Type.service
+        elif Type.accomplishment.value.lower() == type_str:
+            type = Type.accomplishment
+        elif Type.education.value.lower() == type_str:
+            type = Type.education
+        else:
+            return {'message': 'No such experience type'}, 400
+
+        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(type=type).all()
+
+        if exp:
+            exp_data = experiences_schema.dump(exp).data
+            return {'status': 'success', 'data': exp_data}, 200
+
