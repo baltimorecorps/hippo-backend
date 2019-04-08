@@ -155,6 +155,31 @@ Sample call:
 http://127.0.0.1:5000/api/contacts/1/experiences/Education
 ```
 
+**Add experiences by list**
+
+URL
+```
+http://<IP>:5000/api/contacts/<int:contact_id>/experiences/addByList
+```
+
+Sample Call:
+```
+curl --header "Content-Type: application/json" --request POST --data '[{			
+          "description": "ok bye",
+          "host": "Google",
+          "title": "SDE",
+          "date_start": "2010-02-09",
+          "type": "Work",
+          "degree":"Masters",
+          "achievements": [{
+        		"description":"hi",
+        		"achievement_order":1
+          }
+          ]
+}]' http://127.0.0.1:5000/api/contacts/1/experiences/
+
+```
+
 ### Frontend
 
 - Open a different terminal window
