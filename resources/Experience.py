@@ -103,13 +103,41 @@ class ExperienceOne(Resource):
 
 class ExperienceList(Resource):
     def post(self, contact_id):
-        pass
+        json_data = request.get_json(force=True)
+
+        if not json_data:
+            return {'message': 'No input data provided'}, 400
+
+        for d in json_data:
+            d['contact_id'] = contact_id
+        # Validate and deserialize input
+        data, errors = experiences_schema.load(json_data)
+        if errors:
+            return errors, 422
+        result = []
+        for exp_data in data:
+            achievements = []
+            if 'achievements' in exp_data:
+                achievements = exp_data.pop('achievements')
+                exp_data['achievements'] = []
+            exp = Experience(**exp_data)
+
+            for achievement in achievements:
+                # Create email object and append to contact email field
+                exp.achievements.append(Achievement(**achievement))
+
+            db.session.add(exp)
+            db.session.commit()
+            result.append(experience_schema.dump(exp).data)
+
+        return {"status": 'success', 'data': result}, 201
 
 
 class ExperienceType(Resource):
     def get(self, contact_id, type):
-        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(type=Type(type)).first()
+        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(type=Type(type)).order_by(Experience.date_end.desc(),
+                                                                                 Experience.date_start.desc())
 
         if exp:
-            exp_data = experience_schema.dump(exp).data
+            exp_data = experiences_schema.dump(exp).data
             return {'status': 'success', 'data': exp_data}, 200
