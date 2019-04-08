@@ -44,15 +44,6 @@ class ContactOne(Resource):
             emails = data.pop('email')
             data['email'] = []
 
-        # if 'email_primary' in data:
-        #     email_primary = data.pop('email_primary')
-        #     if 'is_primary' in email_primary:
-        #         if not email_primary['is_primary']:
-        #             return {'message': 'email_primary was set to False, cannot add this email as email_primary'}, 400
-        #     email_primary['is_primary'] = True
-        #
-        #     data['email_primary'] = Email(**email_primary)
-
         if 'address' in data:
             addresses = data.pop('address')
             data['address'] = []
