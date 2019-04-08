@@ -83,7 +83,26 @@ class TagOne(Resource):
 class TagItemQuery(Resource):
 	# returns a list of tags associated with a given contact
 	def get(self, contact_id):
-		tags = db.session.query(Tag, Contact, TagItem)\
+		if len(request.url.split('type='))==2:
+			type_str = request.url.split('type=')[1].strip().lower()
+			
+			if TagType.skill.value.lower() == type_str:
+				type = TagType.skill
+			elif TagType.topic.value.lower() == type_str:
+				type = TagType.topic
+			elif TagType.function.value.lower() == type_str:
+				type = TagType.function
+			else:
+				return {'message': 'No such tag type'}, 400
+
+			tags = db.session.query(Tag, Contact, TagItem)\
+						.with_entities(TagItem.contact_id, TagItem.tag_id, Tag.name, Tag.type)\
+						.filter(TagItem.contact_id==contact_id)\
+						.filter(TagItem.contact_id==Contact.id)\
+						.filter(Tag.type==type)\
+						.filter(TagItem.tag_id==Tag.id).all()
+		else:
+			tags = db.session.query(Tag, Contact, TagItem)\
 						.with_entities(TagItem.contact_id, TagItem.tag_id, Tag.name, Tag.type)\
 						.filter(TagItem.contact_id==contact_id)\
 						.filter(TagItem.contact_id==Contact.id)\
