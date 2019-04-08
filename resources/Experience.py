@@ -135,8 +135,22 @@ class ExperienceList(Resource):
 
 class ExperienceType(Resource):
     def get(self, contact_id, type):
-        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(type=Type(type)).order_by(Experience.date_end.desc(),
+        type_str = type.strip().lower()
+            
+        if Type.work.value.lower() == type_str:
+            type = Type.work
+        elif Type.service.value.lower() == type_str:
+            type = Type.service
+        elif Type.accomplishment.value.lower() == type_str:
+            type = Type.accomplishment
+        elif Type.education.value.lower() == type_str:
+            type = Type.education
+        else:
+            return {'message': 'No such experience type'}, 400
+
+        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(type=type).order_by(Experience.date_end.desc(),
                                                                                  Experience.date_start.desc())
+
 
         if exp:
             exp_data = experiences_schema.dump(exp).data
