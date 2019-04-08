@@ -142,6 +142,19 @@ Sample call:
 curl -X PUT -d '{"type": "Work"}' http://127.0.0.1:5000/api/contacts/1/experiences/2
 ```
 
+**View by experience type**
+
+URL
+```
+http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<type>
+```
+
+Sample call:
+
+```
+http://127.0.0.1:5000/api/contacts/1/experiences/Education
+```
+
 ### Frontend
 
 - Open a different terminal window
