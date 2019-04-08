@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, Flask
 from flask_restful import Api
 from resources.Contacts import ContactAll, ContactOne, Profile
 from resources.Tag import TagAll, TagOne, TagItemQuery
