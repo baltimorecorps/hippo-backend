@@ -146,7 +146,7 @@ curl -X PUT -d '{"type": "Work"}' http://127.0.0.1:5000/api/contacts/1/experienc
 
 URL
 ```
-http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<type>
+http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<string:type>
 ```
 
 Sample call:
