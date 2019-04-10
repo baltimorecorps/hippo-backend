@@ -180,6 +180,51 @@ curl --header "Content-Type: application/json" --request POST --data '[{
 
 ```
 
+**View all tags**
+URL
+```
+http://<IP>:5000/api/tags/
+```
+
+**View one tag**
+URL
+```
+http://<IP>:5000/api/tags/<int:tag_id>
+```
+Sample Call:
+```
+curl --header "Content-Type: application/json" --request POST --data '{      
+          "name": "blahhhh",
+          "type": "Function"
+          }' http://127.0.0.1:5000/api/tags/1/
+```
+
+```
+curl --header "Content-Type: application/json" --request DELETE http://127.0.0.1:5000/api/tags/1/
+```
+
+```
+curl --header "Content-Type: application/json" --request PUT --data '{      
+          "name": "blahhhh",
+          "type": "Function"
+          }' http://127.0.0.1:5000/api/tags/1/
+```
+
+**Tags associated with a contact**
+
+URL
+```
+http://<IP>:5000/api/contacts/1/tags/
+```
+
+```
+curl --header "Content-Type: application/json" --request POST --data '{"contact_id":1, "tag_id": 1, "tag_item_order":2}' http://127.0.0.1:5000/api/contacts/1/tags/
+```
+
+```
+curl --header "Content-Type: application/json" --request PUT --data '{"contact_id":1, "tag_id": 1, "tag_item_order":2}' http://127.0.0.1:5000/api/contacts/1/tags/3/
+```
+
 ### Frontend
 
 - Open a different terminal window
