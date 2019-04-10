@@ -217,6 +217,11 @@ URL
 http://<IP>:5000/api/contacts/1/tags/
 ```
 
+URL
+```
+http://<IP>:5000/api/contacts/1/tags/?type=<string type>
+```
+
 ```
 curl --header "Content-Type: application/json" --request POST --data '{"contact_id":1, "tag_id": 1, "tag_item_order":2}' http://127.0.0.1:5000/api/contacts/1/tags/
 ```
