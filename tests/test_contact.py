@@ -1,9 +1,10 @@
 import json
+from flask import url_for
 
 def test_add_contact(app):
     # print(app)
     with app.test_client() as client:
-        response =client.get('/contacts')
+        response =client.get(url_for('contacts'), follow_redirects=True)
         # response = client.post('/contacts',
         #                         data=json.dumps(dict(
         #                         first_name= "abc",
@@ -16,7 +17,9 @@ def test_add_contact(app):
         #                         )),
         #                         content_type='application/json'
         #                        )
-        # print(response)
-        # data = json.loads(response.data.decode())
-        # print(data)
-        assert 201 == 201
+        #data = json.loads(response.data.decode())
+
+        assert response.json =={
+                                    "status": "success",
+                                    "data": []
+                                }
