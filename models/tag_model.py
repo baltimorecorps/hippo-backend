@@ -20,8 +20,8 @@ class Tag(db.Model):
     __tablename__ = "tag"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    type = db.Column(EnumType(TagType), nullable=False)
-    status = db.Column(EnumType(TagStatusType))
+    type = db.Column(EnumType(TagType, name='TagType'), nullable=False)
+    status = db.Column(EnumType(TagStatusType, name='TagStatusType'))
 
 
 class TagSchema(Schema):
