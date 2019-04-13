@@ -22,5 +22,7 @@ def app():
 
         db.create_all()
         yield app
-        db.session.remove()
+        #db.session.remove()
+        db.engine.execute("drop schema if exists public cascade")
+        db.engine.execute("create schema public")
         db.drop_all()

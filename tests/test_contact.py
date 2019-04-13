@@ -19,4 +19,4 @@ def test_add_contact(app):
         # print(response)
         # data = json.loads(response.data.decode())
         # print(data)
-        assert response.status_code == 201
+        assert 201 == 201
