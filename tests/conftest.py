@@ -16,17 +16,13 @@ def app():
     app = create_app("config")
     app.config['DEBUG'] = True
     app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://:@localhost/mydb"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite://"
     # db = SQLAlchemy()
 
     with app.app_context():
         db.init_app(app)
-
-        # db.engine.execute("GRANT ALL ON SCHEMA public TO newuser;")
-        # db.engine.execute("GRANT ALL ON SCHEMA public TO public;")
         db.create_all()
         yield app
-        #db.session.remove()
-        db.engine.execute("drop schema if exists public cascade")
-        db.engine.execute("create schema public")
+        # db.engine.execute("drop schema if exists public cascade")
+        # db.engine.execute("create schema public")
         db.drop_all()
