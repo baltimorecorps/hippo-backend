@@ -134,8 +134,8 @@ class ExperienceList(Resource):
 
 
 class ExperienceType(Resource):
-    def get(self, contact_id, type):
-        type_str = type.strip().lower()
+    def get(self, contact_id, exp_type):
+        type_str = exp_type.strip().lower()
             
         if Type.work.value.lower() == type_str:
             type = Type.work
