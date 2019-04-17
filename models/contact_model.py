@@ -5,7 +5,9 @@ from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
-from models.address_model import Address, AddressSchema
+from models.address_model import Address
+from models.achievement_model import Achievement
+
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -71,6 +73,9 @@ class Contact(db.Model):
                                                                     Type.accomplishment),
                                                 order_by=(Experience.date_end.desc(), Experience.date_start.desc()),
                                                 back_populates='contact')
+    achievements = db.relationship("Achievement",
+                                   primaryjoin=(id == Achievement.contact_id),
+                                   back_populates='contact')
 
 
 class ContactAllSchema(Schema):

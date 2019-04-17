@@ -76,10 +76,12 @@ CREATE TABLE experience
 CREATE TABLE achievement
   (
      id                SERIAL PRIMARY KEY NOT NULL,
-     exp_id            INTEGER NOT NULL,
+     exp_id            INTEGER,
+     contact_id        INTEGER NOT NULL,
      description       VARCHAR(500) NOT NULL,
      achievement_order INTEGER NOT NULL,
-     FOREIGN KEY(exp_id) REFERENCES experience(id)
+     FOREIGN KEY(exp_id) REFERENCES experience(id),
+     FOREIGN KEY(contact_id) REFERENCES contact(id)
   ); 
 
 CREATE TYPE tag_type AS ENUM ('Function', 'Skill', 'Topic');
