@@ -9,7 +9,7 @@ api_bp = Blueprint('api',__name__)
 api = Api(api_bp)
 
 # Route
-api.add_resource(ContactAll, '/contacts/')
+api.add_resource(ContactAll, '/contacts/', '/')
 api.add_resource(ContactOne, '/contacts/<int:contact_id>', '/contacts/')
 api.add_resource(Profile, '/contacts/<int:contact_id>/profile')
 api.add_resource(ExperienceAll, '/contacts/<int:contact_id>/experiences/')
