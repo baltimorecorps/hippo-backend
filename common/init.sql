@@ -106,12 +106,12 @@ CREATE TABLE tag_item
      FOREIGN KEY(tag_id) REFERENCES tag(id)
   ); 
 
-CREATE TABLE resume_template
+CREATE TABLE templates
   (
      id           SERIAL PRIMARY KEY NOT NULL,
      name         VARCHAR(100) NOT NULL,
      template_url VARCHAR(500) NOT NULL,
-     description  VARCHAR(500) NOT NULL
+     json         VARCHAR(500) NOT NULL
   ); 
 
 CREATE TABLE resume
@@ -123,44 +123,31 @@ CREATE TABLE resume
      date_created DATE NOT NULL,
      FOREIGN KEY(contact_id) REFERENCES contact(id),
      FOREIGN KEY(template_id) REFERENCES resume_template(id)
-  ); 
+  );
 
-CREATE TABLE resume_experience
+CREATE TABLE resume_section
   (
      id               SERIAL PRIMARY KEY NOT NULL,
      resume_id        INTEGER NOT NULL,
+     name             VARCHAR(100) NOT NULL,
+     min_count        INTEGER,
+     max_count        INTEGER,
+     FOREIGN KEY(resume_id) REFERENCES resume(id)
+  );
+
+CREATE TABLE resume_item
+  (
+     order            INTEGER NOT NULL,
+     section_id       INTEGER NOT NULL,
      exp_id           INTEGER NOT NULL,
-     date_start       DATE NOT NULL,
-     date_end         DATE,
-     score            DECIMAL,
-     resume_exp_order INTEGER NOT NULL,
-     FOREIGN KEY(resume_id) REFERENCES resume(id),
-     FOREIGN KEY(exp_id) REFERENCES experience(id)
-  ); 
+     tag_id           INTEGER NOT NULL,
+     achievement_id   INTEGER NOT NULL,
+     indented         BOOL DEFAULT false,
+     FOREIGN KEY(section_id) REFERENCES resume_section(id),
+     FOREIGN KEY(exp_id) REFERENCES experience(id),
+     FOREIGN KEY(tag_id) REFERENCES tag_item(id),
+     PRIMARY KEY(section_id, order)
+  );
 
-CREATE TABLE resume_tag
-  (
-     id               SERIAL PRIMARY KEY NOT NULL,
-     resume_id        INTEGER NOT NULL,
-     tag_item_id      INTEGER NOT NULL,
-     score            DECIMAL,
-     resume_tag_order INTEGER NOT NULL,
-     FOREIGN KEY(resume_id) REFERENCES resume(id),
-     FOREIGN KEY(tag_item_id) REFERENCES tag_item(id)
-  ); 
 
-CREATE TABLE resume_achievement
-  (
-     id                       SERIAL PRIMARY KEY NOT NULL,
-     resume_id                INTEGER NOT NULL,
-     resume_tag_id            INTEGER NOT NULL,
-     resume_exp_id            INTEGER NOT NULL,
-     achievement_id           INTEGER NOT NULL,
-     score                    DECIMAL,
-     resume_achievement_order INTEGER NOT NULL,
-     FOREIGN KEY(resume_id) REFERENCES resume(id),
-     FOREIGN KEY(resume_tag_id) REFERENCES resume_tag(id),
-     FOREIGN KEY(resume_exp_id) REFERENCES resume_experience(id),
-     FOREIGN KEY(achievement_id) REFERENCES achievement(id)
-  ); 
 
