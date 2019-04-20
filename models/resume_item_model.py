@@ -3,7 +3,7 @@ from models.base_model import db
 
 class ResumeItem(db.Model):
     __tablename__ = "resume_item"
-    order = db.Column(db.Integer,primary_key=True)
+    resume_order = db.Column(db.Integer,primary_key=True)
     section_id = db.Column(db.Integer, db.ForeignKey("resume_section.id"), nullable=False, primary_key=True)
     exp_id = db.Column(db.Integer, db.ForeignKey("experience.id"), nullable=False)
     tag_id = db.Column(db.Integer, db.ForeignKey("tag_item.id"), nullable=False)

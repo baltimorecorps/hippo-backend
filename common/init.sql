@@ -122,7 +122,7 @@ CREATE TABLE resume
      template_id  INTEGER NOT NULL,
      date_created DATE NOT NULL,
      FOREIGN KEY(contact_id) REFERENCES contact(id),
-     FOREIGN KEY(template_id) REFERENCES resume_template(id)
+     FOREIGN KEY(template_id) REFERENCES templates(id)
   );
 
 CREATE TABLE resume_section
@@ -137,8 +137,9 @@ CREATE TABLE resume_section
 
 CREATE TABLE resume_item
   (
-     order            INTEGER NOT NULL,
+
      section_id       INTEGER NOT NULL,
+     resume_order     SERIAL NOT NULL,
      exp_id           INTEGER NOT NULL,
      tag_id           INTEGER NOT NULL,
      achievement_id   INTEGER NOT NULL,
@@ -146,7 +147,7 @@ CREATE TABLE resume_item
      FOREIGN KEY(section_id) REFERENCES resume_section(id),
      FOREIGN KEY(exp_id) REFERENCES experience(id),
      FOREIGN KEY(tag_id) REFERENCES tag_item(id),
-     PRIMARY KEY(section_id, order)
+     PRIMARY KEY(section_id, resume_order)
   );
 
 
