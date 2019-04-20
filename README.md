@@ -119,13 +119,13 @@ curl --header "Content-Type: application/json" --request POST --data '{"descript
 
 URL
 ```
-http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
+http://<IP>:5000/api/experiences/<int:experience_id>
 ```
 
 Sample call:
 
 ```
-curl -X DELETE http://127.0.0.1:5000/api/contacts/1/experiences/2
+curl -X DELETE http://127.0.0.1:5000/api/experiences/2
 ```
 
 
@@ -133,13 +133,13 @@ curl -X DELETE http://127.0.0.1:5000/api/contacts/1/experiences/2
 
 URL
 ```
-http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
+http://<IP>:5000/api/experiences/<int:experience_id>
 ```
 
 Sample call:
 
 ```
-curl -X PUT -d '{"type": "Work"}' http://127.0.0.1:5000/api/contacts/1/experiences/2
+curl -X PUT -d '{"type": "Work"}' http://127.0.0.1:5000/api/experiences/2
 ```
 
 **View by experience type**

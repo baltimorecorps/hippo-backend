@@ -68,58 +68,23 @@ class ExperienceAll(Resource):
 
 class ExperienceOne(Resource):
 
-    def get(self, contact_id, experience_id):
-        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(id=experience_id).first()
+    def get(self, experience_id):
+        exp = Experience.query.filter_by(id=experience_id).first()
 
         if exp:
             exp_data = experience_schema.dump(exp).data
             return {'status': 'success', 'data': exp_data}, 200
 
-    def post(self, contact_id):
-
-        json_data = request.get_json(force=True)
-
-        if not json_data:
-            return {'message': 'No input data provided'}, 400
-        json_data['contact_id'] = contact_id
-
-        # Validate and deserialize input
-        data, errors = experience_schema.load(json_data)
-        if errors:
-            return errors, 422
-
-        achievements = []
-
-        if 'achievements' in data:
-            achievements = data.pop('achievements')
-            data['achievements'] = []
-
-        exp = Experience(**data)
-
-        for achievement in achievements:
-            # Create email object and append to contact email field
-            exp.achievements.append(Achievement(**achievement))
-
-        db.session.add(exp)
-        db.session.commit()
-        result = experience_schema.dump(exp).data
-
-        return {"status": 'success', 'data': result}, 201
-
-    def delete(self, contact_id, experience_id):
-        exp = Experience.query.with_entities(Experience.id, Experience.description, Experience.host,
-                                                     Experience.title, Experience.date_start, Experience.date_end,
-                                                     Experience.type)\
-                        .filter_by(contact_id=contact_id)\
-                        .filter_by(id=experience_id)
+    def delete(self, experience_id):
+        exp = Experience.query.filter_by(id=experience_id)
         if not exp.first():
             return {'message': 'Experience does not exist'}, 400
         exp.delete()
         db.session.commit()
         return {"status": 'success'}, 201
 
-    def put(self, contact_id, experience_id):
-        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(id=experience_id)
+    def put(self, experience_id):
+        exp = Experience.query.filter_by(id=experience_id)
 
         if not exp.first():
             return {'message': 'Experience does not exist'}, 400
