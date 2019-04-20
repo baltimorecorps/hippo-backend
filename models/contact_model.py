@@ -7,6 +7,7 @@ from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address
 from models.achievement_model import Achievement
+from models.resume_model import Resume
 
 
 class Gender(enum.Enum):
@@ -75,6 +76,9 @@ class Contact(db.Model):
                                                 back_populates='contact')
     achievements = db.relationship("Achievement",
                                    primaryjoin=(id == Achievement.contact_id),
+                                   back_populates='contact')
+    resumes = db.relationship("Resume",
+                                   primaryjoin=(id == Resume.contact_id),
                                    back_populates='contact')
 
 
