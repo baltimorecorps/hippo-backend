@@ -3,6 +3,7 @@ from flask_restful import Api
 from resources.Contacts import ContactAll, ContactOne, Profile
 from resources.Tag import TagAll, TagOne, TagItemQuery
 from resources.Experience import ExperienceAll, ExperienceOne, ExperienceList
+from resources.Achievement import AchievementsAll, AchievementOne
 
 
 api_bp = Blueprint('api',__name__)
@@ -18,3 +19,5 @@ api.add_resource(ExperienceList, '/contacts/<int:contact_id>/experiences/addByLi
 api.add_resource(TagAll, '/tags/')
 api.add_resource(TagOne, '/tags/<int:tag_id>')
 api.add_resource(TagItemQuery, '/contacts/<int:contact_id>/tags/','/contacts/<int:contact_id>/tags/<int:tagitem_id>')
+api.add_resource(AchievementsAll, '/experiences/<int:experience_id>/achievements')
+api.add_resource(AchievementOne, '/achievements/<int:achievement_id>')
