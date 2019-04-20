@@ -10,11 +10,31 @@ experiences_schema = ExperienceSchema(many=True)
 class ExperienceAll(Resource):
 
     def get(self, contact_id):
-        experiences = Experience.query.filter_by(contact_id=contact_id).order_by(Experience.date_end.desc(),
-                                                                                 Experience.date_start.desc())
-        exp_list = experiences_schema.dump(experiences).data
+        if len(request.url.split('type='))==2:
+            type_str = request.url.split('type=')[1].strip().lower()
+            
+            if Type.work.value.lower() == type_str:
+                type = Type.work
+            elif Type.service.value.lower() == type_str:
+                type = Type.service
+            elif Type.accomplishment.value.lower() == type_str:
+                type = Type.accomplishment
+            elif Type.education.value.lower() == type_str:
+                type = Type.education
+            else:
+                return {'message': 'No such tag type'}, 400
 
-        return {'status': 'success', 'data': exp_list}, 200
+            experiences = Experience.query.filter_by(contact_id=contact_id).filter_by(type=type).order_by(Experience.date_end.desc(),
+                                                                                 Experience.date_start.desc())
+            exp_list = experiences_schema.dump(experiences).data
+
+            return {'status': 'success', 'data': exp_list}, 200
+        else:   
+            experiences = Experience.query.filter_by(contact_id=contact_id).order_by(Experience.date_end.desc(),
+                                                                                 Experience.date_start.desc())
+            exp_list = experiences_schema.dump(experiences).data
+
+            return {'status': 'success', 'data': exp_list}, 200
 
 
 class ExperienceOne(Resource):
@@ -131,27 +151,3 @@ class ExperienceList(Resource):
             result.append(experience_schema.dump(exp).data)
 
         return {"status": 'success', 'data': result}, 201
-
-
-class ExperienceType(Resource):
-    def get(self, contact_id, exp_type):
-        type_str = exp_type.strip().lower()
-            
-        if Type.work.value.lower() == type_str:
-            type = Type.work
-        elif Type.service.value.lower() == type_str:
-            type = Type.service
-        elif Type.accomplishment.value.lower() == type_str:
-            type = Type.accomplishment
-        elif Type.education.value.lower() == type_str:
-            type = Type.education
-        else:
-            return {'message': 'No such experience type'}, 400
-
-        exp = Experience.query.filter_by(contact_id=contact_id).filter_by(type=type).order_by(Experience.date_end.desc(),
-                                                                                 Experience.date_start.desc())
-
-
-        if exp:
-            exp_data = experiences_schema.dump(exp).data
-            return {'status': 'success', 'data': exp_data}, 200
