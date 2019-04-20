@@ -112,7 +112,7 @@ http://<IP>:5000/api/contacts/<int:contact_id>/experiences/
 Sample call:
 
 ```
-curl --header "Content-Type: application/json" --request POST --data '{"description":"hello world hello world hello world hello world", "host": "abc", "title": "xyz", "date_start": "2000-01-01", "date_end":"2010-01-01", "type": "service"}' http://127.0.0.1:5000/api/contacts/1/experiences/
+curl --header "Content-Type: application/json" --request POST --data '{"description":"hello world hello world hello world hello world", "host": "abc", "title": "xyz", "date_start": "2000-01-01", "date_end":"2010-01-01", "type": "Service"}' http://127.0.0.1:5000/api/contacts/1/experiences/
 ```
 
 **Delete one experience**
