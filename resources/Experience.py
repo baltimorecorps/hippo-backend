@@ -78,6 +78,11 @@ class ExperienceOne(Resource):
 
         if exp:
             exp_data = experience_schema.dump(exp).data
+            if exp_data.get("achievements") is not None:
+                for achievement in exp_data["achievements"]:
+                    del achievement["contact_id"]
+                    del achievement["exp_id"]
+                    del achievement["achievement_order"]
             return {'status': 'success', 'data': exp_data}, 200
 
     def delete(self, experience_id):
