@@ -26,15 +26,20 @@ class ExperienceAll(Resource):
 
             experiences = Experience.query.filter_by(contact_id=contact_id).filter_by(type=type).order_by(Experience.date_end.desc(),
                                                                                  Experience.date_start.desc())
-            exp_list = experiences_schema.dump(experiences).data
-
-            return {'status': 'success', 'data': exp_list}, 200
+            exp_list = experiences_schema.dump(experiences).data 
         else:   
             experiences = Experience.query.filter_by(contact_id=contact_id).order_by(Experience.date_end.desc(),
                                                                                  Experience.date_start.desc())
             exp_list = experiences_schema.dump(experiences).data
 
-            return {'status': 'success', 'data': exp_list}, 200
+        for experience in exp_list:
+                if experience.get("achievements") is not None:
+                    for achievement in experience["achievements"]:
+                        del achievement["contact_id"]
+                        del achievement["exp_id"]
+                        del achievement["achievement_order"]
+
+        return {'status': 'success', 'data': exp_list}, 200
 
     def post(self, contact_id):
         json_data = request.get_json(force=True)
