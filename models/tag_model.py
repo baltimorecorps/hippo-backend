@@ -3,6 +3,10 @@ import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
+<<<<<<< HEAD
+=======
+from models.resume_item_model import ResumeItem
+>>>>>>> resume_model
 
 
 class TagType(enum.Enum):
@@ -20,8 +24,8 @@ class Tag(db.Model):
     __tablename__ = "tag"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    type = db.Column(EnumType(TagType), nullable=False)
-    status = db.Column(EnumType(TagStatusType))
+    type = db.Column(EnumType(TagType, name='TagType'), nullable=False)
+    status = db.Column(EnumType(TagStatusType, name='TagStatusType'))
 
 
 class TagSchema(Schema):
@@ -40,6 +44,9 @@ class TagItem(db.Model):
     address = db.relationship('Tag')
     score = db.Column(db.DECIMAL)
     tag_item_order = db.Column(db.Integer, nullable=False)
+    resumes = db.relationship("ResumeItem",
+                              primaryjoin=(id == ResumeItem.tag_id),
+                              back_populates='tag_item')
 
 
 class TagItemSchema(Schema):

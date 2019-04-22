@@ -5,7 +5,9 @@ from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
-from models.address_model import Address, AddressSchema
+from models.address_model import Address
+from models.achievement_model import Achievement
+from models.resume_model import Resume
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -31,7 +33,7 @@ class Salutation(enum.Enum):
 class Contact(db.Model):
     __tablename__ = "contact"
     id = db.Column(db.Integer, primary_key=True)
-    salutation = db.Column(EnumType(Salutation))
+    salutation = db.Column(EnumType(Salutation, name='Salutation'))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     email = db.relationship("Email",
@@ -49,8 +51,8 @@ class Contact(db.Model):
                                       back_populates='contact',
                                       uselist=False)
     phone_primary = db.Column(db.String(25))
-    gender = db.Column(EnumType(Gender))
-    race_all = db.Column(EnumType(Race))
+    gender = db.Column(EnumType(Gender, name='Gender'))
+    race_all = db.Column(EnumType(Race, name='Race'))
     birthdate = db.Column(db.Date)
     work_experience = db.relationship("Experience",
                                       primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.work),
@@ -71,6 +73,12 @@ class Contact(db.Model):
                                                                     Type.accomplishment),
                                                 order_by=(Experience.date_end.desc(), Experience.date_start.desc()),
                                                 back_populates='contact')
+    achievements = db.relationship("Achievement",
+                                   primaryjoin=(id == Achievement.contact_id),
+                                   back_populates='contact')
+    resumes = db.relationship("Resume",
+                                   primaryjoin=(id == Resume.contact_id),
+                                   back_populates='contact')
 
 
 class ContactAllSchema(Schema):

@@ -106,12 +106,20 @@ CREATE TABLE tag_item
      FOREIGN KEY(tag_id) REFERENCES tag(id)
   ); 
 
+<<<<<<< HEAD
 CREATE TABLE resume_template
+=======
+CREATE TABLE templates
+>>>>>>> resume_model
   (
      id           SERIAL PRIMARY KEY NOT NULL,
      name         VARCHAR(100) NOT NULL,
      template_url VARCHAR(500) NOT NULL,
+<<<<<<< HEAD
      description  VARCHAR(500) NOT NULL
+=======
+     json         VARCHAR(500) NOT NULL
+>>>>>>> resume_model
   ); 
 
 CREATE TABLE resume
@@ -122,6 +130,7 @@ CREATE TABLE resume
      template_id  INTEGER NOT NULL,
      date_created DATE NOT NULL,
      FOREIGN KEY(contact_id) REFERENCES contact(id),
+<<<<<<< HEAD
      FOREIGN KEY(template_id) REFERENCES resume_template(id)
   ); 
 
@@ -163,4 +172,35 @@ CREATE TABLE resume_achievement
      FOREIGN KEY(resume_exp_id) REFERENCES resume_experience(id),
      FOREIGN KEY(achievement_id) REFERENCES achievement(id)
   ); 
+=======
+     FOREIGN KEY(template_id) REFERENCES templates(id)
+  );
+
+CREATE TABLE resume_section
+  (
+     id               SERIAL PRIMARY KEY NOT NULL,
+     resume_id        INTEGER NOT NULL,
+     name             VARCHAR(100) NOT NULL,
+     min_count        INTEGER,
+     max_count        INTEGER,
+     FOREIGN KEY(resume_id) REFERENCES resume(id)
+  );
+
+CREATE TABLE resume_item
+  (
+
+     section_id       INTEGER NOT NULL,
+     resume_order     SERIAL NOT NULL,
+     exp_id           INTEGER NOT NULL,
+     tag_id           INTEGER NOT NULL,
+     achievement_id   INTEGER NOT NULL,
+     indented         BOOL DEFAULT false,
+     FOREIGN KEY(section_id) REFERENCES resume_section(id),
+     FOREIGN KEY(exp_id) REFERENCES experience(id),
+     FOREIGN KEY(tag_id) REFERENCES tag_item(id),
+     PRIMARY KEY(section_id, resume_order)
+  );
+
+
+>>>>>>> resume_model
 

@@ -112,20 +112,32 @@ http://<IP>:5000/api/contacts/<int:contact_id>/experiences/
 Sample call:
 
 ```
+<<<<<<< HEAD
 curl --header "Content-Type: application/json" --request POST --data '{"description":"hello world hello world hello world hello world", "host": "abc", "title": "xyz", "date_start": "2000-01-01", "date_end":"2010-01-01", "type": "Service"}' http://127.0.0.1:5000/api/contacts/1/experiences/
+=======
+curl --header "Content-Type: application/json" --request POST --data '{"description":"hello world hello world hello world hello world", "host": "abc", "title": "xyz", "date_start": "2000-01-01", "date_end":"2010-01-01", "type": "service"}' http://127.0.0.1:5000/api/contacts/1/experiences/
+>>>>>>> resume_model
 ```
 
 **Delete one experience**
 
 URL
 ```
+<<<<<<< HEAD
 http://<IP>:5000/api/experiences/<int:experience_id>
+=======
+http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
+>>>>>>> resume_model
 ```
 
 Sample call:
 
 ```
+<<<<<<< HEAD
 curl -X DELETE http://127.0.0.1:5000/api/experiences/2
+=======
+curl -X DELETE http://127.0.0.1:5000/api/contacts/1/experiences/2
+>>>>>>> resume_model
 ```
 
 
@@ -133,13 +145,21 @@ curl -X DELETE http://127.0.0.1:5000/api/experiences/2
 
 URL
 ```
+<<<<<<< HEAD
 http://<IP>:5000/api/experiences/<int:experience_id>
+=======
+http://<IP>:5000/api/contacts/<int:contact_id>/experiences/<int:experience_id>
+>>>>>>> resume_model
 ```
 
 Sample call:
 
 ```
+<<<<<<< HEAD
 curl -X PUT -d '{"type": "Work"}' http://127.0.0.1:5000/api/experiences/2
+=======
+curl -X PUT -d '{"type": "Work"}' http://127.0.0.1:5000/api/contacts/1/experiences/2
+>>>>>>> resume_model
 ```
 
 **View by experience type**

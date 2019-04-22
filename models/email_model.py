@@ -16,7 +16,11 @@ class Email(db.Model):
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
     is_primary = db.Column(db.Boolean, default=False)
     email = db.Column(db.String(100), nullable=False)
+<<<<<<< HEAD
     type = db.Column(EnumType(Type))
+=======
+    type = db.Column(EnumType(Type, name='Type'))
+>>>>>>> resume_model
     contact = db.relationship('Contact')
 
 
