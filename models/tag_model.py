@@ -3,10 +3,7 @@ import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
-<<<<<<< HEAD
-=======
 from models.resume_item_model import ResumeItem
->>>>>>> resume_model
 
 
 class TagType(enum.Enum):
