@@ -1,138 +1,70 @@
 from flask_restful import Resource, request
-from models.achievement_model import Achievement, AchievementSchema
+from models.resume_model import Resume, ResumeSchema
 from models.base_model import db
 
-achievement_schema = AchievementSchema()
-achievements_schema = AchievementSchema(many=True)
+resume_schema = ResumeSchema()
+resumes_schema = ResumeSchema(many=True)
 
 
-class ContactsResumes(Resource):
+class ContactsResume(Resource):
 
     def get(self, contact_id):  
-        experiences = Achievement.query.filter_by(contact_id=contact_id).order_by(Experience.date_end.desc(),
-                                                                                 Experience.date_start.desc())
-        exp_list = experiences_schema.dump(experiences).data
+        resumes = resume.query.filter_by(contact_id=contact_id).order_by(Resume.date_created.desc())
+        res_list = resumes_schema.dump(resumes).data
 
-        for experience in exp_list:
-                if experience.get("achievements") is not None:
-                    for achievement in experience["achievements"]:
-                        del achievement["contact_id"]
-                        del achievement["exp_id"]
-                        del achievement["achievement_order"]
-
-        return {'status': 'success', 'data': exp_list}, 200
+        return {'status': 'success', 'data': res_list}, 200
 
     def post(self, contact_id):
         json_data = request.get_json(force=True)
 
         if not json_data:
             return {'message': 'No input data provided'}, 400
-        json_data['contact_id'] = contact_id
 
         # Validate and deserialize input
-        data, errors = experience_schema.load(json_data)
+        data, errors = resume_schema.load(json_data)
         if errors:
             return errors, 422
 
-        achievements = []
+        res = Resume(**data)
 
-        if 'achievements' in data:
-            achievements = data.pop('achievements')
-            data['achievements'] = []
-
-        exp = Experience(**data)
-
-        for achievement in achievements:
-            # Create email object and append to contact email field
-            exp.achievements.append(Achievement(**achievement))
-
-        db.session.add(exp)
+        db.session.add(res)
         db.session.commit()
-        result = experience_schema.dump(exp).data
+        result = tag_schema.dump(res).data
 
         return {"status": 'success', 'data': result}, 201
 
 class ResumeOne(Resource):
 
-    def get(self, experience_id):
-        exp = Experience.query.filter_by(id=experience_id).first()
+    def get(self, resume_id):
+        res = Resume.query.filter_by(id=resume_id).first()
 
-        if exp:
-            exp_data = experience_schema.dump(exp).data
-            if exp_data.get("achievements") is not None:
-                for achievement in exp_data["achievements"]:
-                    del achievement["contact_id"]
-                    del achievement["exp_id"]
-                    del achievement["achievement_order"]
-            return {'status': 'success', 'data': exp_data}, 200
+        if res:
+            res_data = resume_schema.dump(res).data
+            return {'status': 'success', 'data': res_data}, 200
 
-    def delete(self, experience_id):
-        exp = Experience.query.filter_by(id=experience_id)
-        if not exp.first():
-            return {'message': 'Experience does not exist'}, 400
-        exp.delete()
+    def delete(self, resume_id):
+        res = Resume.query.filter_by(id=resume_id)
+        if not res.first():
+            return {'message': 'Resume does not exist'}, 400
+        res.delete()
         db.session.commit()
         return {"status": 'success'}, 201
 
-    def put(self, experience_id):
-        exp = Experience.query.filter_by(id=experience_id)
+    def put(self, resume_id):
+        res = Resume.query.filter_by(id=resume_id)
 
-        if not exp.first():
-            return {'message': 'Experience does not exist'}, 400
+        if not res.first():
+            return {'message': 'Resume does not exist'}, 400
         json_data = request.get_json(force=True)
-        data, errors = experience_schema.load(json_data)
+        data, errors = resume_schema.load(json_data)
         if not data:
             return {'message': 'No data provided to update'}, 400
-
-        achievements = []
-        if 'achievements' in data:
-            achievements = data.pop('achievements')
-
-        for achievement in achievements:
-            # Check if any achievement was updated
-            try:
-                ach = Achievement.query.filter_by(exp_id=experience_id).filter_by(id=achievement['id'])
-                if not ach.first():
-                    return {'message': 'Incorrect id. This achievement does not exist!'}, 400
-                else:
-                    ach.update(achievement)
-            except:
-                return {'message': 'Did not provide achievement id'}, 400
-
-        # q = dict((k, [Achievement(**x) for x in v]) if k == 'achievements' else (k, v) for k, v in data.items())
-
-        exp.update(data)
+        res.update(data)
         db.session.commit()
         return {"status": 'success'}, 201
 
 
 class ResumeSections(Resource):
-    def post(self, contact_id):
-        json_data = request.get_json(force=True)
+    def get(self, resume_id):
+        pass
 
-        if not json_data:
-            return {'message': 'No input data provided'}, 400
-
-        for d in json_data:
-            d['contact_id'] = contact_id
-        # Validate and deserialize input
-        data, errors = experiences_schema.load(json_data)
-        if errors:
-            return errors, 422
-        result = []
-        for exp_data in data:
-            achievements = []
-            if 'achievements' in exp_data:
-                achievements = exp_data.pop('achievements')
-                exp_data['achievements'] = []
-            exp = Experience(**exp_data)
-
-            for achievement in achievements:
-                # Create email object and append to contact email field
-                exp.achievements.append(Achievement(**achievement))
-
-            db.session.add(exp)
-            db.session.commit()
-            result.append(experience_schema.dump(exp).data)
-
-        return {"status": 'success', 'data': result}, 201
