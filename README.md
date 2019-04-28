@@ -230,6 +230,42 @@ curl --header "Content-Type: application/json" --request POST --data '{"contact_
 curl --header "Content-Type: application/json" --request PUT --data '{"contact_id":1, "tag_id": 1, "tag_item_order":2}' http://127.0.0.1:5000/api/contacts/1/tags/3/
 ```
 
+**Add a new achievement**
+
+URL
+```
+http://<IP>:5000/api/experiences/<int:experience_id>/achievements/
+```
+
+Sample Call:
+```
+curl --header "Content-Type: application/json" --request POST --data '{"exp_id":"1", "contact_id":"1", "description":"AutoCAD certification", "achievement_order":"3"}' http://127.0.0.1:5000/api/experiences/1/achievements
+```
+
+**Update an achievement**
+
+URL
+```
+http://<IP>:5000/api/achievements/<int:achievement_id>
+```
+
+Sample Call:
+```
+curl -X PUT -d '{"description":"Completed 30 hours of training"}' http://127.0.0.1:5000/api/achievements/9
+```
+
+**Delete an achievement**
+
+URL
+```
+http://<IP>:5000/api/achievements/<int:achievement_id>
+```
+
+Sample Call:
+```
+curl -X DELETE http://127.0.0.1:5000/api/achievements/8
+```
+
 ### Frontend
 
 - Open a different terminal window
