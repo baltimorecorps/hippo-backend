@@ -4,7 +4,7 @@ from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
 from models.achievement_model import Achievement, AchievementSchema
-from models.resume_item_model import ResumeItem
+# from models.resume_item_model import Resumeitem
 
 class Type(enum.Enum):
     work = 'Work'

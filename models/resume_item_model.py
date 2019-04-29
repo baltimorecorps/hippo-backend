@@ -1,7 +1,11 @@
 from models.base_model import db
 from models.resume_section_model import Resumesection
 
+<<<<<<< HEAD
 class ResumeItem(db.Model):
+=======
+class Resumeitem(db.Model):
+>>>>>>> resume_model
     __tablename__ = "resumeitem"
     resume_order = db.Column(db.Integer, primary_key=True)
     section_id = db.Column(db.Integer, db.ForeignKey('resumesection.id'), nullable=False, primary_key=True)
