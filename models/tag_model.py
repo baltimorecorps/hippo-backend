@@ -2,7 +2,7 @@ from models.base_model import db
 import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
-from sqlalchemy_enum34 import EnumType
+from sqlalchemy import Enum
 
 
 class TagType(enum.Enum):
@@ -20,15 +20,15 @@ class Tag(db.Model):
     __tablename__ = "tag"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    type = db.Column(EnumType(TagType), nullable=False)
-    status = db.Column(EnumType(TagStatusType))
+    type = db.Column(Enum(TagType), nullable=False)
+    status = db.Column(Enum(TagStatusType))
 
 
 class TagSchema(Schema):
     id = fields.Integer()
     name = fields.String(required=True)
     type = EnumField(TagType, by_value=True, required=True)
-    status = EnumType(TagStatusType, by_value=True)
+    status = Enum(TagStatusType, by_value=True)
 
 
 class TagItem(db.Model):
@@ -56,4 +56,3 @@ class ContactTagSchema(Schema):
     tag_id = fields.Integer(required=True)
     name = fields.String(required=True)
     type = EnumField(TagType, by_value=True, required=True)
-

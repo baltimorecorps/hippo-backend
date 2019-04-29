@@ -1,6 +1,6 @@
 from models.base_model import db
 import enum
-from sqlalchemy_enum34 import EnumType
+from sqlalchemy import Enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 
@@ -16,7 +16,7 @@ class Email(db.Model):
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
     is_primary = db.Column(db.Boolean, default=False)
     email = db.Column(db.String(100), nullable=False)
-    type = db.Column(EnumType(Type))
+    type = db.Column(Enum(Type))
     contact = db.relationship('Contact')
 
 

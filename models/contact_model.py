@@ -2,7 +2,7 @@ from models.base_model import db
 import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
-from sqlalchemy_enum34 import EnumType
+from sqlalchemy import Enum
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address, AddressSchema
@@ -31,7 +31,7 @@ class Salutation(enum.Enum):
 class Contact(db.Model):
     __tablename__ = "contact"
     id = db.Column(db.Integer, primary_key=True)
-    salutation = db.Column(EnumType(Salutation))
+    salutation = db.Column(Enum(Salutation))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     email = db.relationship("Email",
@@ -49,8 +49,8 @@ class Contact(db.Model):
                                       back_populates='contact',
                                       uselist=False)
     phone_primary = db.Column(db.String(25))
-    gender = db.Column(EnumType(Gender))
-    race_all = db.Column(EnumType(Race))
+    gender = db.Column(Enum(Gender))
+    race_all = db.Column(Enum(Race))
     birthdate = db.Column(db.Date)
     work_experience = db.relationship("Experience",
                                       primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.work),
