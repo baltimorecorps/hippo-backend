@@ -34,9 +34,6 @@ class Experience(db.Model):
     achievements = db.relationship("Achievement",
                                    primaryjoin=id == Achievement.exp_id,
                                    back_populates='experience')
-    resumes = db.relationship("ResumeItem",
-                              primaryjoin=(id == ResumeItem.exp_id),
-                              back_populates='experience')
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
     address_id = db.Column(db.Integer, db.ForeignKey("address.id"), nullable=False)
     contact = db.relationship('Contact')
