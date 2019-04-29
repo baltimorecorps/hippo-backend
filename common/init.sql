@@ -125,7 +125,7 @@ CREATE TABLE resume
      FOREIGN KEY(template_id) REFERENCES templates(id)
   );
 
-CREATE TABLE resume_section
+CREATE TABLE resumesection
   (
      id               SERIAL PRIMARY KEY NOT NULL,
      resume_id        INTEGER NOT NULL,
@@ -135,7 +135,7 @@ CREATE TABLE resume_section
      FOREIGN KEY(resume_id) REFERENCES resume(id)
   );
 
-CREATE TABLE resume_item
+CREATE TABLE resumeitem
   (
 
      section_id       INTEGER NOT NULL,
@@ -144,7 +144,7 @@ CREATE TABLE resume_item
      tag_id           INTEGER NOT NULL,
      achievement_id   INTEGER NOT NULL,
      indented         BOOL DEFAULT false,
-     FOREIGN KEY(section_id) REFERENCES resume_section(id),
+     FOREIGN KEY(section_id) REFERENCES resumesection(id),
      FOREIGN KEY(exp_id) REFERENCES experience(id),
      FOREIGN KEY(tag_id) REFERENCES tag_item(id),
      PRIMARY KEY(section_id, resume_order)

@@ -1,4 +1,5 @@
 from models.base_model import db
+from models.templates_model import Templates
 
 
 class Resume(db.Model):
@@ -9,4 +10,4 @@ class Resume(db.Model):
     template_id = db.Column(db.Integer, db.ForeignKey("templates.id"), nullable=False)
     date_created = db.Column(db.Date, nullable=False)
     contact = db.relationship('Contact')
-    templates = db.relationship('Templates')
+    templates = db.relationship(Templates)

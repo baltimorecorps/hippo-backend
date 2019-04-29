@@ -4,7 +4,7 @@ from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
 from models.achievement_model import Achievement, AchievementSchema
-from models.resume_item_model import ResumeItem
+# from models.resume_item_model import Resumeitem
 
 class Type(enum.Enum):
     work = 'Work'
@@ -34,9 +34,9 @@ class Experience(db.Model):
     achievements = db.relationship("Achievement",
                                    primaryjoin=id == Achievement.exp_id,
                                    back_populates='experience')
-    resumes = db.relationship("ResumeItem",
-                              primaryjoin=(id == ResumeItem.exp_id),
-                              back_populates='experience')
+    # resumes = db.relationship(Resumeitem,
+    #                           foreign_keys=[id],
+    #                           back_populates='experience')
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
     address_id = db.Column(db.Integer, db.ForeignKey("address.id"), nullable=False)
     contact = db.relationship('Contact')
