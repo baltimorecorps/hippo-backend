@@ -137,9 +137,8 @@ CREATE TABLE resume_section
 
 CREATE TABLE resume_item
   (
-
+    resume_order     SERIAL NOT NULL,
      section_id       INTEGER NOT NULL,
-     resume_order     SERIAL NOT NULL,
      exp_id           INTEGER NOT NULL,
      tag_id           INTEGER NOT NULL,
      achievement_id   INTEGER NOT NULL,
@@ -147,7 +146,7 @@ CREATE TABLE resume_item
      FOREIGN KEY(section_id) REFERENCES resume_section(id),
      FOREIGN KEY(exp_id) REFERENCES experience(id),
      FOREIGN KEY(tag_id) REFERENCES tag_item(id),
-     PRIMARY KEY(section_id, resume_order)
+     PRIMARY KEY(resume_order, section_id)
   );
 
   
