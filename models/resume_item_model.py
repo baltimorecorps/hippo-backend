@@ -1,5 +1,6 @@
 from models.base_model import db
 
+
 class ResumeItem(db.Model):
     __tablename__ = "resume_item"
     id = db.Column(db.Integer)
@@ -9,6 +10,6 @@ class ResumeItem(db.Model):
     tag_id = db.Column(db.Integer, db.ForeignKey("tag_item.id"), nullable=False)
     achievement_id = db.Column(db.Integer, db.ForeignKey("experience.id"), nullable=False)
     indented = db.Column(db.Boolean, default=False)
-    resume_section = db.relationship('ResumeSection')
+    resumeSection = db.relationship('ResumeSection')
     experience = db.relationship('Experience')
     tag_item = db.relationship('TagItem')

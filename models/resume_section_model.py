@@ -1,6 +1,5 @@
 from models.base_model import db
 
-
 class ResumeSection(db.Model):
     __tablename__ = "resume_section"
     id = db.Column(db.Integer, primary_key=True)
