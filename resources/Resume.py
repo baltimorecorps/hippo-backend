@@ -38,10 +38,24 @@ class ResumeOne(Resource):
         pass
 
     def delete(self, resume_id):
-        pass
+        res = Resume.query.filter_by(id=resume_id)
+        if not res.first():
+            return {'message': 'Resume does not exist'}, 400
+        res.delete()
+        db.session.commit()
+        return {"status": 'success'}, 201
 
     def put(self, resume_id):
-        pass
+        res = Resume.query.filter_by(id=resume_id)
+        if not res.first():
+            return {'message': 'Resume does not exist'}, 400
+        json_data = request.get_json(force=True)
+        data, errors = resume_schema.load(json_data)
+        if not data:
+            return {'message': 'No data provided to update'}, 400
+        res.update(data)
+        db.session.commit()
+        return {"status": 'success'}, 201
 
 
 class ResumeSections(Resource):
