@@ -5,11 +5,11 @@ _init_sql_path = os.path.join(os.path.dirname(__file__), 'init.sql')
 with open(_init_sql_path, 'rb') as f:
     _init_sql = f.read().decode('utf8')
 
-conn = psycopg2.connect(user="newuser",
-                        password="password",
-                        host="127.0.0.1",
+conn = psycopg2.connect(user="skflpscmrdpxig",
+                        password="b5d9f1887753ae2dedf55325f7253f053a46388c685fa288ff1d4469b15fabe1",
+                        host="ec2-23-21-128-35.compute-1.amazonaws.com",
                         port="5432",
-                        database="mydb")
+                        database="d8i4u0mq57b2cv")
 cursor = conn.cursor()
 print(_init_sql)
 cursor.execute(_init_sql)
