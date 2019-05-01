@@ -5,3 +5,6 @@ __pycache__/
 venv/
 env/
 *.pyc
+
+*.swp
+*.swo
