@@ -7,7 +7,7 @@ resume_schema = ResumeSchema()
 
 class ContactsResume(Resource):
 
-    def get(self, contact_id):  
+    def get(self, contact_id):
         res = Resume.query.filter_by(contact_id=contact_id)
         res_list = resumes_schema.dump(res).data
 
@@ -30,7 +30,7 @@ class ContactsResume(Resource):
         db.session.commit()
         result = resume_schema.dump(res).data
 
-        return {"status": 'success', 'data': result}, 201
+        return {'status': 'success', 'data': result}, 201
 
 class ResumeOne(Resource):
 
@@ -43,7 +43,7 @@ class ResumeOne(Resource):
             return {'message': 'Resume does not exist'}, 400
         res.delete()
         db.session.commit()
-        return {"status": 'success'}, 201
+        return {'status': 'success'}, 201
 
     def put(self, resume_id):
         res = Resume.query.filter_by(id=resume_id)
@@ -55,10 +55,9 @@ class ResumeOne(Resource):
             return {'message': 'No data provided to update'}, 400
         res.update(data)
         db.session.commit()
-        return {"status": 'success'}, 201
+        return {'status': 'success'}, 201
 
 
 class ResumeSections(Resource):
     def get(self, resume_id):
         pass
-
