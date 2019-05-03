@@ -27,7 +27,7 @@ class TagOne(Resource):
 	def get(self, tag_id):
 		tags_list = Tag.query.with_entities(Tag.id, Tag.name, Tag.type)\
 						.filter_by(id=tag_id)
-		
+
 		if not tags_list.first():
 			return {'message': 'Tag does not exist'}, 400
 
@@ -85,7 +85,7 @@ class TagItemQuery(Resource):
 	def get(self, contact_id):
 		if len(request.url.split('type='))==2:
 			type_str = request.url.split('type=')[1].strip().lower()
-			
+
 			if TagType.skill.value.lower() == type_str:
 				type = TagType.skill
 			elif TagType.topic.value.lower() == type_str:
@@ -108,7 +108,7 @@ class TagItemQuery(Resource):
 						.filter(TagItem.contact_id==Contact.id)\
 						.filter(TagItem.tag_id==Tag.id).all()
 
-		tags_list = contacttag_schema.dump(tags).data		
+		tags_list = contacttag_schema.dump(tags).data
 		return {'status': 'success', 'data': tags_list}, 200
 
 
@@ -144,4 +144,3 @@ class TagItemQuery(Resource):
 		tag.update(data)
 		db.session.commit()
 		return {"status": 'success'}, 201
-

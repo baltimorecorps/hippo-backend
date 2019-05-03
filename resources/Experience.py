@@ -12,7 +12,7 @@ class ExperienceAll(Resource):
     def get(self, contact_id):
         if len(request.url.split('type='))==2:
             type_str = request.url.split('type=')[1].strip().lower()
-            
+
             if Type.work.value.lower() == type_str:
                 type = Type.work
             elif Type.service.value.lower() == type_str:
@@ -27,7 +27,7 @@ class ExperienceAll(Resource):
             experiences = Experience.query.filter_by(contact_id=contact_id).filter_by(type=type).order_by(Experience.date_end.desc(),
                                                                                  Experience.date_start.desc())
             exp_list = experiences_schema.dump(experiences).data 
-        else:   
+        else:
             experiences = Experience.query.filter_by(contact_id=contact_id).order_by(Experience.date_end.desc(),
                                                                                  Experience.date_start.desc())
             exp_list = experiences_schema.dump(experiences).data
