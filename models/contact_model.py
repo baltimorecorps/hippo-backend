@@ -7,7 +7,6 @@ from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address
 from models.achievement_model import Achievement
-from models.resume_model import Resume
 
 class Gender(enum.Enum):
     female = 'Female'

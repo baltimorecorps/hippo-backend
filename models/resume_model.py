@@ -1,6 +1,7 @@
 from models.base_model import db
 from marshmallow import Schema, fields
-from models.resume_section_model import ResumeSection
+from models.resume_section_model import ResumeSection, ResumeSectionSchema
+from models.contact_model import ContactSchema
 
 
 class Resume(db.Model):
@@ -20,3 +21,10 @@ class ResumeSchema(Schema):
 	contact_id = fields.Integer(required=True)
 	name = fields.String(required=True)
 	date_created = fields.Date(required=True)
+
+class ResumeRenderSchema(Schema):
+    id = fields.Integer()
+	contact = fields.Nested(ContactSchema)
+	name = fields.String(required=True)
+	date_created = fields.Date(required=True)
+    sections = fields.Nested(ResumeItemSchema, many=True)
