@@ -3,14 +3,13 @@ from marshmallow import Schema, fields
 
 
 class Achievement(db.Model):
-    __tablename__ = "achievement"
+    __tablename__ = 'achievement'
     id = db.Column(db.Integer, primary_key=True)
-    exp_id = db.Column(db.Integer, db.ForeignKey("experience.id"))
-    contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
+    exp_id = db.Column(db.Integer, db.ForeignKey('experience.id'))
+    contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
     description = db.Column(db.String(500))
-    achievement_order = db.Column(db.Integer)
-    experience = db.relationship('Experience')
-    contact = db.relationship('Contact')
+    experience = db.relationship('Experience', back_populates='achievements')
+    contact = db.relationship('Contact', back_populates='achievements')
 
 
 class AchievementSchema(Schema):
@@ -18,4 +17,3 @@ class AchievementSchema(Schema):
     exp_id = fields.Integer()
     contact_id = fields.Integer()
     description = fields.String()
-    achievement_order = fields.Integer()

@@ -31,22 +31,20 @@ class Salutation(enum.Enum):
 
 
 class Contact(db.Model):
-    __tablename__ = "contact"
+    __tablename__ = 'contact'
+
+    #table columns
     id = db.Column(db.Integer, primary_key=True)
     salutation = db.Column(EnumType(Salutation, name='Salutation'))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
-    email = db.relationship("Email",
-                            primaryjoin=(id == Email.contact_id),
-                            back_populates='contact')
+    emails = db.relationship('Email', back_populates='contact')
     email_primary = db.relationship("Email",
                                     primaryjoin=db.and_(id == Email.contact_id, Email.is_primary == True),
                                     back_populates='contact',
                                     uselist=False)
-    address = db.relationship("Address",
-                              primaryjoin=(id == Address.contact_id),
-                              back_populates='contact')
-    address_primary = db.relationship("Address",
+    addresses = db.relationship('Address', back_populates='contact')
+    address_primary = db.relationship('Address',
                                       primaryjoin=db.and_(id == Address.contact_id, Address.is_primary == True),
                                       back_populates='contact',
                                       uselist=False)
@@ -54,40 +52,34 @@ class Contact(db.Model):
     gender = db.Column(EnumType(Gender, name='Gender'))
     race_all = db.Column(EnumType(Race, name='Race'))
     birthdate = db.Column(db.Date)
-    work_experience = db.relationship("Experience",
+
+    #relationships
+    achievements = db.relationship('Achievement', back_populates='contact')
+    resumes = db.relationship('Resume', back_populates='contact')
+    tags = db.relationship('TagItem', back_populates='contact')
+    experiences = db.relationship('Experience')
+    work_experience = db.relationship('Experience',
                                       primaryjoin=db.and_(id == Experience.contact_id, Experience.type == Type.work),
                                       order_by=(Experience.date_end.desc(), Experience.date_start.desc()),
                                       back_populates='contact')
-    education_experience = db.relationship("Experience",
+    education_experience = db.relationship('Experience',
                                            primaryjoin=db.and_(id == Experience.contact_id, Experience.type ==
                                                                Type.education),
                                            order_by=(Experience.date_end.desc(), Experience.date_start.desc()),
                                            back_populates='contact')
-    service_experience = db.relationship("Experience",
+    service_experience = db.relationship('Experience',
                                          primaryjoin=db.and_(id == Experience.contact_id, Experience.type ==
                                                              Type.service),
                                          order_by=(Experience.date_end.desc(), Experience.date_start.desc()),
                                          back_populates='contact')
-    accomplishment_experience = db.relationship("Experience",
+    accomplishment_experience = db.relationship('Experience',
                                                 primaryjoin=db.and_(id == Experience.contact_id, Experience.type ==
                                                                     Type.accomplishment),
                                                 order_by=(Experience.date_end.desc(), Experience.date_start.desc()),
                                                 back_populates='contact')
-    achievements = db.relationship("Achievement",
-                                   primaryjoin=(id == Achievement.contact_id),
-                                   back_populates='contact')
-    resumes = db.relationship("Resume",
-                                   primaryjoin=(id == Resume.contact_id),
-                                   back_populates='contact')
 
 
-class ContactAllSchema(Schema):
-    id = fields.Integer()
-    first_name = fields.String(required=True)
-    last_name = fields.String(required=True)
-    email_primary = fields.Nested(EmailSchema)
-
-class ContactOneSchema(Schema):
+class ContactSchema(Schema):
     id = fields.Integer()
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
