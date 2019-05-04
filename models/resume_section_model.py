@@ -21,4 +21,4 @@ class ResumeSectionSchema(Schema):
     name = fields.String()
     min_count = fields.Integer()
     max_count = fields.Integer()
-    items = fields.List(fields.Nested(ResumeItemSchema))
+    items = fields.Nested(ResumeItemSchema, many=True)

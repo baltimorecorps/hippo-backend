@@ -51,4 +51,5 @@ class ExperienceSchema(Schema):
     date_end = fields.Date()
     type = EnumField(Type, by_value=True)
     contact_id = fields.Integer(required=True)
-    achievements = fields.List(fields.Nested(AchievementSchema, only=['id', 'description']))
+    achievements = fields.Nested(AchievementSchema, 
+                                 many=True, only=['id', 'description'])
