@@ -25,6 +25,7 @@ class ResumeItemSchema(Schema):
     resume_order = fields.Integer()
     section_id = fields.Integer()
     indented = fields.Boolean()
-    experience = fields.Nested(ExperienceSchema)
-    tag = fields.Nested(TagItemSchema)
-    achievement = fields.Integer(AchievementSchema)
+    experience = fields.Nested(ExperienceSchema,
+                               exclude=['achievements', 'contact_id'])
+    tag = fields.Nested(TagItemSchema, exclude=['contact_id'])
+    achievement = fields.Integer(AchievementSchema, only=['id', 'description'])
