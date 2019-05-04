@@ -74,14 +74,3 @@ class ContactOne(Resource):
         result = contact_schema.dump(contact).data
 
         return {"status": 'success', 'data': result}, 201
-
-
-class Profile(Resource):
-
-    def get(self, contact_id):
-
-        contact = Contact.query.filter_by(id=contact_id).first()
-        if contact:
-            print(profile_schema.dump(contact))
-            contact = profile_schema.dump(contact).data
-            return {'status': 'success', 'data': contact}, 200
