@@ -1,5 +1,5 @@
 from flask_restful import Resource, request
-from models.contact_model import Contact, ContactSchema, ProfileSchema
+from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
@@ -7,7 +7,6 @@ from models.base_model import db
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
-profile_schema = ProfileSchema()
 
 
 class ContactAll(Resource):
