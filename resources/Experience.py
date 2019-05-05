@@ -10,9 +10,20 @@ experiences_schema = ExperienceSchema(many=True)
 class ExperienceAll(Resource):
 
     def get(self, contact_id):
-        experiences = (Experience.query.filter_by(contact_id=contact_id)
-                                       .order_by(Experience.date_end.desc(),
-                                                 Experience.date_start.desc()))
+        type_arg = request.args.get('type')
+        if type_arg:
+            if type_arg not in Type.__members__:
+                return {'message': 'No such experience type'}, 400
+            experiences = (Experience.query
+                           .filter_by(contact_id=contact_id,
+                                      type=Type[type_arg])
+                           .order_by(Experience.date_end.desc(),
+                                     Experience.date_start.desc()))
+        else:
+            experiences = (Experience.query
+                           .filter_by(contact_id=contact_id)
+                           .order_by(Experience.date_end.desc(),
+                                     Experience.date_start.desc()))
         exp_list = experiences_schema.dump(experiences).data
         return {'status': 'success', 'data': exp_list}, 200
 
