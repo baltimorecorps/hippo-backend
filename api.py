@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restful import Api
 from resources.Contacts import ContactAll, ContactOne
-from resources.Tag import TagAll, TagOne, TagItemQuery
+from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne
 from resources.Experience import ExperienceAll, ExperienceOne
 from resources.Achievement import AchievementsAll, AchievementOne
 from resources.Resume import ContactsResume, ResumeOne, ResumeSections

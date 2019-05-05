@@ -20,6 +20,6 @@ class TagItemSchema(Schema):
     id = fields.Integer()
     contact_id = fields.Integer(required=True)
     tag_id = fields.Integer(required=True)
-    name = fields.Nested(TagSchema, only='name')
-    type = fields.Nested(TagSchema, only='type')
-    score = fields.Decimal()
+    name = fields.Nested(TagSchema, attribute='tag', only='type')
+    type = fields.Nested(TagSchema, attribute='tag', only='type')
+    score = fields.Integer() #Decimal() throws an error in python 3.7
