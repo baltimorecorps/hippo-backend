@@ -5,7 +5,7 @@ from models.base_model import db
 achievement_schema = AchievementSchema()
 
 
-class AchievementsAll(Resource):
+class AchievementAll(Resource):
 
     def post(self, experience_id):
         json_data = request.get_json(force=True)

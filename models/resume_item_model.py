@@ -14,13 +14,15 @@ class ResumeItem(db.Model):
     exp_id = db.Column(db.Integer, db.ForeignKey('experience.id'))
     tag_id = db.Column(db.Integer, db.ForeignKey('tag_item.id'))
     achievement_id = db.Column(db.Integer, db.ForeignKey('achievement.id'))
+    resume_id = db.Column(db.Integer, db.ForeignKey('resume.id'))
     indented = db.Column(db.Boolean, default=False)
 
     #relationships
     section = db.relationship('ResumeSection', back_populates='items')
     experience = db.relationship('Experience')
     tag_item = db.relationship('TagItem')
-    accomplishment = db.relationship('Achievement')
+    achievement = db.relationship('Achievement')
+    resume = db.relationship('Resume')
 
 class ResumeItemSchema(Schema):
     resume_order = fields.Integer()
