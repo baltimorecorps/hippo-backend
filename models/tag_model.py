@@ -24,7 +24,8 @@ class Tag(db.Model):
     status = db.Column(EnumType(TagStatusType, name='TagStatusType'))
 
     #relationships
-    contacts = db.relationship('TagItem', back_populates='tag')
+    contacts = db.relationship('TagItem', back_populates='tag',
+                               cascade='all, delete, delete-orphan')
 
 
 class TagSchema(Schema):

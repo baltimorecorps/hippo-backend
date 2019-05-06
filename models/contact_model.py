@@ -53,10 +53,14 @@ class Contact(db.Model):
     birthdate = db.Column(db.Date)
 
     #relationships
-    achievements = db.relationship('Achievement', back_populates='contact')
-    resumes = db.relationship('Resume', back_populates='contact')
-    tags = db.relationship('TagItem', back_populates='contact')
-    experiences = db.relationship('Experience')
+    achievements = db.relationship('Achievement', back_populates='contact',
+                                   cascade='all, delete, delete-orphan')
+    resumes = db.relationship('Resume', back_populates='contact',
+                              cascade='all, delete, delete-orphan')
+    tags = db.relationship('TagItem', back_populates='contact',
+                           cascade='all, delete, delete-orphan')
+    experiences = db.relationship('Experience', back_populates='contact',
+                                  cascade='all, delete, delete-orphan')
 
 class ContactSchema(Schema):
     id = fields.Integer()

@@ -14,12 +14,14 @@ class TagItem(db.Model):
     #relationships
     contact = db.relationship('Contact', back_populates='tags')
     tag = db.relationship('Tag', back_populates='contacts')
+    resumes = db.relationship('ResumeItem', back_populates='tag_item',
+                              cascade='all, delete, delete-orphan')
 
 
 class TagItemSchema(Schema):
     id = fields.Integer()
     contact_id = fields.Integer(required=True)
     tag_id = fields.Integer(required=True)
-    name = fields.Nested(TagSchema, attribute='tag', only='type')
+    name = fields.Nested(TagSchema, attribute='tag', only='name')
     type = fields.Nested(TagSchema, attribute='tag', only='type')
     score = fields.Integer() #Decimal() throws an error in python 3.7

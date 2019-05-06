@@ -39,6 +39,8 @@ class Experience(db.Model):
     contact = db.relationship('Contact')
     address = db.relationship('Address')
     achievements = db.relationship('Achievement', back_populates='experience')
+    resumes = db.relationship('ResumeItem', back_populates='experience',
+                              cascade='all, delete, delete-orphan')
 
 
 class ExperienceSchema(Schema):
@@ -51,5 +53,5 @@ class ExperienceSchema(Schema):
     date_end = fields.Date()
     type = EnumField(Type, by_value=True)
     contact_id = fields.Integer(required=True)
-    achievements = fields.Nested(AchievementSchema, 
+    achievements = fields.Nested(AchievementSchema,
                                  many=True, only=['id', 'description'])
