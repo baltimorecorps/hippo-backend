@@ -3,9 +3,17 @@ from models.achievement_model import Achievement, AchievementSchema
 from models.base_model import db
 
 achievement_schema = AchievementSchema()
+achievements_schema = AchievementSchema(many=True)
 
 
-class AchievementAll(Resource):
+class ContactAchievementAll(Resource):
+
+    def get(self, contact_id):
+        achievement = Achievement.query.filter_by(contact_id=contact_id)
+        achievement_list = achievement_schema.dump(achievement).data
+        return {'status': 'success', 'data': achievement_list}, 200
+
+class ExperienceAchievementAll(Resource):
 
     def post(self, experience_id):
         json_data = request.get_json(force=True)
