@@ -26,7 +26,7 @@ class TagAll(Resource):
             return {'message': 'No data provided to update'}, 400
         if errors:
             return errors, 422
-            tag = Tag(**data)
+        tag = Tag(**data)
         db.session.add(tag)
         db.session.commit()
         result = tag_schema.dump(tag).data
@@ -46,10 +46,9 @@ class TagOne(Resource):
         tag = Tag.query.get(tag_id)
         if not tag:
             return {'message': 'Tag does not exist'}, 400
-        tag.delete()
+        db.session.delete(tag)
         db.session.commit()
         return {'status': 'success'}, 201
-
 
     def put(self, tag_id):
         tag = Tag.query.get(tag_id)
@@ -61,7 +60,8 @@ class TagOne(Resource):
             return {'message': 'No data provided to update'}, 400
         if errors:
             return errors, 422
-        tag.update(data)
+        for k,v in data.items():
+            setattr(tag,k,v)
         db.session.commit()
         result = tag_schema.dump(tag).data
         return {'status': 'success', 'data': result}, 201
@@ -99,7 +99,7 @@ class TagItemAll(Resource):
 class TagItemOne(Resource):
     def get(self, contact_id, tag_id):
         tag = (TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id)
-                           .first())
+                            .first())
         if not tag:
             return {'message': 'TagItem does not exist'}, 400
         tag_data = tag_item_schema.dump(tag).data
