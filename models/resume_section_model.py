@@ -4,7 +4,10 @@ from marshmallow import Schema, fields
 
 
 class ResumeSection(db.Model):
-    __tablename__ = 'resume_section'
+    __tablename__ = 'resumesection' #should be changed to resume_section
+                                    #after init.sql can be updated
+
+    #table columns
     id = db.Column(db.Integer, primary_key=True)
     resume_id = db.Column(db.Integer, db.ForeignKey('resume.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
