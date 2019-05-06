@@ -15,16 +15,9 @@ class Resume(db.Model):
     #relationships
     sections = db.relationship('ResumeSection', back_populates='resume')
 
-
 class ResumeSchema(Schema):
-	id = fields.Integer()
-	contact_id = fields.Integer(required=True)
-	name = fields.String(required=True)
-	date_created = fields.Date(required=True)
-
-class ResumeRenderSchema(Schema):
     id = fields.Integer()
-	contact = fields.Nested(ContactSchema)
-	name = fields.String(required=True)
-	date_created = fields.Date(required=True)
-    sections = fields.Nested(ResumeItemSchema, many=True)
+    contact_id = fields.Integer(required=True)
+    name = fields.String(required=True)
+    date_created = fields.Date(required=True)
+    sections = fields.Nested(ResumeSectionSchema, many=True)

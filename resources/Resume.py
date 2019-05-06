@@ -2,7 +2,8 @@ from flask_restful import Resource, request
 from models.resume_model import Resume, ResumeSchema
 
 resumes_schema = ResumeSchema(many=True)
-resume_schema = ResumeSchema()
+resume_schema = ResumeSchema(exclude=['sections'])
+resume_render_schema = ResumeSchema()
 
 
 class ContactsResume(Resource):
