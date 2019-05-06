@@ -8,6 +8,7 @@ tag_schema = TagSchema()
 tags_schema = TagSchema(many=True)
 tag_item_schema = TagItemSchema()
 tag_items_schema = TagItemSchema(many=True)
+type_list = [m for m in TagType.__members__.keys()]
 
 
 # Returns a list of all tags
@@ -69,7 +70,16 @@ class TagOne(Resource):
 class TagItemAll(Resource):
     # returns a list of tags associated with a given contact
     def get(self, contact_id):
-        tags = TagItem.query.filter_by(contact_id=contact_id)
+        type_arg = request.args.get('type')
+        if type_arg:
+            if type_arg not in TagType.__members__:
+                return {'message':
+                        f'No such tag type, '
+                        f'choose an option from this list: {type_list}'}, 400
+            tags = TagItem.query.filter(TagItem.contact_id==contact_id,
+                                        Tag.type==TagType[type_arg])
+        else:
+            tags = TagItem.query.filter_by(contact_id=contact_id)
         tags_list = tag_items_schema.dump(tags).data
         return {'status': 'success', 'data': tags_list}, 200
 
