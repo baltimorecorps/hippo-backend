@@ -33,11 +33,3 @@ class TagSchema(Schema):
     name = fields.String(required=True)
     type = EnumField(TagType, by_value=True, required=True)
     status = EnumType(TagStatusType, by_value=True)
-
-
-class ContactTagSchema(Schema):
-    id = fields.Integer()
-    contact_id = fields.Integer(required=True)
-    tag_id = fields.Integer(required=True)
-    name = fields.String(required=True)
-    type = EnumField(TagType, by_value=True, required=True)
