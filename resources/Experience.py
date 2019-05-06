@@ -56,7 +56,7 @@ class ExperienceOne(Resource):
         exp = Experience.query.get(experience_id)
         if not exp:
             return {'message': 'Experience does not exist'}, 400
-        exp.delete()
+        db.session.delete(exp)
         db.session.commit()
         return {"status": 'success'}, 201
 
