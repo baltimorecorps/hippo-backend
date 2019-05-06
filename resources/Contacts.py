@@ -10,66 +10,46 @@ contacts_schema = ContactSchema(many=True)
 
 
 class ContactAll(Resource):
+
     def get(self):
         contacts = Contact.query.all()
         contacts = contacts_schema.dump(contacts).data
         return {'status': 'success', 'data': contacts}, 200
 
+    def post(self):
+        json_data = request.get_json(force=True)
+        # Validate and deserialize input
+        data, errors = contact_schema.load(json_data)
+        if not data:
+            return {'message': 'No input data provided'}, 400
+        if errors:
+            return errors, 422
+        contact = Contact(**data)
+        db.session.add(contact)
+        db.session.commit()
+        result = contact_schema.dump(contact).data
+        return {"status": 'success', 'data': result}, 201
 
 class ContactOne(Resource):
 
     def get(self, contact_id):
-        contact = Contact.query.filter_by(id=contact_id).first()
-        if contact:
-            contact = contact_schema.dump(contact).data
-            return {'status': 'success', 'data': contact}, 200
+        contact = Contact.query.get(contact_id)
+        if not contact:
+            return {'message': 'Contact does not exist'}, 400
+        contact = contact_schema.dump(contact).data
+        return {'status': 'success', 'data': contact}, 200
 
-    def post(self):
+    def put(self, contact_id):
+        contact = Contact.query.get(contact_id)
+        if not contact:
+            return {'message': 'Contact does not exist'}, 400
         json_data = request.get_json(force=True)
-
-        if not json_data:
-            return {'message': 'No input data provided'}, 400
-
-        # Validate and deserialize input
         data, errors = contact_schema.load(json_data)
+        if not data:
+            return {'message': 'No input data provided'}, 400
         if errors:
             return errors, 422
-
-        # Extract join fields from input if they exist
-        emails = []
-        addresses = []
-
-        if 'email' in data:
-            emails = data.pop('email')
-            data['email'] = []
-
-        if 'address' in data:
-            addresses = data.pop('address')
-            data['address'] = []
-
-        contact = Contact(**data)
-
-        # Ensure number of primary emails <= 1
-        email_primary_cnt = len([email['is_primary'] for email in emails if 'is_primary' in email and email['is_primary']])
-        if email_primary_cnt > 1:
-            return {'message': 'Only one email can be set as primary'}, 400
-
-        for email in emails:
-            # Create email object and append to contact email field
-            contact.email.append(Email(**email))
-
-        # Ensure number of primary addresses <= 1
-        address_primary_cnt = len(
-            [address['is_primary'] for address in addresses if 'is_primary' in address and addresses['is_primary']])
-        if address_primary_cnt > 1:
-            return {'message': 'Only one address can be set as primary'}, 400
-
-        for address in addresses:
-            # Create address object and append to contact address field
-            contact.address.append(Address(**address))
-
-        db.session.add(contact)
-        db.session.commit()
-        result = contact_schema.dump(contact).data
-
+        for k,v in data.items():
+            setattr(contact, k, v)
+        result = contact_schema.dump(exp).data
         return {"status": 'success', 'data': result}, 201
