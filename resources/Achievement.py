@@ -35,7 +35,7 @@ class AchievementOne(Resource):
         achievement = Achievement.query.get(achievement_id)
         if not achievement.first():
             return {'message': 'Achievement does not exist'}, 400
-        achievement.delete()
+        db.session.delete(achievement)
         db.session.commit()
         return {"status": 'success'}, 201
 
