@@ -10,7 +10,7 @@ class ContactAchievementAll(Resource):
 
     def get(self, contact_id):
         achievement = Achievement.query.filter_by(contact_id=contact_id)
-        achievement_list = achievement_schema.dump(achievement).data
+        achievement_list = achievements_schema.dump(achievement).data
         return {'status': 'success', 'data': achievement_list}, 200
 
 class ExperienceAchievementAll(Resource):
@@ -33,7 +33,7 @@ class AchievementOne(Resource):
 
     def delete(self, achievement_id):
         achievement = Achievement.query.get(achievement_id)
-        if not achievement.first():
+        if not achievement:
             return {'message': 'Achievement does not exist'}, 400
         db.session.delete(achievement)
         db.session.commit()
@@ -49,7 +49,7 @@ class AchievementOne(Resource):
         if not data:
             return {'message': 'No data provided to update'}, 400
         for k,v in data.items():
-            setattr(exp, k, v)
+            setattr(achievement, k, v)
         db.session.commit()
-        result = experience_schema.dump(exp).data
+        result = achievement_schema.dump(achievement).data
         return {"status": 'success', 'data': result}, 201
