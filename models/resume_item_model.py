@@ -5,12 +5,12 @@ from models.achievement_model import Achievement, AchievementSchema
 from marshmallow import Schema, fields
 
 class ResumeItem(db.Model):
-    __tablename__ = 'resumeitem' #should be changed to resume_item
-                                 #after updating init.sql script
+    __tablename__ = 'resume_item'
 
     #table columns
-    resume_order = db.Column(db.Integer, primary_key=True)
-    section_id = db.Column(db.Integer, db.ForeignKey('resumesection.id'), nullable=False, primary_key=True)
+    resume_order = db.Column(db.Integer, nullable=False, primary_key=True)
+    section_id = db.Column(db.Integer, db.ForeignKey('resume_section.id'),
+                           nullable=False, primary_key=True)
     exp_id = db.Column(db.Integer, db.ForeignKey('experience.id'))
     tag_id = db.Column(db.Integer, db.ForeignKey('tag_item.id'))
     achievement_id = db.Column(db.Integer, db.ForeignKey('achievement.id'))
@@ -25,8 +25,8 @@ class ResumeItem(db.Model):
     resume = db.relationship('Resume')
 
 class ResumeItemSchema(Schema):
-    resume_order = fields.Integer()
-    section_id = fields.Integer()
+    resume_order = fields.Integer(required=True)
+    section_id = fields.Integer(required=True)
     indented = fields.Boolean()
     experience = fields.Nested(ExperienceSchema,
                                exclude=['achievements', 'contact_id'])

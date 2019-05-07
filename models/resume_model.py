@@ -5,14 +5,14 @@ from models.contact_model import ContactSchema
 
 
 class Resume(db.Model):
-    __tablename__ = "resume"
+    __tablename__ = 'resume'
     id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     date_created = db.Column(db.Date, nullable=False)
-    contact = db.relationship('Contact')
 
     #relationships
+    contact = db.relationship('Contact', back_populates='resumes')
     sections = db.relationship('ResumeSection', back_populates='resume')
 
 class ResumeSchema(Schema):

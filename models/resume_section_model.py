@@ -4,8 +4,7 @@ from marshmallow import Schema, fields
 
 
 class ResumeSection(db.Model):
-    __tablename__ = 'resumesection' #should be changed to resume_section
-                                    #after init.sql can be updated
+    __tablename__ = 'resume_section'
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)

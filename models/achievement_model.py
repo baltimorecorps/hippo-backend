@@ -7,19 +7,19 @@ class Achievement(db.Model):
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
-    exp_id = db.Column(db.Integer, db.ForeignKey('experience.id'))
+    exp_id = db.Column(db.Integer, db.ForeignKey('experience.id'), nullable=False)
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
     description = db.Column(db.String(500))
 
     #relationships
     experience = db.relationship('Experience', back_populates='achievements')
     contact = db.relationship('Contact', back_populates='achievements')
-    resumes = db.relationship('ResumeItem', back_populates='achievement', 
+    resumes = db.relationship('ResumeItem', back_populates='achievement',
                               cascade='all, delete, delete-orphan')
 
 
 class AchievementSchema(Schema):
     id = fields.Integer()
-    exp_id = fields.Integer()
-    contact_id = fields.Integer()
+    exp_id = fields.Integer(required=True)
+    contact_id = fields.Integer(required=True)
     description = fields.String()

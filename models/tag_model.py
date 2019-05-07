@@ -19,7 +19,7 @@ class TagStatusType(enum.Enum):
 class Tag(db.Model):
     __tablename__ = 'tag'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(100), nullable=False)
     type = db.Column(EnumType(TagType, name='TagType'), nullable=False)
     status = db.Column(EnumType(TagStatusType, name='TagStatusType'))
 

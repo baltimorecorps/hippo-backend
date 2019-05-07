@@ -9,7 +9,7 @@ class TagItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
     tag_id = db.Column(db.Integer, db.ForeignKey('tag.id'), nullable=False)
-    score = db.Column(db.DECIMAL)
+    score = db.Column(db.Integer)
 
     #relationships
     contact = db.relationship('Contact', back_populates='tags')
