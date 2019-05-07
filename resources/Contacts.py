@@ -24,6 +24,7 @@ class ContactAll(Resource):
             return {'message': 'No input data provided'}, 400
         if errors:
             return errors, 422
+        data['email_primary'] = Email(**data['email_primary'])
         contact = Contact(**data)
         db.session.add(contact)
         db.session.commit()
