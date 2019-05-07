@@ -114,7 +114,7 @@ class TagItemOne(Resource):
     def put(self, contact_id, tag_id):
         tag = (TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id)
                             .first())
-        if not tag.first():
+        if not tag:
             return {'message': 'TagItem does not exist'}, 400
         json_data = request.get_json(force=True)
         data, errors = tag_item_schema_load.load(json_data)
@@ -123,6 +123,8 @@ class TagItemOne(Resource):
         if errors:
             return errors, 422
         for k,v in data.items():
+            if k in ('id', 'contact_id', 'tag_id'):
+                continue
             setattr(tag, k, v)
         db.session.commit()
         result = tag_item_schema_dump.dump(tag)
