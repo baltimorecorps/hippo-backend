@@ -24,4 +24,5 @@ class ResumeSectionSchema(Schema):
     name = fields.String()
     min_count = fields.Integer()
     max_count = fields.Integer()
-    items = fields.Nested(ResumeItemSchema, many=True)
+    items = fields.Nested(ResumeItemSchema, many=True,
+                          exclude=['exp_id','tag_id','achievement_id','resume_id'])

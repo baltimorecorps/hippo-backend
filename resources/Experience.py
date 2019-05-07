@@ -1,6 +1,6 @@
 from flask_restful import Resource, request
 from models.experience_model import Experience, ExperienceSchema, Type
-from models.achievement_model import Achievement
+from models.achievement_model import Achievement, AchievementSchema
 from models.base_model import db
 
 experience_schema = ExperienceSchema()

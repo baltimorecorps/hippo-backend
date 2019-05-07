@@ -20,14 +20,18 @@ class ResumeItem(db.Model):
     #relationships
     section = db.relationship('ResumeSection', back_populates='items')
     experience = db.relationship('Experience')
-    tag_item = db.relationship('TagItem')
+    tag = db.relationship('TagItem')
     achievement = db.relationship('Achievement')
     resume = db.relationship('Resume')
 
 class ResumeItemSchema(Schema):
     resume_order = fields.Integer(required=True)
+    resume_id = fields.Integer(required=True)
     section_id = fields.Integer(required=True)
     indented = fields.Boolean()
+    exp_id = fields.Integer()
+    tag_id = fields.Integer()
+    achievement_id = fields.Integer()
     experience = fields.Nested(ExperienceSchema,
                                exclude=['achievements', 'contact_id'])
     tag = fields.Nested(TagItemSchema, exclude=['contact_id'])

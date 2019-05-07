@@ -2,6 +2,7 @@ from flask_restful import Resource, request
 from models.resume_model import Resume, ResumeSchema
 from models.resume_section_model import ResumeSection, ResumeSectionSchema
 from models.resume_item_model import ResumeItem, ResumeItemSchema
+from models.base_model import db
 
 resumes_schema = ResumeSchema(many=True)
 resume_schema = ResumeSchema(exclude=['sections'])
@@ -11,7 +12,12 @@ resume_sections_schema = ResumeSectionSchema(many=True)
 resume_section_schema = ResumeSectionSchema()
 
 resume_items_schema = ResumeItemSchema(many=True)
-resume_item_schema = ResumeItemSchema()
+resume_item_schema_load = ResumeItemSchema(exclude=['experience',
+                                                    'tag',
+                                                    'achievement'])
+resume_item_schema_dump = ResumeItemSchema(exclude=['exp_id',
+                                                    'tag_id',
+                                                    'achievement_id'])
 
 class ResumeAll(Resource):
 
@@ -96,9 +102,9 @@ class ResumeSectionOne(Resource):
 
 class ResumeItemAll(Resource):
 
-    def post(self, section_id):
+    def post(self, resume_id, section_id):
         json_data = request.get_json(force=True)
-        data, errors = resume_item_schema.load(json_data)
+        data, errors = resume_item_schema_load.load(json_data)
         if not data:
             return {'message': 'No input data provided'}, 400
         if errors:
@@ -106,18 +112,18 @@ class ResumeItemAll(Resource):
         item = ResumeItem(**data)
         db.session.add(item)
         db.session.commit()
-        result = resume_item_schema.dump(section).data
+        result = resume_item_schema_dump.dump(item).data
         return {'status': 'success', 'data': result}, 201
 
 class ResumeItemOne(Resource):
 
-    def put(self, section_id, item_position):
+    def put(self, resume_id, section_id, item_position):
         item = ResumeItem.query.filter_by(section_id=section_id,
                                           resume_order=item_position).first()
         if not item:
             return {'message': 'Item does not exist'}
         json_data = request.get_json(force=True)
-        data, errors = resume_schema.load(json_data)
+        data, errors = resume_item_schema_load.load(json_data)
         if not data:
             return {'message': 'No data provided to update'}, 400
         if errors:
@@ -125,12 +131,21 @@ class ResumeItemOne(Resource):
         for k,v in data.items():
             setattr(item, k, v)
         db.session.commit()
-        result = resume_item_schema.dump(item)
+        result = resume_item_schema_dump.dump(item)
         return {'status': 'success', 'data': result}, 201
+
+    def delete(self, resume_id, section_id, item_position):
+        item = ResumeItem.query.filter_by(section_id=section_id,
+                                          resume_order=item_position).first()
+        if not item:
+            return {'message': 'Item does not exist'}
+        db.session.delete(item)
+        db.session.commit()
+        return {'status': 'success'}, 201
 
 class ResumeItemReorder(Resource):
 
-    def patch(self, section_id, item_position, new_position):
+    def patch(self, resume_id, section_id, item_position):
         pass
         '''
         Not sure if it would make sense to implement an endpoint like this
