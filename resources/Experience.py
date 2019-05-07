@@ -56,7 +56,7 @@ class ExperienceOne(Resource):
         exp = Experience.query.get(experience_id)
         if not exp:
             return {'message': 'Experience does not exist'}, 400
-        exp.delete()
+        db.session.delete(exp)
         db.session.commit()
         return {"status": 'success'}, 201
 
@@ -68,6 +68,8 @@ class ExperienceOne(Resource):
         data, errors = experience_schema.load(json_data)
         if not data:
             return {'message': 'No data provided to update'}, 400
+        if errors:
+            return errors, 422
         for k,v in data.items():
             setattr(exp, k, v)
         result = experience_schema.dump(exp).data
