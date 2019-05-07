@@ -38,7 +38,8 @@ class Experience(db.Model):
     #relationships
     contact = db.relationship('Contact')
     address = db.relationship('Address')
-    achievements = db.relationship('Achievement', back_populates='experience')
+    achievements = db.relationship('Achievement', back_populates='experience',
+                                   cascade='all, delete, delete-orphan')
     resumes = db.relationship('ResumeItem', back_populates='experience',
                               cascade='all, delete, delete-orphan')
 

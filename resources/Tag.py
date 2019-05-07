@@ -127,10 +127,10 @@ class TagItemOne(Resource):
         result = tag_item_schema.dump(tag)
         return {'status': 'success', 'data': result}, 201
 
-    def delete(self, tag_id):
-        tag = TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id)
+    def delete(self, contact_id, tag_id):
+        tag = TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id).first()
         if not tag:
             return {'message': 'TagItem does not exist'}, 400
-        tag.delete()
+        db.session.delete(tag)
         db.session.commit()
         return {'status': 'success'}, 201
