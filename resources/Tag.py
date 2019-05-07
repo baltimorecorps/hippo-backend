@@ -4,6 +4,10 @@ from models.tag_item_model import TagItem, TagItemSchema
 from models.contact_model import Contact, ContactSchema
 from models.base_model import db
 
+# Useful for debugging
+#from flask_sqlalchemy import get_debug_queries
+#from pprint import pprint
+
 tag_schema = TagSchema()
 tags_schema = TagSchema(many=True)
 tag_item_schema = TagItemSchema()
@@ -76,8 +80,9 @@ class TagItemAll(Resource):
                 return {'message':
                         f'No such tag type, '
                         f'choose an option from this list: {type_list}'}, 400
-            tags = TagItem.query.filter(TagItem.contact_id==contact_id,
-                                        Tag.type==TagType[type_arg])
+            tags = (TagItem.query.join(Tag)
+                                 .filter(TagItem.contact_id==contact_id,
+                                         Tag.type==TagType[type_arg]))
         else:
             tags = TagItem.query.filter_by(contact_id=contact_id)
         tags_list = tag_items_schema.dump(tags).data
