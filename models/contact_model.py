@@ -37,6 +37,12 @@ class Contact(db.Model):
     salutation = db.Column(EnumType(Salutation, name='Salutation'))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
+    phone_primary = db.Column(db.String(25))
+    gender = db.Column(EnumType(Gender, name='Gender'))
+    race_all = db.Column(EnumType(Race, name='Race'))
+    birthdate = db.Column(db.Date)
+
+    #relationships
     emails = db.relationship('Email', back_populates='contact')
     email_primary = db.relationship("Email",
                                     primaryjoin=db.and_(id == Email.contact_id, Email.is_primary == True),
@@ -47,12 +53,6 @@ class Contact(db.Model):
                                       primaryjoin=db.and_(id == Address.contact_id, Address.is_primary == True),
                                       back_populates='contact',
                                       uselist=False)
-    phone_primary = db.Column(db.String(25))
-    gender = db.Column(EnumType(Gender, name='Gender'))
-    race_all = db.Column(EnumType(Race, name='Race'))
-    birthdate = db.Column(db.Date)
-
-    #relationships
     achievements = db.relationship('Achievement', back_populates='contact',
                                    cascade='all, delete, delete-orphan')
     resumes = db.relationship('Resume', back_populates='contact',
