@@ -21,7 +21,7 @@ class Email(db.Model):
     type = db.Column(EnumType(Type, name='Type'))
 
     #relationships
-    contact = db.relationship('Contact', back_populates='emails')
+    contact = db.relationship('Contact', back_populates='email_primary')
 
 
 class EmailSchema(Schema):
