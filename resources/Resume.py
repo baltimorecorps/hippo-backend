@@ -11,14 +11,6 @@ resume_render_schema = ResumeSchema()
 resume_sections_schema = ResumeSectionSchema(many=True)
 resume_section_schema = ResumeSectionSchema()
 
-resume_items_schema = ResumeItemSchema(many=True)
-resume_item_schema_load = ResumeItemSchema(exclude=['experience',
-                                                    'tag',
-                                                    'achievement'])
-resume_item_schema_dump = ResumeItemSchema(exclude=['exp_id',
-                                                    'tag_id',
-                                                    'achievement_id'])
-
 class ResumeAll(Resource):
 
     def get(self, contact_id):
@@ -100,59 +92,25 @@ class ResumeSectionOne(Resource):
         result = resume_section_schema.dump(section)
         return {'status': 'success', 'data': result}, 201
 
-class ResumeItemAll(Resource):
-
-    def post(self, resume_id, section_id):
+    def put(self, section_id):
+        section = Resume.query.get(section_id)
+        if not section:
+            return {'message': 'Resume section does not exist'}, 400
         json_data = request.get_json(force=True)
-        data, errors = resume_item_schema_load.load(json_data)
+        data, errors = resume_section_schema.load(json_data)
         if not data:
             return {'message': 'No input data provided'}, 400
         if errors:
             return errors, 422
-        item = ResumeItem(**data)
-        db.session.add(item)
-        db.session.commit()
-        result = resume_item_schema_dump.dump(item).data
-        return {'status': 'success', 'data': result}, 201
-
-class ResumeItemOne(Resource):
-
-    def put(self, resume_id, section_id, item_position):
-        item = ResumeItem.query.filter_by(section_id=section_id,
-                                          resume_order=item_position).first()
-        if not item:
-            return {'message': 'Item does not exist'}
-        json_data = request.get_json(force=True)
-        data, errors = resume_item_schema_load.load(json_data)
-        if not data:
-            return {'message': 'No data provided to update'}, 400
-        if errors:
-            return errors, 422
+        items = data.pop('items', None)
         for k,v in data.items():
-            setattr(item, k, v)
+            setattr(section, k, v)
+        del section.items[:]
+        if items:
+            for item in items:
+                i = ResumeItem(**item)
+                i.resume_id = section.resume_id
+                section.items.append(i)
         db.session.commit()
-        result = resume_item_schema_dump.dump(item)
+        result = resume_schema.dump(section).data
         return {'status': 'success', 'data': result}, 201
-
-    def delete(self, resume_id, section_id, item_position):
-        item = ResumeItem.query.filter_by(section_id=section_id,
-                                          resume_order=item_position).first()
-        if not item:
-            return {'message': 'Item does not exist'}
-        db.session.delete(item)
-        db.session.commit()
-        return {'status': 'success'}, 201
-
-class ResumeItemReorder(Resource):
-
-    def patch(self, resume_id, section_id, item_position):
-        pass
-        '''
-        Not sure if it would make sense to implement an endpoint like this
-        but I was thinking this could be used to efficiently update
-        the order of the items in a section by following the strategy
-        suggested in this post:
-        https://softwareengineering.stackexchange.com/questions/195308/storing-a-re-orderable-list-in-a-database
-        for the time being, this same functionality can be supported by
-        simply PUTting to each of the items in the section
-        '''
