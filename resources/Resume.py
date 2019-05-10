@@ -5,7 +5,7 @@ from models.resume_item_model import ResumeItem, ResumeItemSchema
 from models.base_model import db
 
 resumes_schema = ResumeSchema(many=True)
-resume_schema = ResumeSchema(exclude=['sections'])
+resume_schema = ResumeSchema()
 resume_render_schema = ResumeSchema()
 
 resume_sections_schema = ResumeSectionSchema(many=True)
@@ -37,12 +37,12 @@ class ResumeOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 400
-        result = resume_render_schema.dump(res).data
+        result = resume_schema.dump(res).data
         return {'status': 'success', 'data': result}, 200
 
     def delete(self, resume_id):
         res = Resume.query.get(resume_id)
-        if not res.first():
+        if not res:
             return {'message': 'Resume does not exist'}, 400
         res.delete()
         db.session.commit()
@@ -77,7 +77,13 @@ class ResumeSectionAll(Resource):
             return {'message': 'No input data provided'}, 400
         if errors:
             return errors, 422
+        items = data.pop('items', None)
         section = ResumeSection(**data)
+        if items:
+            for item in items:
+                i = ResumeItem(**item)
+                i.resume_id = section.resume_id
+                section.items.append(i)
         db.session.add(section)
         db.session.commit()
         result = resume_schema.dump(section).data
