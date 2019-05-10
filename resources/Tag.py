@@ -10,7 +10,7 @@ from models.base_model import db
 
 tag_schema = TagSchema()
 tags_schema = TagSchema(many=True)
-tag_item_schema_dump = TagItemSchema()
+tag_item_schema = TagItemSchema()
 tag_items_schema = TagItemSchema(many=True)
 type_list = [m for m in TagType.__members__.keys()]
 
@@ -90,7 +90,7 @@ class TagItemAll(Resource):
 
     def post(self, contact_id):
         json_data = request.get_json(force=True)
-        data, errors = tag_item_schema_load.load(json_data)
+        data, errors = tag_item_schema.load(json_data)
         if not data:
             return {'message': 'No input data provided'}, 400
         if errors:
@@ -98,7 +98,7 @@ class TagItemAll(Resource):
         tagitem = TagItem(**data)
         db.session.add(tagitem)
         db.session.commit()
-        result = tag_item_schema_dump.dump(tagitem).data
+        result = tag_item_schema.dump(tagitem).data
         return {'status': 'success', 'data': result}, 201
 
 class TagItemOne(Resource):
@@ -107,26 +107,25 @@ class TagItemOne(Resource):
                             .first())
         if not tag:
             return {'message': 'TagItem does not exist'}, 400
-        tag_data = tag_item_schema_dump.dump(tag).data
+        tag_data = tag_item_schema.dump(tag).data
         return {'status': 'success', 'data': tag_data}, 200
 
     def put(self, contact_id, tag_id):
         tag = (TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id)
                             .first())
+        print(tag_item_schema.dump(tag))
         if not tag:
             return {'message': 'TagItem does not exist'}, 400
         json_data = request.get_json(force=True)
-        data, errors = tag_item_schema_load.load(json_data)
+        data, errors = tag_item_schema.load(json_data)
         if not data:
             return {'message': 'No data provided to update'}, 400
         if errors:
             return errors, 422
         for k,v in data.items():
-            if k in ('id', 'contact_id', 'tag_id'):
-                continue
             setattr(tag, k, v)
         db.session.commit()
-        result = tag_item_schema_dump.dump(tag)
+        result = tag_item_schema.dump(tag).data
         return {'status': 'success', 'data': result}, 201
 
     def delete(self, contact_id, tag_id):
