@@ -16,7 +16,7 @@ api.add_resource(ContactAll,
                  '/')
 api.add_resource(ContactOne,
                  '/contacts/<int:contact_id>',
-                 '/contacts/')
+                 '/contacts/<int:contact_id>/')
 api.add_resource(ExperienceAll,
                 '/contacts/<int:contact_id>/experiences/',
                 '/contacts/<int:contact_id>/experiences')
