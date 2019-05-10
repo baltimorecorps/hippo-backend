@@ -61,14 +61,14 @@ class ResumeOne(Resource):
         for k,v in data.items():
             setattr(res, k, v)
         db.session.commit()
-        result = resume_schema.dump(res)
+        result = resume_schema.dump(res).data
         return {'status': 'success', 'data': result}, 201
 
 class ResumeSectionAll(Resource):
     def get(self, resume_id):
-        sections = ResumeSection.query.filter(resume_id=resume_id)
-        res_list = resume_sections_schema.dump(res).data
-        return {'status': 'success', 'data': res_list}, 200
+        sections = ResumeSection.query.filter_by(resume_id=resume_id)
+        result = resume_sections_schema.dump(sections).data
+        return {'status': 'success', 'data': result}, 200
 
     def post(self, resume_id):
         json_data = request.get_json(force=True)
@@ -91,11 +91,11 @@ class ResumeSectionAll(Resource):
 
 class ResumeSectionOne(Resource):
 
-    def get(self, section_id):
+    def get(self, resume_id, section_id):
         section = ResumeSection.query.get(section_id)
         if not section:
             return {'message': 'Resume section does not exist'}, 400
-        result = resume_section_schema.dump(section)
+        result = resume_section_schema.dump(section).data
         return {'status': 'success', 'data': result}, 201
 
     def put(self, section_id):
