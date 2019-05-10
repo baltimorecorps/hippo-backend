@@ -17,7 +17,8 @@ class Resume(db.Model):
 
 class ResumeSchema(Schema):
     id = fields.Integer(dump_only=True)
-    contact_id = fields.Integer(required=True)
+    contact_id = fields.Integer(required=True, load_only=True)
+    contact = fields.Nested(ContactSchema, dump_only=True)
     name = fields.String(required=True)
     date_created = fields.Date(required=True)
     sections = fields.Nested(ResumeSectionSchema, dump_only=True, many=True,
