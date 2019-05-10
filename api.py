@@ -4,7 +4,8 @@ from resources.Contacts import ContactAll, ContactOne
 from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne
 from resources.Experience import ExperienceAll, ExperienceOne
 from resources.Achievement import AchievementAll
-from resources.Resume import ResumeAll, ResumeOne, ResumeSectionAll
+from resources.Resume import ResumeAll, ResumeOne
+from resources.Resume import ResumeSectionAll, ResumeSectionOne
 
 api_bp = Blueprint('api',__name__)
 api = Api(api_bp)
@@ -47,3 +48,6 @@ api.add_resource(ResumeOne,
 api.add_resource(ResumeSectionAll,
                  '/resumes/<int:resume_id>/sections/',
                  '/resumes/<int:resume_id>/sections')
+api.add_resource(ResumeSectionOne,
+                 '/resumes/<int:resume_id>/sections/<int:section_id>',
+                 '/resumes/<int:resume_id>/sections/<int:section_id>/')
