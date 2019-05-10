@@ -37,7 +37,13 @@ class ExperienceAll(Resource):
             return {'message': 'No data provided to update'}, 400
         if errors:
             return errors, 422
+        achievements = data.pop('achievements', None)
         exp = Experience(**data)
+        if achievements:
+            for achievement in achievements:
+                a = Achievement(**achievement)
+                a.contact_id = exp.contact_id
+                exp.achievements.append(a)
         db.session.add(exp)
         db.session.commit()
         result = experience_schema.dump(exp).data
@@ -70,8 +76,15 @@ class ExperienceOne(Resource):
             return {'message': 'No data provided to update'}, 400
         if errors:
             return errors, 422
+        achievements = data.pop('achievements', None)
         for k,v in data.items():
             setattr(exp, k, v)
-        result = experience_schema.dump(exp).data
+        del exp.achievements[:]
+        if achievements:
+            for achievement in achievements:
+                a = Achievement(**achievement)
+                a.contact_id = exp.contact_id
+                exp.achievements.append(a)
         db.session.commit()
+        result = experience_schema.dump(exp).data
         return {'status': 'success', 'data': result}, 201
