@@ -1,0 +1,92 @@
+Contacts
+POST
+curl http://localhost:5000/api/contacts/ --request POST --data '{}'
+
+PUT
+curl http://localhost:5000/api/contacts/1 --request PUT --data '{}'
+
+DELETE
+curl http://localhost:5000/api/contacts/<:id> --request DELETE
+--------------------------------------------------
+Experiences
+POST
+curl http://localhost:5000/api/contacts/1/experiences --request POST --data '{"description": "sup","host": "Google","title": "Chief Goofball", "contact_id": 1, "date_start": "2019-01-01","type": "Work", "achievements": [{"description": "description 1"}, {"description": "description 1"}]}'
+
+PUT
+curl http://localhost:5000/api/experiences/1 --request PUT --data '{"description": "sup","host": "Google","title": "Chief Goofball", "contact_id": 2, "date_start": "2019-01-01","type": "Work", "achievements": [{"id": 6, "description": "description 45"}, {"description": "description 19"}]}'
+
+DELETE
+curl http://localhost:5000/api/experiences/<:id> --request DELETE
+-------------------------------------------------
+Tags
+POST
+curl http://localhost:5000/api/tags --request POST --data '{}'
+
+PUT
+curl http://localhost:5000/api/tags/<:id> --request PUT --data '{}'
+
+DELETE
+curl http://localhost:5000/api/tags/<:id> --request DELETE
+------------------------------------------------
+Tag Items
+POST
+curl http://localhost:5000/api/contacts/<:id>/tags/ --request POST --data '{}'
+
+PUT
+curl http://localhost:5000/api/contacts/<:id>/tags/<:id> --request PUT --data '{}'
+
+DELETE
+curl http://localhost:5000/api/contacts/<:id>/tags/<:id> --request DELETE
+-----------------------------------------------
+Resumes
+POST
+curl http://localhost:5000/api/contacts/1/resumes/ --request POST --data '{}'
+
+PUT
+curl http://localhost:5000/api/resumes/<:id> --request PUT --data '{}'
+
+DELETE
+curl http://localhost:5000/api/resumes/<:id> --request DELETE
+-------------------------------------------------
+Resume Section
+POST
+curl http://localhost:5000/api/resumes/<:id>/sections/ --request POST --data '{}'
+
+PUT
+curl http://localhost:5000/api/resumes/<:id>/sections/<:id> --request PUT --data '{}'
+
+DELETE
+curl http://localhost:5000/api/resumes/<:id>/sections/<:id> --request DELETE
+-----------------------------------------------
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"date_end": null, "description": "sup","host": "Baltimore Corps","title": "Chief Goofball", "contact_id": 1, "date_start": "2019-01-01","degree": null,"type": "Work"}' http://localhost:5000/api/contacts/1/experiences/
+
+PUT http://localhost:5000/api/contacts/<:id>/experiences/
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"name": "Python", "type": "Skill", "status": "Active"}' http://localhost:5000/api/tags/
+
+
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"contact_id": 1, "exp_id": 1, "description": "achievement 1"}' http://localhost:5000/api/experiences/1/achievements/
+
+
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"contact_id": 1, "tag_id": 3, "score": 5}' http://localhost:5000/api/contacts/1/tags/
+
+
+
+curl -i -H "Content-Type: application/json" -X PUT -d '{"contact_id": 1, "exp_id": 2, "description": "awesomer achievement 2.3"}' http://localhost:5000/api/achievements/5/
+
+
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"contact_id": 1, "name": "Billy Resume", "date_created": "2019-05-06"}' http://localhost:5000/api/contacts/1/resumes/
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"resume_id": 1, "name": "Experience"}' http://localhost:5000/api/resumes/1/sections/
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"resume_id": 1, "name": "Education"}' http://localhost:5000/api/resumes/1/sections/
+
+curl http://127.0.0.1:5000/api/contacts/1/tags/ --request POST --data '{"name": "C++", "contact_id": "1", "type": "Function", "tag_id": 2, "score": 2}'
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"resume_id": 1, "section_id": 1, "exp_id": 4, "resume_order": 2, "indented": 0}' http://localhost:5000/api/resumes/1/sections/1/items
+
+curl -i -H "Content-Type: application/json" -X POST -d '{"description": "sup","host": "Google","title": "Chief Goofball", "contact_id": 1, "date_start": "2019-01-01","type": "Work", "achievements": [{"description": "description 1"}, {"description": "description 1"}]}' http://localhost:5000/api/contacts/2/experiences/
