@@ -40,11 +40,11 @@ class TagAll(Resource):
 class TagOne(Resource):
 
     def get(self, tag_id):
-        tags_list = Tag.query.get(tag_id)
-        if not tags_list.first():
+        tag = Tag.query.get(tag_id)
+        if not tag:
             return {'message': 'Tag does not exist'}, 400
-        tag = tag_schema.dump(tags_list.first()).data
-        return {'status': 'success', 'data': tag}, 200
+        result = tag_schema.dump(tag).data
+        return {'status': 'success', 'data': result}, 200
 
     def delete(self, tag_id):
         tag = Tag.query.get(tag_id)
