@@ -16,8 +16,9 @@ class Resume(db.Model):
     sections = db.relationship('ResumeSection', back_populates='resume')
 
 class ResumeSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(dump_only=True)
     contact_id = fields.Integer(required=True)
     name = fields.String(required=True)
     date_created = fields.Date(required=True)
-    sections = fields.Nested(ResumeSectionSchema, many=True)
+    sections = fields.Nested(ResumeSectionSchema, dump_only=True, many=True,
+                             exclude=['resume_id', 'contact_id'])

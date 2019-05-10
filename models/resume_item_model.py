@@ -26,13 +26,11 @@ class ResumeItem(db.Model):
 
 class ResumeItemSchema(Schema):
     resume_order = fields.Integer(required=True)
-    resume_id = fields.Integer(required=True)
-    section_id = fields.Integer(required=True)
     indented = fields.Boolean()
-    exp_id = fields.Integer()
-    tag_id = fields.Integer()
-    achievement_id = fields.Integer()
-    experience = fields.Nested(ExperienceSchema,
+    exp_id = fields.Integer(load_only=True)
+    tag_id = fields.Integer(load_only=True)
+    achievement_id = fields.Integer(load_only=True)
+    experience = fields.Nested(ExperienceSchema, dump_only=True,
                                exclude=['achievements', 'contact_id'])
-    tag = fields.Nested(TagItemSchema, exclude=['contact_id'])
-    achievement = fields.Integer(AchievementSchema, only=['id', 'description'])
+    tag = fields.Nested(TagItemSchema, dump_only=True, exclude=['contact_id'])
+    achievement = fields.Integer(AchievementSchema, dump_only=True)

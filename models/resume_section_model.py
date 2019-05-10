@@ -19,10 +19,9 @@ class ResumeSection(db.Model):
                             cascade='all, delete, delete-orphan')
 
 class ResumeSectionSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(dump_only=True)
     resume_id = fields.Integer()
     name = fields.String()
     min_count = fields.Integer()
     max_count = fields.Integer()
-    items = fields.Nested(ResumeItemSchema, many=True,
-                          exclude=['exp_id','tag_id','achievement_id','resume_id'])
+    items = fields.Nested(ResumeItemSchema, many=True)

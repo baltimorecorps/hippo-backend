@@ -19,7 +19,5 @@ class Achievement(db.Model):
 
 
 class AchievementSchema(Schema):
-    id = fields.Integer()
-    exp_id = fields.Integer(required=True)
-    contact_id = fields.Integer(required=True)
+    id = fields.Integer(dump_only=True)
     description = fields.String()

@@ -29,7 +29,7 @@ class Tag(db.Model):
 
 
 class TagSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(dump_only=True)
     name = fields.String(required=True)
     type = EnumField(TagType, by_value=True, required=True)
     status = EnumType(TagStatusType, by_value=True)

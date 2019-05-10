@@ -10,7 +10,6 @@ from models.base_model import db
 
 tag_schema = TagSchema()
 tags_schema = TagSchema(many=True)
-tag_item_schema_load = TagItemSchema(exclude=['type', 'name'])
 tag_item_schema_dump = TagItemSchema()
 tag_items_schema = TagItemSchema(many=True)
 type_list = [m for m in TagType.__members__.keys()]

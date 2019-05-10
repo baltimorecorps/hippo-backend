@@ -19,9 +19,9 @@ class TagItem(db.Model):
 
 
 class TagItemSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(dump_only=True)
     contact_id = fields.Integer(required=True)
     tag_id = fields.Integer(required=True)
-    name = fields.Nested(TagSchema, attribute='tag', only='name')
-    type = fields.Nested(TagSchema, attribute='tag', only='type')
+    name = fields.Nested(TagSchema, attribute='tag', only='name', dump_only=True)
+    type = fields.Nested(TagSchema, attribute='tag', only='type', dump_only=True)
     score = fields.Integer() #Decimal() throws an error in python 3.7
