@@ -33,4 +33,4 @@ class ResumeItemSchema(Schema):
     experience = fields.Nested(ExperienceSchema, dump_only=True,
                                exclude=['achievements', 'contact_id'])
     tag = fields.Nested(TagItemSchema, dump_only=True, exclude=['contact_id'])
-    achievement = fields.Integer(AchievementSchema, dump_only=True)
+    achievement = fields.Nested(AchievementSchema, dump_only=True)
