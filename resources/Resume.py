@@ -98,8 +98,8 @@ class ResumeSectionOne(Resource):
         result = resume_section_schema.dump(section).data
         return {'status': 'success', 'data': result}, 201
 
-    def put(self, section_id):
-        section = Resume.query.get(section_id)
+    def put(self, resume_id, section_id):
+        section = ResumeSection.query.get(section_id)
         if not section:
             return {'message': 'Resume section does not exist'}, 400
         json_data = request.get_json(force=True)
@@ -118,5 +118,5 @@ class ResumeSectionOne(Resource):
                 i.resume_id = section.resume_id
                 section.items.append(i)
         db.session.commit()
-        result = resume_schema.dump(section).data
+        result = resume_section_schema.dump(section).data
         return {'status': 'success', 'data': result}, 201
