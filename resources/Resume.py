@@ -86,7 +86,7 @@ class ResumeSectionAll(Resource):
                 section.items.append(i)
         db.session.add(section)
         db.session.commit()
-        result = resume_schema.dump(section).data
+        result = resume_section_schema.dump(section).data
         return {'status': 'success', 'data': result}, 201
 
 class ResumeSectionOne(Resource):
