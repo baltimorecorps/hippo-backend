@@ -13,7 +13,8 @@ class Resume(db.Model):
 
     #relationships
     contact = db.relationship('Contact', back_populates='resumes')
-    sections = db.relationship('ResumeSection', back_populates='resume')
+    sections = db.relationship('ResumeSection', back_populates='resume',
+                               cascade='all, delete, delete-orphan')
 
 class ResumeSchema(Schema):
     id = fields.Integer(dump_only=True)
