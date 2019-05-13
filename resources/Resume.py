@@ -44,7 +44,7 @@ class ResumeOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 400
-        res.delete()
+        db.session.delete(res)
         db.session.commit()
         return {'status': 'success'}, 201
 
