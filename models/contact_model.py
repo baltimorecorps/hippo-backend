@@ -43,10 +43,10 @@ class Contact(db.Model):
     birthdate = db.Column(db.Date)
 
     #relationships
-    #emails = db.relationship('Email', back_populates='contact')
+    emails = db.relationship('Email', back_populates='contact')
     email_primary = db.relationship("Email",
-                                    primaryjoin=db.and_(id == Email.contact_id, Email.is_primary == True),
-                                    back_populates='contact',
+                                    primaryjoin=db.and_(id == Email.contact_id,
+                                                        Email.is_primary == True),
                                     uselist=False)
     addresses = db.relationship('Address', back_populates='contact')
     address_primary = db.relationship('Address',
@@ -63,10 +63,11 @@ class Contact(db.Model):
                                   cascade='all, delete, delete-orphan')
 
 class ContactSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(dump_only=True)
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
     email_primary = fields.Nested(EmailSchema)
+    emails = fields.Nested(EmailSchema, many=True)
     phone_primary = fields.String()
     gender = EnumField(Gender, by_value=True)
     race_all = EnumField(Race, by_value=True)
