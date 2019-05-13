@@ -120,3 +120,11 @@ class ResumeSectionOne(Resource):
         db.session.commit()
         result = resume_section_schema.dump(section).data
         return {'status': 'success', 'data': result}, 201
+
+    def delete(self, resume_id, section_id):
+        section = ResumeSection.query.get(section_id)
+        if not section:
+            return {'message': 'Resume section does not exist'}, 400
+        db.session.delete(section)
+        db.session.commit()
+        return {'status': 'success'}, 201
