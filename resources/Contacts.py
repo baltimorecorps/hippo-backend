@@ -24,8 +24,10 @@ class ContactAll(Resource):
             return {'message': 'No input data provided'}, 400
         if errors:
             return errors, 422
-        data['email_primary'] = Email(**data['email_primary'])
+        email = data.pop('email_primary', None)
         contact = Contact(**data)
+        if email:
+            contact.email_primary = Email(**email)
         db.session.add(contact)
         db.session.commit()
         result = contact_schema.dump(contact).data
@@ -50,7 +52,12 @@ class ContactOne(Resource):
             return {'message': 'No input data provided'}, 400
         if errors:
             return errors, 422
+        email = data.pop('email_primary', None)
         for k,v in data.items():
             setattr(contact, k, v)
-        result = contact_schema.dump(exp).data
+        del contact.email_primary
+        if email:
+            contact.email_primary = Email(**email)
+        db.session.commit()
+        result = contact_schema.dump(contact).data
         return {"status": 'success', 'data': result}, 201
