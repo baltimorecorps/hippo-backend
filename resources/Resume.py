@@ -6,7 +6,7 @@ from models.base_model import db
 
 resumes_schema = ResumeSchema(many=True)
 resume_schema = ResumeSchema()
-resume_render_schema = ResumeSchema()
+resume_put_schema = ResumeSchema(partial=True)
 
 resume_sections_schema = ResumeSectionSchema(many=True)
 resume_section_schema = ResumeSectionSchema()
@@ -53,7 +53,7 @@ class ResumeOne(Resource):
         if not res:
             return {'message': 'Resume does not exist'}, 400
         json_data = request.get_json(force=True)
-        data, errors = resume_schema.load(json_data)
+        data, errors = resume_put_schema.load(json_data)
         if not data:
             return {'message': 'No data provided to update'}, 400
         if errors:
