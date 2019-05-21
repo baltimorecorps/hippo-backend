@@ -15,9 +15,11 @@ class Status(enum.Enum):
 
 
 class Address(db.Model):
-    __tablename__ = "address"
+    __tablename__ = 'address'
+
+    #table columns
     id = db.Column(db.Integer, primary_key=True)
-    contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
+    contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
     is_primary = db.Column(db.Boolean, default=False)
     street1 = db.Column(db.String(200), nullable=False)
     street2 = db.Column(db.String(200))
@@ -27,7 +29,9 @@ class Address(db.Model):
     postal_code = db.Column(db.String(10), nullable=False)
     type = db.Column(EnumType(Type, name='Type'), default=Type.home)
     status = db.Column(EnumType(Status, name='Status'), default=Status.active)
-    contact = db.relationship('Contact')
+
+    #relationships
+    contact = db.relationship('Contact', back_populates='addresses')
 
 
 class AddressSchema(Schema):

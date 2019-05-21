@@ -4,7 +4,6 @@ from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from sqlalchemy_enum34 import EnumType
 from models.achievement_model import Achievement, AchievementSchema
-# from models.resume_item_model import Resumeitem
 
 class Type(enum.Enum):
     work = 'Work'
@@ -22,7 +21,9 @@ class Degree(enum.Enum):
 
 
 class Experience(db.Model):
-    __tablename__ = "experience"
+    __tablename__ = 'experience'
+
+    #table columns
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(500))
     host = db.Column(db.String(100), nullable=False)
@@ -31,17 +32,20 @@ class Experience(db.Model):
     date_start = db.Column(db.Date, nullable=False)
     date_end = db.Column(db.Date)
     type = db.Column(EnumType(Type, name='Type'))
-    achievements = db.relationship("Achievement",
-                                   primaryjoin=id == Achievement.exp_id,
-                                   back_populates='experience')
-    contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
-    address_id = db.Column(db.Integer, db.ForeignKey("address.id"), nullable=False)
+    contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
+    address_id = db.Column(db.Integer, db.ForeignKey('address.id'))
+
+    #relationships
     contact = db.relationship('Contact')
     address = db.relationship('Address')
+    achievements = db.relationship('Achievement', back_populates='experience',
+                                   cascade='all, delete, delete-orphan')
+    resumes = db.relationship('ResumeItem', back_populates='experience',
+                              cascade='all, delete, delete-orphan')
 
 
 class ExperienceSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(dump_only=True)
     description = fields.String()
     host = fields.String(required=True)
     title = fields.String(required=True)
@@ -50,4 +54,4 @@ class ExperienceSchema(Schema):
     date_end = fields.Date()
     type = EnumField(Type, by_value=True)
     contact_id = fields.Integer(required=True)
-    achievements = fields.List(fields.Nested(AchievementSchema))
+    achievements = fields.Nested(AchievementSchema, many=True)

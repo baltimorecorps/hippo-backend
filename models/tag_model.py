@@ -17,43 +17,19 @@ class TagStatusType(enum.Enum):
 
 
 class Tag(db.Model):
-    __tablename__ = "tag"
+    __tablename__ = 'tag'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
+    name = db.Column(db.String(100), nullable=False)
     type = db.Column(EnumType(TagType, name='TagType'), nullable=False)
     status = db.Column(EnumType(TagStatusType, name='TagStatusType'))
 
+    #relationships
+    contacts = db.relationship('TagItem', back_populates='tag',
+                               cascade='all, delete, delete-orphan')
+
 
 class TagSchema(Schema):
-    id = fields.Integer()
+    id = fields.Integer(dump_only=True)
     name = fields.String(required=True)
     type = EnumField(TagType, by_value=True, required=True)
     status = EnumType(TagStatusType, by_value=True)
-
-
-class TagItem(db.Model):
-    __tablename__ = "tag_item"
-    id = db.Column(db.Integer, primary_key=True)
-    contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
-    contact = db.relationship('Contact')
-    tag_id = db.Column(db.Integer, db.ForeignKey("tag.id"), nullable=False)
-    address = db.relationship('Tag')
-    score = db.Column(db.DECIMAL)
-    tag_item_order = db.Column(db.Integer, nullable=False)
-
-
-class TagItemSchema(Schema):
-    id = fields.Integer()
-    contact_id = fields.Integer(required=True)
-    tag_id = fields.Integer(required=True)
-    score = fields.Decimal()
-    tag_item_order = fields.Integer(required=True)
-
-
-class ContactTagSchema(Schema):
-    id = fields.Integer()
-    contact_id = fields.Integer(required=True)
-    tag_id = fields.Integer(required=True)
-    name = fields.String(required=True)
-    type = EnumField(TagType, by_value=True, required=True)
-

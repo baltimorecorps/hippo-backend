@@ -1,0 +1,62 @@
+Contacts
+POST
+curl http://localhost:5000/api/contacts/ --request POST --data '{"phone_primary": "908-578-4622", "last_name": "Mouse", "gender": "Male", "first_name": "Mickey", "birthdate": "1993-12-04","race_all": "Asian", "email_primary": {"email": "mickey@disney.org", "is_primary": true}}'
+curl http://localhost:5000/api/contacts/ --request POST --data '{"phone_primary": "908-578-4622", "last_name": "Daly", "gender": "Male", "first_name": "Billy", "birthdate": "1993-12-04","race_all": "White"}'
+
+PUT
+curl http://localhost:5000/api/contacts/1 --request PUT --data '{"id": 1, "phone_primary": "908-578-4622", "last_name": "Daly", "gender": "Male", "first_name": "Billy", "birthdate": "1993-12-04","race_all": "White", "email_primary": {"email": "billy@baltimorecorps.org", "is_primary": true}}'
+
+DELETE
+curl http://localhost:5000/api/contacts/3 --request DELETE
+--------------------------------------------------
+Experiences
+POST
+curl http://localhost:5000/api/contacts/1/experiences/ --request POST --data '{"description": "sup","host": "Chef","title": "Boyardee", "contact_id": 1, "date_start": "2019-01-01","type": "Work", "achievements": [{"description": "description 1"}, {"description": "description 1"}]}'
+
+PUT
+curl http://localhost:5000/api/experiences/9 --request PUT --data '{"description": "sup","host": "Google","title": "Chief Goofball", "contact_id": 2, "date_start": "2019-01-01", "date_end": null, "type": "Work", "achievements": [{"id": 6, "description": "description 454"}, {"description": "description 193"}]}'
+
+DELETE
+curl http://localhost:5000/api/experiences/7 --request DELETE
+-------------------------------------------------
+Tags
+POST
+curl http://localhost:5000/api/tags/ --request POST --data '{"name": "Public Health", "type": "Topic"}'
+
+PUT
+curl http://localhost:5000/api/tags/13 --request PUT --data '{"name": "Public Health: Addiction", "type": "Topic"}'
+
+DELETE
+curl http://localhost:5000/api/tags/10 --request DELETE
+------------------------------------------------
+Tag Items
+POST
+curl http://localhost:5000/api/contacts/2/tags/ --request POST --data '{"tag_id": 2, "type": "Function", "contact_id": 2, "score": 2, "name": "Web Development"}'
+
+PUT
+curl http://localhost:5000/api/contacts/2/tags/2 --request PUT --data '{"tag_id": 2, "type": "Function", "contact_id": 2, "score": 4, "name": "Web Development"}'
+
+DELETE
+curl http://localhost:5000/api/contacts/1/tags/2 --request DELETE
+-----------------------------------------------
+Resumes
+POST
+curl http://localhost:5000/api/contacts/1/resumes/ --request POST --data '{"contact_id": 1, "name": "Billy Resume Deux", "date_created": "2019-05-06"}'
+
+PUT
+curl http://localhost:5000/api/resumes/2/ --request PUT --data '{"name": "Billy Resume Trois"}'
+
+DELETE
+curl http://localhost:5000/api/resumes/3 --request DELETE
+-------------------------------------------------
+Resume Section
+POST
+curl http://localhost:5000/api/resumes/1/sections/ --request POST --data '{"max_count": 8, "name": "Accomplishments", "min_count": 1, "resume_id": 1}'
+curl http://localhost:5000/api/resumes/1/sections/ --request POST --data '{"max_count": 8, "name": "Relevant Experience", "min_count": 1, "resume_id": 1, "items": [{"exp_id": 4, "resume_order": 1, "indented": 0}, {"achievement_id": 14, "resume_order": 2, "indented": 1}]}'
+
+PUT
+curl http://localhost:5000/api/resumes/1/sections/4 --request PUT --data '{"max_count": 8, "name": "Accomplishments", "min_count": 1, "resume_id": 1, "items": [{"achievement_id": 15, "resume_order": 1, "indented": 0}, {"achievement_id": 14, "resume_order": 2, "indented": 0}]}'
+
+DELETE
+curl http://localhost:5000/api/resumes/1/sections/2 --request DELETE
+-----------------------------------------------
