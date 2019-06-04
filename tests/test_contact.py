@@ -13,8 +13,8 @@ class TestContactOne(object):
 
     def test_get_one_contact(self):
         message = 'this tests ContactAll GET method'
-        assert message = 'this tests ContactOne GET method'
+        assert message == 'this tests ContactAll GET method'
 
     def test_put_one_contact(self):
         message = 'this tests ContactAll GET method'
-        assert message = 'this tests ContactOne GET method'
+        assert message == 'this tests ContactAll GET method'
