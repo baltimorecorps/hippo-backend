@@ -6,12 +6,17 @@ from testing.postgresql import Postgresql
 from run import create_app
 from models.base_model import db
 
-_init_sql_path = os.path.join(os.path.dirname(__file__), 
+_init_sql_path = os.path.join(os.path.dirname(__file__),
                               '..', 'common', 'init.sql')
 with open(_init_sql_path, 'rb') as f:
     _init_sql = f.read().decode('utf8')
 
-@pytest.fixture
+_init_sql_path = os.path.join(os.path.dirname(__file__),
+                              '..', 'common', 'populate_db.sql')
+with open(_init_sql_path, 'rb') as f:
+    _populate_sql = f.read().decode('utf8')
+
+@pytest.fixture(scope='module')
 def app():
     app = create_app("config")
     app.config['DEBUG'] = True
@@ -22,5 +27,5 @@ def app():
         with app.app_context():
             db.init_app(app)
             db.engine.execute(_init_sql)
+            db.engine.execute(_populate_sql)
             yield app
-

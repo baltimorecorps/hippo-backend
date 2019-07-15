@@ -1,32 +1,30 @@
 
-class TestExperienceAll(object):
+class TestQueryExperiences(object):
 
-    def test_get_all_exp(self):
+    def test_get_all(self):
         message = 'this tests ContactAll GET method'
         assert message == 'this tests ContactAll GET method'
 
-    def test_get_exp_by_correct_type(self):
+    def Test_filter_by_type_work(self):
         message = 'this tests ContactAll GET method'
         assert message == 'this tests ContactAll GET method'
 
-    def test_get_exp_by_wrong_type(self):
+    def test_filter_by_type_edu(self):
         message = 'this tests ContactAll GET method'
         assert message == 'this tests ContactAll GET method'
 
-    def test_post_an_exp(self):
+    def test_filter_by_type_service(self):
         message = 'this tests ContactAll GET method'
         assert message == 'this tests ContactAll GET method'
 
-class TestExperienceOne(object):
-
-    def test_get_one_exp(self):
+    def test_filter_by_type_accomplishment(self):
         message = 'this tests ContactAll GET method'
         assert message == 'this tests ContactAll GET method'
 
-    def test_put_one_exp(self):
+    def test_filter_by_type_upper(self):
         message = 'this tests ContactAll GET method'
         assert message == 'this tests ContactAll GET method'
 
-    def test_put_one_exp(self):
+    def test_filter_by_type_missing(self):
         message = 'this tests ContactAll GET method'
         assert message == 'this tests ContactAll GET method'
