@@ -54,14 +54,14 @@ class ExperienceOne(Resource):
     def get(self, experience_id):
         exp = Experience.query.get(experience_id)
         if not exp:
-            return {'message': 'Experience does not exist'}, 400
+            return {'message': 'Experience does not exist'}, 404
         exp_data = experience_schema.dump(exp).data
         return {'status': 'success', 'data': exp_data}, 200
 
     def delete(self, experience_id):
         exp = Experience.query.get(experience_id)
         if not exp:
-            return {'message': 'Experience does not exist'}, 400
+            return {'message': 'Experience does not exist'}, 404
         db.session.delete(exp)
         db.session.commit()
         return {"status": 'success'}, 201
@@ -69,7 +69,7 @@ class ExperienceOne(Resource):
     def put(self, experience_id):
         exp = Experience.query.get(experience_id)
         if not exp:
-            return {'message': 'Experience does not exist'}, 400
+            return {'message': 'Experience does not exist'}, 404
         json_data = request.get_json(force=True)
         data, errors = experience_schema.load(json_data)
         if not data:

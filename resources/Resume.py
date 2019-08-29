@@ -96,7 +96,7 @@ class ResumeSectionOne(Resource):
         if not section:
             return {'message': 'Resume section does not exist'}, 400
         result = resume_section_schema.dump(section).data
-        return {'status': 'success', 'data': result}, 201
+        return {'status': 'success', 'data': result}, 200
 
     def put(self, resume_id, section_id):
         section = ResumeSection.query.get(section_id)
