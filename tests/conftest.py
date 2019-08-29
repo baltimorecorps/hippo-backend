@@ -5,6 +5,7 @@ from testing.postgresql import Postgresql
 
 from run import create_app
 from models.base_model import db
+from common.populate_db import populate
 
 _init_sql_path = os.path.join(os.path.dirname(__file__),
                               '..', 'common', 'init.sql')
@@ -27,5 +28,6 @@ def app():
         with app.app_context():
             db.init_app(app)
             db.engine.execute(_init_sql)
-            db.engine.execute(_populate_sql)
+            #db.engine.execute(_populate_sql)
+            populate(db)
             yield app
