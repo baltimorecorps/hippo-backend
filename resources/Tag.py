@@ -59,7 +59,6 @@ class TagOne(Resource):
         if not tag:
             return {'message': 'Tag does not exist'}, 404
         json_data = request.get_json(force=True)
-        print(json_data)
         data, errors = tag_schema.load(json_data, partial=True)
         if not data:
             return {'message': 'No data provided to update'}, 400
