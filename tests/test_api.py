@@ -1,9 +1,11 @@
 import json
 from datetime import date
 from pprint import pprint
+from models.contact_model import Contact
 from models.experience_model import Experience
 from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
+from models.tag_model import Tag
 from models.tag_item_model import TagItem
 import pytest
 
@@ -21,7 +23,7 @@ import pytest
 * GET api/resumes/<resume_id>/sections/
 * GET api/resumes/<resume_id>/sections/<section_id>/
 
-POST api/contacts/
+* POST api/contacts/
 POST api/contacts/<contact_id>/experiences/
 POST api/tags/
 POST api/contacts/<contact_id>/tags/
@@ -81,7 +83,7 @@ CONTACTS = {
         'birthdate': '1961-08-04',
         'phone_primary': "555-444-4444",
         'race_all': "Black",
-    }
+    },
 }
 
 ACHIEVEMENTS = {
@@ -230,6 +232,99 @@ RESUMES = {
         ],
     },
 }
+
+
+
+@pytest.mark.parametrize(
+    "url,data,query",
+    [('/api/contacts/', 
+      {
+          "first_name": "Tester",
+          "last_name": "Byte",
+          "email_primary": {
+              "email": "testerb@example.com",
+              "is_primary": True, 
+          },
+          "phone_primary": "111-111-1111",
+          "gender": "Female",
+          "race_all": "Hispanic/Latino",
+          "birthdate": "1973-04-23",
+      },
+      lambda id: Contact.query.get(id)
+      )
+    ,('/api/contacts/123/experiences/', 
+      {
+          'description': 'Test description',
+          'host': 'Test Org',
+          'title': 'Test title',
+          'date_start': '1910-09-03',
+          'date_end': '2019-05-22',
+          'type': 'Work',
+          'contact_id': 123,
+          'achievements': [
+              {'description': 'Test achievement 1'},
+              {'description': 'Test achievement 2'},
+          ],
+      },
+      lambda id: Experience.query.get(id)
+      )
+    ,('/api/tags/', 
+      {
+          'name': 'Test Tag',
+          'type': 'Skill',
+      },
+      lambda id: Tag.query.get(id)
+      )
+    ,('/api/contacts/123/tags/', 
+      {
+        'contact_id': 123,
+        'tag_id': 125,
+        'score': 4,
+      },
+      lambda id: TagItem.query.get(id)
+      )
+    ,('/api/contacts/123/resumes/', 
+      {
+        'contact_id': 123,
+        'name': 'Test Resume',
+        'date_created': '2019-01-01',
+      },
+      lambda id: Resume.query.get(id)
+      )
+    ,('/api/resumes/51/sections/', 
+      {
+        'resume_id': 51,
+        'min_count': 1,
+        'max_count': 50,
+        'name': "Test Section",
+        'items': [
+            {
+                'resume_order': 0,
+                'indented': False,
+                'experience_id': 512,
+            },
+        ],
+      },
+      lambda id: ResumeSection.query.get(id)
+      )
+    ]
+)
+def test_post(app, url, data, query):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        response = client.post(url, data=json.dumps(data), headers=headers)
+        pprint(response.json)
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        assert data['id'] is not None
+        id = data['id']
+        assert query(data['id']) is not None
 
 @pytest.mark.parametrize(
     "url,update,query,test",
