@@ -1,5 +1,10 @@
 import json
+from datetime import date
 from pprint import pprint
+from models.experience_model import Experience
+from models.resume_model import Resume
+from models.resume_section_model import ResumeSection
+from models.tag_item_model import TagItem
 import pytest
 
 """
@@ -14,21 +19,23 @@ import pytest
 * GET api/contact/<contact_id>/resumes/
 * GET api/resumes/<int:resume_id>/
 * GET api/resumes/<resume_id>/sections/
-GET api/resumes/<resume_id>/sections/<section_id>/
+* GET api/resumes/<resume_id>/sections/<section_id>/
 
 POST api/contacts/
 POST api/contacts/<contact_id>/experiences/
-PUT api/experiences/<int:exp_id>/
-DELETE api/experiences/<int:exp_id>/
 POST api/tags/
 POST api/contacts/<contact_id>/tags/
-PUT api/contacts/<contact_id>/tags/<tag_item_id>/
 POST api/contacts/<contact_id>/resumes/
-PUT api/resumes/<resume_id>/
-DELETE api/resumes/<resume_id>/
 POST api/resumes/<resume_id>/sections/<section_id>/
-PUT api/resumes/<resume_id>/sections/<section_id>/
-DELETE api/resumes/<int:section_id>/sections/<section_id>/
+
+* PUT api/experiences/<int:exp_id>/
+* PUT api/contacts/<contact_id>/tags/<tag_id>/
+* PUT api/resumes/<resume_id>/
+* PUT api/resumes/<resume_id>/sections/<section_id>/
+
+* DELETE api/experiences/<int:exp_id>/
+* DELETE api/resumes/<resume_id>/
+* DELETE api/resumes/<int:section_id>/sections/<section_id>/
 """
 
 CONTACTS = {
@@ -223,6 +230,82 @@ RESUMES = {
         ],
     },
 }
+
+@pytest.mark.parametrize(
+    "url,update,query,test",
+    [('/api/experiences/512/', 
+      {'date_end': '2017-01-01'},
+      lambda: Experience.query.get(512),
+      lambda e: e.date_end == date(2017, 1, 1),
+      )
+    ,('/api/experiences/512/', 
+      {'achievements': EXPERIENCES['goucher']['achievements'] + [
+          {'description': 'test'} 
+      ]},
+      lambda: Experience.query.get(512),
+      lambda e: e.achievements[-1].description == 'test',
+      )
+    ,('/api/contacts/123/tags/124/',
+      {'score': 3},
+      lambda: TagItem.query.get(21),
+      lambda ti: ti.score == 3,
+      )
+    ,('/api/resumes/51/',
+      {'name': 'test'},
+      lambda: Resume.query.get(51),
+      lambda r: r.name == 'test',
+      )
+    ,('/api/resumes/51/sections/61/',
+      {'items': [{
+          'resume_order': 0,
+          'indented': True,
+          'achievement_id': 81,
+      }]},
+      lambda: ResumeSection.query.get(61),
+      lambda rs: (len(rs.items) == 1 
+                  and rs.items[0].achievement is not None 
+                  and rs.items[0].achievement.description == 
+                      ACHIEVEMENTS['baltimore1']['description'])
+      )
+    ]
+)
+def test_put(app, url, update, query, test):
+    from models.resume_section_model import ResumeSectionSchema
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        assert query() is not None, "Item to update should exist"
+        assert not test(query())
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        print(response.json)
+        assert response.status_code == 200
+        assert test(query())
+
+
+@pytest.mark.parametrize(
+    "delete_url,query",
+    [('/api/experiences/512/', lambda: Experience.query.get(512))
+    ,('/api/resumes/51/', lambda: Resume.query.get(51))
+    ,('/api/resumes/51/sections/61/', lambda: ResumeSection.query.get(61))
+    ]
+)
+def test_delete(app, delete_url, query):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        assert query() is not None, "Item to delete should exist"
+
+        response = client.delete(delete_url, headers=headers)
+        assert response.status_code == 200
+        assert query() is None, "Deleted item should not exist"
+
 
 @pytest.mark.parametrize(
     "url,expected",

@@ -18,7 +18,7 @@ class Email(db.Model):
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
     is_primary = db.Column(db.Boolean, default=False)
     email = db.Column(db.String(100), nullable=False)
-    type = db.Column(EnumType(Type, name='Type'))
+    type = db.Column(db.Enum(Type, name='EmailType'))
 
     #relationships
     contact = db.relationship('Contact', back_populates='email_primary')

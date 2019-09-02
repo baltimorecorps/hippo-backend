@@ -48,7 +48,7 @@ billy = Contact(
         id=45,
         is_primary=True,
         email='billy@example.com',
-        type=EmailType('Personal'),
+        type=EmailType.personal,
     ),
     gender=Gender('Male'),
     birthdate=date(1991, 1, 2),
@@ -193,6 +193,7 @@ resume_billy = Resume(
         ),
     ]
 )
+
 
 def populate(db):
     db.session.add(billy)

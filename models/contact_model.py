@@ -34,12 +34,12 @@ class Contact(db.Model):
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
-    salutation = db.Column(EnumType(Salutation, name='Salutation'))
+    salutation = db.Column(db.Enum(Salutation, name='Salutation'))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     phone_primary = db.Column(db.String(25))
-    gender = db.Column(EnumType(Gender, name='Gender'))
-    race_all = db.Column(EnumType(Race, name='Race'))
+    gender = db.Column(db.Enum(Gender, name='Gender'))
+    race_all = db.Column(db.Enum(Race, name='Race'))
     birthdate = db.Column(db.Date)
 
     #relationships

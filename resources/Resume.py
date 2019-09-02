@@ -6,7 +6,6 @@ from models.base_model import db
 
 resumes_schema = ResumeSchema(many=True)
 resume_schema = ResumeSchema()
-resume_put_schema = ResumeSchema(partial=True)
 
 resume_sections_schema = ResumeSectionSchema(many=True)
 resume_section_schema = ResumeSectionSchema()
@@ -36,24 +35,24 @@ class ResumeOne(Resource):
     def get(self, resume_id):
         res = Resume.query.get(resume_id)
         if not res:
-            return {'message': 'Resume does not exist'}, 400
+            return {'message': 'Resume does not exist'}, 404
         result = resume_schema.dump(res).data
         return {'status': 'success', 'data': result}, 200
 
     def delete(self, resume_id):
         res = Resume.query.get(resume_id)
         if not res:
-            return {'message': 'Resume does not exist'}, 400
+            return {'message': 'Resume does not exist'}, 404
         db.session.delete(res)
         db.session.commit()
-        return {'status': 'success'}, 201
+        return {'status': 'success'}, 200
 
     def put(self, resume_id):
         res = Resume.query.get(resume_id)
         if not res:
-            return {'message': 'Resume does not exist'}, 400
+            return {'message': 'Resume does not exist'}, 404
         json_data = request.get_json(force=True)
-        data, errors = resume_put_schema.load(json_data)
+        data, errors = resume_schema.load(json_data, partial=True)
         if not data:
             return {'message': 'No data provided to update'}, 400
         if errors:
@@ -62,7 +61,7 @@ class ResumeOne(Resource):
             setattr(res, k, v)
         db.session.commit()
         result = resume_schema.dump(res).data
-        return {'status': 'success', 'data': result}, 201
+        return {'status': 'success', 'data': result}, 200
 
 class ResumeSectionAll(Resource):
     def get(self, resume_id):
@@ -94,16 +93,16 @@ class ResumeSectionOne(Resource):
     def get(self, resume_id, section_id):
         section = ResumeSection.query.get(section_id)
         if not section:
-            return {'message': 'Resume section does not exist'}, 400
+            return {'message': 'Resume section does not exist'}, 404
         result = resume_section_schema.dump(section).data
         return {'status': 'success', 'data': result}, 200
 
     def put(self, resume_id, section_id):
         section = ResumeSection.query.get(section_id)
         if not section:
-            return {'message': 'Resume section does not exist'}, 400
+            return {'message': 'Resume section does not exist'}, 404
         json_data = request.get_json(force=True)
-        data, errors = resume_section_schema.load(json_data)
+        data, errors = resume_section_schema.load(json_data, partial=True)
         if not data:
             return {'message': 'No input data provided'}, 400
         if errors:
@@ -119,12 +118,12 @@ class ResumeSectionOne(Resource):
                 section.items.append(i)
         db.session.commit()
         result = resume_section_schema.dump(section).data
-        return {'status': 'success', 'data': result}, 201
+        return {'status': 'success', 'data': result}, 200
 
     def delete(self, resume_id, section_id):
         section = ResumeSection.query.get(section_id)
         if not section:
-            return {'message': 'Resume section does not exist'}, 400
+            return {'message': 'Resume section does not exist'}, 404
         db.session.delete(section)
         db.session.commit()
-        return {'status': 'success'}, 201
+        return {'status': 'success'}, 200

@@ -64,14 +64,14 @@ class ExperienceOne(Resource):
             return {'message': 'Experience does not exist'}, 404
         db.session.delete(exp)
         db.session.commit()
-        return {"status": 'success'}, 201
+        return {"status": 'success'}, 200
 
     def put(self, experience_id):
         exp = Experience.query.get(experience_id)
         if not exp:
             return {'message': 'Experience does not exist'}, 404
         json_data = request.get_json(force=True)
-        data, errors = experience_schema.load(json_data)
+        data, errors = experience_schema.load(json_data, partial=True)
         if not data:
             return {'message': 'No data provided to update'}, 400
         if errors:
@@ -87,4 +87,4 @@ class ExperienceOne(Resource):
                 exp.achievements.append(a)
         db.session.commit()
         result = experience_schema.dump(exp).data
-        return {'status': 'success', 'data': result}, 201
+        return {'status': 'success', 'data': result}, 200
