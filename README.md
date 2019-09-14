@@ -1,4 +1,5 @@
-# Resumer Builder API
+# Resume Builder API
+[![Dev Build Status](https://travis-ci.com/baltimorecorps/hippo-backend.svg?branch=dev)](https://travis-ci.com/baltimorecorps/hippo-backend)
 ## Run on local server
 
 ### Dependencies for development
