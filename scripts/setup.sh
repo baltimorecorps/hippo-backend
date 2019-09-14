@@ -7,21 +7,10 @@ if [ ! -d .git ]; then
     exit 1
 fi
 
-if [[ ! "$(python3 --version)" =~ Python.3\.[789].* ]]; then
-    echo 'You must have Python 3.7 or later installed'
-    exit 1
-fi
+scripts/setup_virtualenv.sh
+scripts/setup_secrets.sh
+scripts/start_localdb.sh
 
-if [ -d env ]; then
-    echo 'Found environment, skipping virtual environment install.'
-    . env/bin/activate
-else
-    echo "Setting up new virtual environment 'env'..."
-    python3 -m venv env
-    . env/bin/activate
-    pip install -r requirements.txt
-fi
-
-
-
-
+echo -e 'Run this command to complete setup:\nsource env/bin/activate\n'
+echo -e 'To connect to the dev database: export DEPLOY_ENV=dev\n'
+echo -e 'To start the server: python run.py'
