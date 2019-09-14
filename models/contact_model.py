@@ -2,7 +2,6 @@ from models.base_model import db
 import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
-from sqlalchemy_enum34 import EnumType
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address
@@ -34,12 +33,12 @@ class Contact(db.Model):
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
-    salutation = db.Column(EnumType(Salutation, name='Salutation'))
+    salutation = db.Column(db.Enum(Salutation, name='Salutation'))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     phone_primary = db.Column(db.String(25))
-    gender = db.Column(EnumType(Gender, name='Gender'))
-    race_all = db.Column(EnumType(Race, name='Race'))
+    gender = db.Column(db.Enum(Gender, name='Gender'))
+    race_all = db.Column(db.Enum(Race, name='Race'))
     birthdate = db.Column(db.Date)
 
     #relationships

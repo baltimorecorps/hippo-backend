@@ -42,14 +42,14 @@ class TagOne(Resource):
     def get(self, tag_id):
         tag = Tag.query.get(tag_id)
         if not tag:
-            return {'message': 'Tag does not exist'}, 400
+            return {'message': 'Tag does not exist'}, 404
         result = tag_schema.dump(tag).data
         return {'status': 'success', 'data': result}, 200
 
     def delete(self, tag_id):
         tag = Tag.query.get(tag_id)
         if not tag:
-            return {'message': 'Tag does not exist'}, 400
+            return {'message': 'Tag does not exist'}, 404
         db.session.delete(tag)
         db.session.commit()
         return {'status': 'success'}, 201
@@ -57,9 +57,9 @@ class TagOne(Resource):
     def put(self, tag_id):
         tag = Tag.query.get(tag_id)
         if not tag:
-            return {'message': 'Tag does not exist'}, 400
+            return {'message': 'Tag does not exist'}, 404
         json_data = request.get_json(force=True)
-        data, errors = tag_schema.load(json_data)
+        data, errors = tag_schema.load(json_data, partial=True)
         if not data:
             return {'message': 'No data provided to update'}, 400
         if errors:
@@ -106,18 +106,17 @@ class TagItemOne(Resource):
         tag = (TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id)
                             .first())
         if not tag:
-            return {'message': 'TagItem does not exist'}, 400
+            return {'message': 'TagItem does not exist'}, 404
         tag_data = tag_item_schema.dump(tag).data
         return {'status': 'success', 'data': tag_data}, 200
 
     def put(self, contact_id, tag_id):
         tag = (TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id)
                             .first())
-        print(tag_item_schema.dump(tag))
         if not tag:
-            return {'message': 'TagItem does not exist'}, 400
+            return {'message': 'TagItem does not exist'}, 404
         json_data = request.get_json(force=True)
-        data, errors = tag_item_schema.load(json_data)
+        data, errors = tag_item_schema.load(json_data, partial=True)
         if not data:
             return {'message': 'No data provided to update'}, 400
         if errors:
@@ -126,12 +125,12 @@ class TagItemOne(Resource):
             setattr(tag, k, v)
         db.session.commit()
         result = tag_item_schema.dump(tag).data
-        return {'status': 'success', 'data': result}, 201
+        return {'status': 'success', 'data': result}, 200
 
     def delete(self, contact_id, tag_id):
         tag = TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id).first()
         if not tag:
-            return {'message': 'TagItem does not exist'}, 400
+            return {'message': 'TagItem does not exist'}, 404
         db.session.delete(tag)
         db.session.commit()
         return {'status': 'success'}, 201

@@ -1,6 +1,5 @@
 from models.base_model import db
 import enum
-from sqlalchemy_enum34 import EnumType
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 
@@ -27,8 +26,8 @@ class Address(db.Model):
     state = db.Column(db.String(100), nullable=False)
     country = db.Column(db.String(100), nullable=False)
     postal_code = db.Column(db.String(10), nullable=False)
-    type = db.Column(EnumType(Type, name='Type'), default=Type.home)
-    status = db.Column(EnumType(Status, name='Status'), default=Status.active)
+    type = db.Column(db.Enum(Type, name='AddressType'), default=Type.home)
+    status = db.Column(db.Enum(Status, name='Status'), default=Status.active)
 
     #relationships
     contact = db.relationship('Contact', back_populates='addresses')
