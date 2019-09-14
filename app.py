@@ -5,9 +5,15 @@ from api import api_bp
 def load_from_dev(app):
     app.config.from_pyfile('secrets/dev.cfg')
 
+def load_from_env(app):
+    if os.environ.get('DATABASE_URL'):
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+
 def load_config(app):
     if os.environ.get('DEPLOY_ENV') == 'dev':
         load_from_dev(app)
+    else:
+        load_from_env(app)
 
 def create_app():
     app = Flask(__name__)

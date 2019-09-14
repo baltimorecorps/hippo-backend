@@ -1,0 +1,16 @@
+language: python
+python:
+  - "3.7"
+# command to install dependencies
+install:
+  - pip install -r requirements.txt
+# command to run tests
+script:
+  - pytest
+deploy:
+  provider: heroku
+  app:
+    dev: bcorps-hippo-backend-staging
+    master: bcorps-hippo-backend
+  api_key:
+    secure: gG4XiHxS2/CZGwAoO90UvV7M054pCyFsywQZkcir9WexwnQSo1AJvqFTXZl+UAM60btqiyCFR+cWYAIp7ZQOSo1UehLGmkvXM2J2ft8HgifMjkfP0EuyxQ9ZuBzeetFzhrhUhguu56jbQ6frTv+G9U9610ND4OctGNJN1mLa4v+F+S4addp6arKM2CAId67SlbefncUDdyXx0ua7B4kR+KxmsJ5zK0iLvpEFV7E//Br9iiaUZQpOMnV0A/vsJfdih3duKx5I6abw+wtDY+uu+2qBTD5UtMU1cbVfNUwJvLpUbsWbKHfpu1wJg4R93JuFrsYIafYpLkPq1TdAPBADrPl3W5XL1PCMtRj/kVX9f4YuoqQc0htGmT30ncVE4BA3gc8k1LJcgp4Q1+7jtInQArhtni6COqeATphYCMDsMFhW/wOr+q6JBJYBfsBoSOkwGSLvMxFnRkDgyt7BpXibgpnsBm2l4v7brrUL1Lfwk8ShzVpN2y9BirojDgXJ8Afr05+iAbv9jh5OS2zolmPRqljioL6KsWmk+TPpVpFLrSGPMyOy2Ce5CR2xS5Ic2GLx3a5KWd8mTx16pO7xseXtLH38JRN7wruxYyN4+xbN55XPOqo33u45LNkqz5YAVhNWZlJYt+cLlZkSVbzp9zAso8HvkKQe6nRdZGKt2425drg=
