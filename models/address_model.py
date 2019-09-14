@@ -1,6 +1,5 @@
 from models.base_model import db
 import enum
-from sqlalchemy_enum34 import EnumType
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 

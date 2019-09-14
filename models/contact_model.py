@@ -2,7 +2,6 @@ from models.base_model import db
 import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
-from sqlalchemy_enum34 import EnumType
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address

@@ -125,16 +125,19 @@ TAGS = {
         'id': 123,
         'name': 'Python',
         'type': 'Skill',
+        'status': 'Active',
     },
     'webdev': {
         'id': 124,
         'name': 'Web Development',
         'type': 'Function',
+        'status': 'Active',
     },
     'health': {
         'id': 125,
         'name': 'Public Health',
         'type': 'Topic',
+        'status': 'Active',
     },
 }
 
