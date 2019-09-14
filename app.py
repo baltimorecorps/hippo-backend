@@ -2,9 +2,9 @@ from flask import Flask
 from api import api_bp
 
 
-def create_app(config_filename):
+def create_app():
     app = Flask(__name__)
-    app.config.from_object(config_filename)
+    app.config.from_object('defaultcfg')
     app.register_blueprint(api_bp, url_prefix='/api')
 
     @app.route('/')
