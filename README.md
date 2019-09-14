@@ -1,26 +1,48 @@
 # Resumer Builder API
 ## Run on local server
 
+### Dependencies for development
+- Python 3.7 (or later)
+- Postgres 11.x
+  - Used for unit tests
+- Docker
+- Keybase
+
 ### Getting Started:
-- Install Python 3.7
+- Install the dependencies listed above
+- Run `scripts/setup.sh`, which will automatically do the following
+  - Set up a virtual env (in the `env` directory)
+  - Set up a local database (running in docker)
+  - Clone the secrets repository
+- `source env/bin/activate` to enter the virtualenv
+- `pytest` to ensure all unit tests run and pass
+- `python run.py` to start the server
 
-- Clone the repository
+Quickstart version (can be copy/pasted into terminal)
+```
+python --version
+psql --version
+docker --version
+keybase --version
 
-- Create virtual environment and activate it
+scripts/setup.sh
+source env/bin/activate
+pytest
+python run.py
+```
 
-`python3 -m venv`
+### Connecting to the shared development database
+By default, a new local database is created which runs on your local machine.
+However, for debugging purposes, you may want to connect your local server to
+the shared development database running in Heroku. You can accomplish this by
+setting the environment variable `DEPLOY_ENV=dev`.
 
-`source venv/bin/activate`
+```
+export DEPLOY_ENV=dev
+python run.py
+```
 
-- Install required python packages
-
-`pip install -r requirements.txt`
-
-- Run the API server
-
-`python run.py`
-
-### Using the API
+### Viewing the API
 
 **View all contacts**
 
