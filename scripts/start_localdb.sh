@@ -12,7 +12,6 @@ if ! docker --version; then
     exit 1
 fi
 
-
 if [ -z "$(docker images hippo_localdb -q)" ]; then
     echo "Building 'hippo_localdb' docker image..."
     docker build scripts/localdb -t hippo_localdb
@@ -30,7 +29,7 @@ if [ -z "$(docker ps -f name=hippo_localdb -q)" ]; then
         --name hippo_localdb \
         --network hippo-localdb \
         --rm -d \
-        -p 5432:5432 \
+        -p 5433:5432 \
         hippo_localdb
     echo "'hippo_localdb' container started."
 fi
