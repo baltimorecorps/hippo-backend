@@ -23,8 +23,6 @@ run_db_cmd () {
            psql -h hippo_localdb -U postgres $@
 }
 
-run_db_cmd -c "DROP DATABASE localdb"
-
 if ! run_db_cmd localdb -c "SELECT 1" >/dev/null; then
     echo "Creating database localdb..."
     run_db_cmd -c "CREATE DATABASE localdb"
