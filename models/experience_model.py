@@ -3,6 +3,7 @@ import enum
 from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from models.achievement_model import Achievement, AchievementSchema
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class Type(enum.Enum):
     work = 'Work'
@@ -42,6 +43,32 @@ class Experience(db.Model):
     resumes = db.relationship('ResumeItem', back_populates='experience',
                               cascade='all, delete, delete-orphan')
 
+    #calculated fields
+    @hybrid_property
+    def start_month(self):
+        return self.date_start.strftime('%B')
+
+    @hybrid_property
+    def start_year(self):
+        return self.date_start.strftime('%Y')
+
+    @hybrid_property
+    def end_month(self):
+        return self.date_end.strftime('%B')
+
+    @hybrid_property
+    def end_year(self):
+        return self.date_end.strftime('%Y')
+
+    @hybrid_property
+    def date_length(self):
+        if not self.date_end:
+            delta = dt.datetime.today() - self.date_start
+
+        else:
+            delta = self.date_end - self.date_start
+        months = delta.month
+        return f'{math.floor(months/12)},  {months % 12}'
 
 class ExperienceSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -49,8 +76,11 @@ class ExperienceSchema(Schema):
     host = fields.String(required=True)
     title = fields.String(required=True)
     degree = EnumField(Degree, by_value=True)
-    date_start = fields.Date(required=True)
-    date_end = fields.Date()
+    start_month = fields.String(required=True)
+    end_month = fields.String()
+    start_year = fields.Integer(required=True)
+    end_year = fields.Integer()
+    date_length = fields.String(dump_only=True)
     type = EnumField(Type, by_value=True)
     contact_id = fields.Integer(required=True)
     achievements = fields.Nested(AchievementSchema, many=True)

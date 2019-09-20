@@ -2,6 +2,7 @@ from flask_restful import Resource, request
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.achievement_model import Achievement, AchievementSchema
 from models.base_model import db
+import datetime as dt
 
 experience_schema = ExperienceSchema()
 experiences_schema = ExperienceSchema(many=True)
@@ -37,7 +38,27 @@ class ExperienceAll(Resource):
             return {'message': 'No data provided to update'}, 400
         if errors:
             return errors, 422
+
+        #pull out the achievements to create them later
         achievements = data.pop('achievements', None)
+
+        #pull out the fields to store experience dates
+        start_month = data.pop('start_month', None)
+        start_year = data.pop('start_year', None)
+        end_month = data.pop('end_month', None)
+        end_year = data.pop('end_year', None)
+
+        #generate experience dates
+        if start_month and start_year:
+            start_str = f'1 {start_month}, {start_year}'
+            start_dt = dt.datetime.strptime(start_str,'%d %B, %Y')
+            data['date_start'] = start_dt.date()
+        if end_month and end_year:
+            end_str = f'1 {end_month}, {end_year}'
+            end_dt = dt.datetime.strptime(end_str,'%d %B, %Y')
+            data['date_end'] = end_dt.date()
+
+        #create the experience record
         exp = Experience(**data)
         if achievements:
             for achievement in achievements:
@@ -76,7 +97,25 @@ class ExperienceOne(Resource):
             return {'message': 'No data provided to update'}, 400
         if errors:
             return errors, 422
+
         achievements = data.pop('achievements', None)
+
+        #pull out the fields to store experience dates
+        start_month = data.pop('start_month', None)
+        start_year = data.pop('start_year', None)
+        end_month = data.pop('end_month', None)
+        end_year = data.pop('end_year', None)
+
+        #generate experience dates
+        if start_month and start_year:
+            start_str = f'1 {start_month}, {start_year}'
+            start_dt = dt.datetime.strptime(start_str,'%d %B, %Y')
+            data['date_start'] = start_dt.date()
+        if end_month and end_month:
+            end_str = f'1 {end_month}, {end_year}'
+            end_dt = dt.datetime.strptime(end_str,'%d %B, %Y')
+            data['date_end'] = end_dt.date()
+
         for k,v in data.items():
             setattr(exp, k, v)
         del exp.achievements[:]
