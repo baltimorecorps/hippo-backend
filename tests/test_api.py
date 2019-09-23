@@ -82,8 +82,10 @@ EXPERIENCES = {
         'host': 'Columbia University',
         'title': 'Political Science',
         'degree': 'Undergraduate',
-        'date_start': '1979-09-03',
-        'date_end': '1983-05-22',
+        'start_month': 'September',
+        'start_year': 1979,
+        'end_month': 'May',
+        'end_year': 1983,
         'type': 'Education',
         'contact_id': 124,
         'achievements': [],
@@ -94,8 +96,10 @@ EXPERIENCES = {
         'host': 'Goucher College',
         'title': 'Economics',
         'degree': 'Undergraduate',
-        'date_start': '2012-09-01',
-        'date_end': '2016-05-20',
+        'start_month': 'September',
+        'start_year': 2012,
+        'end_month': 'May',
+        'end_year': 2016,
         'type': 'Education',
         'contact_id': 123,
         'achievements': [
@@ -108,8 +112,10 @@ EXPERIENCES = {
         'host': 'Baltimore Corps',
         'title': 'Systems Design Manager',
         'degree': 'Undergraduate',
-        'date_start': '2000-01-01',
-        'date_end': '2019-07-17',
+        'start_month': 'January',
+        'start_year': 2000,
+        'end_month': 'July',
+        'end_year': 2019,
         'type': 'Work',
         'contact_id': 123,
         'achievements': [
@@ -230,8 +236,10 @@ RESUMES = {
           'description': 'Test description',
           'host': 'Test Org',
           'title': 'Test title',
-          'date_start': '1910-09-03',
-          'date_end': '2019-05-22',
+          'start_month': 'September',
+          'start_year': 2000,
+          'end_month': 'May',
+          'end_year': 2019,
           'type': 'Work',
           'contact_id': 123,
           'achievements': [
@@ -301,8 +309,8 @@ def test_post(app, url, data, query):
 
 @pytest.mark.parametrize(
     "url,update,query,test",
-    [('/api/experiences/512/', 
-      {'date_end': '2017-01-01'},
+    [('/api/experiences/512/',
+      {'end_month': 'January', 'end_year': 2017},
       lambda: Experience.query.get(512),
       lambda e: e.date_end == date(2017, 1, 1),
       )
@@ -431,4 +439,3 @@ def test_get_many_unordered(app, url, expected):
         for item in data:
             pprint(item)
             assert item in expected
-
