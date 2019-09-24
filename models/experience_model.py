@@ -36,6 +36,7 @@ class Experience(db.Model):
     type = db.Column(db.Enum(Type, name='ExperienceType'))
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
     address_id = db.Column(db.Integer, db.ForeignKey('address.id'))
+    current_experience = db.Column(db.Boolean, default=False)
 
     #relationships
     contact = db.relationship('Contact')
@@ -98,6 +99,7 @@ class ExperienceSchema(Schema):
     host = fields.String(required=True)
     title = fields.String(required=True)
     degree = EnumField(Degree, by_value=True, missing=None)
+    current_experience = fields.Boolean()
     start_month = fields.String(required=True)
     start_year = fields.Integer(required=True)
     end_month = fields.String()
