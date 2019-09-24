@@ -46,19 +46,31 @@ class Experience(db.Model):
     #calculated fields
     @hybrid_property
     def start_month(self):
-        return self.date_start.strftime('%B')
+        try:
+            return self.date_start.strftime('%B')
+        except AttributeError:
+            return None
 
     @hybrid_property
     def start_year(self):
-        return self.date_start.strftime('%Y')
+        try:
+            return self.date_start.strftime('%Y')
+        except AttributeError:
+            return None
 
     @hybrid_property
     def end_month(self):
-        return self.date_end.strftime('%B')
+        try:
+            return self.date_end.strftime('%B')
+        except AttributeError:
+            return None
 
     @hybrid_property
     def end_year(self):
-        return self.date_end.strftime('%Y')
+        try:
+            return self.date_end.strftime('%Y')
+        except AttributeError:
+            return None
 
     @hybrid_property
     def date_length(self):
