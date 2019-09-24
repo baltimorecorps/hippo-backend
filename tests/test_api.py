@@ -82,6 +82,7 @@ EXPERIENCES = {
         'host': 'Columbia University',
         'title': 'Political Science',
         'degree': 'Undergraduate',
+        'current_experience': False,
         'start_month': 'September',
         'start_year': 1979,
         'end_month': 'May',
@@ -98,6 +99,7 @@ EXPERIENCES = {
         'host': 'Goucher College',
         'title': 'Economics',
         'degree': 'Undergraduate',
+        'current_experience': False,
         'start_month': 'September',
         'start_year': 2012,
         'end_month': 'May',
@@ -116,6 +118,7 @@ EXPERIENCES = {
         'host': 'Baltimore Corps',
         'title': 'Systems Design Manager',
         'degree': 'Undergraduate',
+        'current_experience': False,
         'start_month': 'January',
         'start_year': 2000,
         'end_month': 'July',
@@ -344,6 +347,12 @@ def test_post_experience_null_degree(app):
     assert Experience.query.get(id_) is not None
     pprint(Experience.query.get(id_).degree)
 
+def test_post_experience_current(app):
+    exp = POSTS['experience'].copy()
+    exp['current_experience'] = True
+    id_ = post_experience(app, '/api/contacts/123/experiences/', exp)
+    assert Experience.query.get(id_) is not None
+    pprint(Experience.query.get(id_).current_experience)
 
 
 @pytest.mark.parametrize(
