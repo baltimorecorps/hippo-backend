@@ -75,7 +75,7 @@ class ExperienceSchema(Schema):
     description = fields.String()
     host = fields.String(required=True)
     title = fields.String(required=True)
-    degree = EnumField(Degree, by_value=True)
+    degree = EnumField(Degree, by_value=True, missing=None)
     start_month = fields.String(required=True)
     end_month = fields.String()
     start_year = fields.Integer(required=True)
