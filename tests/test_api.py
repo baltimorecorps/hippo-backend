@@ -219,6 +219,42 @@ RESUMES = {
 }
 
 
+POSTS = {
+    'experience': {
+        'description': 'Test description',
+        'host': 'Test Org',
+        'title': 'Test title',
+        'start_month': 'September',
+        'start_year': 2000,
+        'end_month': 'May',
+        'end_year': 2019,
+        'type': 'Work',
+        'contact_id': 123,
+        'achievements': [
+            {'description': 'Test achievement 1'},
+            {'description': 'Test achievement 2'},
+        ],
+    },
+}
+
+def post_experience(app, url, data):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        response = client.post(url, data=json.dumps(data),
+                               headers=headers)
+        pprint(response.json)
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        assert data['id'] is not None
+        id = data['id']
+        return id
+
 
 @pytest.mark.parametrize(
     "url,data,query",
@@ -238,21 +274,7 @@ RESUMES = {
       lambda id: Contact.query.get(id)
       )
     ,('/api/contacts/123/experiences/',
-      {
-          'description': 'Test description',
-          'host': 'Test Org',
-          'title': 'Test title',
-          'start_month': 'September',
-          'start_year': 2000,
-          'end_month': 'May',
-          'end_year': 2019,
-          'type': 'Work',
-          'contact_id': 123,
-          'achievements': [
-              {'description': 'Test achievement 1'},
-              {'description': 'Test achievement 2'},
-          ],
-      },
+      POSTS['experience'],
       lambda id: Experience.query.get(id)
       )
     ,('/api/tags/',
@@ -303,15 +325,26 @@ def test_post(app, url, data, query):
         'Accept': mimetype
     }
 
-    with app.test_client() as client:
-        response = client.post(url, data=json.dumps(data), headers=headers)
-        pprint(response.json)
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        assert data['id'] is not None
-        id = data['id']
-        assert query(data['id']) is not None
+    id_ = post_experience(app, url, data)
+    assert query(id_) is not None
+
+
+def test_post_experience_date(app):
+    id_ = post_experience(app, '/api/contacts/123/experiences/',
+                          POSTS['experience'])
+    # Note: Dates should always be on the first of the month that they were
+    # added for
+    assert Experience.query.get(id_).date_start == date(2000,9,1)
+    assert Experience.query.get(id_).date_end == date(2019,5,1)
+
+def test_post_experience_null_degree(app):
+    exp = POSTS['experience'].copy()
+    exp['degree'] = None
+    id_ = post_experience(app, '/api/contacts/123/experiences/', exp)
+    assert Experience.query.get(id_) is not None
+    pprint(Experience.query.get(id_).degree)
+
+
 
 @pytest.mark.parametrize(
     "url,update,query,test",
