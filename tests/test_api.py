@@ -86,6 +86,8 @@ EXPERIENCES = {
         'start_year': 1979,
         'end_month': 'May',
         'end_year': 1983,
+        'length_year': 3,
+        'length_month': 8,
         'type': 'Education',
         'contact_id': 124,
         'achievements': [],
@@ -100,6 +102,8 @@ EXPERIENCES = {
         'start_year': 2012,
         'end_month': 'May',
         'end_year': 2016,
+        'length_year': 3,
+        'length_month': 8,
         'type': 'Education',
         'contact_id': 123,
         'achievements': [
@@ -116,6 +120,8 @@ EXPERIENCES = {
         'start_year': 2000,
         'end_month': 'July',
         'end_year': 2019,
+        'length_year': 19,
+        'length_month': 6,
         'type': 'Work',
         'contact_id': 123,
         'achievements': [
@@ -176,7 +182,7 @@ RESUME_SECTIONS = {
                 'indented': False,
                 'achievement': None,
                 'tag': None,
-                'experience': filter_dict(EXPERIENCES['baltimore'], 
+                'experience': filter_dict(EXPERIENCES['baltimore'],
                                           {'achievements', 'contact_id'}),
             },
         ],
@@ -216,13 +222,13 @@ RESUMES = {
 
 @pytest.mark.parametrize(
     "url,data,query",
-    [('/api/contacts/', 
+    [('/api/contacts/',
       {
           "first_name": "Tester",
           "last_name": "Byte",
           "email_primary": {
               "email": "testerb@example.com",
-              "is_primary": True, 
+              "is_primary": True,
           },
           "phone_primary": "111-111-1111",
           "gender": "Female",
@@ -231,7 +237,7 @@ RESUMES = {
       },
       lambda id: Contact.query.get(id)
       )
-    ,('/api/contacts/123/experiences/', 
+    ,('/api/contacts/123/experiences/',
       {
           'description': 'Test description',
           'host': 'Test Org',
@@ -249,14 +255,14 @@ RESUMES = {
       },
       lambda id: Experience.query.get(id)
       )
-    ,('/api/tags/', 
+    ,('/api/tags/',
       {
           'name': 'Test Tag',
           'type': 'Skill',
       },
       lambda id: Tag.query.get(id)
       )
-    ,('/api/contacts/123/tags/', 
+    ,('/api/contacts/123/tags/',
       {
         'contact_id': 123,
         'tag_id': 125,
@@ -264,7 +270,7 @@ RESUMES = {
       },
       lambda id: TagItem.query.get(id)
       )
-    ,('/api/contacts/123/resumes/', 
+    ,('/api/contacts/123/resumes/',
       {
         'contact_id': 123,
         'name': 'Test Resume',
@@ -272,7 +278,7 @@ RESUMES = {
       },
       lambda id: Resume.query.get(id)
       )
-    ,('/api/resumes/51/sections/', 
+    ,('/api/resumes/51/sections/',
       {
         'resume_id': 51,
         'min_count': 1,
@@ -314,9 +320,9 @@ def test_post(app, url, data, query):
       lambda: Experience.query.get(512),
       lambda e: e.date_end == date(2017, 1, 1),
       )
-    ,('/api/experiences/512/', 
+    ,('/api/experiences/512/',
       {'achievements': EXPERIENCES['goucher']['achievements'] + [
-          {'description': 'test'} 
+          {'description': 'test'}
       ]},
       lambda: Experience.query.get(512),
       lambda e: e.achievements[-1].description == 'test',
@@ -338,9 +344,9 @@ def test_post(app, url, data, query):
           'achievement_id': 81,
       }]},
       lambda: ResumeSection.query.get(61),
-      lambda rs: (len(rs.items) == 1 
-                  and rs.items[0].achievement is not None 
-                  and rs.items[0].achievement.description == 
+      lambda rs: (len(rs.items) == 1
+                  and rs.items[0].achievement is not None
+                  and rs.items[0].achievement.description ==
                       ACHIEVEMENTS['baltimore1']['description'])
       )
     ]
@@ -411,7 +417,7 @@ def test_get(app, url, expected):
 @pytest.mark.parametrize(
     "url,expected",
     [('/api/contacts/', CONTACTS.values())
-    ,('/api/contacts/123/experiences/', [EXPERIENCES['goucher'], 
+    ,('/api/contacts/123/experiences/', [EXPERIENCES['goucher'],
                                          EXPERIENCES['baltimore']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES['columbia']])
     ,('/api/contacts/123/achievements/', ACHIEVEMENTS.values())
