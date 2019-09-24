@@ -213,6 +213,24 @@ RESUMES = {
 }
 
 
+POSTS = {
+    'experience': {
+        'description': 'Test description',
+        'host': 'Test Org',
+        'title': 'Test title',
+        'start_month': 'September',
+        'start_year': 2000,
+        'end_month': 'May',
+        'end_year': 2019,
+        'type': 'Work',
+        'contact_id': 123,
+        'achievements': [
+            {'description': 'Test achievement 1'},
+            {'description': 'Test achievement 2'},
+        ],
+    },
+}
+
 
 @pytest.mark.parametrize(
     "url,data,query",
@@ -232,21 +250,7 @@ RESUMES = {
       lambda id: Contact.query.get(id)
       )
     ,('/api/contacts/123/experiences/', 
-      {
-          'description': 'Test description',
-          'host': 'Test Org',
-          'title': 'Test title',
-          'start_month': 'September',
-          'start_year': 2000,
-          'end_month': 'May',
-          'end_year': 2019,
-          'type': 'Work',
-          'contact_id': 123,
-          'achievements': [
-              {'description': 'Test achievement 1'},
-              {'description': 'Test achievement 2'},
-          ],
-      },
+      POSTS['experience'],
       lambda id: Experience.query.get(id)
       )
     ,('/api/tags/', 
@@ -306,6 +310,38 @@ def test_post(app, url, data, query):
         assert data['id'] is not None
         id = data['id']
         assert query(data['id']) is not None
+
+@pytest.fixture
+def post_experience(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/123/experiences/', 
+                               data=json.dumps(POSTS['experience']),
+                               headers=headers)
+        pprint(response.json)
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        assert data['id'] is not None
+        id = data['id']
+        yield id
+
+def test_post_experience_date(post_experience):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    # Note: Dates should always be on the first of the month that they were
+    # added for
+    assert Experience.query.get(post_experience).date_start == date(2000,9,1)
+    assert Experience.query.get(post_experience).date_end == date(2019,5,1)
+
 
 @pytest.mark.parametrize(
     "url,update,query,test",
