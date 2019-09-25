@@ -91,6 +91,8 @@ EXPERIENCES = {
         'length_month': 8,
         'type': 'Education',
         'contact_id': 124,
+        'location_city': 'New York',
+        'location_state': 'New York',
         'achievements': [],
     },
     'goucher': {
@@ -108,6 +110,8 @@ EXPERIENCES = {
         'length_month': 8,
         'type': 'Education',
         'contact_id': 123,
+        'location_city': 'Towson',
+        'location_state': 'Maryland',
         'achievements': [
             ACHIEVEMENTS['goucher1'],
         ],
@@ -127,6 +131,8 @@ EXPERIENCES = {
         'length_month': 6,
         'type': 'Work',
         'contact_id': 123,
+        'location_city': 'Baltimore',
+        'location_state': 'Maryland',
         'achievements': [
             ACHIEVEMENTS['baltimore1'],
             ACHIEVEMENTS['baltimore2'],
@@ -233,6 +239,8 @@ POSTS = {
         'end_year': 2019,
         'type': 'Work',
         'contact_id': 123,
+        'location_city': 'Test City',
+        'location_state': 'Test State',
         'achievements': [
             {'description': 'Test achievement 1'},
             {'description': 'Test achievement 2'},

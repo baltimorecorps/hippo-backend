@@ -35,12 +35,11 @@ class Experience(db.Model):
     date_end = db.Column(db.Date)
     type = db.Column(db.Enum(Type, name='ExperienceType'))
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
-    address_id = db.Column(db.Integer, db.ForeignKey('address.id'))
-    current_experience = db.Column(db.Boolean, default=False)
+    location_city = db.Column(db.String(100))
+    location_state = db.Column(db.String(100))
 
     #relationships
     contact = db.relationship('Contact')
-    address = db.relationship('Address')
     achievements = db.relationship('Achievement', back_populates='experience',
                                    cascade='all, delete, delete-orphan')
     resumes = db.relationship('ResumeItem', back_populates='experience',
