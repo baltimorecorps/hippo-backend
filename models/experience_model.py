@@ -49,42 +49,23 @@ class Experience(db.Model):
 
     #calculated fields
     @hybrid_property
-    def start_month(self):
-        try:
-            return self.date_start.strftime('%B')
-        except AttributeError:
-            return None
+    def date_end(self):
+        if self.end_month and self.end_year:
+            end_str = f'1 {self.end_month}, {self.end_year}'
+            return dt.datetime.strptime(end_str, '%d %B, %Y')
+        else:
+            return dt.datetime.today()
 
     @hybrid_property
-    def start_year(self):
-        try:
-            return self.date_start.strftime('%Y')
-        except AttributeError:
-            return None
-
-    @hybrid_property
-    def end_month(self):
-        try:
-            return self.date_end.strftime('%B')
-        except AttributeError:
-            return None
-
-    @hybrid_property
-    def end_year(self):
-        try:
-            return self.date_end.strftime('%Y')
-        except AttributeError:
-            return None
+    def date_start(self):
+        start_str = f'1 {self.start_month}, {self.start_year}'
+        return dt.datetime.strptime(start_str, '%d %B, %Y')
 
     @hybrid_property
     def date_length(self):
-        if not self.date_end:
-            delta = ((dt.datetime.today().year - self.date_start.year) * 12
-                      + dt.datetime.today().month - self.date_start.month)
-        else:
-            delta = ((self.date_end.year - self.date_start.year) * 12
-                      + self.date_end.month - self.date_start.month)
-        return delta
+        end = self.date_end
+        start = self.date_start
+        return (end.year - start.year) * 12 + end.month - start.month
 
     @hybrid_property
     def length_year(self):
