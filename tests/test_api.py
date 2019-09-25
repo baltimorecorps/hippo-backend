@@ -2,6 +2,7 @@ import json
 from datetime import date
 from pprint import pprint
 import pytest
+import math
 
 from models.contact_model import Contact
 from models.experience_model import Experience
@@ -125,10 +126,10 @@ EXPERIENCES = {
         'current_experience': False,
         'start_month': 'January',
         'start_year': 2000,
-        'end_month': 'July',
-        'end_year': 2019,
+        'end_month': None,
+        'end_year': None,
         'length_year': 19,
-        'length_month': 6,
+        'length_month': 8,
         'type': 'Work',
         'contact_id': 123,
         'location_city': 'Baltimore',
@@ -248,7 +249,7 @@ POSTS = {
     },
 }
 
-def post_experience(app, url, data):
+def post_request(app, url, data):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -336,29 +337,29 @@ def test_post(app, url, data, query):
         'Accept': mimetype
     }
 
-    id_ = post_experience(app, url, data)
+    id_ = post_request(app, url, data)
     assert query(id_) is not None
 
 
 def test_post_experience_date(app):
-    id_ = post_experience(app, '/api/contacts/123/experiences/',
+    id_ = post_request(app, '/api/contacts/123/experiences/',
                           POSTS['experience'])
-    # Note: Dates should always be on the first of the month that they were
-    # added for
-    assert Experience.query.get(id_).date_start == date(2000,9,1)
-    assert Experience.query.get(id_).date_end == date(2019,5,1)
+    assert Experience.query.get(id_).end_month == 'May'
+    assert Experience.query.get(id_).end_year == 2019
+    assert Experience.query.get(id_).start_month == 'September'
+    assert Experience.query.get(id_).start_year == 2000
 
 def test_post_experience_null_degree(app):
     exp = POSTS['experience'].copy()
     exp['degree'] = None
-    id_ = post_experience(app, '/api/contacts/123/experiences/', exp)
+    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     pprint(Experience.query.get(id_).degree)
 
 def test_post_experience_current(app):
     exp = POSTS['experience'].copy()
     exp['current_experience'] = True
-    id_ = post_experience(app, '/api/contacts/123/experiences/', exp)
+    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     pprint(Experience.query.get(id_).current_experience)
 
@@ -368,7 +369,7 @@ def test_post_experience_current(app):
     [('/api/experiences/512/',
       {'end_month': 'January', 'end_year': 2017},
       lambda: Experience.query.get(512),
-      lambda e: e.date_end == date(2017, 1, 1),
+      lambda e: e.end_month == 'January' and e.end_year == 2017,
       )
     ,('/api/experiences/512/',
       {'achievements': EXPERIENCES['goucher']['achievements'] + [
