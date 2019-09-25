@@ -107,4 +107,6 @@ class ExperienceSchema(Schema):
     length_month = fields.Integer(dump_only=True)
     type = EnumField(Type, by_value=True)
     contact_id = fields.Integer(required=True)
+    location_city = fields.String()
+    location_state = fields.String()
     achievements = fields.Nested(AchievementSchema, many=True)
