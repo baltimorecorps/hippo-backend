@@ -5,6 +5,7 @@ Click==7.0
 Flask==1.0.2
 Flask-Cors==3.0.7
 Flask-Migrate==2.3.1
+flask-script==2.0.6
 Flask-RESTful==0.3.7
 Flask-SQLAlchemy==2.3.2
 itsdangerous==1.1.0
@@ -13,7 +14,7 @@ Mako==1.0.7
 MarkupSafe==1.1.0
 marshmallow==2.18.0
 marshmallow-enum==1.4.1
-psycopg2==2.7.7
+psycopg2>=2.8
 pytest==4.4.0
 pytest-flask-sqlalchemy==1.0.2
 python-dateutil==2.8.0
