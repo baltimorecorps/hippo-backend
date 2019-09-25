@@ -3,6 +3,7 @@ from models.experience_model import Experience, ExperienceSchema, Type
 from models.achievement_model import Achievement, AchievementSchema
 from models.base_model import db
 import datetime as dt
+from operator import attrgetter
 
 experience_schema = ExperienceSchema()
 experiences_schema = ExperienceSchema(many=True)
@@ -18,17 +19,14 @@ class ExperienceAll(Resource):
                 return {'message':
                         f'No such experience type, '
                         f'choose an option from this list: {type_list}'}, 400
-            exp = (Experience.query
-                             .filter_by(contact_id=contact_id,
-                                        type=Type[type_arg])
-                             .order_by(Experience.date_end.desc(),
-                                       Experience.date_start.desc()))
+            exp = (Experience.query.filter_by(contact_id=contact_id,
+                                              type=Type[type_arg]))
         else:
-            exp = (Experience.query
-                             .filter_by(contact_id=contact_id)
-                             .order_by(Experience.date_end.desc(),
-                                       Experience.date_start.desc()))
-        exp_list = experiences_schema.dump(exp).data
+            exp = (Experience.query.filter_by(contact_id=contact_id))
+        exp_sorted = sorted(exp,
+                            key=attrgetter('date_end', 'date_start'),
+                            reverse=True)
+        exp_list = experiences_schema.dump(exp_sorted).data
         return {'status': 'success', 'data': exp_list}, 200
 
     def post(self, contact_id):
