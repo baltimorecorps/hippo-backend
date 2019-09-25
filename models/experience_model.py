@@ -75,17 +75,25 @@ class Experience(db.Model):
     def length_month(self):
         return self.date_length % 12
 
+    @hybrid_property
+    def is_current(self):
+        if self.end_month and self.end_year:
+            return False
+        else:
+            return True
+
+
 class ExperienceSchema(Schema):
     id = fields.Integer(dump_only=True)
     description = fields.String()
     host = fields.String(required=True)
     title = fields.String(required=True)
     degree = EnumField(Degree, by_value=True, missing=None)
-    current_experience = fields.Boolean()
+    is_current = fields.Boolean(dump_only=True)
     start_month = fields.String(required=True)
     start_year = fields.Integer(required=True)
-    end_month = fields.String()
-    end_year = fields.Integer()
+    end_month = fields.String(allow_none=True)
+    end_year = fields.Integer(allow_none=True)
     length_year = fields.Integer(dump_only=True)
     length_month = fields.Integer(dump_only=True)
     type = EnumField(Type, by_value=True)
