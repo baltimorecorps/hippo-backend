@@ -27,7 +27,7 @@ if ! run_db_cmd localdb -c "SELECT 1" >/dev/null; then
     echo "Creating database localdb..."
     run_db_cmd -c "CREATE DATABASE localdb"
     source env/bin/activate
-    python init_db.py
+    python migrate.py db upgrade
     echo "Created database localdb."
 else
     echo "Database localdb already found, skipping init"
