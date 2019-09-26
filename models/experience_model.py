@@ -21,6 +21,19 @@ class Degree(enum.Enum):
     masters = 'Masters'
     doctoral = 'Doctoral'
 
+class Month(enum.Enum):
+    january = 'January'
+    february = 'February'
+    march = 'March'
+    april = 'April'
+    may = 'May'
+    june = 'June'
+    july = 'July'
+    august = 'August'
+    september = 'September'
+    october = 'October'
+    november = 'November'
+    december = 'December'
 
 class Experience(db.Model):
     __tablename__ = 'experience'
@@ -31,9 +44,9 @@ class Experience(db.Model):
     host = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     degree = db.Column(db.Enum(Degree, name='Degree'))
-    start_month = db.Column(db.String(100), nullable=False)
+    start_month = db.Column(db.Enum(Month, name='MonthType'))
     start_year = db.Column(db.Integer, nullable=False)
-    end_month = db.Column(db.String(100))
+    end_month = db.Column(db.Enum(Month, name='MonthType'))
     end_year = db.Column(db.Integer)
     type = db.Column(db.Enum(Type, name='ExperienceType'))
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
@@ -51,14 +64,14 @@ class Experience(db.Model):
     @hybrid_property
     def date_end(self):
         if self.end_month and self.end_year:
-            end_str = f'1 {self.end_month}, {self.end_year}'
+            end_str = f'1 {self.end_month.value}, {self.end_year}'
             return dt.datetime.strptime(end_str, '%d %B, %Y')
         else:
             return dt.datetime.today()
 
     @hybrid_property
     def date_start(self):
-        start_str = f'1 {self.start_month}, {self.start_year}'
+        start_str = f'1 {self.start_month.value}, {self.start_year}'
         return dt.datetime.strptime(start_str, '%d %B, %Y')
 
     @hybrid_property
@@ -90,9 +103,9 @@ class ExperienceSchema(Schema):
     title = fields.String(required=True)
     degree = EnumField(Degree, by_value=True, missing=None)
     is_current = fields.Boolean(dump_only=True)
-    start_month = fields.String(required=True)
+    start_month = EnumField(Month, by_value=True, required=True)
     start_year = fields.Integer(required=True)
-    end_month = fields.String(allow_none=True)
+    end_month = EnumField(Month, by_value=True, missing=None)
     end_year = fields.Integer(allow_none=True)
     length_year = fields.Integer(dump_only=True)
     length_month = fields.Integer(dump_only=True)

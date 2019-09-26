@@ -5,7 +5,7 @@ import pytest
 import math
 
 from models.contact_model import Contact
-from models.experience_model import Experience
+from models.experience_model import Experience, Month
 from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.tag_model import Tag
@@ -344,9 +344,9 @@ def test_post(app, url, data, query):
 def test_post_experience_date(app):
     id_ = post_request(app, '/api/contacts/123/experiences/',
                           POSTS['experience'])
-    assert Experience.query.get(id_).end_month == 'May'
+    assert Experience.query.get(id_).end_month == Month.may
     assert Experience.query.get(id_).end_year == 2019
-    assert Experience.query.get(id_).start_month == 'September'
+    assert Experience.query.get(id_).start_month == Month.september
     assert Experience.query.get(id_).start_year == 2000
 
 def test_post_experience_null_degree(app):
@@ -370,7 +370,7 @@ def test_post_experience_current(app):
     [('/api/experiences/512/',
       {'end_month': 'January', 'end_year': 2017},
       lambda: Experience.query.get(512),
-      lambda e: e.end_month == 'January' and e.end_year == 2017,
+      lambda e: e.end_month == Month.january and e.end_year == 2017,
       )
     ,('/api/experiences/512/',
       {'achievements': EXPERIENCES['goucher']['achievements'] + [
