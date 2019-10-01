@@ -1,5 +1,5 @@
 import json
-from datetime import date
+import datetime as dt
 from pprint import pprint
 import pytest
 import math
@@ -76,6 +76,11 @@ ACHIEVEMENTS = {
     }
 }
 
+DATE_START = dt.date(2000, 1, 1)
+DATE_END = dt.datetime.today()
+DATE_LENGTH = ((DATE_END.year - DATE_START.year) * 12
+               + DATE_END.month - DATE_START.month)
+
 EXPERIENCES = {
     'columbia': {
         'id': 511,
@@ -128,8 +133,8 @@ EXPERIENCES = {
         'start_year': 2000,
         'end_month': None,
         'end_year': None,
-        'length_year': 19,
-        'length_month': 8,
+        'length_year': math.floor(DATE_LENGTH/12),
+        'length_month': DATE_LENGTH % 12,
         'type': 'Work',
         'contact_id': 123,
         'location_city': 'Baltimore',
