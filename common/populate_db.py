@@ -1,19 +1,20 @@
 from datetime import date
 
 from models.contact_model import (
-    Contact, 
-    Gender, 
-    Race, 
+    Contact,
+    Gender,
+    Race,
     Salutation,
 )
 from models.email_model import (
-    Email, 
+    Email,
     Type as EmailType,
 )
 from models.experience_model import (
-    Experience, 
-    Degree, 
+    Experience,
+    Degree,
     Type as ExpType,
+    Month,
 )
 
 from models.achievement_model import (
@@ -76,9 +77,13 @@ exp_columbia = Experience(
     host='Columbia University',
     title='Political Science',
     degree=Degree('Undergraduate'),
-    date_start=date(1979, 9, 3),
-    date_end=date(1983, 5, 22),
+    start_month=Month('September'),
+    start_year=1979,
+    end_month=Month('May'),
+    end_year=1983,
     type=ExpType('Education'),
+    location_city='New York',
+    location_state='New York',
     contact_id=124,
 )
 
@@ -88,9 +93,13 @@ exp_goucher = Experience(
     host='Goucher College',
     title='Economics',
     degree=Degree('Undergraduate'),
-    date_start=date(2012, 9, 1),
-    date_end=date(2016, 5, 20),
+    start_month=Month('September'),
+    start_year=2012,
+    end_month=Month('May'),
+    end_year=2016,
     type=ExpType('Education'),
+    location_city='Towson',
+    location_state='Maryland',
     contact_id=123,
 )
 
@@ -100,9 +109,11 @@ exp_baltimore = Experience(
     description='Test description here',
     title='Systems Design Manager',
     degree=Degree('Undergraduate'),
-    date_start=date(2000,1,1),
-    date_end=date(2019, 7, 17),
+    start_month=Month('January'),
+    start_year=2000,
     type=ExpType('Work'),
+    location_city='Baltimore',
+    location_state='Maryland',
     contact_id=123,
 )
 

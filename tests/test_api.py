@@ -1,10 +1,11 @@
 import json
-from datetime import date
+import datetime as dt
 from pprint import pprint
 import pytest
+import math
 
 from models.contact_model import Contact
-from models.experience_model import Experience
+from models.experience_model import Experience, Month
 from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.tag_model import Tag
@@ -75,6 +76,11 @@ ACHIEVEMENTS = {
     }
 }
 
+DATE_START = dt.date(2000, 1, 1)
+DATE_END = dt.datetime.today()
+DATE_LENGTH = ((DATE_END.year - DATE_START.year) * 12
+               + DATE_END.month - DATE_START.month)
+
 EXPERIENCES = {
     'columbia': {
         'id': 511,
@@ -82,12 +88,17 @@ EXPERIENCES = {
         'host': 'Columbia University',
         'title': 'Political Science',
         'degree': 'Undergraduate',
+        'is_current': False,
         'start_month': 'September',
         'start_year': 1979,
         'end_month': 'May',
         'end_year': 1983,
+        'length_year': 3,
+        'length_month': 8,
         'type': 'Education',
         'contact_id': 124,
+        'location_city': 'New York',
+        'location_state': 'New York',
         'achievements': [],
     },
     'goucher': {
@@ -96,12 +107,17 @@ EXPERIENCES = {
         'host': 'Goucher College',
         'title': 'Economics',
         'degree': 'Undergraduate',
+        'is_current': False,
         'start_month': 'September',
         'start_year': 2012,
         'end_month': 'May',
         'end_year': 2016,
+        'length_year': 3,
+        'length_month': 8,
         'type': 'Education',
         'contact_id': 123,
+        'location_city': 'Towson',
+        'location_state': 'Maryland',
         'achievements': [
             ACHIEVEMENTS['goucher1'],
         ],
@@ -112,12 +128,17 @@ EXPERIENCES = {
         'host': 'Baltimore Corps',
         'title': 'Systems Design Manager',
         'degree': 'Undergraduate',
+        'is_current': True,
         'start_month': 'January',
         'start_year': 2000,
-        'end_month': 'July',
-        'end_year': 2019,
+        'end_month': None,
+        'end_year': None,
+        'length_year': math.floor(DATE_LENGTH/12),
+        'length_month': DATE_LENGTH % 12,
         'type': 'Work',
         'contact_id': 123,
+        'location_city': 'Baltimore',
+        'location_state': 'Maryland',
         'achievements': [
             ACHIEVEMENTS['baltimore1'],
             ACHIEVEMENTS['baltimore2'],
@@ -176,7 +197,7 @@ RESUME_SECTIONS = {
                 'indented': False,
                 'achievement': None,
                 'tag': None,
-                'experience': filter_dict(EXPERIENCES['baltimore'], 
+                'experience': filter_dict(EXPERIENCES['baltimore'],
                                           {'achievements', 'contact_id'}),
             },
         ],
@@ -224,6 +245,8 @@ POSTS = {
         'end_year': 2019,
         'type': 'Work',
         'contact_id': 123,
+        'location_city': 'Test City',
+        'location_state': 'Test State',
         'achievements': [
             {'description': 'Test achievement 1'},
             {'description': 'Test achievement 2'},
@@ -231,7 +254,7 @@ POSTS = {
     },
 }
 
-def post_experience(app, url, data):
+def post_request(app, url, data):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -252,13 +275,13 @@ def post_experience(app, url, data):
 
 @pytest.mark.parametrize(
     "url,data,query",
-    [('/api/contacts/', 
+    [('/api/contacts/',
       {
           "first_name": "Tester",
           "last_name": "Byte",
           "email_primary": {
               "email": "testerb@example.com",
-              "is_primary": True, 
+              "is_primary": True,
           },
           "phone_primary": "111-111-1111",
           "gender": "Female",
@@ -267,18 +290,18 @@ def post_experience(app, url, data):
       },
       lambda id: Contact.query.get(id)
       )
-    ,('/api/contacts/123/experiences/', 
+    ,('/api/contacts/123/experiences/',
       POSTS['experience'],
       lambda id: Experience.query.get(id)
       )
-    ,('/api/tags/', 
+    ,('/api/tags/',
       {
           'name': 'Test Tag',
           'type': 'Skill',
       },
       lambda id: Tag.query.get(id)
       )
-    ,('/api/contacts/123/tags/', 
+    ,('/api/contacts/123/tags/',
       {
         'contact_id': 123,
         'tag_id': 125,
@@ -286,7 +309,7 @@ def post_experience(app, url, data):
       },
       lambda id: TagItem.query.get(id)
       )
-    ,('/api/contacts/123/resumes/', 
+    ,('/api/contacts/123/resumes/',
       {
         'contact_id': 123,
         'name': 'Test Resume',
@@ -294,7 +317,7 @@ def post_experience(app, url, data):
       },
       lambda id: Resume.query.get(id)
       )
-    ,('/api/resumes/51/sections/', 
+    ,('/api/resumes/51/sections/',
       {
         'resume_id': 51,
         'min_count': 1,
@@ -319,25 +342,32 @@ def test_post(app, url, data, query):
         'Accept': mimetype
     }
 
-    id_ = post_experience(app, url, data)
+    id_ = post_request(app, url, data)
     assert query(id_) is not None
 
 
 def test_post_experience_date(app):
-    id_ = post_experience(app, '/api/contacts/123/experiences/',
+    id_ = post_request(app, '/api/contacts/123/experiences/',
                           POSTS['experience'])
-    # Note: Dates should always be on the first of the month that they were
-    # added for
-    assert Experience.query.get(id_).date_start == date(2000,9,1)
-    assert Experience.query.get(id_).date_end == date(2019,5,1)
+    assert Experience.query.get(id_).end_month == Month.may
+    assert Experience.query.get(id_).end_year == 2019
+    assert Experience.query.get(id_).start_month == Month.september
+    assert Experience.query.get(id_).start_year == 2000
 
 def test_post_experience_null_degree(app):
     exp = POSTS['experience'].copy()
     exp['degree'] = None
-    id_ = post_experience(app, '/api/contacts/123/experiences/', exp)
+    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     pprint(Experience.query.get(id_).degree)
 
+def test_post_experience_current(app):
+    exp = POSTS['experience'].copy()
+    exp['end_month'] = None
+    exp['end_'] = None
+    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    assert Experience.query.get(id_) is not None
+    assert Experience.query.get(id_).is_current == True
 
 
 @pytest.mark.parametrize(
@@ -345,11 +375,11 @@ def test_post_experience_null_degree(app):
     [('/api/experiences/512/',
       {'end_month': 'January', 'end_year': 2017},
       lambda: Experience.query.get(512),
-      lambda e: e.date_end == date(2017, 1, 1),
+      lambda e: e.end_month == Month.january and e.end_year == 2017,
       )
-    ,('/api/experiences/512/', 
+    ,('/api/experiences/512/',
       {'achievements': EXPERIENCES['goucher']['achievements'] + [
-          {'description': 'test'} 
+          {'description': 'test'}
       ]},
       lambda: Experience.query.get(512),
       lambda e: e.achievements[-1].description == 'test',
@@ -371,9 +401,9 @@ def test_post_experience_null_degree(app):
           'achievement_id': 81,
       }]},
       lambda: ResumeSection.query.get(61),
-      lambda rs: (len(rs.items) == 1 
-                  and rs.items[0].achievement is not None 
-                  and rs.items[0].achievement.description == 
+      lambda rs: (len(rs.items) == 1
+                  and rs.items[0].achievement is not None
+                  and rs.items[0].achievement.description ==
                       ACHIEVEMENTS['baltimore1']['description'])
       )
     ]
@@ -444,7 +474,7 @@ def test_get(app, url, expected):
 @pytest.mark.parametrize(
     "url,expected",
     [('/api/contacts/', CONTACTS.values())
-    ,('/api/contacts/123/experiences/', [EXPERIENCES['goucher'], 
+    ,('/api/contacts/123/experiences/', [EXPERIENCES['goucher'],
                                          EXPERIENCES['baltimore']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES['columbia']])
     ,('/api/contacts/123/achievements/', ACHIEVEMENTS.values())

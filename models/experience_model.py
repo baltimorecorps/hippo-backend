@@ -4,6 +4,8 @@ from marshmallow import Schema, fields
 from marshmallow_enum import EnumField
 from models.achievement_model import Achievement, AchievementSchema
 from sqlalchemy.ext.hybrid import hybrid_property
+import datetime as dt
+import math
 
 class Type(enum.Enum):
     work = 'Work'
@@ -19,6 +21,19 @@ class Degree(enum.Enum):
     masters = 'Masters'
     doctoral = 'Doctoral'
 
+class Month(enum.Enum):
+    january = 'January'
+    february = 'February'
+    march = 'March'
+    april = 'April'
+    may = 'May'
+    june = 'June'
+    july = 'July'
+    august = 'August'
+    september = 'September'
+    october = 'October'
+    november = 'November'
+    december = 'December'
 
 class Experience(db.Model):
     __tablename__ = 'experience'
@@ -29,15 +44,17 @@ class Experience(db.Model):
     host = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     degree = db.Column(db.Enum(Degree, name='Degree'))
-    date_start = db.Column(db.Date, nullable=False)
-    date_end = db.Column(db.Date)
+    start_month = db.Column(db.Enum(Month, name='MonthType'))
+    start_year = db.Column(db.Integer, nullable=False)
+    end_month = db.Column(db.Enum(Month, name='MonthType'))
+    end_year = db.Column(db.Integer)
     type = db.Column(db.Enum(Type, name='ExperienceType'))
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
-    address_id = db.Column(db.Integer, db.ForeignKey('address.id'))
+    location_city = db.Column(db.String(100))
+    location_state = db.Column(db.String(100))
 
     #relationships
     contact = db.relationship('Contact')
-    address = db.relationship('Address')
     achievements = db.relationship('Achievement', back_populates='experience',
                                    cascade='all, delete, delete-orphan')
     resumes = db.relationship('ResumeItem', back_populates='experience',
@@ -45,30 +62,39 @@ class Experience(db.Model):
 
     #calculated fields
     @hybrid_property
-    def start_month(self):
-        return self.date_start.strftime('%B')
+    def date_end(self):
+        if self.end_month and self.end_year:
+            end_str = f'1 {self.end_month.value}, {self.end_year}'
+            return dt.datetime.strptime(end_str, '%d %B, %Y')
+        else:
+            return dt.datetime.today()
 
     @hybrid_property
-    def start_year(self):
-        return self.date_start.strftime('%Y')
-
-    @hybrid_property
-    def end_month(self):
-        return self.date_end.strftime('%B')
-
-    @hybrid_property
-    def end_year(self):
-        return self.date_end.strftime('%Y')
+    def date_start(self):
+        start_str = f'1 {self.start_month.value}, {self.start_year}'
+        return dt.datetime.strptime(start_str, '%d %B, %Y')
 
     @hybrid_property
     def date_length(self):
-        if not self.date_end:
-            delta = dt.datetime.today() - self.date_start
+        end = self.date_end
+        start = self.date_start
+        return (end.year - start.year) * 12 + end.month - start.month
 
+    @hybrid_property
+    def length_year(self):
+        return math.floor(self.date_length/12)
+
+    @hybrid_property
+    def length_month(self):
+        return self.date_length % 12
+
+    @hybrid_property
+    def is_current(self):
+        if self.end_month and self.end_year:
+            return False
         else:
-            delta = self.date_end - self.date_start
-        months = delta.month
-        return f'{math.floor(months/12)},  {months % 12}'
+            return True
+
 
 class ExperienceSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -76,11 +102,15 @@ class ExperienceSchema(Schema):
     host = fields.String(required=True)
     title = fields.String(required=True)
     degree = EnumField(Degree, by_value=True, missing=None)
-    start_month = fields.String(required=True)
-    end_month = fields.String()
+    is_current = fields.Boolean(dump_only=True)
+    start_month = EnumField(Month, by_value=True, required=True)
     start_year = fields.Integer(required=True)
-    end_year = fields.Integer()
-    date_length = fields.String(dump_only=True)
+    end_month = EnumField(Month, by_value=True, missing=None)
+    end_year = fields.Integer(allow_none=True)
+    length_year = fields.Integer(dump_only=True)
+    length_month = fields.Integer(dump_only=True)
     type = EnumField(Type, by_value=True)
     contact_id = fields.Integer(required=True)
+    location_city = fields.String()
+    location_state = fields.String()
     achievements = fields.Nested(AchievementSchema, many=True)
