@@ -3,6 +3,7 @@ from models.tag_model import Tag, TagSchema, TagStatusType, TagType
 from models.tag_item_model import TagItem, TagItemSchema
 from models.contact_model import Contact, ContactSchema
 from models.base_model import db
+from marshmallow import ValidationError
 
 # Useful for debugging
 #from flask_sqlalchemy import get_debug_queries
@@ -20,20 +21,21 @@ class TagAll(Resource):
 
     def get(self):
         tags = Tag.query.all()
-        tags_list = tags_schema.dump(tags).data
+        tags_list = tags_schema.dump(tags)
         return {'status': 'success', 'data': tags_list}, 200
 
     def post(self):
         json_data = request.get_json(force=True)
-        data, errors = tag_schema.load(json_data)
+        try:
+            data = tag_schema.load(json_data)
+        except ValidationError as e:
+            return e.messages, 422
         if not data:
             return {'message': 'No data provided to update'}, 400
-        if errors:
-            return errors, 422
         tag = Tag(**data)
         db.session.add(tag)
         db.session.commit()
-        result = tag_schema.dump(tag).data
+        result = tag_schema.dump(tag)
         return {'status': 'success', 'data': result}, 201
 
 # Returns a specific tag
@@ -43,7 +45,7 @@ class TagOne(Resource):
         tag = Tag.query.get(tag_id)
         if not tag:
             return {'message': 'Tag does not exist'}, 404
-        result = tag_schema.dump(tag).data
+        result = tag_schema.dump(tag)
         return {'status': 'success', 'data': result}, 200
 
     def delete(self, tag_id):
@@ -59,15 +61,16 @@ class TagOne(Resource):
         if not tag:
             return {'message': 'Tag does not exist'}, 404
         json_data = request.get_json(force=True)
-        data, errors = tag_schema.load(json_data, partial=True)
+        try:
+            data = tag_schema.load(json_data, partial=True)
+        except ValidationError as e:
+            return e.messages, 422
         if not data:
             return {'message': 'No data provided to update'}, 400
-        if errors:
-            return errors, 422
         for k,v in data.items():
             setattr(tag,k,v)
         db.session.commit()
-        result = tag_schema.dump(tag).data
+        result = tag_schema.dump(tag)
         return {'status': 'success', 'data': result}, 201
 
 
@@ -85,20 +88,21 @@ class TagItemAll(Resource):
                                          Tag.type==TagType[type_arg]))
         else:
             tags = TagItem.query.filter_by(contact_id=contact_id)
-        tags_list = tag_items_schema.dump(tags).data
+        tags_list = tag_items_schema.dump(tags)
         return {'status': 'success', 'data': tags_list}, 200
 
     def post(self, contact_id):
         json_data = request.get_json(force=True)
-        data, errors = tag_item_schema.load(json_data)
+        try:
+            data = tag_item_schema.load(json_data)
+        except ValidationError as e:
+            return e.messages, 422
         if not data:
             return {'message': 'No input data provided'}, 400
-        if errors:
-            return errors, 422
         tagitem = TagItem(**data)
         db.session.add(tagitem)
         db.session.commit()
-        result = tag_item_schema.dump(tagitem).data
+        result = tag_item_schema.dump(tagitem)
         return {'status': 'success', 'data': result}, 201
 
 class TagItemOne(Resource):
@@ -107,7 +111,7 @@ class TagItemOne(Resource):
                             .first())
         if not tag:
             return {'message': 'TagItem does not exist'}, 404
-        tag_data = tag_item_schema.dump(tag).data
+        tag_data = tag_item_schema.dump(tag)
         return {'status': 'success', 'data': tag_data}, 200
 
     def put(self, contact_id, tag_id):
@@ -116,15 +120,16 @@ class TagItemOne(Resource):
         if not tag:
             return {'message': 'TagItem does not exist'}, 404
         json_data = request.get_json(force=True)
-        data, errors = tag_item_schema.load(json_data, partial=True)
+        try:
+            data = tag_item_schema.load(json_data, partial=True)
+        except ValidationError as e:
+            return e.messages, 422
         if not data:
             return {'message': 'No data provided to update'}, 400
-        if errors:
-            return errors, 422
         for k,v in data.items():
             setattr(tag, k, v)
         db.session.commit()
-        result = tag_item_schema.dump(tag).data
+        result = tag_item_schema.dump(tag)
         return {'status': 'success', 'data': result}, 200
 
     def delete(self, contact_id, tag_id):

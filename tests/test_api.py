@@ -327,7 +327,7 @@ def post_request(app, url, data):
             {
                 'resume_order': 0,
                 'indented': False,
-                'experience_id': 512,
+                'exp_id': 512,
             },
         ],
       },
@@ -364,7 +364,7 @@ def test_post_experience_null_degree(app):
 def test_post_experience_current(app):
     exp = POSTS['experience'].copy()
     exp['end_month'] = None
-    exp['end_'] = None
+    exp['end_year'] = None
     id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     assert Experience.query.get(id_).is_current == True

@@ -10,5 +10,5 @@ class AchievementAll(Resource):
 
     def get(self, contact_id):
         achievement = Achievement.query.filter_by(contact_id=contact_id)
-        achievement_list = achievements_schema.dump(achievement).data
+        achievement_list = achievements_schema.dump(achievement)
         return {'status': 'success', 'data': achievement_list}, 200

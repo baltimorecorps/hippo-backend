@@ -12,8 +12,8 @@ itsdangerous==1.1.0
 Jinja2>=2.10.1
 Mako==1.0.7
 MarkupSafe==1.1.0
-marshmallow==2.18.0
-marshmallow-enum==1.4.1
+marshmallow==3.2.1
+marshmallow-enum==1.5.1
 psycopg2>=2.8
 pytest==4.4.0
 pytest-flask-sqlalchemy==1.0.2

@@ -4,6 +4,7 @@ from models.achievement_model import Achievement, AchievementSchema
 from models.base_model import db
 import datetime as dt
 from operator import attrgetter
+from marshmallow import ValidationError
 
 experience_schema = ExperienceSchema()
 experiences_schema = ExperienceSchema(many=True)
@@ -26,16 +27,18 @@ class ExperienceAll(Resource):
         exp_sorted = sorted(exp,
                             key=attrgetter('date_end', 'date_start'),
                             reverse=True)
-        exp_list = experiences_schema.dump(exp_sorted).data
+        exp_list = experiences_schema.dump(exp_sorted)
         return {'status': 'success', 'data': exp_list}, 200
 
     def post(self, contact_id):
         json_data = request.get_json(force=True)
-        data, errors = experience_schema.load(json_data)
+
+        try:
+            data = experience_schema.load(json_data)
+        except ValidationError as e:
+            return e.messages, 422
         if not data:
             return {'message': 'No data provided to update'}, 400
-        if errors:
-            return errors, 422
 
         #pull out the achievements to create them later
         achievements = data.pop('achievements', None)
@@ -49,7 +52,7 @@ class ExperienceAll(Resource):
                 exp.achievements.append(a)
         db.session.add(exp)
         db.session.commit()
-        result = experience_schema.dump(exp).data
+        result = experience_schema.dump(exp)
         return {"status": 'success', 'data': result}, 201
 
 class ExperienceOne(Resource):
@@ -58,7 +61,7 @@ class ExperienceOne(Resource):
         exp = Experience.query.get(experience_id)
         if not exp:
             return {'message': 'Experience does not exist'}, 404
-        exp_data = experience_schema.dump(exp).data
+        exp_data = experience_schema.dump(exp)
         return {'status': 'success', 'data': exp_data}, 200
 
     def delete(self, experience_id):
@@ -74,11 +77,12 @@ class ExperienceOne(Resource):
         if not exp:
             return {'message': 'Experience does not exist'}, 404
         json_data = request.get_json(force=True)
-        data, errors = experience_schema.load(json_data, partial=True)
+        try:
+            data = experience_schema.load(json_data, partial=True)
+        except ValidationError as e:
+            return e.messages, 422
         if not data:
             return {'message': 'No data provided to update'}, 400
-        if errors:
-            return errors, 422
 
         achievements = data.pop('achievements', None)
 
@@ -91,5 +95,5 @@ class ExperienceOne(Resource):
                 a.contact_id = exp.contact_id
                 exp.achievements.append(a)
         db.session.commit()
-        result = experience_schema.dump(exp).data
+        result = experience_schema.dump(exp)
         return {'status': 'success', 'data': result}, 200

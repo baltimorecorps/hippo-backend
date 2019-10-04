@@ -19,5 +19,5 @@ class Achievement(db.Model):
 
 
 class AchievementSchema(Schema):
-    id = fields.Integer(dump_only=True)
+    id = fields.Integer()
     description = fields.String()
