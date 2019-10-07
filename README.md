@@ -1,6 +1,6 @@
 # Resume Builder API
 [![Dev Build Status](https://travis-ci.com/baltimorecorps/hippo-backend.svg?branch=dev)](https://travis-ci.com/baltimorecorps/hippo-backend)
-## Run on local server
+## Getting set up for development
 
 ### Dependencies for development
 - Python 3.7 (or later)
@@ -32,18 +32,68 @@ pytest
 python run.py
 ```
 
+## Database
+
+### Working with the local database
+As part of `scripts/setup.sh`, a new docker container is started running a
+local database. This database will lose all data every time it is stopped and
+be reinitialized every time it is restarted (using the current database
+migrations)
+
+The following scripts are provided for working with this database
+* `scripts/start_localdb.sh`
+* `scripts/stop_localdb.sh`
+* `scripts/restart_localdb.sh`
+* `scripts/connect_localdb.sh`
+
 ### Connecting to the shared development database
-By default, a new local database is created which runs on your local machine.
-However, for debugging purposes, you may want to connect your local server to
-the shared development database running in Heroku. You can accomplish this by
-setting the environment variable `DEPLOY_ENV=dev`.
+For debugging purposes, you may want to connect your local server to the shared
+development database running in Heroku. You can accomplish this by setting the
+environment variable `DEPLOY_ENV=dev`.
 
 ```
 export DEPLOY_ENV=dev
 python run.py
 ```
 
-### Viewing the API
+### Database Migrations
+We use `flask-migrate` (which in turn, mostly uses `alembic`) for managing 
+database migrations. If you are starting development on this project, it is
+recommended that you take the time to familiarize yourself with these tools:
+
+* https://alembic.sqlalchemy.org/en/latest/tutorial.html 
+* https://flask-migrate.readthedocs.io/en/latest/ 
+
+Mostly, you will probably want to autogenerate migrations. You can do this with
+the following commands, which will autogenerate a migration, then open it for
+editing and review.
+
+```
+python migrate.py db migrate
+python migrate.py db edit
+```
+
+Note that at the moment, [alembic doesn't do a great job of handling PostgreSQL enums](https://github.com/sqlalchemy/alembic/issues/278),
+so if you have made changes to the database which include enums, you'll likely
+run into issues and have to make manual edits to the migration.
+
+Once you're happy with your migration, you can test it on your local db by
+running the upgrade and downgrade scripts (make sure to actually test the
+downgrade!)
+
+```
+python migrate.py db upgrade
+python migrate.py db downgrade 
+```
+
+Finally, once you are happy with your migration, don't forget to add the
+migration script to your next commit!
+
+```
+git add migrations/versions/
+```
+
+## Viewing the API
 
 **View all contacts**
 

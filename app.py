@@ -9,16 +9,22 @@ def load_from_env(app):
     if os.environ.get('DATABASE_URL'):
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 
-def load_config(app):
-    if os.environ.get('DEPLOY_ENV') == 'dev':
+def load_config(app, env):
+    if env is None:
+        env = os.environ.get('DEPLOY_ENV')
+
+    if env == 'local':
+        # Stick with the defaults
+        return 
+    elif env == 'dev':
         load_from_dev(app)
     else:
         load_from_env(app)
 
-def create_app():
+def create_app(env=None):
     app = Flask(__name__)
     app.config.from_object('defaultcfg')
-    load_config(app)
+    load_config(app, env)
     app.register_blueprint(api_bp, url_prefix='/api')
 
     @app.route('/')
