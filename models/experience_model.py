@@ -22,6 +22,7 @@ class Degree(enum.Enum):
     doctoral = 'Doctoral'
 
 class Month(enum.Enum):
+    none = 'none'
     january = 'January'
     february = 'February'
     march = 'March'
@@ -63,11 +64,11 @@ class Experience(db.Model):
     #calculated fields
     @hybrid_property
     def date_end(self):
-        if self.end_month and self.end_year:
+        if self.end_month.value=='none' and self.end_year==0:
+            return dt.datetime.today()
+        else:
             end_str = f'1 {self.end_month.value}, {self.end_year}'
             return dt.datetime.strptime(end_str, '%d %B, %Y')
-        else:
-            return dt.datetime.today()
 
     @hybrid_property
     def date_start(self):
@@ -90,10 +91,10 @@ class Experience(db.Model):
 
     @hybrid_property
     def is_current(self):
-        if self.end_month and self.end_year:
-            return False
-        else:
+        if self.end_month.value=='none' and self.end_year==0:
             return True
+        else:
+            return False
 
 
 class ExperienceSchema(Schema):
