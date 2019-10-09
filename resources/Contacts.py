@@ -3,6 +3,7 @@ from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
+from marshmallow import ValidationError
 
 
 contact_schema = ContactSchema()
@@ -13,24 +14,27 @@ class ContactAll(Resource):
 
     def get(self):
         contacts = Contact.query.all()
-        contacts = contacts_schema.dump(contacts).data
+        contacts = contacts_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 
     def post(self):
         json_data = request.get_json(force=True)
         # Validate and deserialize input
-        data, errors = contact_schema.load(json_data)
+        
+        try:
+            data = contact_schema.load(json_data)
+        except ValidationError as e: 
+            return e.messages, 422
         if not data:
             return {'message': 'No input data provided'}, 400
-        if errors:
-            return errors, 422
+
         email = data.pop('email_primary', None)
         contact = Contact(**data)
         if email:
             contact.email_primary = Email(**email)
         db.session.add(contact)
         db.session.commit()
-        result = contact_schema.dump(contact).data
+        result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 201
 
 class ContactOne(Resource):
@@ -39,7 +43,7 @@ class ContactOne(Resource):
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 400
-        contact = contact_schema.dump(contact).data
+        contact = contact_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
 
     def put(self, contact_id):
@@ -47,11 +51,12 @@ class ContactOne(Resource):
         if not contact:
             return {'message': 'Contact does not exist'}, 400
         json_data = request.get_json(force=True)
-        data, errors = contact_schema.load(json_data)
+        try:
+            data = contact_schema.load(json_data)
+        except ValidationError as e:
+            return e.messages, 422
         if not data:
             return {'message': 'No input data provided'}, 400
-        if errors:
-            return errors, 422
         email = data.pop('email_primary', None)
         for k,v in data.items():
             setattr(contact, k, v)
@@ -59,5 +64,5 @@ class ContactOne(Resource):
         if email:
             contact.email_primary = Email(**email)
         db.session.commit()
-        result = contact_schema.dump(contact).data
+        result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 201

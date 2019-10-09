@@ -20,6 +20,7 @@ class ResumeSection(db.Model):
 
 class ResumeSectionSchema(Schema):
     id = fields.Integer(dump_only=True)
+    contact_id = fields.Integer(load_only=True)
     resume_id = fields.Integer()
     name = fields.String()
     min_count = fields.Integer()
