@@ -131,8 +131,8 @@ EXPERIENCES = {
         'is_current': True,
         'start_month': 'January',
         'start_year': 2000,
-        'end_month': None,
-        'end_year': None,
+        'end_month': 'none',
+        'end_year': 0,
         'length_year': math.floor(DATE_LENGTH/12),
         'length_month': DATE_LENGTH % 12,
         'type': 'Work',
@@ -363,8 +363,8 @@ def test_post_experience_null_degree(app):
 
 def test_post_experience_current(app):
     exp = POSTS['experience'].copy()
-    exp['end_month'] = None
-    exp['end_year'] = None
+    exp['end_month'] = 'none'
+    exp['end_year'] = 0
     id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     assert Experience.query.get(id_).is_current == True
