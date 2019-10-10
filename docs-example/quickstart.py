@@ -19,10 +19,7 @@ FILLED_DOCUMENT_ID = '1R80Bdc5eGdAIQJ3UULX_GRLkSAOV49H8qfZb5PMs1gs'
 TEST_DOCUMENT_ID = '1RExcI9pWu6JTGqHDtXzfF0hnOj0U4KQtKf4qpFzXfwE'
 DOCUMENT_ID = TEST_DOCUMENT_ID
 
-def main():
-    """Shows basic usage of the Docs API.
-    Prints the title of a sample document.
-    """
+def init_services():
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -45,24 +42,136 @@ def main():
     gdrive = build('drive', 'v3', credentials=creds)
     gdocs = build('docs', 'v1', credentials=creds)
 
-    # Retrieve the documents contents from the Docs service.
-    response = gdrive.files().copy(fileId=DOCUMENT_ID, body={'name': 'Automatic Test File'}).execute()
-    doc_id = response['id']
-    print(f'https://docs.google.com/document/d/{doc_id}/edit')
-    #document = gdocs.documents().get(documentId=doc_id).execute()
-    edit_doc(gdocs, doc_id)
+    return (gdrive, gdocs)
+
+def dump_document(doc_id):
+    (gdrive, gdocs) = init_services()
+    document = gdocs.documents().get(documentId=doc_id).execute()
+    print(json.dumps(document))
 
 def make_replace_request(item):
     (key, value) = item
     return {
         'replaceAllText': {
             'containsText': {
-                'text': r'{{' + key + '}}',
+                'text': f'[[{key}]]',
                 'matchCase': 'true'
             },
             'replaceText': value
         }
     }
+
+def make_insert_text_request(text, location):
+    return {
+        'insertText': {
+            'text': text,
+            'location': {
+                'segmentId': '',
+                'index': location, 
+            }
+        }
+    }
+
+def make_insert_table_request(location):
+    return {
+        'insertTable': {
+            'rows': 1,
+            'columns': 1,
+            'location': {
+                'segmentId': '',
+                'index': location, 
+            }
+        }
+    }
+
+def make_delete_table_row_request(location, row):
+    return {
+        'deleteTableRow': {
+            'tableCellLocation': {
+                'tableStartLocation': {
+                    'segmentId': '',
+                    'index': location, 
+                },
+                'rowIndex': row,
+                'columnIndex': 0,
+            }
+        }
+    }
+
+def make_table_cell_style_request(style, location, row, col):
+    return {
+        'updateTableCellStyle': {
+            'tableCellStyle': style,
+            'fields': '*',
+            'tableRange': {
+                'tableCellLocation': {
+                    'tableStartLocation': {
+                        'segmentId': '',
+                        'index': location,
+                    },
+                    'rowIndex': row,
+                    'columnIndex': col,
+                },
+                'rowSpan': 1,
+                'columnSpan': 1,
+            }
+        }
+    }
+
+
+
+def parse_template_doc(document):
+    # This will start out _super_ brittle and linked to the template, but we'll
+    # see if it ever needs to become more robust
+    mainGrid = document['body']['content'][2]
+    assert 'table' in mainGrid
+    assert mainGrid['table']['rows'] == 3
+    assert mainGrid['table']['columns'] == 2
+
+    relevantExperience = mainGrid['table']['tableRows'][1]['tableCells'][0]
+    assert 'table' in relevantExperience['content'][3]
+    newTableAnchor = relevantExperience['content'][2]
+    table = relevantExperience['content'][3]
+    cell_style = table['table']['tableRows'][0]['tableCells'][0]['tableCellStyle']
+    return ([
+        make_delete_table_row_request(table['startIndex'], 0),
+        make_insert_table_request(newTableAnchor['startIndex']),
+        make_insert_table_request(newTableAnchor['startIndex']),
+        make_insert_table_request(newTableAnchor['startIndex']),
+    ], cell_style)
+    
+TEMPLATE_TEXT = """[[rex_host{n}]] \u2014 [[rex_location_city{n}]], [[rex_location_state{n}]]
+[[rex_title{n}]]
+[[rex_date_start{n}]]\u2013[[rex_date_end{n}]]
+[[rex_achievements{n}]]"""
+
+def add_templates(document, template_text, cell_style):
+    # This will start out _super_ brittle and linked to the template, but we'll
+    # see if it ever needs to become more robust
+    mainGrid = document['body']['content'][2]
+    assert 'table' in mainGrid
+    assert mainGrid['table']['rows'] == 3
+    assert mainGrid['table']['columns'] == 2
+
+    relevantExperience = mainGrid['table']['tableRows'][1]['tableCells'][0]
+    tables = []
+    for element in relevantExperience['content']:
+        if 'table' in element:
+            tables.append(element)
+
+    # strip off header table, and reverse (for efficiency)
+    # see https://developers.google.com/docs/api/how-tos/best-practices#edit_backwards_for_efficiency
+    tables = list(reversed(list(enumerate(tables[1:]))))
+    return [
+        make_table_cell_style_request(cell_style, 
+                                      table['startIndex'],
+                                      0,0)
+        for n, table in tables
+    ] + [
+        make_insert_text_request(template_text.format(n=n), 
+                                 table['table']['tableRows'][0]['tableCells'][0]['content'][0]['startIndex'])
+        for n, table in tables
+    ]
 
 def edit_doc(gdocs, doc_id):
     info = load_info('./david.json')
@@ -77,9 +186,20 @@ def edit_doc(gdocs, doc_id):
     to_update['state'] = 'AL'
     to_update['primary_function'] = 'Software Engineer'
 
+    def do_update(requests):
+        return gdocs.documents().batchUpdate(
+            documentId=doc_id, body={'requests': requests}).execute()
+
     requests = list(map(make_replace_request, to_update.items()))
-    result = gdocs.documents().batchUpdate(
-        documentId=doc_id, body={'requests': requests}).execute()
+    do_update(requests)
+
+    document = gdocs.documents().get(documentId=doc_id).execute()
+    requests, cell_style = parse_template_doc(document)
+    do_update(requests)
+
+    document = gdocs.documents().get(documentId=doc_id).execute()
+    requests = add_templates(document, TEMPLATE_TEXT, cell_style)
+    do_update(requests)
 
 
 def load_info(filename):
@@ -87,11 +207,18 @@ def load_info(filename):
         info = json.load(f)
         return info
 
+def main():
+    (gdrive, gdocs) = init_services()
 
+    # Retrieve the documents contents from the Docs service.
+    response = gdrive.files().copy(fileId=DOCUMENT_ID, body={'name': 'Automatic Test File'}).execute()
+    doc_id = response['id']
+    print(f'https://docs.google.com/document/d/{doc_id}/edit')
+    edit_doc(gdocs, doc_id)
 
-    #print('The title of the document is: {}'.format(document.get('title')))
-    #print(json.dumps(document))
 
 
 if __name__ == '__main__':
+    #with open('empty_doc.json', 'r') as f:
+    #    print(parse_doc(json.load(f)))
     main()
