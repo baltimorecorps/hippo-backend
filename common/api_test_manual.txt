@@ -33,7 +33,7 @@ curl http://localhost:5000/api/tags/10 --request DELETE
 ------------------------------------------------
 Tag Items
 POST
-curl http://localhost:5000/api/contacts/2/tags/ --request POST --data '{"tag_id": 2, "type": "Function", "contact_id": 2, "score": 2, "name": "Web Development"}'
+curl http://localhost:5000/api/contacts/1/tags/ --request POST --data '{"tag_id": 1, "type": "Function", "contact_id": 1, "score": 2, "name": "Web Development"}'
 
 PUT
 curl http://localhost:5000/api/contacts/2/tags/2 --request PUT --data '{"tag_id": 2, "type": "Function", "contact_id": 2, "score": 4, "name": "Web Development"}'
