@@ -1,6 +1,6 @@
 from models.base_model import db
 import enum
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
@@ -71,3 +71,6 @@ class ContactSchema(Schema):
     gender = EnumField(Gender, by_value=True)
     race_all = EnumField(Race, by_value=True)
     birthdate = fields.Date()
+
+    class Meta:
+        unknown = EXCLUDE

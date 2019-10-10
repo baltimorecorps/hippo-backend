@@ -1,6 +1,6 @@
 from models.base_model import db
 import enum
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 
 class Type(enum.Enum):
@@ -44,3 +44,6 @@ class AddressSchema(Schema):
     postal_code = fields.String(required=True)
     type = EnumField(Type, by_value=True)
     status = EnumField(Status, by_value=True)
+
+    class Meta:
+        unknown = EXCLUDE

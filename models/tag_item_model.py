@@ -1,6 +1,6 @@
 from models.base_model import db
 from models.tag_model import Tag, TagSchema
-from marshmallow import Schema, fields, post_dump
+from marshmallow import Schema, fields, EXCLUDE, post_dump
 
 class TagItem(db.Model):
     __tablename__ = 'tag_item'
@@ -24,6 +24,9 @@ class TagItemSchema(Schema):
     tag_id = fields.Integer(required=True)
     tag = fields.Nested(TagSchema, only=['name', 'type'], dump_only=True)
     score = fields.Integer() #Decimal() throws an error in python 3.7
+
+    class Meta:
+        unknown = EXCLUDE
 
     @post_dump
     def flatten_tag(self, data, **kwargs): 
