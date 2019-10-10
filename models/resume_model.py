@@ -1,5 +1,5 @@
 from models.base_model import db
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE
 from models.resume_section_model import ResumeSection, ResumeSectionSchema
 from models.contact_model import ContactSchema
 
@@ -24,3 +24,7 @@ class ResumeSchema(Schema):
     date_created = fields.Date(required=True)
     sections = fields.Nested(ResumeSectionSchema, dump_only=True, many=True,
                              exclude=['resume_id', 'contact_id'])
+
+    class Meta:
+        unknown = EXCLUDE
+

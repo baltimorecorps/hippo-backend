@@ -1,6 +1,6 @@
 from models.base_model import db
 import enum
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 
 
@@ -32,3 +32,7 @@ class TagSchema(Schema):
     name = fields.String(required=True)
     type = EnumField(TagType, by_value=True, required=True)
     status = EnumField(TagStatusType, by_value=True)
+
+    class Meta:
+        unknown = EXCLUDE
+

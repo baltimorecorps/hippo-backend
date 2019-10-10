@@ -1,5 +1,5 @@
 from models.base_model import db
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE
 
 
 class Achievement(db.Model):
@@ -21,3 +21,6 @@ class Achievement(db.Model):
 class AchievementSchema(Schema):
     id = fields.Integer()
     description = fields.String()
+
+    class Meta:
+        unknown = EXCLUDE

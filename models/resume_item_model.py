@@ -2,7 +2,7 @@ from models.base_model import db
 from models.tag_item_model import TagItem, TagItemSchema
 from models.experience_model import Experience, ExperienceSchema
 from models.achievement_model import Achievement, AchievementSchema
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE
 
 class ResumeItem(db.Model):
     __tablename__ = 'resume_item'
@@ -34,3 +34,7 @@ class ResumeItemSchema(Schema):
                                exclude=['achievements', 'contact_id'])
     tag = fields.Nested(TagItemSchema, dump_only=True, exclude=['contact_id'])
     achievement = fields.Nested(AchievementSchema, dump_only=True)
+
+    class Meta:
+        unknown = EXCLUDE
+

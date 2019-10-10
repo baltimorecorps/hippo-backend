@@ -1,6 +1,6 @@
 from models.base_model import db
 from models.resume_item_model import ResumeItem, ResumeItemSchema
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE
 
 
 class ResumeSection(db.Model):
@@ -26,3 +26,7 @@ class ResumeSectionSchema(Schema):
     min_count = fields.Integer()
     max_count = fields.Integer()
     items = fields.Nested(ResumeItemSchema, many=True)
+
+    class Meta:
+        unknown = EXCLUDE
+

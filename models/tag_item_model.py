@@ -1,6 +1,6 @@
 from models.base_model import db
 from models.tag_model import Tag, TagSchema
-from marshmallow import Schema, fields, post_dump
+from marshmallow import Schema, fields, post_dump, EXCLUDE
 
 class TagItem(db.Model):
     __tablename__ = 'tag_item'
@@ -36,3 +36,6 @@ class TagItemSchema(Schema):
         data['type'] = tag['type']
         del data['tag']
         return data
+
+    class Meta:
+        unknown = EXCLUDE

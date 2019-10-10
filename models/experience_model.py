@@ -1,6 +1,6 @@
 from models.base_model import db
 import enum
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from models.achievement_model import Achievement, AchievementSchema
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -114,3 +114,8 @@ class ExperienceSchema(Schema):
     location_city = fields.String()
     location_state = fields.String()
     achievements = fields.Nested(AchievementSchema, many=True)
+
+    class Meta:
+        unknown = EXCLUDE
+
+
