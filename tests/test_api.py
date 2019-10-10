@@ -369,6 +369,14 @@ def test_post_experience_current(app):
     assert Experience.query.get(id_) is not None
     assert Experience.query.get(id_).is_current == True
 
+def test_post_experience_dump_only(app):
+    exp = POSTS['experience'].copy()
+    exp['length_year'] = 18
+    exp['length_month'] = 8
+    exp['is_current'] = False
+    exp['id'] = 1
+    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    assert Experience.query.get(id_) is not None
 
 @pytest.mark.parametrize(
     "url,update,query,test",
