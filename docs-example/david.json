@@ -1,0 +1,225 @@
+{
+    "contacts": {
+        "status": "success",
+        "data": {
+            "birthdate": null,
+            "first_name": "David",
+            "last_name": "Koh",
+            "race_all": null,
+            "id": 1,
+            "email_primary": {
+                "email": "dkoh44@gmail.com",
+                "id": 1,
+                "is_primary": true,
+                "type": null
+            },
+            "phone_primary": "8454534274",
+            "gender": null,
+            "emails": [
+                {
+                    "email": "dkoh44@gmail.com",
+                    "id": 1,
+                    "is_primary": true,
+                    "type": null
+                }
+            ]
+        }
+    },
+    "experiences": {
+        "status": "success",
+        "data": [
+            {
+                "length_month": 6,
+                "location_state": "",
+                "start_year": 2016,
+                "length_year": 1,
+                "contact_id": 1,
+                "is_current": false,
+                "title": "Centers for Medicare and Medicaid Quality Payment Program CTO",
+                "location_city": "",
+                "end_month": "April",
+                "type": "Work",
+                "id": 2,
+                "degree": null,
+                "host": "United States Digital Service at Department of Health and Human Services",
+                "start_month": "October",
+                "description": "",
+                "achievements": [
+                    {
+                        "id": 2,
+                        "description": "Directed and supervised a team of over 200 developers building the Quality Payment Program website and API"
+                    },
+                    {
+                        "id": 3,
+                        "description": "Created and implemented the QPP Incident Response Plan to effectively respond to and resolve over thirty security and availability in a four-month period before launch of submission period"
+                    },
+                    {
+                        "id": 4,
+                        "description": "Launched initial submission period on time, with no system downtime or major user-facing issues"
+                    },
+                    {
+                        "id": 5,
+                        "description": "Oversaw release of a public API for QPP, providing a modern automated mechanism for submission of Medicare healthcare quality information for the first time at CMS"
+                    },
+                    {
+                        "id": 6,
+                        "description": "Wrote and awarded a $10 million contract for additional foundational infrastructure work to ensure a solid infrastructural base on which to continue iterating on and improving the system"
+                    }
+                ],
+                "end_year": 2018
+            },
+            {
+                "length_month": 2,
+                "location_state": "",
+                "start_year": 2016,
+                "length_year": 1,
+                "contact_id": 1,
+                "is_current": false,
+                "title": "U.S. Citizenship and Immigration Services - Director of Engineering",
+                "location_city": "",
+                "end_month": "September",
+                "type": "Work",
+                "id": 3,
+                "degree": null,
+                "host": "US Digital Service at Department of Homeland Security",
+                "start_month": "July",
+                "description": "",
+                "achievements": [
+                    {
+                        "id": 7,
+                        "description": "Supervised a team of 150 developers working to design, develop, and deliver functionality for the Electronic Immigration System (ELIS), which handles backend processing for most major USCIS immigration benefits"
+                    },
+                    {
+                        "id": 8,
+                        "description": "Resolved critical issues with the Naturalization benefit in ELIS by designing and executing a Situation Room protocol enabling product managers and developers to interface directly with users experiencing bugs"
+                    },
+                    {
+                        "id": 9,
+                        "description": "Resolved over 100 issues and scaling interviews from 10/day to 2,000/day within two months"
+                    },
+                    {
+                        "id": 10,
+                        "description": "Designed and developed the VERIFI tool which allows ELIS developers to validate in minutes the correct operation of the background check subsystems on thousands of checks run each day"
+                    }
+                ],
+                "end_year": 2017
+            },
+            {
+                "length_month": 8,
+                "location_state": "",
+                "start_year": 2016,
+                "length_year": 1,
+                "contact_id": 1,
+                "is_current": false,
+                "title": "Director of Engineering",
+                "location_city": "",
+                "end_month": "September",
+                "type": "Work",
+                "id": 4,
+                "degree": null,
+                "host": "OkCupid",
+                "start_month": "January",
+                "description": "",
+                "achievements": [
+                    {
+                        "id": 11,
+                        "description": "Managed team of nine engineers who perform all backend engineering and data science tasks for an infrastructure handling over 1.5M users a day"
+                    },
+                    {
+                        "id": 12,
+                        "description": "Lead ongoing recruiting efforts to acquire talented, independent, and highly motivated engineers"
+                    },
+                    {
+                        "id": 13,
+                        "description": "Designed and executed a new recruiting pipeline for data scientists, resulting in two hires onto a new team"
+                    },
+                    {
+                        "id": 14,
+                        "description": "Created summer internship program, attracting three paid interns in the first summer who completed substantial improvements to our matching, interest, and data infrastructures"
+                    },
+                    {
+                        "id": 15,
+                        "description": "Redesigned billing system to handle tracking multiple subscriptions per user"
+                    },
+                    {
+                        "id": 16,
+                        "description": "Unified tracking of billing transactions run through 5 different billing systems, including Paypal, Apple, and Google Play mobile billing "
+                    },
+                    {
+                        "id": 17,
+                        "description": "Designed Bloom filter based optimization to save 30% (1.2 TB) of RAM over all match servers"
+                    }
+                ],
+                "end_year": 2017
+            },
+            {
+                "length_month": 6,
+                "location_state": "",
+                "start_year": 2011,
+                "length_year": 3,
+                "contact_id": 1,
+                "is_current": false,
+                "title": "Software Engineer",
+                "location_city": "",
+                "end_month": "January",
+                "type": "Work",
+                "id": 5,
+                "degree": null,
+                "host": "OkCupid",
+                "start_month": "July",
+                "description": "",
+                "achievements": [
+                    {
+                        "id": 18,
+                        "description": "Designed and built event tracking log for all actions on OkCupid which handles >400M events/day"
+                    },
+                    {
+                        "id": 19,
+                        "description": "Promoted to Lead Software Engineer, duties expanded to include mentoring other engineers and a larger role in design and architecture of the site as a whole (Feb 2013)"
+                    },
+                    {
+                        "id": 20,
+                        "description": "Took on technical lead for development of new app, Crazy Blind Date"
+                    },
+                    {
+                        "id": 21,
+                        "description": "Developed an entirely new date scheduling and matching algorithm"
+                    },
+                    {
+                        "id": 22,
+                        "description": "Refactored core infrastructure of OkCupid to be shared by Crazy Blind Date"
+                    },
+                    {
+                        "id": 23,
+                        "description": "Built and maintained features on all OkCupid backend services"
+                    }
+                ],
+                "end_year": 2015
+            },
+            {
+                "length_month": 9,
+                "location_state": "",
+                "start_year": 2007,
+                "length_year": 3,
+                "contact_id": 1,
+                "is_current": false,
+                "title": "B.S. in Computer Science and Engineering",
+                "location_city": "",
+                "end_month": "June",
+                "type": "Education",
+                "id": 1,
+                "degree": "Undergraduate",
+                "host": "Massachusetts Institute of Technology ",
+                "start_month": "September",
+                "description": "",
+                "achievements": [
+                    {
+                        "id": 1,
+                        "description": "Achieved a GPA of 5.0 out of 5.0"
+                    }
+                ],
+                "end_year": 2011
+            }
+        ]
+    }
+}
