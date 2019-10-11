@@ -4,7 +4,7 @@ import pickle
 import os.path
 import json
 from enum import Enum
-from defaultdict import defaultdict 
+from collections import defaultdict 
 from pprint import pprint
 
 from googleapiclient.discovery import build
@@ -147,70 +147,12 @@ def make_paragraph_style_request(obj, offset):
         }
     }
 
-def parse_template_cell_content(cell):
-    template_text = ''
-    cell_style = cell['tableCellStyle']
-    paragraph_styles = []
-    text_styles = []
-
-    offset = 0
-    for paragraph in cell['content']:
-        assert 'paragraph' in paragraph, 'All elements of template cells should be Paragraphs'
-        paragraph_style = { 
-            'start': offset,
-            'style': paragraph['paragraph']['paragraphStyle']
-        }
-        for element in paragraph['paragraph']['elements']:
-            assert 'textRun' in element, 'All elements of paragraphs should be TextRuns'
-            text_style = { 
-                'start': offset,
-                'style': element['textRun']['textStyle']
-            }
-
-            content = element['textRun']['content']
-
-            # We are going to add 3 characters (a 3 digit index) to every
-            # template item we substitute in for, so adjust for that
-            #
-            # We start with the given length from the doc, rather than just
-            # the length of the content, because I'm not sure if GDocs and
-            # Python count larger unicode chars in the same way
-            length = element['endIndex'] - element['startIndex']
-            length += content.count(']]') * 3
-
-            offset += length
-            text_style['end'] = offset
-            text_style['content'] = content
-
-            # Update all our return values
-            #
-            # Template text has a number formatter added to it so the index
-            # can be injected appropriately later
-            template_text += content.replace(']]', '{n:03d}]]')
-            text_styles.append(text_style)
-
-        paragraph_style['end'] = offset
-
-        paragraph_styles.append(paragraph_style)
-
-    return {
-        'template_text': template_text,
-        'cell_style': cell_style,
-        'paragraph_styles': paragraph_styles,
-        'text_styles': text_styles,
-    }
-
 def get_tables(elements):
     tables = []
     for elem_index, element in enumerate(elements):
         if 'table' in element:
-            tables = (elem_index, element)
+            tables.append((elem_index, element))
     return tables
-
-def get_template_cell_table_index(elements):
-    tables = get_tables(elements)
-    assert len(tables) > 0, 'Expected to find table in template cell'
-    return tables[0][0]
 
 def generate_experience_updates(experiences):
     experiences = resume['experiences']['data']
@@ -281,10 +223,10 @@ class Layout(object):
         # We assume the first table is the main grid, this is kind of brittle
         # but we'll see if we need to make it any better
         assert len(tables) > 0
-        main_grid_table = tables[0]
+        main_grid_table = tables[0][1]
 
         def get_main_grid_cell(row, col):
-            mainGrid['table']['tableRows'][row]['tableCells'][col]
+            return main_grid_table['table']['tableRows'][row]['tableCells'][col]
 
         for rc, sections in self.main_grid.items():
             row, col = rc
@@ -293,7 +235,7 @@ class Layout(object):
             for section in sections:
                 # This will populate the section objects with the relevant
                 # information
-                curr_index = section.parse(doc_state container, curr_index)
+                curr_index = section.parse(doc_state, container, curr_index)
 
 class DocumentParseError(Exception):
     pass
@@ -326,10 +268,10 @@ class Section(object):
         elif doc_state in (DocState.INSERT_TEMPLATE_TEXT,
                            DocState.STYLE_TEMPLATE_ENTRIES):
             if not self.generated_entries:
-                throw DocumentParseError(
+                raise DocumentParseError(
                     f'Invalid parse in state {doc_state}: {self.name} has not yet generated entries')
         else:
-            throw DocumentParseError(
+            raise DocumentParseError(
                 f'Tried to parse section in unexpected state {doc_state}')
 
         return end_index
@@ -354,7 +296,7 @@ class Section(object):
 
     def generate_style_updates(self):
         if not self.generated_entries:
-            throw DocumentParseError(
+            raise DocumentParseError(
                 f'{self.name} tried to generate style updates before generating entries!')
 
         style_updates = [
@@ -378,7 +320,7 @@ class Section(object):
 
     def generate_insert_text_updates(self):
         if not self.generated_entries:
-            throw DocumentParseError(
+            raise DocumentParseError(
                 f'{self.name} tried to generate insert text updates before generating entries!')
 
         return [
@@ -388,11 +330,13 @@ class Section(object):
         ]
 
 
-    def _parse_structure(self, container, start_index)
+    def _parse_structure(self, container, start_index):
         # This is the 'main grid' cell that holds this section
         self.container = container
 
-        tables = get_tables(container)
+        pprint(container)
+        tables = get_tables(container['content'])
+        pprint(tables)
 
         # Note: num_items doesn't count the header item, so we add one
         end_index = start_index + self.num_items + 1
@@ -411,6 +355,7 @@ class Section(object):
         #
         # Each item here is an (index, table) pair
         self.items = tables[start_index + 1 : end_index]
+        pprint(self.items)
 
         # Return the following index for the next section in this container
         return end_index
@@ -418,7 +363,7 @@ class Section(object):
     def _parse_template_content(self):
         """Fills out the template object for this section"""
 
-        assert len(self.items) == 1, 'Should only have one template item'
+        assert len(self.items) == 1, f'{self.name}, should only have one template item'
         template_index, template_item = self.items[0]
         anchor = self.container['content'][template_index - 1]
         content_cell = template_item['table']['tableRows'][0]['tableCells'][0]
@@ -466,90 +411,6 @@ class Section(object):
 
             self.template.paragraph_styles.append(paragraph_style)
 
-def parse_template_doc(document, resume):
-    # This will start out _super_ brittle and linked to the template, but we'll
-    # see if it ever needs to become more robust
-    mainGrid = document['body']['content'][2]
-    assert 'table' in mainGrid
-    assert mainGrid['table']['rows'] == 3
-    assert mainGrid['table']['columns'] == 2
-
-    def get_main_grid_cell(row, col):
-        mainGrid['table']['tableRows'][row]['tableCells'][col]
-
-    def get_every_other(iter_):
-        for i, item in iter_:
-            if i % 2 == 1:
-                yield item
-
-    relevant_sidebar = get_every_other(
-        get_tables(get_main_grid_cell(1, 1)['content']))
-    other_sidebar = get_every_other(
-        get_tables(get_main_grid_cell(2, 1)['content']))
-
-    template_cell_map = {
-        'relevant_experience': get_main_grid_cell(1, 0),
-        'relevant_skills': relevant_sidebar[0],
-        'relevant_achievements': relevant_sidebar[1],
-        'relevant_education': relevant_sidebar[2],
-        'other_experience': get_main_grid_cell(2, 0),
-        'other_education': other_sidebar[0],
-        'other_achievements': other_sidebar[1],
-        'other_skills': other_sidebar[2],
-        'languages': other_sidebar[3],
-    }
-    return template_cell_map
-
-def add_templates(document, parse_info):
-    (
-        template_text,
-        cell_style,
-        paragraph_styles,
-        text_styles,
-    ) = parse_info
-
-    # This will start out _super_ brittle and linked to the template, but we'll
-    # see if it ever needs to become more robust
-    mainGrid = document['body']['content'][2]
-    assert 'table' in mainGrid
-    assert mainGrid['table']['rows'] == 3
-    assert mainGrid['table']['columns'] == 2
-
-    relevantExperience = mainGrid['table']['tableRows'][1]['tableCells'][0]
-    tables = []
-    for element in relevantExperience['content']:
-        if 'table' in element:
-            tables.append(element)
-
-    def get_table_start(table):
-        return table['table']['tableRows'][0]['tableCells'][0]['content'][0]['startIndex']
-
-    # strip off header table, and reverse (for efficiency)
-    # see https://developers.google.com/docs/api/how-tos/best-practices#edit_backwards_for_efficiency
-    tables = list(reversed(list(enumerate(tables[1:]))))
-    style_requests = [
-        make_table_cell_style_request(cell_style, 
-                                      table['startIndex'],
-                                      0,0)
-        for _, table in tables
-    ] + [
-        make_paragraph_style_request(style, get_table_start(table))
-        for style in paragraph_styles
-        for _, table in tables
-    ] + [
-        make_text_style_request(style, get_table_start(table))
-        for style in text_styles
-        for _, table in tables
-    ]
-
-    insert_text_requests = [
-        make_insert_text_request(template_text.format(n=n), 
-                                 get_table_start(table))
-        for n, table in tables
-    ]
-
-    return (insert_text_requests, style_requests)
-
 def update_contact_info(resume):
     to_update = {}
     to_update['contact_name'] = ('{} {}'.format(
@@ -563,41 +424,6 @@ def update_contact_info(resume):
     to_update['primary_function'] = 'Software Engineer'
 
     return list(map(make_replace_request, to_update.items()))
-
-def edit_doc(gdocs, doc_id):
-    resume = load_info('./david.json')
-
-    def do_update(requests):
-        return gdocs.documents().batchUpdate(
-            documentId=doc_id, body={'requests': requests}).execute()
-
-    # UPDATE_CONTACT_INFO
-    updates = update_contact_info(resume)
-    do_update(updates)
-
-    # PARSE_TEMPLATE
-    document = gdocs.documents().get(documentId=doc_id).execute()
-    (template_updates, 
-     content_updates, 
-     parse_info) = parse_template_doc(document, resume)
-    #print(json.dumps(parse_info))
-    #return
-    do_update(template_updates)
-
-    # INSERT_TEMPLATE_TEXT
-    document = gdocs.documents().get(documentId=doc_id).execute()
-    (insert_updates, _) = add_templates(document, parse_info)
-    do_update(insert_updates)
-
-    # STYLE_TEMPLATE_ENTRIES
-    document = gdocs.documents().get(documentId=doc_id).execute()
-    #print(json.dumps(document))
-    (_, style_updates) = add_templates(document, parse_info)
-    do_update(style_updates)
-
-    # INSERT_CONTENT
-    #pprint(content_updates)
-    do_update(content_updates)
 
 def build_layout():
     # This code should be updated when the Google Doc Template is updated
@@ -619,10 +445,10 @@ def build_layout():
 
 def generate_entries_from_resume(resume, layout):
     experiences = resume['experiences']['data']
-    work_experiences = filter(experiences, lambda e: e['type'] == 'Work')
-    edu_experiences = filter(experiences, lambda e: e['type'] == 'Education')
-    service_experiences = filter(experiences, lambda e: e['type'] == 'Service')
-    accomplishments = filter(experiences, lambda e: e['type'] == 'Accomplishment')
+    work_experiences = filter(lambda e: e['type'] == 'Work', experiences)
+    edu_experiences = filter(lambda e: e['type'] == 'Education', experiences)
+    service_experiences = filter(lambda e: e['type'] == 'Service', experiences)
+    accomplishments = filter(lambda e: e['type'] == 'Accomplishment', experiences)
 
     num_entries = {
         'Relevant Experience': len(work_experiences),
@@ -641,7 +467,7 @@ def generate_content_updates(resume):
     updates = []
     updates.extend(generate_experience_updates(resume))
 
-def edit_doc_new(gdocs, doc_id):
+def edit_doc(gdocs, doc_id):
     resume = load_info('./david.json')
 
     layout = build_layout()
@@ -690,8 +516,10 @@ def main():
 
 
 if __name__ == '__main__':
-    #with open('empty_doc.json', 'r') as f:
-    #    pprint(parse_template_doc(json.load(f)))
+    layout = build_layout()
+    with open('empty_doc.json', 'r') as f:
+        doc = json.load(f)
+        layout.parse(doc, DocState.PARSE_TEMPLATE)
 
     #with open('parse_info.json', 'r') as f:
     #    parse_info = json.load(f)
@@ -702,4 +530,4 @@ if __name__ == '__main__':
     #dump_document('1eNOSyhxsKjQZBMBgMgnEtgcpdTrj95kCrUBGxr-84zg')
     #dump_document('1RExcI9pWu6JTGqHDtXzfF0hnOj0U4KQtKf4qpFzXfwE')
 
-    main()
+    #main()
