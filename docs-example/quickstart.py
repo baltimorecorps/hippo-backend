@@ -75,11 +75,11 @@ def make_insert_text_request(text, location):
         }
     }
 
-def make_insert_table_request(location):
+def make_insert_table_request(location, rows, cols):
     return {
         'insertTable': {
-            'rows': 1,
-            'columns': 1,
+            'rows': rows,
+            'columns': cols,
             'location': {
                 'segmentId': '',
                 'index': location, 
@@ -147,6 +147,30 @@ def make_paragraph_style_request(obj, offset):
         }
     }
 
+def get_update_index(update):
+    key = list(update.keys())[0]
+    if key == 'deleteTableRow':
+        return update[key]['tableCellLocation']['tableStartLocation']['index']
+    elif key == 'updateTableCellStyle':
+        return update[key]['tableRange']['tableCellLocation']['tableStartLocation']['index']
+    elif key in ('updateTextStyle', 'updateParagraphStyle'):
+        return update[key]['range']['startIndex']
+    elif key in ('insertText', 'insertTable'):
+        return update[key]['location']['index']
+    elif key == 'replaceAllText':
+        return 0
+    else:
+        assert False, f'Got unexpected update type {key}'
+
+def order_updates(updates):
+    # See https://developers.google.com/docs/api/how-tos/best-practices#edit_backwards_for_efficiency
+    def sort_fn(update):
+        key = list(update.keys())[0]
+        return get_update_index(update)
+    
+    return sorted(updates, key=sort_fn, reverse=True)
+
+
 def get_tables(elements):
     tables = []
     for elem_index, element in enumerate(elements):
@@ -154,26 +178,6 @@ def get_tables(elements):
             tables.append((elem_index, element))
     return tables
 
-def generate_experience_updates(experiences):
-    experiences = resume['experiences']['data']
-
-    updates = []
-    for i, experience in enumerate(experiences):
-        n = '{:03d}'.format(i)
-        to_update = {}
-        for key in ('host', 'location_city', 'location_state', 'title'):
-            to_update[f'rex_{key}{n}'] = experience[key]
-        for key in ('start', 'end'):
-            to_update[f'rex_date_{key}{n}'] = '{} {}'.format(
-                experience[key + '_month'],
-                experience[key + '_year'])
-        to_update[f'rex_achievements{n}'] = '\n'.join(
-            map(lambda x: x['description'], experience['achievements']))
-        updates.extend(
-            list(map(make_replace_request, to_update.items()))
-        )
-
-    return updates
 
 class DocState(Enum):
     UPDATE_CONTACT_INFO = 1
@@ -248,12 +252,16 @@ class Template(object):
         self.text_styles = []
 
 class Section(object):
-    def __init__(self, name):
+    def __init__(self, name, shape=(1,1)):
         self.name = name 
-        # Every section starts with a template entry
+        # Every section starts with a template entry, so this starts at 1
         self.num_items = 1
         self.container = None
         self.template = None
+        
+        # Entry shape is the # of (rows, columns) in the tables that make up
+        # each entry in this section
+        self.entry_shape = shape
 
         # Keep track of whether or not we've generated the entries for our
         # section yet, to ensure it happens for all sections before we try
@@ -282,11 +290,13 @@ class Section(object):
         anchor = self.container['content'][template_index - 1]
         content_cell = template_item['table']['tableRows'][0]['tableCells'][0]
 
-        updates = [
-            make_delete_table_row_request(template_item['startIndex'], 0),
-        ]
+        updates = []
+        for i in range(self.entry_shape[0]):
+            updates.append(make_delete_table_row_request(template_item['startIndex'],
+                                                         i))
         for _ in range(num_entries):
-            updates.append(make_insert_table_request(anchor['endIndex'] - 1))
+            updates.append(make_insert_table_request(anchor['endIndex'] - 1,
+                           self.entry_shape[0], self.entry_shape[1]))
 
         # It's key to store this information away for the future, otherwise all
         # our future parses will be wrong
@@ -334,9 +344,7 @@ class Section(object):
         # This is the 'main grid' cell that holds this section
         self.container = container
 
-        pprint(container)
         tables = get_tables(container['content'])
-        pprint(tables)
 
         # Note: num_items doesn't count the header item, so we add one
         end_index = start_index + self.num_items + 1
@@ -355,7 +363,6 @@ class Section(object):
         #
         # Each item here is an (index, table) pair
         self.items = tables[start_index + 1 : end_index]
-        pprint(self.items)
 
         # Return the following index for the next section in this container
         return end_index
@@ -432,40 +439,63 @@ def build_layout():
     # the top level grid in which this section resides
     layout = Layout()
     layout.add_section(1, 0, Section('Relevant Experience'))
-    layout.add_section(1, 1, Section('Skills and Abilities'))
-    layout.add_section(1, 1, Section('Achivements'))
-    layout.add_section(1, 1, Section('Relevant Education'))
+    layout.add_section(1, 1, Section('Skills and Abilities', shape=(1,2)))
+    layout.add_section(1, 1, Section('Achievements', shape=(1,2)))
+    layout.add_section(1, 1, Section('Relevant Education', shape=(1,2)))
     layout.add_section(2, 0, Section('Additional Experience'))
-    layout.add_section(2, 1, Section('Additional Education'))
-    layout.add_section(2, 1, Section('Other Achievements'))
-    layout.add_section(2, 1, Section('Additional Skills'))
-    layout.add_section(2, 1, Section('Languages'))
+    layout.add_section(2, 1, Section('Additional Education', shape=(1,2)))
+    layout.add_section(2, 1, Section('Other Achievements', shape=(1,2)))
+    layout.add_section(2, 1, Section('Additional Skills', shape=(1,2)))
+    layout.add_section(2, 1, Section('Languages', shape=(1,2)))
 
     return layout
 
 def generate_entries_from_resume(resume, layout):
     experiences = resume['experiences']['data']
-    work_experiences = filter(lambda e: e['type'] == 'Work', experiences)
-    edu_experiences = filter(lambda e: e['type'] == 'Education', experiences)
-    service_experiences = filter(lambda e: e['type'] == 'Service', experiences)
-    accomplishments = filter(lambda e: e['type'] == 'Accomplishment', experiences)
+    work_experiences = list(filter(lambda e: e['type'] == 'Work', experiences))
+    edu_experiences = list(filter(lambda e: e['type'] == 'Education', experiences))
+    service_experiences = list(filter(lambda e: e['type'] == 'Service', experiences))
+    accomplishments = list(filter(lambda e: e['type'] == 'Accomplishment', experiences))
 
     num_entries = {
         'Relevant Experience': len(work_experiences),
-        'Skills and Abilities': 0,
-        'Achievements': len(accomplishments),
+        'Skills and Abilities': 3,
+        #'Achievements': len(accomplishments),
+        'Achievements': 2,
         'Relevant Education': len(edu_experiences),
-        'Additional Experience': 0,
-        'Additional Education': 0,
-        'Other Achievements': 0,
-        'Additional Skills': 0,
-        'Languages': 0,
+        'Additional Experience': 4,
+        'Additional Education': 2,
+        'Other Achievements': 3,
+        'Additional Skills': 4,
+        'Languages': 2,
     }
-    layout.generate_entries(num_entries)
+    return layout.generate_entries(num_entries)
 
 def generate_content_updates(resume):
     updates = []
     updates.extend(generate_experience_updates(resume))
+
+def generate_experience_updates(experiences):
+    experiences = resume['experiences']['data']
+
+    updates = []
+    for i, experience in enumerate(experiences):
+        n = '{:03d}'.format(i)
+        to_update = {}
+        for key in ('host', 'location_city', 'location_state', 'title'):
+            to_update[f'rex_{key}{n}'] = experience[key]
+        for key in ('start', 'end'):
+            to_update[f'rex_date_{key}{n}'] = '{} {}'.format(
+                experience[key + '_month'],
+                experience[key + '_year'])
+        to_update[f'rex_achievements{n}'] = '\n'.join(
+            map(lambda x: x['description'], experience['achievements']))
+        updates.extend(
+            list(map(make_replace_request, to_update.items()))
+        )
+
+    return updates
+
 
 def edit_doc(gdocs, doc_id):
     resume = load_info('./david.json')
@@ -473,6 +503,8 @@ def edit_doc(gdocs, doc_id):
     layout = build_layout()
 
     def do_update(requests):
+        requests = order_updates(requests)
+        pprint(requests)
         return gdocs.documents().batchUpdate(
             documentId=doc_id, body={'requests': requests}).execute()
 
@@ -514,12 +546,17 @@ def main():
     edit_doc(gdocs, doc_id)
 
 
-
-if __name__ == '__main__':
+def test_fake_edit():
     layout = build_layout()
     with open('empty_doc.json', 'r') as f:
         doc = json.load(f)
         layout.parse(doc, DocState.PARSE_TEMPLATE)
+
+        resume = load_info('./david.json')
+        pprint(order_updates(generate_entries_from_resume(resume, layout)))
+
+
+if __name__ == '__main__':
 
     #with open('parse_info.json', 'r') as f:
     #    parse_info = json.load(f)
@@ -530,4 +567,5 @@ if __name__ == '__main__':
     #dump_document('1eNOSyhxsKjQZBMBgMgnEtgcpdTrj95kCrUBGxr-84zg')
     #dump_document('1RExcI9pWu6JTGqHDtXzfF0hnOj0U4KQtKf4qpFzXfwE')
 
-    #main()
+    main()
+    #test_fake_edit()
