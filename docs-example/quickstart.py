@@ -199,7 +199,7 @@ def parse_template_cell(cell):
         text_styles,
     )
 
-def parse_template_doc(document):
+def parse_template_doc(document, resume):
     # This will start out _super_ brittle and linked to the template, but we'll
     # see if it ever needs to become more robust
     mainGrid = document['body']['content'][2]
@@ -212,12 +212,35 @@ def parse_template_doc(document):
     newTableAnchor = relevantExperience['content'][2]
     table = relevantExperience['content'][3]
     cell = table['table']['tableRows'][0]['tableCells'][0]
-    return ([
+
+    experiences = resume['experiences']['data']
+
+    template_updates = [
         make_delete_table_row_request(table['startIndex'], 0),
-        make_insert_table_request(newTableAnchor['startIndex']),
-        make_insert_table_request(newTableAnchor['startIndex']),
-        make_insert_table_request(newTableAnchor['startIndex']),
-    ], parse_template_cell(cell))
+    ]
+    for experience in experiences:
+        template_updates.append(
+            make_insert_table_request(newTableAnchor['startIndex']),
+        )
+
+    content_updates = []
+    # Reversed for performance reasons
+    for i, experience in reversed(list(enumerate(experiences))):
+        n = '{:03d}'.format(i)
+        to_update = {}
+        for key in ('host', 'location_city', 'location_state', 'title'):
+            to_update[f'rex_{key}{n}'] = experience[key]
+        for key in ('start', 'end'):
+            to_update[f'rex_date_{key}{n}'] = '{} {}'.format(
+                experience[key + '_month'],
+                experience[key + '_year'])
+        to_update[f'rex_achievements{n}'] = '\n'.join(
+            map(lambda x: x['description'], experience['achievements']))
+        content_updates.extend(
+            list(map(make_replace_request, to_update.items()))
+        )
+
+    return (template_updates, content_updates, parse_template_cell(cell))
     
 TEMPLATE_TEXT = """[[rex_host{n:03d}]] \u2014 [[rex_location_city{n:03d}]], [[rex_location_state{n:03d}]]
 [[rex_title{n:03d}]]
@@ -274,40 +297,50 @@ def add_templates(document, parse_info):
 
     return (insert_text_requests, style_requests)
 
-def edit_doc(gdocs, doc_id):
-    info = load_info('./david.json')
+def update_contact_info(resume):
     to_update = {}
     to_update['contact_name'] = ('{} {}'.format(
-        info['contacts']['data']['first_name'],
-        info['contacts']['data']['last_name']))
+        resume['contacts']['data']['first_name'],
+        resume['contacts']['data']['last_name']))
 
-    to_update['phone'] = info['contacts']['data']['phone_primary']
-    to_update['email'] = info['contacts']['data']['email_primary']['email']
+    to_update['phone'] = resume['contacts']['data']['phone_primary']
+    to_update['email'] = resume['contacts']['data']['email_primary']['email']
     to_update['city'] = 'Tuscaloosa'
     to_update['state'] = 'AL'
     to_update['primary_function'] = 'Software Engineer'
+
+    return list(map(make_replace_request, to_update.items()))
+
+def edit_doc(gdocs, doc_id):
+    resume = load_info('./david.json')
 
     def do_update(requests):
         return gdocs.documents().batchUpdate(
             documentId=doc_id, body={'requests': requests}).execute()
 
-    requests = list(map(make_replace_request, to_update.items()))
-    do_update(requests)
+    updates = update_contact_info(resume)
+    do_update(updates)
 
     document = gdocs.documents().get(documentId=doc_id).execute()
-    requests, parse_info = parse_template_doc(document)
+    (template_updates, 
+     content_updates, 
+     parse_info) = parse_template_doc(document, resume)
     #print(json.dumps(parse_info))
     #return
-    do_update(requests)
+    do_update(template_updates)
 
     document = gdocs.documents().get(documentId=doc_id).execute()
-    (insert_requests, style_requests) = add_templates(document, parse_info)
-    do_update(insert_requests)
+    (insert_updates, _) = add_templates(document, parse_info)
+    do_update(insert_updates)
 
     document = gdocs.documents().get(documentId=doc_id).execute()
     #print(json.dumps(document))
-    (insert_requests, style_requests) = add_templates(document, parse_info)
-    do_update(style_requests)
+    (_, style_updates) = add_templates(document, parse_info)
+    do_update(style_updates)
+
+    #pprint(content_updates)
+    do_update(content_updates)
+
 
 
 def load_info(filename):
