@@ -503,7 +503,7 @@ def generate_content_updates(resume):
     updates = []
     updates.extend(generate_experience_updates(resume))
 
-def generate_experience_updates(experiences):
+def generate_experience_updates(resume):
     experiences = resume['experiences']['data']
     work_experiences = list(filter(lambda e: e['type'] == 'Work', experiences))
     edu_experiences = list(filter(lambda e: e['type'] == 'Education', experiences))
@@ -527,18 +527,14 @@ def generate_experience_updates(experiences):
     for i, experience in enumerate(edu_experiences):
         n = '{:03d}'.format(i)
         to_update = {}
-        for key in ('host', 'location_city', 'location_state', 'title'):
-            to_update[f'rex_{key}{n}'] = experience[key]
-        for key in ('start', 'end'):
-            to_update[f'rex_date_{key}{n}'] = '{} {}'.format(
-                experience[key + '_month'],
-                experience[key + '_year'])
-        to_update[f'rex_achievements{n}'] = '\n'.join(
-            map(lambda x: x['description'], experience['achievements']))
+        to_update[f're_date{n}'] = '{} {}'.format(
+            experience['start_month'],
+            experience['start_year'])
+        to_update[f're_institution{n}'] = experience['host']
+        to_update[f're_degree{n}'] = experience['degree']
         updates.extend(
             list(map(make_replace_request, to_update.items()))
         )
-
 
     return updates
 
