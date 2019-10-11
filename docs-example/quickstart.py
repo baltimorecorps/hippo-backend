@@ -1,4 +1,5 @@
 from __future__ import print_function
+import sys
 import pickle
 import os.path
 import json
@@ -118,7 +119,85 @@ def make_table_cell_style_request(style, location, row, col):
         }
     }
 
+def make_text_style_request(obj, offset):
+    return {
+        'updateTextStyle': {
+            'textStyle': obj['style'],
+            'fields': '*',
+            'range': {
+                'segmentId': '',
+                'startIndex': obj['start'] + offset,
+                'endIndex': obj['end'] + offset,
+            },
+        }
+    }
 
+def make_paragraph_style_request(obj, offset):
+    return {
+        'updateParagraphStyle': {
+            'paragraphStyle': obj['style'],
+            'fields': '*',
+            'range': {
+                'segmentId': '',
+                'startIndex': obj['start'] + offset,
+                'endIndex': obj['end'] + offset,
+            },
+        }
+    }
+
+
+def parse_template_cell(cell):
+    template_text = ''
+    cell_style = cell['tableCellStyle']
+    paragraph_styles = []
+    text_styles = []
+
+    offset = 0
+    for paragraph in cell['content']:
+        assert 'paragraph' in paragraph, 'All elements of template cells should be Paragraphs'
+        paragraph_style = { 
+            'start': offset,
+            'style': paragraph['paragraph']['paragraphStyle']
+        }
+        for element in paragraph['paragraph']['elements']:
+            assert 'textRun' in element, 'All elements of paragraphs should be TextRuns'
+            text_style = { 
+                'start': offset,
+                'style': element['textRun']['textStyle']
+            }
+
+            content = element['textRun']['content']
+
+            # We are going to add 3 characters (a 3 digit index) to every
+            # template item we substitute in for, so adjust for that
+            #
+            # We start with the given length from the doc, rather than just
+            # the length of the content, because I'm not sure if GDocs and
+            # Python count larger unicode chars in the same way
+            length = element['endIndex'] - element['startIndex']
+            length += content.count(']]') * 3
+
+            offset += length
+            text_style['end'] = offset
+            text_style['content'] = content
+
+            # Update all our return values
+            #
+            # Template text has a number formatter added to it so the index
+            # can be injected appropriately later
+            template_text += content.replace(']]', '{n:03d}]]')
+            text_styles.append(text_style)
+
+        paragraph_style['end'] = offset
+
+        paragraph_styles.append(paragraph_style)
+
+    return (
+        template_text,
+        cell_style,
+        paragraph_styles,
+        text_styles,
+    )
 
 def parse_template_doc(document):
     # This will start out _super_ brittle and linked to the template, but we'll
@@ -132,20 +211,27 @@ def parse_template_doc(document):
     assert 'table' in relevantExperience['content'][3]
     newTableAnchor = relevantExperience['content'][2]
     table = relevantExperience['content'][3]
-    cell_style = table['table']['tableRows'][0]['tableCells'][0]['tableCellStyle']
+    cell = table['table']['tableRows'][0]['tableCells'][0]
     return ([
         make_delete_table_row_request(table['startIndex'], 0),
         make_insert_table_request(newTableAnchor['startIndex']),
         make_insert_table_request(newTableAnchor['startIndex']),
         make_insert_table_request(newTableAnchor['startIndex']),
-    ], cell_style)
+    ], parse_template_cell(cell))
     
-TEMPLATE_TEXT = """[[rex_host{n}]] \u2014 [[rex_location_city{n}]], [[rex_location_state{n}]]
-[[rex_title{n}]]
-[[rex_date_start{n}]]\u2013[[rex_date_end{n}]]
-[[rex_achievements{n}]]"""
+TEMPLATE_TEXT = """[[rex_host{n:03d}]] \u2014 [[rex_location_city{n:03d}]], [[rex_location_state{n:03d}]]
+[[rex_title{n:03d}]]
+[[rex_date_start{n:03d}]]\u2013[[rex_date_end{n:03d}]]
+[[rex_achievements{n:03d}]]"""
 
-def add_templates(document, template_text, cell_style):
+def add_templates(document, parse_info):
+    (
+        template_text,
+        cell_style,
+        paragraph_styles,
+        text_styles,
+    ) = parse_info
+
     # This will start out _super_ brittle and linked to the template, but we'll
     # see if it ever needs to become more robust
     mainGrid = document['body']['content'][2]
@@ -159,19 +245,34 @@ def add_templates(document, template_text, cell_style):
         if 'table' in element:
             tables.append(element)
 
+    def get_table_start(table):
+        return table['table']['tableRows'][0]['tableCells'][0]['content'][0]['startIndex']
+
     # strip off header table, and reverse (for efficiency)
     # see https://developers.google.com/docs/api/how-tos/best-practices#edit_backwards_for_efficiency
     tables = list(reversed(list(enumerate(tables[1:]))))
-    return [
+    style_requests = [
         make_table_cell_style_request(cell_style, 
                                       table['startIndex'],
                                       0,0)
-        for n, table in tables
+        for _, table in tables
     ] + [
+        make_paragraph_style_request(style, get_table_start(table))
+        for style in paragraph_styles
+        for _, table in tables
+    ] + [
+        make_text_style_request(style, get_table_start(table))
+        for style in text_styles
+        for _, table in tables
+    ]
+
+    insert_text_requests = [
         make_insert_text_request(template_text.format(n=n), 
-                                 table['table']['tableRows'][0]['tableCells'][0]['content'][0]['startIndex'])
+                                 get_table_start(table))
         for n, table in tables
     ]
+
+    return (insert_text_requests, style_requests)
 
 def edit_doc(gdocs, doc_id):
     info = load_info('./david.json')
@@ -194,12 +295,19 @@ def edit_doc(gdocs, doc_id):
     do_update(requests)
 
     document = gdocs.documents().get(documentId=doc_id).execute()
-    requests, cell_style = parse_template_doc(document)
+    requests, parse_info = parse_template_doc(document)
+    #print(json.dumps(parse_info))
+    #return
     do_update(requests)
 
     document = gdocs.documents().get(documentId=doc_id).execute()
-    requests = add_templates(document, TEMPLATE_TEXT, cell_style)
-    do_update(requests)
+    (insert_requests, style_requests) = add_templates(document, parse_info)
+    do_update(insert_requests)
+
+    document = gdocs.documents().get(documentId=doc_id).execute()
+    #print(json.dumps(document))
+    (insert_requests, style_requests) = add_templates(document, parse_info)
+    do_update(style_requests)
 
 
 def load_info(filename):
@@ -213,12 +321,22 @@ def main():
     # Retrieve the documents contents from the Docs service.
     response = gdrive.files().copy(fileId=DOCUMENT_ID, body={'name': 'Automatic Test File'}).execute()
     doc_id = response['id']
-    print(f'https://docs.google.com/document/d/{doc_id}/edit')
+    print(f'https://docs.google.com/document/d/{doc_id}/edit', file=sys.stderr)
     edit_doc(gdocs, doc_id)
 
 
 
 if __name__ == '__main__':
     #with open('empty_doc.json', 'r') as f:
-    #    print(parse_doc(json.load(f)))
+    #    pprint(parse_template_doc(json.load(f)))
+
+    #with open('parse_info.json', 'r') as f:
+    #    parse_info = json.load(f)
+
+    #with open('test.json', 'r') as f:
+    #    pprint(add_templates(json.load(f), parse_info))
+
+    #dump_document('1eNOSyhxsKjQZBMBgMgnEtgcpdTrj95kCrUBGxr-84zg')
+    #dump_document('1RExcI9pWu6JTGqHDtXzfF0hnOj0U4KQtKf4qpFzXfwE')
+
     main()

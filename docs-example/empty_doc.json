@@ -114,7 +114,7 @@
                                                         "startIndex": 5,
                                                         "endIndex": 22,
                                                         "textRun": {
-                                                            "content": "{{contact_name}}\n",
+                                                            "content": "[[contact_name]]\n",
                                                             "textStyle": {
                                                                 "fontSize": {
                                                                     "magnitude": 20,
@@ -198,7 +198,7 @@
                                                         "startIndex": 22,
                                                         "endIndex": 43,
                                                         "textRun": {
-                                                            "content": "{{primary_function}} ",
+                                                            "content": "[[primary_function]] ",
                                                             "textStyle": {
                                                                 "fontSize": {
                                                                     "magnitude": 12,
@@ -241,7 +241,7 @@
                                                         "startIndex": 44,
                                                         "endIndex": 68,
                                                         "textRun": {
-                                                            "content": " {{secondary_function}}\n",
+                                                            "content": " [[secondary_function]]\n",
                                                             "textStyle": {
                                                                 "fontSize": {
                                                                     "magnitude": 12,
@@ -404,7 +404,7 @@
                                                         "startIndex": 69,
                                                         "endIndex": 89,
                                                         "textRun": {
-                                                            "content": "{{city}}, {{state}}\n",
+                                                            "content": "[[city]], [[state]]\n",
                                                             "textStyle": {
                                                                 "foregroundColor": {
                                                                     "color": {
@@ -493,7 +493,7 @@
                                                         "startIndex": 89,
                                                         "endIndex": 98,
                                                         "textRun": {
-                                                            "content": "{{phone}}",
+                                                            "content": "[[phone]]",
                                                             "textStyle": {
                                                                 "foregroundColor": {
                                                                     "color": {
@@ -603,7 +603,7 @@
                                                         "startIndex": 99,
                                                         "endIndex": 109,
                                                         "textRun": {
-                                                            "content": "{{email}}\n",
+                                                            "content": "[[email]]\n",
                                                             "textStyle": {
                                                                 "foregroundColor": {
                                                                     "color": {
@@ -1037,7 +1037,7 @@
                                                                                     "startIndex": 140,
                                                                                     "endIndex": 152,
                                                                                     "textRun": {
-                                                                                        "content": "{{exp_host}}",
+                                                                                        "content": "[[exp_host]]",
                                                                                         "textStyle": {
                                                                                             "bold": false
                                                                                         }
@@ -1055,7 +1055,7 @@
                                                                                     "startIndex": 155,
                                                                                     "endIndex": 193,
                                                                                     "textRun": {
-                                                                                        "content": "{{location_city}}, {{location_state}}\n",
+                                                                                        "content": "[[location_city]], [[location_state]]\n",
                                                                                         "textStyle": {
                                                                                             "bold": false,
                                                                                             "italic": true,
@@ -1091,7 +1091,7 @@
                                                                                     "startIndex": 193,
                                                                                     "endIndex": 202,
                                                                                     "textRun": {
-                                                                                        "content": "{{title}}",
+                                                                                        "content": "[[title]]",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -1147,7 +1147,7 @@
                                                                                     "startIndex": 203,
                                                                                     "endIndex": 217,
                                                                                     "textRun": {
-                                                                                        "content": "{{date_start}}",
+                                                                                        "content": "[[date_start]]",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -1173,7 +1173,7 @@
                                                                                     "startIndex": 217,
                                                                                     "endIndex": 233,
                                                                                     "textRun": {
-                                                                                        "content": " - {{date_end}}\n",
+                                                                                        "content": " - [[date_end]]\n",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -1224,7 +1224,7 @@
                                                                                     "startIndex": 233,
                                                                                     "endIndex": 248,
                                                                                     "textRun": {
-                                                                                        "content": "{{achievement}}",
+                                                                                        "content": "[[achievement]]",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -1771,7 +1771,7 @@
                                                                                     "startIndex": 282,
                                                                                     "endIndex": 290,
                                                                                     "textRun": {
-                                                                                        "content": "{{tag}}\n",
+                                                                                        "content": "[[tag]]\n",
                                                                                         "textStyle": {
                                                                                             "bold": false,
                                                                                             "weightedFontFamily": {
@@ -1882,7 +1882,7 @@
                                                                                     "startIndex": 291,
                                                                                     "endIndex": 301,
                                                                                     "textRun": {
-                                                                                        "content": "{{score}}\n",
+                                                                                        "content": "[[score]]\n",
                                                                                         "textStyle": {
                                                                                             "fontSize": {
                                                                                                 "magnitude": 10,
@@ -2277,7 +2277,7 @@
                                                                                     "startIndex": 324,
                                                                                     "endIndex": 332,
                                                                                     "textRun": {
-                                                                                        "content": "{{date}}",
+                                                                                        "content": "[[date]]",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -2413,7 +2413,7 @@
                                                                                     "startIndex": 334,
                                                                                     "endIndex": 342,
                                                                                     "textRun": {
-                                                                                        "content": "{{host}}",
+                                                                                        "content": "[[host]]",
                                                                                         "textStyle": {
                                                                                             "bold": false
                                                                                         }
@@ -2463,7 +2463,7 @@
                                                                                     "startIndex": 343,
                                                                                     "endIndex": 358,
                                                                                     "textRun": {
-                                                                                        "content": "{{description}}",
+                                                                                        "content": "[[description]]",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -2855,7 +2855,7 @@
                                                                                     "startIndex": 388,
                                                                                     "endIndex": 396,
                                                                                     "textRun": {
-                                                                                        "content": "{{date}}",
+                                                                                        "content": "[[date]]",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -2991,7 +2991,7 @@
                                                                                     "startIndex": 398,
                                                                                     "endIndex": 414,
                                                                                     "textRun": {
-                                                                                        "content": "{{institution}}\n",
+                                                                                        "content": "[[institution]]\n",
                                                                                         "textStyle": {
                                                                                             "bold": false
                                                                                         }
@@ -3027,7 +3027,7 @@
                                                                                     "startIndex": 414,
                                                                                     "endIndex": 425,
                                                                                     "textRun": {
-                                                                                        "content": "{{degree}}\n",
+                                                                                        "content": "[[degree]]\n",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -3576,7 +3576,7 @@
                                                                                     "startIndex": 460,
                                                                                     "endIndex": 468,
                                                                                     "textRun": {
-                                                                                        "content": "{{host}}",
+                                                                                        "content": "[[host]]",
                                                                                         "textStyle": {
                                                                                             "bold": false
                                                                                         }
@@ -3594,7 +3594,7 @@
                                                                                     "startIndex": 471,
                                                                                     "endIndex": 509,
                                                                                     "textRun": {
-                                                                                        "content": "{{location_city}}, {{location_state}}\n",
+                                                                                        "content": "[[location_city]], [[location_state]]\n",
                                                                                         "textStyle": {
                                                                                             "bold": false,
                                                                                             "italic": true,
@@ -3626,7 +3626,7 @@
                                                                                     "startIndex": 509,
                                                                                     "endIndex": 519,
                                                                                     "textRun": {
-                                                                                        "content": "{{title}}\n",
+                                                                                        "content": "[[title]]\n",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -3664,7 +3664,7 @@
                                                                                     "startIndex": 519,
                                                                                     "endIndex": 549,
                                                                                     "textRun": {
-                                                                                        "content": "{{date_start}} - {{date_end}}\n",
+                                                                                        "content": "[[date_start]] - [[date_end]]\n",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -3714,7 +3714,7 @@
                                                                                     "startIndex": 549,
                                                                                     "endIndex": 564,
                                                                                     "textRun": {
-                                                                                        "content": "{{achievement}}",
+                                                                                        "content": "[[achievement]]",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -4227,7 +4227,7 @@
                                                                                     "startIndex": 599,
                                                                                     "endIndex": 608,
                                                                                     "textRun": {
-                                                                                        "content": "{{date}}\n",
+                                                                                        "content": "[[date]]\n",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -4345,7 +4345,7 @@
                                                                                     "startIndex": 609,
                                                                                     "endIndex": 625,
                                                                                     "textRun": {
-                                                                                        "content": "{{institution}}\n",
+                                                                                        "content": "[[institution]]\n",
                                                                                         "textStyle": {
                                                                                             "bold": false
                                                                                         }
@@ -4381,7 +4381,7 @@
                                                                                     "startIndex": 625,
                                                                                     "endIndex": 636,
                                                                                     "textRun": {
-                                                                                        "content": "{{degree}}\n",
+                                                                                        "content": "[[degree]]\n",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -4751,7 +4751,7 @@
                                                                                     "startIndex": 665,
                                                                                     "endIndex": 674,
                                                                                     "textRun": {
-                                                                                        "content": "{{date}}\n",
+                                                                                        "content": "[[date]]\n",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -4869,7 +4869,7 @@
                                                                                     "startIndex": 675,
                                                                                     "endIndex": 691,
                                                                                     "textRun": {
-                                                                                        "content": "{{institution}}\n",
+                                                                                        "content": "[[institution]]\n",
                                                                                         "textStyle": {
                                                                                             "bold": false
                                                                                         }
@@ -4905,7 +4905,7 @@
                                                                                     "startIndex": 691,
                                                                                     "endIndex": 702,
                                                                                     "textRun": {
-                                                                                        "content": "{{degree}}\n",
+                                                                                        "content": "[[degree]]\n",
                                                                                         "textStyle": {
                                                                                             "foregroundColor": {
                                                                                                 "color": {
@@ -5275,7 +5275,7 @@
                                                                                     "startIndex": 730,
                                                                                     "endIndex": 738,
                                                                                     "textRun": {
-                                                                                        "content": "{{tag}}\n",
+                                                                                        "content": "[[tag]]\n",
                                                                                         "textStyle": {
                                                                                             "bold": false,
                                                                                             "weightedFontFamily": {
@@ -5386,7 +5386,7 @@
                                                                                     "startIndex": 739,
                                                                                     "endIndex": 749,
                                                                                     "textRun": {
-                                                                                        "content": "{{score}}\n",
+                                                                                        "content": "[[score]]\n",
                                                                                         "textStyle": {
                                                                                             "fontSize": {
                                                                                                 "magnitude": 10,
@@ -5752,7 +5752,7 @@
                                                                                     "startIndex": 769,
                                                                                     "endIndex": 782,
                                                                                     "textRun": {
-                                                                                        "content": "{{language}}\n",
+                                                                                        "content": "[[language]]\n",
                                                                                         "textStyle": {
                                                                                             "bold": false,
                                                                                             "weightedFontFamily": {
@@ -5863,7 +5863,7 @@
                                                                                     "startIndex": 783,
                                                                                     "endIndex": 793,
                                                                                     "textRun": {
-                                                                                        "content": "{{score}}\n",
+                                                                                        "content": "[[score]]\n",
                                                                                         "textStyle": {
                                                                                             "fontSize": {
                                                                                                 "magnitude": 10,
