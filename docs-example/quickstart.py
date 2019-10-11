@@ -215,7 +215,7 @@ class Layout(object):
             updates.extend(section.generate_style_updates())
         return updates
 
-    def generate_insert_text_updates(self, num_entries):
+    def generate_insert_text_updates(self):
         updates = []
         for section in self.sections.values():
             updates.extend(section.generate_insert_text_updates())
@@ -257,11 +257,14 @@ class Section(object):
         # Every section starts with a template entry, so this starts at 1
         self.num_items = 1
         self.container = None
-        self.template = None
         
         # Entry shape is the # of (rows, columns) in the tables that make up
         # each entry in this section
         self.entry_shape = shape
+
+        # Every cell in the entry will have a template, indexed by its 
+        # (row, col) position
+        self.templates = {}
 
         # Keep track of whether or not we've generated the entries for our
         # section yet, to ensure it happens for all sections before we try
@@ -304,41 +307,58 @@ class Section(object):
         self.generated_entries = True
         return updates
 
+    def _make_get_table_start(self, r, c):
+        def get_table_start(table):
+            return (table['table']
+                         ['tableRows'][r]
+                         ['tableCells'][c]
+                         ['content'][0]['startIndex'])
+        return get_table_start
+
+
     def generate_style_updates(self):
         if not self.generated_entries:
             raise DocumentParseError(
-                f'{self.name} tried to generate style updates before generating entries!')
+                f'{self.name} tried to generate style updates before '
+                 'generating entries!')
 
-        style_updates = [
-            make_table_cell_style_request(self.template.cell_style, 
-                                          table['startIndex'],
-                                          0,0)
-            for _, table in self.items
-        ]
-        style_updates.extend([
-            make_paragraph_style_request(style, get_table_start(table))
-            for style in self.template.paragraph_styles
-            for _, table in self.items
-        ])
-        style_updates.extend([
-            make_text_style_request(style, get_table_start(table))
-            for style in self.template.text_styles
-            for _, table in self.items
-        ])
+        style_updates = []
+        for (r, c), template in self.templates.items():
+            get_table_start = self._make_get_table_start(r, c)
+            style_updates.extend([
+                make_table_cell_style_request(template.cell_style, 
+                                              table['startIndex'],
+                                              r,c)
+                for _, table in self.items
+            ])
+            style_updates.extend([
+                make_paragraph_style_request(style, get_table_start(table))
+                for style in template.paragraph_styles
+                for _, table in self.items
+            ])
+            style_updates.extend([
+                make_text_style_request(style, get_table_start(table))
+                for style in template.text_styles
+                for _, table in self.items
+            ])
 
         return style_updates
 
     def generate_insert_text_updates(self):
         if not self.generated_entries:
             raise DocumentParseError(
-                f'{self.name} tried to generate insert text updates before generating entries!')
+                f'{self.name} tried to generate insert text updates before '
+                 'generating entries!')
 
-        return [
-            make_insert_text_request(self.template.text.format(n=n), 
-                                     get_table_start(table))
-            for n, (_, table) in enumerate(self.items)
-        ]
-
+        insert_updates = []
+        for (r, c), template in self.templates.items():
+            get_table_start = self._make_get_table_start(r, c)
+            insert_updates.extend([
+                make_insert_text_request(template.text.format(n=n), 
+                                         get_table_start(table))
+                for n, (_, table) in enumerate(self.items)
+            ])
+        return insert_updates
 
     def _parse_structure(self, container, start_index):
         # This is the 'main grid' cell that holds this section
@@ -367,16 +387,11 @@ class Section(object):
         # Return the following index for the next section in this container
         return end_index
 
-    def _parse_template_content(self):
-        """Fills out the template object for this section"""
+    def _parse_template_cell_content(self, table, row, col):
+        content_cell = table['table']['tableRows'][row]['tableCells'][col]
+        template = Template()
 
-        assert len(self.items) == 1, f'{self.name}, should only have one template item'
-        template_index, template_item = self.items[0]
-        anchor = self.container['content'][template_index - 1]
-        content_cell = template_item['table']['tableRows'][0]['tableCells'][0]
-
-        self.template = Template()
-        self.template.cell_style = content_cell['tableCellStyle']
+        template.cell_style = content_cell['tableCellStyle']
 
         offset = 0
         for paragraph in content_cell['content']:
@@ -411,12 +426,25 @@ class Section(object):
                 #
                 # Template text has a number formatter added to it so the index
                 # can be injected appropriately later
-                self.template.text += content.replace(']]', '{n:03d}]]')
-                self.template.text_styles.append(text_style)
+                template.text += content.replace(']]', '{n:03d}]]')
+                template.text_styles.append(text_style)
 
             paragraph_style['end'] = offset
 
-            self.template.paragraph_styles.append(paragraph_style)
+            template.paragraph_styles.append(paragraph_style)
+
+        return template
+
+    def _parse_template_content(self):
+        """Fills out the template object for this section"""
+
+        assert len(self.items) == 1, f'{self.name}, should only have one template item'
+        template_table = self.items[0][1]
+        for r in range(self.entry_shape[0]):
+            for c in range(self.entry_shape[1]):
+                template = self._parse_template_cell_content(template_table, r,
+                                                             c)
+                self.templates[(r, c)] = template
 
 def update_contact_info(resume):
     to_update = {}
@@ -477,9 +505,26 @@ def generate_content_updates(resume):
 
 def generate_experience_updates(experiences):
     experiences = resume['experiences']['data']
+    work_experiences = list(filter(lambda e: e['type'] == 'Work', experiences))
+    edu_experiences = list(filter(lambda e: e['type'] == 'Education', experiences))
 
     updates = []
-    for i, experience in enumerate(experiences):
+    for i, experience in enumerate(work_experiences):
+        n = '{:03d}'.format(i)
+        to_update = {}
+        for key in ('host', 'location_city', 'location_state', 'title'):
+            to_update[f'rex_{key}{n}'] = experience[key]
+        for key in ('start', 'end'):
+            to_update[f'rex_date_{key}{n}'] = '{} {}'.format(
+                experience[key + '_month'],
+                experience[key + '_year'])
+        to_update[f'rex_achievements{n}'] = '\n'.join(
+            map(lambda x: x['description'], experience['achievements']))
+        updates.extend(
+            list(map(make_replace_request, to_update.items()))
+        )
+        
+    for i, experience in enumerate(edu_experiences):
         n = '{:03d}'.format(i)
         to_update = {}
         for key in ('host', 'location_city', 'location_state', 'title'):
@@ -494,6 +539,7 @@ def generate_experience_updates(experiences):
             list(map(make_replace_request, to_update.items()))
         )
 
+
     return updates
 
 
@@ -504,7 +550,7 @@ def edit_doc(gdocs, doc_id):
 
     def do_update(requests):
         requests = order_updates(requests)
-        pprint(requests)
+        #pprint(requests)
         return gdocs.documents().batchUpdate(
             documentId=doc_id, body={'requests': requests}).execute()
 
@@ -549,11 +595,26 @@ def main():
 def test_fake_edit():
     layout = build_layout()
     with open('empty_doc.json', 'r') as f:
-        doc = json.load(f)
-        layout.parse(doc, DocState.PARSE_TEMPLATE)
+        empty_doc = json.load(f)
+    with open('blank_entries.json', 'r') as f:
+        blank_entries_doc = json.load(f)
+    with open('template_text.json', 'r') as f:
+        template_text_doc = json.load(f)
 
-        resume = load_info('./david.json')
-        pprint(order_updates(generate_entries_from_resume(resume, layout)))
+    resume = load_info('./david.json')
+
+    layout.parse(empty_doc, DocState.PARSE_TEMPLATE)
+    entries_updates = order_updates(generate_entries_from_resume(resume, layout))
+    #pprint(entries_updates)
+
+    layout.parse(blank_entries_doc, DocState.INSERT_TEMPLATE_TEXT)
+    insert_updates = order_updates(layout.generate_insert_text_updates())
+    #pprint(insert_updates)
+
+    layout.parse(template_text_doc, DocState.STYLE_TEMPLATE_ENTRIES)
+    style_updates = order_updates(layout.generate_style_updates())
+    pprint(style_updates)
+
 
 
 if __name__ == '__main__':
@@ -566,6 +627,8 @@ if __name__ == '__main__':
 
     #dump_document('1eNOSyhxsKjQZBMBgMgnEtgcpdTrj95kCrUBGxr-84zg')
     #dump_document('1RExcI9pWu6JTGqHDtXzfF0hnOj0U4KQtKf4qpFzXfwE')
+    #dump_document('1Ccb_0Q6ZdzPNyG91DsOO4IVoqywtnngr9LaRfeuaBdw')
+    #dump_document('1gzsR67lZrjY6m_HPepLo_SgP1JQMIY8C3YV427VlhSI')
 
     main()
     #test_fake_edit()
