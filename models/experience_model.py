@@ -64,7 +64,7 @@ class Experience(db.Model):
     #calculated fields
     @hybrid_property
     def date_end(self):
-        if self.end_month==Month.none and self.end_year==0:
+        if self.end_month==Month.none or self.end_year==0:
             return dt.datetime.today()
         else:
             end_str = f'1 {self.end_month.value}, {self.end_year}'
@@ -91,7 +91,7 @@ class Experience(db.Model):
 
     @hybrid_property
     def is_current(self):
-        if self.end_month==Month.none and self.end_year==0:
+        if self.end_month==Month.none or self.end_year==0:
             return True
         else:
             return False
