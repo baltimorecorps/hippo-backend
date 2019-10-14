@@ -1,15 +1,36 @@
-from flask import Blueprint
-from flask_restful import Api
-from resources.Contacts import ContactAll, ContactOne, Profile
-from resources.Experience import ExperienceAll, ExperienceOne
+import os
+from flask import Flask
+from api import api_bp
 
-api_bp = Blueprint('api',__name__)
-api = Api(api_bp)
+def load_from_dev(app):
+    app.config.from_pyfile('secrets/dev.cfg')
 
-# Route
-api.add_resource(ContactAll, '/contacts')
-api.add_resource(ContactOne, '/contacts/<int:contact_id>', '/contacts')
-api.add_resource(Profile, '/contacts/<int:contact_id>/profile')
-api.add_resource(ExperienceAll, '/contacts/<int:contact_id>/experiences/')
-api.add_resource(ExperienceOne, '/contacts/<int:contact_id>/experiences/',
-                 '/contacts/<int:contact_id>/experiences/<int:experience_id>')
+def load_from_env(app):
+    if os.environ.get('DATABASE_URL'):
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+
+def load_config(app, env):
+    if env is None:
+        env = os.environ.get('DEPLOY_ENV')
+
+    if env == 'local':
+        # Stick with the defaults
+        return 
+    elif env == 'dev':
+        load_from_dev(app)
+    else:
+        load_from_env(app)
+
+def create_app(env=None):
+    app = Flask(__name__)
+    app.config.from_object('defaultcfg')
+    load_config(app, env)
+    app.register_blueprint(api_bp, url_prefix='/api')
+
+    @app.route('/')
+    def home_page():
+    	return 'Home page'
+
+    from models.base_model import db
+    db.init_app(app)
+    return app

@@ -3,7 +3,7 @@ from flask_migrate import Migrate, MigrateCommand
 from models.contact_model import db
 from app import create_app
 
-app = create_app('local')
+app = create_app('dev')
 
 migrate = Migrate(app, db)
 manager = Manager(app)

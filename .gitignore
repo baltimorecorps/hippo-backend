@@ -1,5 +1,11 @@
 .DS_Store
 .idea
-
+.pytest_cache
 __pycache__/
 venv/
+env/
+secrets/
+*.pyc
+
+*.swp
+*.swo
