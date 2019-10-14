@@ -45,10 +45,10 @@ class Experience(db.Model):
     host = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     degree = db.Column(db.Enum(Degree, name='Degree'))
-    start_month = db.Column(db.Enum(Month, name='MonthType'))
+    start_month = db.Column(db.Enum(Month, name='MonthType'), nullable=False)
     start_year = db.Column(db.Integer, nullable=False)
-    end_month = db.Column(db.Enum(Month, name='MonthType'))
-    end_year = db.Column(db.Integer)
+    end_month = db.Column(db.Enum(Month, name='MonthType'), nullable=False)
+    end_year = db.Column(db.Integer, nullable=False)
     type = db.Column(db.Enum(Type, name='ExperienceType'))
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
     location_city = db.Column(db.String(100))
@@ -64,7 +64,7 @@ class Experience(db.Model):
     #calculated fields
     @hybrid_property
     def date_end(self):
-        if self.end_month==Month.none and self.end_year==0:
+        if self.end_month==Month.none or self.end_year==0:
             return dt.datetime.today()
         else:
             end_str = f'1 {self.end_month.value}, {self.end_year}'
@@ -91,7 +91,7 @@ class Experience(db.Model):
 
     @hybrid_property
     def is_current(self):
-        if self.end_month==Month.none and self.end_year==0:
+        if self.end_month==Month.none or self.end_year==0:
             return True
         else:
             return False
@@ -106,8 +106,8 @@ class ExperienceSchema(Schema):
     is_current = fields.Boolean(dump_only=True)
     start_month = EnumField(Month, by_value=True, required=True)
     start_year = fields.Integer(required=True)
-    end_month = EnumField(Month, by_value=True, missing=None)
-    end_year = fields.Integer(allow_none=True)
+    end_month = EnumField(Month, by_value=True, required=True)
+    end_year = fields.Integer(required=True)
     length_year = fields.Integer(dump_only=True)
     length_month = fields.Integer(dump_only=True)
     type = EnumField(Type, by_value=True)

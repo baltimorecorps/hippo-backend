@@ -11,7 +11,7 @@ curl http://localhost:5000/api/contacts/3 --request DELETE
 --------------------------------------------------
 Experiences
 POST
-curl http://localhost:5000/api/contacts/1/experiences/ --request POST --data '{"description": "sup","host": "Kool","title": "Kid", "contact_id": 1, "start_month": "January", "start_year": 2019, "end_month": null, "end_year": null, "type": "Work", "achievements": [{"description": "description 1"}, {"description": "description 1"}]}'
+curl http://localhost:5000/api/contacts/1/experiences/ --request POST --data '{"description": "sup","host": "Kool","title": "Kid", "contact_id": 1, "start_month": "January", "start_year": 2019, "end_month": "none", "end_year": 0, "type": "Work", "achievements": [{"description": "description 1"}, {"description": "description 1"}]}'
 curl http://localhost:5000/api/contacts/1/experiences/ --request POST --data '{"description": "sup","host": "Chef","title": "Boyardee", "contact_id": 1, "start_month": "January", "start_year": 2010, "end_month": "May", "end_year": 2012, "type": "Work", "achievements": [{"description": "description 1"}, {"description": "description 1"}]}'
 
 PUT
