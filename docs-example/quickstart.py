@@ -9,6 +9,7 @@ from pprint import pprint
 
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
+from google.oauth2 import service_account
 from google.auth.transport.requests import Request
 
 # If modifying these scopes, delete the file token.pickle.
@@ -22,7 +23,7 @@ FILLED_DOCUMENT_ID = '1R80Bdc5eGdAIQJ3UULX_GRLkSAOV49H8qfZb5PMs1gs'
 TEST_DOCUMENT_ID = '1RExcI9pWu6JTGqHDtXzfF0hnOj0U4KQtKf4qpFzXfwE'
 DOCUMENT_ID = TEST_DOCUMENT_ID
 
-def init_services():
+def get_user_creds():
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -41,7 +42,15 @@ def init_services():
         # Save the credentials for the next run
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
+    return creds
 
+def get_service_creds():
+    credentials = service_account.Credentials.from_service_account_file(
+        '../secrets/HippoSvcAcctDev.json')
+    return credentials.with_scopes(SCOPES)
+
+def init_services():
+    creds = get_user_creds()
     gdrive = build('drive', 'v3', credentials=creds)
     gdocs = build('docs', 'v1', credentials=creds)
 
@@ -584,9 +593,12 @@ def main():
     # Retrieve the documents contents from the Docs service.
     response = gdrive.files().copy(fileId=DOCUMENT_ID, body={'name': 'Automatic Test File'}).execute()
     doc_id = response['id']
+    gdrive.permissions().create(fileId=doc_id, body={
+        'role': 'writer',
+        'type': 'anyone',
+    }).execute()
     print(f'https://docs.google.com/document/d/{doc_id}/edit', file=sys.stderr)
     edit_doc(gdocs, doc_id)
-
 
 def test_fake_edit():
     layout = build_layout()
@@ -627,4 +639,5 @@ if __name__ == '__main__':
     #dump_document('1gzsR67lZrjY6m_HPepLo_SgP1JQMIY8C3YV427VlhSI')
 
     main()
+    #update_permissions()
     #test_fake_edit()
