@@ -25,6 +25,19 @@
             ]
         }
     },
+    "tags": {
+        "status": "success",
+        "data": [
+            {
+                "name": "Python",
+                "score": "3 years"
+            },
+            {
+                "name": "Web Development",
+                "score": "2.5 years"
+            }
+        ]
+    },
     "experiences": {
         "status": "success",
         "data": [
@@ -151,6 +164,50 @@
                     }
                 ],
                 "end_year": 2017
+            },
+            {
+                "length_month": 6,
+                "location_state": "NY",
+                "start_year": 2011,
+                "length_year": 3,
+                "contact_id": 1,
+                "is_current": false,
+                "title": "Software Engineer",
+                "location_city": "New York",
+                "end_month": "January",
+                "type": "Accomplishment",
+                "id": 5,
+                "degree": null,
+                "host": "OkCupid",
+                "start_month": "July",
+                "description": "agalhlahghgalhglagh",
+                "achievements": [
+                    {
+                        "id": 18,
+                        "description": "Designed and built event tracking log for all actions on OkCupid which handles >400M events/day"
+                    },
+                    {
+                        "id": 19,
+                        "description": "Promoted to Lead Software Engineer, duties expanded to include mentoring other engineers and a larger role in design and architecture of the site as a whole (Feb 2013)"
+                    },
+                    {
+                        "id": 20,
+                        "description": "Took on technical lead for development of new app, Crazy Blind Date"
+                    },
+                    {
+                        "id": 21,
+                        "description": "Developed an entirely new date scheduling and matching algorithm"
+                    },
+                    {
+                        "id": 22,
+                        "description": "Refactored core infrastructure of OkCupid to be shared by Crazy Blind Date"
+                    },
+                    {
+                        "id": 23,
+                        "description": "Built and maintained features on all OkCupid backend services"
+                    }
+                ],
+                "end_year": 2015
             },
             {
                 "length_month": 6,
