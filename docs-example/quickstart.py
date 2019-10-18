@@ -4,7 +4,7 @@ import pickle
 import os.path
 import json
 from enum import Enum
-from collections import defaultdict 
+from collections import defaultdict
 from pprint import pprint
 
 from googleapiclient.discovery import build
@@ -70,7 +70,7 @@ def make_insert_text_request(text, location):
             'text': text,
             'location': {
                 'segmentId': '',
-                'index': location, 
+                'index': location,
             }
         }
     }
@@ -82,7 +82,7 @@ def make_insert_table_request(location, rows, cols):
             'columns': cols,
             'location': {
                 'segmentId': '',
-                'index': location, 
+                'index': location,
             }
         }
     }
@@ -93,7 +93,7 @@ def make_delete_table_row_request(location, row):
             'tableCellLocation': {
                 'tableStartLocation': {
                     'segmentId': '',
-                    'index': location, 
+                    'index': location,
                 },
                 'rowIndex': row,
                 'columnIndex': 0,
@@ -167,7 +167,7 @@ def order_updates(updates):
     def sort_fn(update):
         key = list(update.keys())[0]
         return get_update_index(update)
-    
+
     return sorted(updates, key=sort_fn, reverse=True)
 
 
@@ -253,16 +253,16 @@ class Template(object):
 
 class Section(object):
     def __init__(self, name, shape=(1,1)):
-        self.name = name 
+        self.name = name
         # Every section starts with a template entry, so this starts at 1
         self.num_items = 1
         self.container = None
-        
+
         # Entry shape is the # of (rows, columns) in the tables that make up
         # each entry in this section
         self.entry_shape = shape
 
-        # Every cell in the entry will have a template, indexed by its 
+        # Every cell in the entry will have a template, indexed by its
         # (row, col) position
         self.templates = {}
 
@@ -326,7 +326,7 @@ class Section(object):
         for (r, c), template in self.templates.items():
             get_table_start = self._make_get_table_start(r, c)
             style_updates.extend([
-                make_table_cell_style_request(template.cell_style, 
+                make_table_cell_style_request(template.cell_style,
                                               table['startIndex'],
                                               r,c)
                 for _, table in self.items
@@ -354,7 +354,7 @@ class Section(object):
         for (r, c), template in self.templates.items():
             get_table_start = self._make_get_table_start(r, c)
             insert_updates.extend([
-                make_insert_text_request(template.text.format(n=n), 
+                make_insert_text_request(template.text.format(n=n),
                                          get_table_start(table))
                 for n, (_, table) in enumerate(self.items)
             ])
@@ -369,11 +369,11 @@ class Section(object):
         # Note: num_items doesn't count the header item, so we add one
         end_index = start_index + self.num_items + 1
 
-        # Section header item, which is always a table 
+        # Section header item, which is always a table
         # Stored as (index, table)
         self.header = tables[start_index]
 
-        # These are our section's elements in the container. 
+        # These are our section's elements in the container.
         # Note that 'elements' of a section are always Tables, which are
         # always at least separated by at least one Paragraph element, so
         # these indices are not contigous
@@ -396,13 +396,13 @@ class Section(object):
         offset = 0
         for paragraph in content_cell['content']:
             assert 'paragraph' in paragraph, 'All elements of template cells should be Paragraphs'
-            paragraph_style = { 
+            paragraph_style = {
                 'start': offset,
                 'style': paragraph['paragraph']['paragraphStyle']
             }
             for element in paragraph['paragraph']['elements']:
                 assert 'textRun' in element, 'All elements of paragraphs should be TextRuns'
-                text_style = { 
+                text_style = {
                     'start': offset,
                     'style': element['textRun']['textStyle']
                 }
@@ -484,12 +484,12 @@ def generate_entries_from_resume(resume, layout):
     edu_experiences = list(filter(lambda e: e['type'] == 'Education', experiences))
     service_experiences = list(filter(lambda e: e['type'] == 'Service', experiences))
     accomplishments = list(filter(lambda e: e['type'] == 'Accomplishment', experiences))
+    tags = resume['tags']['data']
 
     num_entries = {
         'Relevant Experience': len(work_experiences),
-        'Skills and Abilities': 3,
-        #'Achievements': len(accomplishments),
-        'Achievements': 2,
+        'Skills and Abilities': len(tags),
+        'Achievements': len(accomplishments),
         'Relevant Education': len(edu_experiences),
         'Additional Experience': 4,
         'Additional Education': 2,
@@ -503,8 +503,26 @@ def generate_content_updates(resume):
     updates = []
     updates.extend(generate_experience_updates(resume))
 
+def generate_tag_updates(resume):
+    tags = resume['tags']['data']
+
+    updates = []
+    to_update = {}
+    for i, tag in enumerate(tags):
+        n = '{:03d}'.format(i)
+        to_update = {
+            f'sa_tag{n}': tag['name'],
+            f'sa_score{n}': tag['score']
+        }
+        updates.extend(
+            [make_replace_request(update) for update in to_update.items()]
+        )
+
+    return updates
+
 def generate_experience_updates(resume):
     experiences = resume['experiences']['data']
+    accomplishments = [exp for exp in experiences if exp['type'] == 'Accomplishment']
     work_experiences = list(filter(lambda e: e['type'] == 'Work', experiences))
     edu_experiences = list(filter(lambda e: e['type'] == 'Education', experiences))
 
@@ -523,7 +541,7 @@ def generate_experience_updates(resume):
         updates.extend(
             list(map(make_replace_request, to_update.items()))
         )
-        
+
     for i, experience in enumerate(edu_experiences):
         n = '{:03d}'.format(i)
         to_update = {}
@@ -534,6 +552,18 @@ def generate_experience_updates(resume):
         to_update[f're_degree{n}'] = experience['degree']
         updates.extend(
             list(map(make_replace_request, to_update.items()))
+        )
+
+    for i, experience in enumerate(accomplishments):
+        n = '{:03d}'.format(i)
+        to_update = {}
+        to_update[f'a_date{n}'] = '{} {}'.format(
+            experience['start_month'],
+            experience['start_year'])
+        to_update[f'a_host{n}'] = experience['host']
+        to_update[f'a_description{n}'] = experience['description']
+        updates.extend(
+            [make_replace_request(item) for item in to_update.items()]
         )
 
     return updates
@@ -571,6 +601,7 @@ def edit_doc(gdocs, doc_id):
 
     # INSERT_CONTENT
     do_update(generate_experience_updates(resume))
+    do_update(generate_tag_updates(resume))
 
 
 def load_info(filename):
