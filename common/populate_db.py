@@ -82,8 +82,7 @@ exp_columbia = Experience(
     end_month=Month('May'),
     end_year=1983,
     type=ExpType('Education'),
-    location_city='New York',
-    location_state='New York',
+    location='New York, NY, USA',
     contact_id=124,
 )
 
@@ -98,8 +97,7 @@ exp_goucher = Experience(
     end_month=Month('May'),
     end_year=2016,
     type=ExpType('Education'),
-    location_city='Towson',
-    location_state='Maryland',
+    location='Towson, MD, USA',
     contact_id=123,
 )
 
@@ -114,8 +112,7 @@ exp_baltimore = Experience(
     end_month='none',
     end_year=0,
     type=ExpType('Work'),
-    location_city='Baltimore',
-    location_state='Maryland',
+    location='Baltimore, MD, USA',
     contact_id=123,
 )
 
