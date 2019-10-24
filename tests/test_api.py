@@ -97,8 +97,7 @@ EXPERIENCES = {
         'length_month': 8,
         'type': 'Education',
         'contact_id': 124,
-        'location_city': 'New York',
-        'location_state': 'New York',
+        'location': 'New York, NY, USA',
         'achievements': [],
     },
     'goucher': {
@@ -116,8 +115,7 @@ EXPERIENCES = {
         'length_month': 8,
         'type': 'Education',
         'contact_id': 123,
-        'location_city': 'Towson',
-        'location_state': 'Maryland',
+        'location': 'Towson, MD, USA',
         'achievements': [
             ACHIEVEMENTS['goucher1'],
         ],
@@ -137,8 +135,7 @@ EXPERIENCES = {
         'length_month': DATE_LENGTH % 12,
         'type': 'Work',
         'contact_id': 123,
-        'location_city': 'Baltimore',
-        'location_state': 'Maryland',
+        'location': 'Baltimore, MD, USA',
         'achievements': [
             ACHIEVEMENTS['baltimore1'],
             ACHIEVEMENTS['baltimore2'],
@@ -245,8 +242,7 @@ POSTS = {
         'end_year': 2019,
         'type': 'Work',
         'contact_id': 123,
-        'location_city': 'Test City',
-        'location_state': 'Test State',
+        'location': 'Test City, MD, USA',
         'achievements': [
             {'description': 'Test achievement 1'},
             {'description': 'Test achievement 2'},
@@ -467,6 +463,9 @@ def test_delete(app, delete_url, query):
     ]
 )
 def test_get(app, url, expected):
+    #the expected data comes from the EXPERIENCES constant above
+    #the actual data come from the populate_db.py script
+    #in the common directory
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
