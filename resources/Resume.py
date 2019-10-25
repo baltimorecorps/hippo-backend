@@ -1,15 +1,66 @@
 from flask_restful import Resource, request
-from models.resume_model import Resume, ResumeSchema
+from models.resume_model import Resume, ResumeSchema, ResumeSchemaNew
 from models.resume_section_model import ResumeSection, ResumeSectionSchema
 from models.resume_item_model import ResumeItem, ResumeItemSchema
+from models.contact_model import Contact
+from models.experience_model import Experience
+from models.tag_item_model import TagItem
 from models.base_model import db
 from marshmallow import ValidationError
+import datetime as dt
 
 resumes_schema = ResumeSchema(many=True)
 resume_schema = ResumeSchema()
+resume_generate = ResumeSchemaNew()
 
 resume_sections_schema = ResumeSectionSchema(many=True)
 resume_section_schema = ResumeSectionSchema()
+
+class GenerateResume(Resource):
+
+    def post(self, contact_id):
+        #load the input data
+        input_data = request.get_json(force=True)
+        try:
+            data = resume_generate.load(input_data)
+        except ValidationError as e:
+            return e.messages, 422
+        if not data:
+            return {'message': 'No input data provided'}, 400
+
+        #pop off the ids for the data in each of the sections
+        relevant_exp = data.pop('relevant_exp', None)
+        other_exp = data.pop('other_exp', None)
+        relevant_edu = data.pop('relevant_edu', None)
+        other_edu = data.pop('other_edu', None)
+        relevant_achieve = data.pop('relevant_achieve', None)
+        other_achieve = data.pop('other_achieve', None)
+        relevant_skills = data.pop('relevant_skills', None)
+        other_skills = data.pop('other_skills', None)
+
+        #query and add contact info to input data
+        data['contact'] = Contact.query.get(contact_id)
+        data['date_created'] = dt.datetime.today()
+        data['gdoc_link'] = None
+
+        #query subset of resume items using lists of ids then
+        #add those items to the input data with their section name
+        def query_by_ids(table, id_list, contact_id, section_name):
+            result = table.query.filter(table.id.in_(id_list),
+                                        table.contact_id==contact_id)
+            data[section_name] = result
+
+        query_by_ids(Experience, relevant_exp, contact_id, 'relevant_exp_dump')
+        query_by_ids(Experience, other_exp, contact_id, 'other_exp_dump')
+        query_by_ids(Experience, relevant_edu, contact_id, 'relevant_edu_dump')
+        query_by_ids(Experience, other_edu, contact_id, 'other_edu_dump')
+        query_by_ids(Experience, relevant_achieve, contact_id, 'relevant_achieve_dump')
+        query_by_ids(Experience, other_achieve, contact_id, 'other_achieve_dump')
+        query_by_ids(TagItem, relevant_skills, contact_id, 'relevant_skills_dump')
+        query_by_ids(TagItem, other_skills, contact_id, 'other_skills_dump')
+
+        throughput_data = resume_generate.dump(data)
+        return {'status': 'success', 'data': throughput_data}, 201
 
 class ResumeAll(Resource):
 
