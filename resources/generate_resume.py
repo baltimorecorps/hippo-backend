@@ -31,7 +31,7 @@ SECTIONS = [
     {'row': 2, 'col': 1, 'name': 'Languages', 'shape': (1,2))},
 ]
 
-def init_services():
+def get_user_creds():
     creds = None
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
@@ -50,7 +50,15 @@ def init_services():
         # Save the credentials for the next run
         with open('token.pickle', 'wb') as token:
             pickle.dump(creds, token)
+    return creds
 
+def get_service_creds():
+    credentials = service_account.Credentials.from_service_account_file(
+        '../secrets/HippoSvcAcctDev.json')
+    return credentials.with_scopes(SCOPES)
+
+def init_services():
+    creds = get_user_creds()
     gdrive = build('drive', 'v3', credentials=creds)
     gdocs = build('docs', 'v1', credentials=creds)
 
