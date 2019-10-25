@@ -507,7 +507,8 @@ def generate_content_updates(resume):
     updates.extend(generate_experience_updates(resume))
 
 def generate_tag_updates(resume):
-    tags = resume['tags']['data']
+    relevant_skills = resume['relevant_skills_dump']
+    other_skills = resume['other_skills_dump']
 
     updates = []
     to_update = {}
@@ -524,13 +525,17 @@ def generate_tag_updates(resume):
     return updates
 
 def generate_experience_updates(resume):
-    experiences = resume['experiences']['data']
-    accomplishments = [exp for exp in experiences if exp['type'] == 'Accomplishment']
-    work_experiences = list(filter(lambda e: e['type'] == 'Work', experiences))
-    edu_experiences = list(filter(lambda e: e['type'] == 'Education', experiences))
+    relevant_exp = resume['relevant_exp_dump']
+    other_exp = resume['other_exp_dump']
+    relevant_edu = resume['relevant_edu_dump']
+    other_edu = resume['other_edu_dump']
+    relevant_achieve = resume['relevant_achieve_dump']
+    other_achieve = resume['other_achieve_dump']
 
     updates = []
-    for i, experience in enumerate(work_experiences):
+
+    ### FIX THIS SECTION
+    for i, experience in enumerate(relevant_exp):
         n = '{:03d}'.format(i)
         to_update = {}
         for key in ('host', 'location_city', 'location_state', 'title'):
@@ -545,7 +550,7 @@ def generate_experience_updates(resume):
             list(map(make_replace_request, to_update.items()))
         )
 
-    for i, experience in enumerate(edu_experiences):
+    for i, experience in enumerate(relevant_edu):
         n = '{:03d}'.format(i)
         to_update = {}
         to_update[f're_date{n}'] = '{} {}'.format(
@@ -572,8 +577,8 @@ def generate_experience_updates(resume):
     return updates
 
 
-def edit_doc(gdocs, doc_id):
-    resume = load_info('./david.json')
+def edit_doc(gdocs, doc_id, data):
+    resume = data
 
     layout = build_layout()
 
@@ -607,11 +612,6 @@ def edit_doc(gdocs, doc_id):
     do_update(generate_tag_updates(resume))
 
 
-def load_info(filename):
-    with open(filename, 'r') as f:
-        info = json.load(f)
-        return info
-
 def generate(data):
     (gdrive, gdocs) = init_services()
 
@@ -620,5 +620,5 @@ def generate(data):
                                    body={'name': data['name']}).execute()
     doc_id = response['id']
     # Update the new copy of the template
-    edit_doc(gdocs, doc_id)
+    edit_doc(gdocs, doc_id, data)
     return f'https://docs.google.com/document/d/{doc_id}/edit'

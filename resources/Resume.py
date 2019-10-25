@@ -6,6 +6,7 @@ from models.contact_model import Contact
 from models.experience_model import Experience
 from models.tag_item_model import TagItem
 from models.base_model import db
+from generate_resume import generate
 from marshmallow import ValidationError
 import datetime as dt
 
@@ -59,7 +60,10 @@ class GenerateResume(Resource):
         query_by_ids(TagItem, relevant_skills, contact_id, 'relevant_skills_dump')
         query_by_ids(TagItem, other_skills, contact_id, 'other_skills_dump')
 
+        #dumps the throughput data
         throughput_data = resume_generate.dump(data)
+        gdoc_link = generate(throughput_data)
+
         return {'status': 'success', 'data': throughput_data}, 201
 
 class ResumeAll(Resource):
