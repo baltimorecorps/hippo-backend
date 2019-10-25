@@ -233,6 +233,21 @@ RESUMES = {
     },
 }
 
+RESUME_OUTPUT = {
+    'name': 'Billy Resume',
+    'date_created': dt.datetime.today().strftime('%Y-%m-%d'),
+    'contact': CONTACTS['billy'],
+    'gdoc_link': None,
+    'relevant_exp_dump': [EXPERIENCES['goucher']],
+    'other_exp_dump': [EXPERIENCES['baltimore']],
+    'relevant_edu_dump': [EXPERIENCES['goucher']],
+    'other_edu_dump': [EXPERIENCES['baltimore']],
+    'relevant_achieve_dump': [EXPERIENCES['baltimore']],
+    'other_achieve_dump': [EXPERIENCES['goucher']],
+    'relevant_skills_dump': [TAG_ITEMS['billy_webdev']],
+    'other_skills_dump': [TAG_ITEMS['billy_webdev']]
+}
+
 
 POSTS = {
     'experience': {
@@ -252,6 +267,19 @@ POSTS = {
             {'description': 'Test achievement 2'},
         ],
     },
+    'resume': {
+        'name': 'Billy Resume',
+        'gdoc_link': None,
+        'contact_id': 123,
+        'relevant_exp': [512],
+        'other_exp': [513],
+        'relevant_edu': [512],
+        'other_edu': [513],
+        'relevant_achieve': [513],
+        'other_achieve': [512],
+        'relevant_skills': [21],
+        'other_skills': [21],
+    }
 }
 
 def post_request(app, url, data):
@@ -510,3 +538,22 @@ def test_get_many_unordered(app, url, expected):
         for item in data:
             pprint(item)
             assert item in expected
+
+@pytest.mark.parametrize(
+    "url,input,output",
+    [('/api/contacts/123/generate-resume/',POSTS['resume'],RESUME_OUTPUT)]
+)
+def test_generate_resume(app, url, input, output):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        response = client.post(url, data=json.dumps(input),
+                               headers=headers)
+        pprint(response.json)
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        assert data == output
