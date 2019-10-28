@@ -14,7 +14,7 @@ from pprint import pprint
 resumes_schema = ResumeSchema(many=True)
 resume_schema = ResumeSchema()
 resume_generate_schema = ResumeSchemaNew()
-resume_output_schema = ResumeSchemaNew(only=['id', 'name','date_created', 'gdoc_link'])
+resume_output_schema = ResumeSchemaNew(only=['id', 'name','date_created', 'gdoc_id'])
 
 resume_sections_schema = ResumeSectionSchema(many=True)
 resume_section_schema = ResumeSectionSchema()
