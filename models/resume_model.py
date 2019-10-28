@@ -12,7 +12,7 @@ class Resume(db.Model):
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     date_created = db.Column(db.Date, nullable=False)
-    gdoc_link = db.Column(db.String(255))
+    gdoc_id = db.Column(db.String(255))
 
     #relationships
     contact = db.relationship('Contact', back_populates='resumes')
@@ -43,7 +43,7 @@ class ResumeSchemaNew(Schema):
     #fields used to dump the data from the post request
     id = fields.Integer(dump_only=True)
     contact = fields.Nested(ContactSchema, dump_only=True)
-    gdoc_link = fields.String(dump_only=True)
+    gdoc_id = fields.String(dump_only=True)
     date_created = fields.Date(required=True, dump_only=True)
     relevant_exp_dump = fields.Nested(ExperienceSchema, many=True, dump_only=True)
     other_exp_dump = fields.Nested(ExperienceSchema, many=True, dump_only=True)

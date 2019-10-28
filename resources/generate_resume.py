@@ -549,6 +549,7 @@ def generate_experience_updates(resume):
     #creates updates for relevant_exp
     for i, exp in enumerate(relevant_exp):
         n = '{:03d}'.format(i)
+        #if exp['end_month']==0 or exp['end_year']=='none'
         to_update = {}
         for key in ('host', 'location_city', 'location_state', 'title'):
             to_update[f'rex_{key}{n}'] = exp[key]

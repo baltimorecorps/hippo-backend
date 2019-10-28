@@ -63,14 +63,14 @@ class GenerateResume(Resource):
         #dumps the throughput data and pass to generate resume script
         throughput_data = resume_generate_schema.dump(data)
         pprint(throughput_data)
-        gdoc_link = generate(throughput_data)
+        gdoc_id = generate(throughput_data)
 
         #creates dictionary to insert new resume record
         output_data = {
             'name': data['name'],
             'date_created': dt.datetime.today(),
             'contact_id': contact_id,
-            'gdoc_link': gdoc_link,
+            'gdoc_id': gdoc_id,
         }
         resume = Resume(**output_data)
         db.session.add(resume)
