@@ -9,6 +9,7 @@ from pprint import pprint
 
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
+from google.oauth2 import service_account
 from google.auth.transport.requests import Request
 
 # If modifying these scopes, delete the file token.pickle.
@@ -20,15 +21,15 @@ SCOPES = [
 # The ID of a sample document.
 DOCUMENT_ID = '1RExcI9pWu6JTGqHDtXzfF0hnOj0U4KQtKf4qpFzXfwE'
 SECTIONS = [
-    {'row': 1, 'col': 0, 'name': 'Relevant Experience', 'shape': (1,1))},
-    {'row': 1, 'col': 1, 'name': 'Skills and Abilities', 'shape': (1,2))},
-    {'row': 1, 'col': 1, 'name': 'Achievements', 'shape': (1,2))},
-    {'row': 1, 'col': 1, 'name': 'Relevant Education', 'shape': (1,2))},
-    {'row': 2, 'col': 0, 'name': 'Additional Experience', 'shape': (1,1))},
-    {'row': 2, 'col': 1, 'name': 'Additional Education', 'shape': (1,2))},
-    {'row': 2, 'col': 1, 'name': 'Other Achievements', 'shape': (1,2))},
-    {'row': 2, 'col': 1, 'name': 'Additional Skills', 'shape': (1,2))},
-    {'row': 2, 'col': 1, 'name': 'Languages', 'shape': (1,2))},
+    {'row': 1, 'col': 0, 'name': 'Relevant Experience', 'shape': (1,1)},
+    {'row': 1, 'col': 1, 'name': 'Skills and Abilities', 'shape': (1,2)},
+    {'row': 1, 'col': 1, 'name': 'Achievements', 'shape': (1,2)},
+    {'row': 1, 'col': 1, 'name': 'Relevant Education', 'shape': (1,2)},
+    {'row': 2, 'col': 0, 'name': 'Additional Experience', 'shape': (1,1)},
+    {'row': 2, 'col': 1, 'name': 'Additional Education', 'shape': (1,2)},
+    {'row': 2, 'col': 1, 'name': 'Other Achievements', 'shape': (1,2)},
+    {'row': 2, 'col': 1, 'name': 'Additional Skills', 'shape': (1,2)},
+    {'row': 2, 'col': 1, 'name': 'Languages', 'shape': (1,2)},
 ]
 
 def get_user_creds():
@@ -54,11 +55,11 @@ def get_user_creds():
 
 def get_service_creds():
     credentials = service_account.Credentials.from_service_account_file(
-        '../secrets/HippoSvcAcctDev.json')
+        'secrets/HippoSvcAcctDev.json')
     return credentials.with_scopes(SCOPES)
 
 def init_services():
-    creds = get_user_creds()
+    creds = get_service_creds()
     gdrive = build('drive', 'v3', credentials=creds)
     gdocs = build('docs', 'v1', credentials=creds)
 
@@ -466,14 +467,14 @@ class Section(object):
 def update_contact_info(resume):
     to_update = {}
     to_update['contact_name'] = ('{} {}'.format(
-        resume['contacts']['data']['first_name'],
-        resume['contacts']['data']['last_name']))
+        resume['contact']['first_name'],
+        resume['contact']['last_name']))
 
-    to_update['phone'] = resume['contacts']['data']['phone_primary']
-    to_update['email'] = resume['contacts']['data']['email_primary']['email']
-    to_update['city'] = 'Tuscaloosa'
-    to_update['state'] = 'AL'
-    to_update['primary_function'] = 'Software Engineer'
+    to_update['phone'] = resume['contact']['phone_primary']
+    to_update['email'] = resume['contact']['email_primary']['email']
+    to_update['city'] = 'Baltimore'
+    to_update['state'] = 'MD'
+    to_update['primary_function'] = ''
 
     return list(map(make_replace_request, to_update.items()))
 
@@ -485,27 +486,29 @@ def build_layout():
     layout = Layout()
     for section in SECTIONS:
         layout.add_section(section['row'], section['col'],
-                           section['name'], shape=section['shape'])
+                           Section(section['name'], shape=section['shape']))
     return layout
 
 ### NEEDS TO CHANGE
 def generate_entries_from_resume(resume, layout):
-    experiences = resume['experiences']['data']
-    work_experiences = list(filter(lambda e: e['type'] == 'Work', experiences))
-    edu_experiences = list(filter(lambda e: e['type'] == 'Education', experiences))
-    service_experiences = list(filter(lambda e: e['type'] == 'Service', experiences))
-    accomplishments = list(filter(lambda e: e['type'] == 'Accomplishment', experiences))
-    tags = resume['tags']['data']
+    relevant_exp = resume['relevant_exp_dump']
+    other_exp = resume['other_exp_dump']
+    relevant_edu = resume['relevant_edu_dump']
+    other_edu = resume['other_edu_dump']
+    relevant_achieve = resume['relevant_achieve_dump']
+    other_achieve = resume['other_achieve_dump']
+    relevant_skills = resume['relevant_skills_dump']
+    other_skills = resume['other_skills_dump']
 
     num_entries = {
-        'Relevant Experience': len(work_experiences),
-        'Skills and Abilities': len(tags),
-        'Achievements': len(accomplishments),
-        'Relevant Education': len(edu_experiences),
-        'Additional Experience': 4,
-        'Additional Education': 2,
-        'Other Achievements': 3,
-        'Additional Skills': 4,
+        'Relevant Experience': len(relevant_exp),
+        'Skills and Abilities': len(relevant_skills),
+        'Achievements': len(relevant_achieve),
+        'Relevant Education': len(relevant_edu),
+        'Additional Experience': len(other_exp),
+        'Additional Education': len(other_edu),
+        'Other Achievements': len(other_achieve),
+        'Additional Skills': len(other_skills),
         'Languages': 2,
     }
     return layout.generate_entries(num_entries)
@@ -543,17 +546,17 @@ def generate_experience_updates(resume):
     updates = []
 
     ### FIX THIS SECTION
-    for i, experience in enumerate(relevant_exp):
+    for i, exp in enumerate(relevant_exp):
         n = '{:03d}'.format(i)
         to_update = {}
         for key in ('host', 'location_city', 'location_state', 'title'):
-            to_update[f'rex_{key}{n}'] = experience[key]
+            to_update[f'rex_{key}{n}'] = exp[key]
         for key in ('start', 'end'):
             to_update[f'rex_date_{key}{n}'] = '{} {}'.format(
-                experience[key + '_month'],
-                experience[key + '_year'])
+                exp[key + '_month'],
+                exp[key + '_year'])
         to_update[f'rex_achievements{n}'] = '\n'.join(
-            map(lambda x: x['description'], experience['achievements']))
+            [x['description'] for x in exp['achievements']])
         updates.extend(
             list(map(make_replace_request, to_update.items()))
         )
@@ -570,7 +573,7 @@ def generate_experience_updates(resume):
             list(map(make_replace_request, to_update.items()))
         )
 
-    for i, experience in enumerate(accomplishments):
+    for i, experience in enumerate(relevant_achieve):
         n = '{:03d}'.format(i)
         to_update = {}
         to_update[f'a_date{n}'] = '{} {}'.format(
@@ -617,7 +620,7 @@ def edit_doc(gdocs, doc_id, data):
 
     # INSERT_CONTENT
     do_update(generate_experience_updates(resume))
-    do_update(generate_tag_updates(resume))
+    #do_update(generate_tag_updates(resume))
 
 
 def generate(data):

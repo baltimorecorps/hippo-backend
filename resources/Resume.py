@@ -6,13 +6,15 @@ from models.contact_model import Contact
 from models.experience_model import Experience
 from models.tag_item_model import TagItem
 from models.base_model import db
-from generate_resume import generate
+from .generate_resume import generate
 from marshmallow import ValidationError
 import datetime as dt
+from pprint import pprint
 
 resumes_schema = ResumeSchema(many=True)
 resume_schema = ResumeSchema()
-resume_generate = ResumeSchemaNew()
+resume_generate_schema = ResumeSchemaNew()
+resume_output_schema = ResumeSchemaNew(only=['id', 'name','date_created', 'gdoc_link'])
 
 resume_sections_schema = ResumeSectionSchema(many=True)
 resume_section_schema = ResumeSectionSchema()
@@ -23,7 +25,7 @@ class GenerateResume(Resource):
         #load the input data
         input_data = request.get_json(force=True)
         try:
-            data = resume_generate.load(input_data)
+            data = resume_generate_schema.load(input_data)
         except ValidationError as e:
             return e.messages, 422
         if not data:
@@ -41,8 +43,6 @@ class GenerateResume(Resource):
 
         #query and add contact info to input data
         data['contact'] = Contact.query.get(contact_id)
-        data['date_created'] = dt.datetime.today()
-        data['gdoc_link'] = None
 
         #query subset of resume items using lists of ids then
         #add those items to the input data with their section name
@@ -60,11 +60,23 @@ class GenerateResume(Resource):
         query_by_ids(TagItem, relevant_skills, contact_id, 'relevant_skills_dump')
         query_by_ids(TagItem, other_skills, contact_id, 'other_skills_dump')
 
-        #dumps the throughput data
-        throughput_data = resume_generate.dump(data)
+        #dumps the throughput data and pass to generate resume script
+        throughput_data = resume_generate_schema.dump(data)
+        pprint(throughput_data)
         gdoc_link = generate(throughput_data)
 
-        return {'status': 'success', 'data': throughput_data}, 201
+        #creates dictionary to insert new resume record
+        output_data = {
+            'name': data['name'],
+            'date_created': dt.datetime.today(),
+            'contact_id': contact_id,
+            'gdoc_link': gdoc_link,
+        }
+        resume = Resume(**output_data)
+        db.session.add(resume)
+        db.session.commit()
+        result = resume_output_schema.dump(resume)
+        return {'status': 'success', 'data': result}, 201
 
 class ResumeAll(Resource):
 

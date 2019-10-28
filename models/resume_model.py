@@ -41,6 +41,7 @@ class ResumeSchemaNew(Schema):
     other_skills = fields.List(fields.Integer(), load_only=True)
 
     #fields used to dump the data from the post request
+    id = fields.Integer(dump_only=True)
     contact = fields.Nested(ContactSchema, dump_only=True)
     gdoc_link = fields.String(dump_only=True)
     date_created = fields.Date(required=True, dump_only=True)
