@@ -18,7 +18,8 @@ SCOPES = [
     'https://www.googleapis.com/auth/drive'
 ]
 
-# The ID of a sample document.
+# The ID of a sample document:
+# https://docs.google.com/document/d/1RExcI9pWu6JTGqHDtXzfF0hnOj0U4KQtKf4qpFzXfwE/edit
 DOCUMENT_ID = '1RExcI9pWu6JTGqHDtXzfF0hnOj0U4KQtKf4qpFzXfwE'
 SECTIONS = [
     {'row': 1, 'col': 0, 'name': 'Relevant Experience', 'shape': (1,1)},
@@ -545,7 +546,7 @@ def generate_experience_updates(resume):
 
     updates = []
 
-    ### FIX THIS SECTION
+    #creates updates for relevant_exp
     for i, exp in enumerate(relevant_exp):
         n = '{:03d}'.format(i)
         to_update = {}
@@ -561,6 +562,23 @@ def generate_experience_updates(resume):
             list(map(make_replace_request, to_update.items()))
         )
 
+    #creates updates for other_exp
+    for i, exp in enumerate(other_exp):
+        n = '{:03d}'.format(i)
+        to_update = {}
+        for key in ('host', 'location_city', 'location_state', 'title'):
+            to_update[f'aex_{key}{n}'] = exp[key]
+        for key in ('start', 'end'):
+            to_update[f'aex_date_{key}{n}'] = '{} {}'.format(
+                exp[key + '_month'],
+                exp[key + '_year'])
+        to_update[f'aex_achievements{n}'] = '\n'.join(
+            [x['description'] for x in exp['achievements']])
+        updates.extend(
+            list(map(make_replace_request, to_update.items()))
+        )
+
+    #creates updates for relevant_edu
     for i, experience in enumerate(relevant_edu):
         n = '{:03d}'.format(i)
         to_update = {}
@@ -573,6 +591,20 @@ def generate_experience_updates(resume):
             list(map(make_replace_request, to_update.items()))
         )
 
+    #creates updates for other_edu
+    for i, experience in enumerate(relevant_edu):
+        n = '{:03d}'.format(i)
+        to_update = {}
+        to_update[f'ae_date{n}'] = '{} {}'.format(
+            experience['start_month'],
+            experience['start_year'])
+        to_update[f'ae_institution{n}'] = experience['host']
+        to_update[f'ae_degree{n}'] = experience['degree']
+        updates.extend(
+            list(map(make_replace_request, to_update.items()))
+        )
+
+    #creates updates for relevant_achievements
     for i, experience in enumerate(relevant_achieve):
         n = '{:03d}'.format(i)
         to_update = {}
@@ -581,6 +613,19 @@ def generate_experience_updates(resume):
             experience['start_year'])
         to_update[f'a_host{n}'] = experience['host']
         to_update[f'a_description{n}'] = experience['description']
+        updates.extend(
+            [make_replace_request(item) for item in to_update.items()]
+        )
+
+    #creates updates for other_achieve
+    for i, experience in enumerate(relevant_achieve):
+        n = '{:03d}'.format(i)
+        to_update = {}
+        to_update[f'oa_date{n}'] = '{} {}'.format(
+            experience['start_month'],
+            experience['start_year'])
+        to_update[f'oa_host{n}'] = experience['host']
+        to_update[f'oa_description{n}'] = experience['description']
         updates.extend(
             [make_replace_request(item) for item in to_update.items()]
         )
