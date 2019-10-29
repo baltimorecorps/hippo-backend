@@ -550,17 +550,13 @@ def generate_experience_updates(resume):
     for i, exp in enumerate(relevant_exp):
         n = '{:03d}'.format(i)
         if exp['end_month']==0 or exp['end_year']=='none':
-            exp['date'] = f'{exp['start_month']} {exp['start_year']}–Present'
+            exp['date'] = f'{exp["start_month"]} {exp["start_year"]}–Present'
         else:
-            exp['date'] = f'{exp['start_month']} {exp['start_year']}'
-                          f'–{exp['end_month']} {exp['end_year']}'
+            exp['date'] = (f'{exp["start_month"]} {exp["start_year"]}'
+                           f'–{exp["end_month"]} {exp["end_year"]}')
         to_update = {}
-        for key in ('host', 'location_city', 'location_state', 'title'):
+        for key in ('host', 'location', 'title', 'date'):
             to_update[f'rex_{key}{n}'] = exp[key]
-        for key in ('start', 'end'):
-            to_update[f'rex_date_{key}{n}'] = '{} {}'.format(
-                exp[key + '_month'],
-                exp[key + '_year'])
         to_update[f'rex_achievements{n}'] = '\n'.join(
             [x['description'] for x in exp['achievements']])
         updates.extend(
@@ -570,13 +566,14 @@ def generate_experience_updates(resume):
     #creates updates for other_exp
     for i, exp in enumerate(other_exp):
         n = '{:03d}'.format(i)
+        if exp['end_month']==0 or exp['end_year']=='none':
+            exp['date'] = f'{exp["start_month"]} {exp["start_year"]}–Present'
+        else:
+            exp['date'] = (f'{exp["start_month"]} {exp["start_year"]}'
+                           f'–{exp["end_month"]} {exp["end_year"]}')
         to_update = {}
-        for key in ('host', 'location_city', 'location_state', 'title'):
+        for key in ('host', 'location', 'title', 'date'):
             to_update[f'aex_{key}{n}'] = exp[key]
-        for key in ('start', 'end'):
-            to_update[f'aex_date_{key}{n}'] = '{} {}'.format(
-                exp[key + '_month'],
-                exp[key + '_year'])
         to_update[f'aex_achievements{n}'] = '\n'.join(
             [x['description'] for x in exp['achievements']])
         updates.extend(
