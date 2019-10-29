@@ -34,6 +34,6 @@ class ResumeItemSchema(Schema):
                                exclude=['achievements', 'contact_id'])
     tag = fields.Nested(TagItemSchema, dump_only=True, exclude=['contact_id'])
     achievement = fields.Nested(AchievementSchema, dump_only=True)
-    
+
     class Meta:
         unknown = EXCLUDE
