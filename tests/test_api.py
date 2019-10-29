@@ -538,6 +538,8 @@ def test_get_many_unordered(app, url, expected):
             pprint(item)
             assert item in expected
 
+
+@pytest.mark.skip
 @pytest.mark.parametrize(
     "url,input,output",
     [('/api/contacts/123/generate-resume/',POSTS['resume'],RESUME_OUTPUT)]

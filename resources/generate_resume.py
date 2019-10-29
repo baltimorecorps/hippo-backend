@@ -549,7 +549,7 @@ def generate_experience_updates(resume):
     #creates updates for relevant_exp
     for i, exp in enumerate(relevant_exp):
         n = '{:03d}'.format(i)
-        if exp['end_month']==0 or exp['end_year']=='none':
+        if exp['end_year'] == 0 or exp['end_month'] == 'none':
             exp['date'] = f'{exp["start_month"]} {exp["start_year"]}–Present'
         else:
             exp['date'] = (f'{exp["start_month"]} {exp["start_year"]}'
@@ -585,8 +585,8 @@ def generate_experience_updates(resume):
         n = '{:03d}'.format(i)
         to_update = {}
         to_update[f're_date{n}'] = '{} {}'.format(
-            experience['start_month'],
-            experience['start_year'])
+            experience['end_month'],
+            experience['end_year'])
         to_update[f're_institution{n}'] = experience['host']
         to_update[f're_degree{n}'] = experience['degree']
         updates.extend(
