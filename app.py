@@ -5,6 +5,11 @@ from api import api_bp
 def load_from_dev(app):
     app.config.from_pyfile('secrets/dev.cfg')
 
+def load_from_prod(app):
+    app.config.from_pyfile('secrets/prod.cfg')
+
+
+
 def load_from_env(app):
     if os.environ.get('DATABASE_URL'):
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
@@ -18,6 +23,8 @@ def load_config(app, env):
         return 
     elif env == 'dev':
         load_from_dev(app)
+    elif env == 'prod':
+        load_from_prod(app)
     else:
         load_from_env(app)
 
