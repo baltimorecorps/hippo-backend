@@ -677,6 +677,15 @@ def generate(data):
     response = gdrive.files().copy(fileId=DOCUMENT_ID,
                                    body={'name': data['name']}).execute()
     doc_id = response['id']
+    gdrive.revisions().update(
+        fileId=doc_id,
+        revisionId=1,
+        body={
+            'published': True,
+            'publishAuto': True,
+        }
+    ).execute()
+
     # Update the new copy of the template
     edit_doc(gdocs, doc_id, data)
-    return f'https://docs.google.com/document/d/{doc_id}/edit'
+    return doc_id 

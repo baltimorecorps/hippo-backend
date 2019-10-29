@@ -50,7 +50,7 @@ def get_service_creds():
     return credentials.with_scopes(SCOPES)
 
 def init_services():
-    creds = get_user_creds()
+    creds = get_service_creds()
     gdrive = build('drive', 'v3', credentials=creds)
     gdocs = build('docs', 'v1', credentials=creds)
 
@@ -654,6 +654,26 @@ def test_fake_edit():
     style_updates = order_updates(layout.generate_style_updates())
     pprint(style_updates)
 
+def get_permissions(doc_id):
+    (gdrive, gdocs) = init_services()
+    pprint(gdrive.permissions().list(fileId=doc_id))
+
+def publish(doc_id):
+    (gdrive, gdocs) = init_services()
+    revisions = gdrive.revisions().list(fileId=doc_id).execute()
+    pprint(revisions)
+    latestRevisionId = max(r['id'] for r in revisions['revisions'])
+
+    body = {
+        'published': True,
+        'publishAuto': True,
+    }
+    pprint(gdrive.revisions().update(
+        fileId=doc_id,
+        revisionId=latestRevisionId,
+        body=body
+    ).execute())
+    
 
 
 if __name__ == '__main__':
@@ -669,6 +689,10 @@ if __name__ == '__main__':
     #dump_document('1Ccb_0Q6ZdzPNyG91DsOO4IVoqywtnngr9LaRfeuaBdw')
     #dump_document('1gzsR67lZrjY6m_HPepLo_SgP1JQMIY8C3YV427VlhSI')
 
-    main()
     #update_permissions()
     #test_fake_edit()
+    publish('1Chx-qGNSE5NBHWvaVeevH-27Ba-BwUbgqhhZ1Hd3Tu4')
+
+
+
+    #main()
