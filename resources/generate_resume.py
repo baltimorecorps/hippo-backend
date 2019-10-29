@@ -566,7 +566,7 @@ def generate_experience_updates(resume):
     #creates updates for other_exp
     for i, exp in enumerate(other_exp):
         n = '{:03d}'.format(i)
-        if exp['end_month']==0 or exp['end_year']=='none':
+        if exp['end_year'] == 0 or exp['end_month'] == 'none':
             exp['date'] = f'{exp["start_month"]} {exp["start_year"]}–Present'
         else:
             exp['date'] = (f'{exp["start_month"]} {exp["start_year"]}'
@@ -594,12 +594,12 @@ def generate_experience_updates(resume):
         )
 
     #creates updates for other_edu
-    for i, experience in enumerate(relevant_edu):
+    for i, experience in enumerate(other_edu):
         n = '{:03d}'.format(i)
         to_update = {}
         to_update[f'ae_date{n}'] = '{} {}'.format(
-            experience['start_month'],
-            experience['start_year'])
+            experience['end_month'],
+            experience['end_year'])
         to_update[f'ae_institution{n}'] = experience['host']
         to_update[f'ae_degree{n}'] = experience['degree']
         updates.extend(
@@ -620,7 +620,7 @@ def generate_experience_updates(resume):
         )
 
     #creates updates for other_achieve
-    for i, experience in enumerate(relevant_achieve):
+    for i, experience in enumerate(other_achieve):
         n = '{:03d}'.format(i)
         to_update = {}
         to_update[f'oa_date{n}'] = '{} {}'.format(
@@ -677,6 +677,10 @@ def generate(data):
     response = gdrive.files().copy(fileId=DOCUMENT_ID,
                                    body={'name': data['name']}).execute()
     doc_id = response['id']
+    gdrive.permissions().create(fileId=doc_id, body={
+        'role': 'writer',
+        'type': 'anyone',
+    }).execute()
     gdrive.revisions().update(
         fileId=doc_id,
         revisionId=1,
@@ -688,4 +692,5 @@ def generate(data):
 
     # Update the new copy of the template
     edit_doc(gdocs, doc_id, data)
+    print(doc_id)
     return doc_id 
