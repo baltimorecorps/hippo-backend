@@ -105,10 +105,6 @@ class ResumeOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
-        from models.tag_item_model import TagItemSchema
-        ris = ResumeItemSchema()
-        tis = TagItemSchema()
-        print(tis.dump(res.sections[1].items[0].tag))
         result = resume_schema.dump(res)
         return {'status': 'success', 'data': result}, 200
 

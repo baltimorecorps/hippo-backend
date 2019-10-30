@@ -223,10 +223,7 @@ RESUMES = {
         'contact': CONTACTS['billy'],
         'name': "Billy's Resume",
         'date_created': '2019-05-04',
-        'sections': [
-            filter_dict(RESUME_SECTIONS['billy_work'], {'resume_id'}),
-            filter_dict(RESUME_SECTIONS['billy_skills'], {'resume_id'}),
-        ],
+        'gdoc_id': 'abcdefghijklmnopqrstuvwxyz1234567890-_',
     },
 }
 
@@ -341,22 +338,6 @@ def post_request(app, url, data):
       },
       lambda id: Resume.query.get(id)
       )
-    ,('/api/resumes/51/sections/',
-      {
-        'resume_id': 51,
-        'min_count': 1,
-        'max_count': 50,
-        'name': "Test Section",
-        'items': [
-            {
-                'resume_order': 0,
-                'indented': False,
-                'exp_id': 512,
-            },
-        ],
-      },
-      lambda id: ResumeSection.query.get(id)
-      )
     ]
 )
 def test_post(app, url, data, query):
@@ -426,18 +407,6 @@ def test_post_experience_dump_only(app):
       lambda: Resume.query.get(51),
       lambda r: r.name == 'test',
       )
-    ,('/api/resumes/51/sections/61/',
-      {'items': [{
-          'resume_order': 0,
-          'indented': True,
-          'achievement_id': 81,
-      }]},
-      lambda: ResumeSection.query.get(61),
-      lambda rs: (len(rs.items) == 1
-                  and rs.items[0].achievement is not None
-                  and rs.items[0].achievement.description ==
-                      ACHIEVEMENTS['baltimore1']['description'])
-      )
     ]
 )
 def test_put(app, url, update, query, test):
@@ -461,7 +430,6 @@ def test_put(app, url, update, query, test):
     "delete_url,query",
     [('/api/experiences/512/', lambda: Experience.query.get(512))
     ,('/api/resumes/51/', lambda: Resume.query.get(51))
-    ,('/api/resumes/51/sections/61/', lambda: ResumeSection.query.get(61))
     ]
 )
 def test_delete(app, delete_url, query):
@@ -487,7 +455,6 @@ def test_delete(app, delete_url, query):
     ,('/api/tags/123/', TAGS['python'])
     ,('/api/tags/124/', TAGS['webdev'])
     ,('/api/resumes/51/', RESUMES['billy'])
-    ,('/api/resumes/51/sections/61/', RESUME_SECTIONS['billy_work'])
     ]
 )
 def test_get(app, url, expected):
@@ -516,7 +483,6 @@ def test_get(app, url, expected):
     ,('/api/tags/', TAGS.values())
     ,('/api/contacts/123/tags/', TAG_ITEMS.values())
     ,('/api/contacts/123/resumes/', RESUMES.values())
-    ,('/api/resumes/51/sections/', RESUME_SECTIONS.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):

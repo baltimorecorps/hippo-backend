@@ -16,8 +16,8 @@ class Resume(db.Model):
 
     #relationships
     contact = db.relationship('Contact', back_populates='resumes')
-    sections = db.relationship('ResumeSection', back_populates='resume',
-                               cascade='all, delete, delete-orphan')
+    #sections = db.relationship('ResumeSection', back_populates='resume',
+    #                           cascade='all, delete, delete-orphan')
 
 class ResumeSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -25,8 +25,9 @@ class ResumeSchema(Schema):
     contact = fields.Nested(ContactSchema, dump_only=True)
     name = fields.String(required=True)
     date_created = fields.Date(required=True)
-    sections = fields.Nested(ResumeSectionSchema, dump_only=True, many=True,
-                             exclude=['resume_id', 'contact_id'])
+    gdoc_id = fields.String(dump_only=True)
+    #sections = fields.Nested(ResumeSectionSchema, dump_only=True, many=True,
+    #                         exclude=['resume_id', 'contact_id'])
 
 class ResumeSchemaNew(Schema):
     #fields used to load the data from the POST request

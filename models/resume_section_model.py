@@ -14,7 +14,7 @@ class ResumeSection(db.Model):
     max_count = db.Column(db.Integer)
 
     #relationships
-    resume = db.relationship('Resume', back_populates='sections')
+    #resume = db.relationship('Resume', back_populates='sections')
     items = db.relationship('ResumeItem', back_populates='section',
                             cascade='all, delete, delete-orphan')
 

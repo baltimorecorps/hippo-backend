@@ -174,34 +174,7 @@ resume_billy = Resume(
     contact_id=123,
     name="Billy's Resume",
     date_created=date(2019,5,4),
-    sections=[
-        ResumeSection(
-            id=61,
-            resume_id=51,
-            name="Work Experience",
-            items=[
-                ResumeItem(
-                    resume_order=0,
-                    section_id=61,
-                    exp_id=513,
-                    resume_id=51,
-                ),
-            ]
-        ),
-        ResumeSection(
-            id=62,
-            resume_id=51,
-            name="Skills",
-            items=[
-                ResumeItem(
-                    resume_order=0,
-                    section_id=62,
-                    tag_id=21,
-                    resume_id=51,
-                ),
-            ]
-        ),
-    ]
+    gdoc_id="abcdefghijklmnopqrstuvwxyz1234567890-_",
 )
 
 
