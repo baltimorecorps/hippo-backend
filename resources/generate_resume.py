@@ -687,6 +687,7 @@ def generate(data):
         body={
             'published': True,
             'publishAuto': True,
+            'publishedOutsideDomain': True,
         }
     ).execute()
 
