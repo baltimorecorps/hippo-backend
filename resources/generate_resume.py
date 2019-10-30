@@ -1,6 +1,7 @@
 from __future__ import print_function
 import sys
 import pickle
+import os
 import os.path
 import json
 from enum import Enum
@@ -55,8 +56,13 @@ def get_user_creds():
     return creds
 
 def get_service_creds():
-    credentials = service_account.Credentials.from_service_account_file(
-        'secrets/HippoSvcAcctDev.json')
+    try:
+        acct_info = json.loads(os.environ.get('GOOGLE_SERVICE_ACCT_KEY'))
+        credentials = service_account.Credentials.from_service_account_info(
+            acct_info)
+    except TypeError:
+        credentials = service_account.Credentials.from_service_account_file(
+            'secrets/HippoSvcAcctDev.json')
     return credentials.with_scopes(SCOPES)
 
 def init_services():
