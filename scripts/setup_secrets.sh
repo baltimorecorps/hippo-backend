@@ -7,7 +7,14 @@ if [ ! -d .git ]; then
     exit 1
 fi
 
-git clone keybase://team/bcorps_hippo/secrets secrets
+if [ -d secrets ]; then
+    echo "Directory 'secrets' already exists. Skipping secrets setup."
+    exit
+else
+    echo "Fetching secrets from Keybase..."
+    git clone keybase://team/bcorps_hippo/secrets secrets
+fi
+
 
 
 
