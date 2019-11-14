@@ -40,6 +40,7 @@ class Contact(db.Model):
     gender = db.Column(db.Enum(Gender, name='Gender'))
     race_all = db.Column(db.Enum(Race, name='Race'))
     birthdate = db.Column(db.Date)
+    account_id = db.Column(db.String(255), nullable=True)
 
     #relationships
     emails = db.relationship('Email', back_populates='contact')
@@ -71,6 +72,7 @@ class ContactSchema(Schema):
     gender = EnumField(Gender, by_value=True)
     race_all = EnumField(Race, by_value=True)
     birthdate = fields.Date()
+    account_id = fields.String()
 
     class Meta:
         unknown = EXCLUDE

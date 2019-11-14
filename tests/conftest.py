@@ -19,7 +19,7 @@ with open(_init_sql_path, 'rb') as f:
 
 @pytest.fixture(scope='session')
 def _app(request):
-    app = create_app()
+    app = create_app('test')
     app.config['DEBUG'] = True
     app.config['TESTING'] = True
     with Postgresql() as postgresql:
