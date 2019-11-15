@@ -68,9 +68,9 @@ class ContactSchema(Schema):
     email_primary = fields.Nested(EmailSchema)
     emails = fields.Nested(EmailSchema, many=True)
     phone_primary = fields.String()
-    gender = EnumField(Gender, by_value=True)
-    race_all = EnumField(Race, by_value=True)
-    birthdate = fields.Date()
+    gender = EnumField(Gender, by_value=True, missing=None)
+    race_all = EnumField(Race, by_value=True, missing=None)
+    birthdate = fields.Date(allow_none=True)
 
     class Meta:
         unknown = EXCLUDE
