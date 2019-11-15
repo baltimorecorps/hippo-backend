@@ -42,7 +42,8 @@ class Contact(db.Model):
     birthdate = db.Column(db.Date)
 
     #relationships
-    emails = db.relationship('Email', back_populates='contact')
+    emails = db.relationship('Email', back_populates='contact',
+                             cascade='all, delete, delete-orphan')
     email_primary = db.relationship("Email",
                                     primaryjoin=db.and_(id == Email.contact_id,
                                                         Email.is_primary == True),
