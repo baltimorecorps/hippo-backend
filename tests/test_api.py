@@ -404,7 +404,13 @@ def test_post_experience_dump_only(app):
 
 @pytest.mark.parametrize(
     "url,update,query,test",
-    [('/api/experiences/512/',
+    [('/api/contacts/123/',
+      {'first_name': 'William', 'last_name':'Daly',
+       'gender': None, 'birthdate': None},
+      lambda: Contact.query.get(123),
+      lambda e: e.first_name == 'William' and e.gender == None,
+      ),
+     ('/api/experiences/512/',
       {'end_month': 'January', 'end_year': 2017},
       lambda: Experience.query.get(512),
       lambda e: e.end_month == Month.january and e.end_year == 2017,
@@ -455,7 +461,6 @@ def test_put(app, url, update, query, test):
         print(response.json)
         assert response.status_code == 200
         assert test(query())
-
 
 @pytest.mark.parametrize(
     "delete_url,query",
