@@ -20,10 +20,10 @@ class ContactAll(Resource):
     def post(self):
         json_data = request.get_json(force=True)
         # Validate and deserialize input
-        
+
         try:
             data = contact_schema.load(json_data)
-        except ValidationError as e: 
+        except ValidationError as e:
             return e.messages, 422
         if not data:
             return {'message': 'No input data provided'}, 400
@@ -58,11 +58,13 @@ class ContactOne(Resource):
         if not data:
             return {'message': 'No input data provided'}, 400
         email = data.pop('email_primary', None)
+        email_list = data.pop('emails', None)
+        print(data)
         for k,v in data.items():
             setattr(contact, k, v)
-        del contact.email_primary
+        del contact.emails[:]
         if email:
             contact.email_primary = Email(**email)
         db.session.commit()
         result = contact_schema.dump(contact)
-        return {"status": 'success', 'data': result}, 201
+        return {"status": 'success', 'data': result}, 200
