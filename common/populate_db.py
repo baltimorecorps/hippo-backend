@@ -55,6 +55,7 @@ billy = Contact(
     birthdate=date(1991, 1, 2),
     phone_primary='555-245-2351',
     race_all=Race('White'),
+    account_id='billy|123'
 )
 obama = Contact(
     id=124,

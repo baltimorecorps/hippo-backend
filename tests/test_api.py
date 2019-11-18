@@ -32,6 +32,7 @@ CONTACTS = {
         'birthdate': '1991-01-02',
         'phone_primary': "555-245-2351",
         'race_all': "White",
+        'account_id': 'billy|123',
     },
 
     'obama': {
@@ -54,6 +55,7 @@ CONTACTS = {
         'birthdate': '1961-08-04',
         'phone_primary': "555-444-4444",
         'race_all': "Black",
+        'account_id': None,
     },
 }
 
@@ -308,6 +310,7 @@ def post_request(app, url, data):
           "gender": "Female",
           "race_all": "Hispanic/Latino",
           "birthdate": "1973-04-23",
+          "account_id": 'tester|0123456789',
       },
       lambda id: Contact.query.get(id)
       )

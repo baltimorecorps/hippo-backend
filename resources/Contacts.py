@@ -1,9 +1,11 @@
+from flask import request as reqobj
 from flask_restful import Resource, request
 from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
 from marshmallow import ValidationError
+from auth import requires_auth
 
 
 contact_schema = ContactSchema()
@@ -37,19 +39,30 @@ class ContactAll(Resource):
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 201
 
+class ContactAccount(Resource):
+    method_decorators = {'get': [requires_auth]}
+    def get(self):
+        account_id = request.current_user['sub']
+        contact = Contact.query.filter_by(account_id=account_id).first()
+        if not contact:
+            return {'message': 'Contact does not exist'}, 404
+        contact = contact_schema.dump(contact)
+        return {'status': 'success', 'data': contact}, 200
+
+
 class ContactOne(Resource):
 
     def get(self, contact_id):
         contact = Contact.query.get(contact_id)
         if not contact:
-            return {'message': 'Contact does not exist'}, 400
+            return {'message': 'Contact does not exist'}, 404
         contact = contact_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
 
     def put(self, contact_id):
         contact = Contact.query.get(contact_id)
         if not contact:
-            return {'message': 'Contact does not exist'}, 400
+            return {'message': 'Contact does not exist'}, 404
         json_data = request.get_json(force=True)
         try:
             data = contact_schema.load(json_data)
