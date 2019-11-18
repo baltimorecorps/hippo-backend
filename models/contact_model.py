@@ -43,7 +43,8 @@ class Contact(db.Model):
     account_id = db.Column(db.String(255), nullable=True)
 
     #relationships
-    emails = db.relationship('Email', back_populates='contact')
+    emails = db.relationship('Email', back_populates='contact',
+                             cascade='all, delete, delete-orphan')
     email_primary = db.relationship("Email",
                                     primaryjoin=db.and_(id == Email.contact_id,
                                                         Email.is_primary == True),
@@ -69,8 +70,8 @@ class ContactSchema(Schema):
     email_primary = fields.Nested(EmailSchema)
     emails = fields.Nested(EmailSchema, many=True)
     phone_primary = fields.String()
-    gender = EnumField(Gender, by_value=True)
-    race_all = EnumField(Race, by_value=True)
+    gender = EnumField(Gender, by_value=True, missing=None)
+    race_all = EnumField(Race, by_value=True, missing=None)
     birthdate = fields.Date()
     account_id = fields.String()
 
