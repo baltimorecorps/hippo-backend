@@ -72,7 +72,7 @@ class ContactSchema(Schema):
     phone_primary = fields.String()
     gender = EnumField(Gender, by_value=True, missing=None)
     race_all = EnumField(Race, by_value=True, missing=None)
-    birthdate = fields.Date()
+    birthdate = fields.Date(allow_none=True)
     account_id = fields.String()
 
     class Meta:
