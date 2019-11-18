@@ -19,7 +19,8 @@ def load_from_prod(app):
 def load_from_env(app):
     if os.environ.get('DATABASE_URL'):
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-    app.config['AUTH0_API_AUDIENCE'] = os.environ.get('AUTH0_API_AUDIENCE')
+    if os.environ.get('AUTH0_API_AUDIENCE'):
+        app.config['AUTH0_API_AUDIENCE'] = os.environ['AUTH0_API_AUDIENCE']
 
 def load_config(app, env):
     if env is None:

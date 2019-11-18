@@ -45,7 +45,7 @@ class ContactAccount(Resource):
         account_id = request.current_user['sub']
         contact = Contact.query.filter_by(account_id=account_id).first()
         if not contact:
-            return {'message': 'Contact does not exist'}, 400
+            return {'message': 'Contact does not exist'}, 404
         contact = contact_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
 
@@ -55,14 +55,14 @@ class ContactOne(Resource):
     def get(self, contact_id):
         contact = Contact.query.get(contact_id)
         if not contact:
-            return {'message': 'Contact does not exist'}, 400
+            return {'message': 'Contact does not exist'}, 404
         contact = contact_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
 
     def put(self, contact_id):
         contact = Contact.query.get(contact_id)
         if not contact:
-            return {'message': 'Contact does not exist'}, 400
+            return {'message': 'Contact does not exist'}, 404
         json_data = request.get_json(force=True)
         try:
             data = contact_schema.load(json_data)
