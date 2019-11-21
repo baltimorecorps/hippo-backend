@@ -4,7 +4,7 @@ from models.skill_model import SkillItem, SkillItemSchema
 from models.base_model import db
 from marshmallow import ValidationError
 
-from .skill_utils import get_skill_id
+from .skill_utils import make_skill
 
 skill_schema = SkillItemSchema()
 skills_schema = SkillItemSchema(many=True)
@@ -30,9 +30,7 @@ class ContactSkills(Resource):
         if not data:
             return {'message': 'No input data provided'}, 400
 
-        data['id'] = get_skill_id(data['name'])
-        data['contact_id'] = contact_id
-        skill = SkillItem(**data)
+        skill = make_skill(data['name'], contact_id)
         db.session.add(skill)
         db.session.commit()
         result = skill_schema.dump(skill)
@@ -41,7 +39,7 @@ class ContactSkills(Resource):
 class ContactSkillOne(Resource):
     def delete(self, contact_id, skill_id):
         skill = SkillItem.query.get((skill_id, contact_id))
-        if not skill :
+        if not skill:
             return {'message': 'Skill does not exist'}, 404
         db.session.delete(skill)
         db.session.commit()

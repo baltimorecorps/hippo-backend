@@ -1,10 +1,13 @@
 from flask_restful import Resource, request
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.achievement_model import Achievement, AchievementSchema
+from models.skill_model import SkillItem
 from models.base_model import db
 import datetime as dt
 from operator import attrgetter
 from marshmallow import ValidationError
+
+from .skill_utils import get_skill_id, make_skill
 
 experience_schema = ExperienceSchema()
 experiences_schema = ExperienceSchema(many=True)
@@ -42,6 +45,7 @@ class ExperienceAll(Resource):
 
         #pull out the achievements to create them later
         achievements = data.pop('achievements', None)
+        skills = data.pop('skills', None)
 
         #create the experience record
         exp = Experience(**data)
@@ -50,6 +54,14 @@ class ExperienceAll(Resource):
                 a = Achievement(**achievement)
                 a.contact_id = exp.contact_id
                 exp.achievements.append(a)
+        if skills:
+            for skill in skills:
+                s = SkillItem.query.get((get_skill_id(skill['name']), 
+                                         exp.contact_id))
+                if not s:
+                    s = make_skill(skill['name'], exp.contact_id)
+                exp.skills.append(s)
+
         db.session.add(exp)
         db.session.commit()
         result = experience_schema.dump(exp)
@@ -59,7 +71,6 @@ class ExperienceOne(Resource):
 
     def get(self, experience_id):
         exp = Experience.query.get(experience_id)
-        print(exp.skills)
         if not exp:
             return {'message': 'Experience does not exist'}, 404
         exp_data = experience_schema.dump(exp)

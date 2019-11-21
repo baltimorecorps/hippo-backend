@@ -432,6 +432,14 @@ def test_post_experience_dump_only(app):
     id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
 
+def test_post_experience_skills(app):
+    exp = POSTS['experience'].copy()
+    exp['skills'] = [{'name': 'C++'}, {'name': 'Python'}]
+    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    assert Experience.query.get(id_).skills[0].name == 'C++'
+    assert Experience.query.get(id_).skills[1].name == 'Python'
+
+
 @pytest.mark.parametrize(
     "url,update,query,test",
     [('/api/contacts/123/',
