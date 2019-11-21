@@ -6,6 +6,7 @@ from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address
 from models.achievement_model import Achievement
+from models.skill_model import SkillItem
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -59,6 +60,8 @@ class Contact(db.Model):
     resumes = db.relationship('Resume', back_populates='contact',
                               cascade='all, delete, delete-orphan')
     tags = db.relationship('TagItem', back_populates='contact',
+                           cascade='all, delete, delete-orphan')
+    skills = db.relationship('SkillItem', back_populates='contact',
                            cascade='all, delete, delete-orphan')
     experiences = db.relationship('Experience', back_populates='contact',
                                   cascade='all, delete, delete-orphan')

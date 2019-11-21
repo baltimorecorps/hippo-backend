@@ -178,6 +178,28 @@ TAG_ITEMS = {
     }
 }
 
+SKILLS = {
+    'billy': [
+        {
+            'id': '',
+            'name': 'Python',
+            'contact_id': 123
+        },
+        {
+            'id': '',
+            'name': 'Public Health',
+            'contact_id': 123
+        },
+        {
+            'id': '',
+            'name': 'Web Development',
+            'contact_id': 123
+        }
+
+
+    ],
+}
+
 # This is kind of gross -- maybe we should consider standardizing the resume
 # responses so that they're the same as everything else?
 def filter_dict(d, keys):
@@ -463,6 +485,7 @@ def test_delete(app, delete_url, query):
     ,('/api/tags/123/', TAGS['python'])
     ,('/api/tags/124/', TAGS['webdev'])
     ,('/api/resumes/51/', RESUMES['billy'])
+    #,('/api/contacts/51/skills', SKILLS['billy'])
     ]
 )
 def test_get(app, url, expected):
