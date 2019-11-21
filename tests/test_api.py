@@ -181,22 +181,20 @@ TAG_ITEMS = {
 SKILLS = {
     'billy': [
         {
-            'id': '',
-            'name': 'Python',
-            'contact_id': 123
-        },
-        {
-            'id': '',
+            'id': 'n1N02ypni69EZg0SggRIIg==',
             'name': 'Public Health',
             'contact_id': 123
         },
         {
-            'id': '',
+            'id': '4R9tqGuK2672PavRTJrN/A==',
+            'name': 'Python',
+            'contact_id': 123
+        },
+        {
+            'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
             'name': 'Web Development',
             'contact_id': 123
         }
-
-
     ],
 }
 
@@ -485,7 +483,7 @@ def test_delete(app, delete_url, query):
     ,('/api/tags/123/', TAGS['python'])
     ,('/api/tags/124/', TAGS['webdev'])
     ,('/api/resumes/51/', RESUMES['billy'])
-    #,('/api/contacts/51/skills', SKILLS['billy'])
+    ,('/api/contacts/123/skills', SKILLS['billy'])
     ]
 )
 def test_get(app, url, expected):

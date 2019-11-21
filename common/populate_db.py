@@ -1,4 +1,5 @@
 from datetime import date
+from resources.skill_utils import get_skill_id
 
 from models.contact_model import (
     Contact,
@@ -29,6 +30,10 @@ from models.tag_model import (
 
 from models.tag_item_model import (
     TagItem,
+)
+
+from models.skill_model import (
+    SkillItem,
 )
 
 from models.resume_model import (
@@ -178,6 +183,29 @@ resume_billy = Resume(
     gdoc_id="abcdefghijklmnopqrstuvwxyz1234567890-_",
 )
 
+skill_python = SkillItem(
+    id=get_skill_id('Python'),
+    name='Python',
+    contact_id=123,
+)
+skill_webdev = SkillItem(
+    id=get_skill_id('Web Development'),
+    name='Web Development',
+    contact_id=123,
+)
+skill_health = SkillItem(
+    id=get_skill_id('Public Health'),
+    name='Public Health',
+    contact_id=123,
+)
+
+skill_obama_health = SkillItem(
+    id=get_skill_id('Public Health'),
+    name='Public Health',
+    contact_id=124,
+)
+
+
 
 def populate(db):
     db.session.add(billy)
@@ -194,4 +222,8 @@ def populate(db):
     db.session.add(tag_health)
     db.session.add(item_webdev)
     db.session.add(resume_billy)
+    db.session.add(skill_python)
+    db.session.add(skill_webdev)
+    db.session.add(skill_health)
+    db.session.add(skill_obama_health)
     db.session.commit()
