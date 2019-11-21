@@ -6,7 +6,7 @@ from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address
 from models.achievement_model import Achievement
-from models.skill_model import SkillItem
+from models.skill_model import SkillItemSchema
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -62,6 +62,7 @@ class Contact(db.Model):
     tags = db.relationship('TagItem', back_populates='contact',
                            cascade='all, delete, delete-orphan')
     skills = db.relationship('SkillItem', back_populates='contact',
+                             order_by='SkillItem.name',
                            cascade='all, delete, delete-orphan')
     experiences = db.relationship('Experience', back_populates='contact',
                                   cascade='all, delete, delete-orphan')
@@ -77,6 +78,7 @@ class ContactSchema(Schema):
     race_all = EnumField(Race, by_value=True, missing=None)
     birthdate = fields.Date(allow_none=True)
     account_id = fields.String()
+    skills = fields.Nested(SkillItemSchema, many=True)
 
     class Meta:
         unknown = EXCLUDE

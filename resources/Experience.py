@@ -59,6 +59,7 @@ class ExperienceOne(Resource):
 
     def get(self, experience_id):
         exp = Experience.query.get(experience_id)
+        print(exp.skills)
         if not exp:
             return {'message': 'Experience does not exist'}, 404
         exp_data = experience_schema.dump(exp)

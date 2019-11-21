@@ -208,6 +208,9 @@ skill_obama_health = SkillItem(
 
 
 def populate(db):
+    exp_baltimore.skills.append(skill_python)
+    a_baltimore1.skills.append(skill_webdev)
+
     db.session.add(billy)
     db.session.add(obama)
     db.session.add(exp_columbia)

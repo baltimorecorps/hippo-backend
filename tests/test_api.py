@@ -4,12 +4,43 @@ from pprint import pprint
 import pytest
 import math
 
+
 from models.contact_model import Contact
 from models.experience_model import Experience, Month
 from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.tag_model import Tag
 from models.tag_item_model import TagItem
+from models.skill_model import SkillItem
+
+SKILLS = {
+    'billy': [
+        {
+            'id': 'n1N02ypni69EZg0SggRIIg==',
+            'name': 'Public Health',
+            'contact_id': 123
+        },
+        {
+            'id': '4R9tqGuK2672PavRTJrN/A==',
+            'name': 'Python',
+            'contact_id': 123
+        },
+        {
+            'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
+            'name': 'Web Development',
+            'contact_id': 123
+        }
+    ],
+    'obama': [
+        {
+            'id': 'n1N02ypni69EZg0SggRIIg==',
+            'name': 'Public Health',
+            'contact_id': 124
+        },
+    ],
+}
+
+
 
 CONTACTS = {
     'billy': {
@@ -33,6 +64,7 @@ CONTACTS = {
         'phone_primary': "555-245-2351",
         'race_all': "White",
         'account_id': 'billy|123',
+        'skills': SKILLS['billy'],
     },
 
     'obama': {
@@ -56,6 +88,7 @@ CONTACTS = {
         'phone_primary': "555-444-4444",
         'race_all': "Black",
         'account_id': None,
+        'skills': SKILLS['obama'],
     },
 }
 
@@ -63,18 +96,22 @@ ACHIEVEMENTS = {
     'baltimore1': {
         'id': 81,
         'description': 'Redesigned the Salesforce architecture to facilitate easier reporting.',
+        'skills': [SKILLS['billy'][2]],
     },
     'baltimore2': {
         'id': 82,
         'description': 'Formalized organizational strategy for defining and analyzing KPIs.',
+        'skills': [],
     },
     'baltimore3': {
         'id': 83,
         'description': 'Developed recruitment projection tools to model and track progress to goals.',
+        'skills': [],
     },
     'goucher1': {
         'id': 84,
         'description': 'Did some stuff',
+        'skills': [],
     }
 }
 
@@ -101,6 +138,7 @@ EXPERIENCES = {
         'contact_id': 124,
         'location': 'New York, NY, USA',
         'achievements': [],
+        'skills': [],
     },
     'goucher': {
         'id': 512,
@@ -121,6 +159,7 @@ EXPERIENCES = {
         'achievements': [
             ACHIEVEMENTS['goucher1'],
         ],
+        'skills': [],
     },
     'baltimore' : {
         'id': 513,
@@ -143,6 +182,7 @@ EXPERIENCES = {
             ACHIEVEMENTS['baltimore2'],
             ACHIEVEMENTS['baltimore3'],
         ],
+        'skills': SKILLS['billy'][1:3],
     },
 }
 
@@ -176,26 +216,6 @@ TAG_ITEMS = {
         'tag_id': 124,
         'score': 2,
     }
-}
-
-SKILLS = {
-    'billy': [
-        {
-            'id': 'n1N02ypni69EZg0SggRIIg==',
-            'name': 'Public Health',
-            'contact_id': 123
-        },
-        {
-            'id': '4R9tqGuK2672PavRTJrN/A==',
-            'name': 'Python',
-            'contact_id': 123
-        },
-        {
-            'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
-            'name': 'Web Development',
-            'contact_id': 123
-        }
-    ],
 }
 
 # This is kind of gross -- maybe we should consider standardizing the resume
