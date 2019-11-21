@@ -39,7 +39,7 @@ class SkillItem(db.Model):
 class SkillItemSchema(Schema):
     id = fields.String(dump_only=True)
     name = fields.String(required=True)
-    contact_id = fields.Integer(required=True)
+    contact_id = fields.Integer(dump_only=True)
 
     class Meta:
         unknown = EXCLUDE

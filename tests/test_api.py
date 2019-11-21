@@ -381,6 +381,12 @@ def post_request(app, url, data):
       },
       lambda id: Resume.query.get(id)
       )
+    ,('/api/contacts/123/skills',
+      {
+        'name': 'C++',
+      },
+      lambda id: SkillItem.query.get(('sEVDZsMOqdfQ+vwoIAEk5A==', 123))
+      )
     ]
 )
 def test_post(app, url, data, query):
