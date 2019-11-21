@@ -484,6 +484,8 @@ def test_put(app, url, update, query, test):
     "delete_url,query",
     [('/api/experiences/512/', lambda: Experience.query.get(512))
     ,('/api/resumes/51/', lambda: Resume.query.get(51))
+    ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==', 
+      lambda: SkillItem.query.get(('n1N02ypni69EZg0SggRIIg==', 123)))
     ]
 )
 def test_delete(app, delete_url, query):

@@ -38,5 +38,14 @@ class ContactSkills(Resource):
         result = skill_schema.dump(skill)
         return {'status': 'success', 'data': result}, 201
 
+class ContactSkillOne(Resource):
+    def delete(self, contact_id, skill_id):
+        skill = SkillItem.query.get((skill_id, contact_id))
+        if not skill :
+            return {'message': 'Skill does not exist'}, 404
+        db.session.delete(skill)
+        db.session.commit()
+        return {'status': 'success'}, 200
+
 
 

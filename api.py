@@ -6,7 +6,7 @@ from resources.Experience import ExperienceAll, ExperienceOne
 from resources.Achievement import AchievementAll
 from resources.Resume import ResumeAll, ResumeOne, GenerateResume
 from resources.Resume import ResumeSectionAll, ResumeSectionOne
-from resources.Skills import ContactSkills
+from resources.Skills import ContactSkills, ContactSkillOne
 
 api_bp = Blueprint('api',__name__)
 api = Api(api_bp)
@@ -25,6 +25,9 @@ api.add_resource(ContactAccount,
 api.add_resource(ContactSkills,
                  '/contacts/<int:contact_id>/skills',
                  '/contacts/<int:contact_id>/skills/')
+api.add_resource(ContactSkillOne,
+                 '/contacts/<int:contact_id>/skills/<string:skill_id>',
+                 '/contacts/<int:contact_id>/skills/<string:skill_id>/')
 api.add_resource(ExperienceAll,
                 '/contacts/<int:contact_id>/experiences/',
                 '/contacts/<int:contact_id>/experiences')
