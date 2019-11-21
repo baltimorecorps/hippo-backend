@@ -96,22 +96,18 @@ ACHIEVEMENTS = {
     'baltimore1': {
         'id': 81,
         'description': 'Redesigned the Salesforce architecture to facilitate easier reporting.',
-        'skills': [SKILLS['billy'][2]],
     },
     'baltimore2': {
         'id': 82,
         'description': 'Formalized organizational strategy for defining and analyzing KPIs.',
-        'skills': [],
     },
     'baltimore3': {
         'id': 83,
         'description': 'Developed recruitment projection tools to model and track progress to goals.',
-        'skills': [],
     },
     'goucher1': {
         'id': 84,
         'description': 'Did some stuff',
-        'skills': [],
     }
 }
 
@@ -469,6 +465,11 @@ def test_post_experience_skills(app):
       {'name': 'test'},
       lambda: Resume.query.get(51),
       lambda r: r.name == 'test',
+      )
+    ,('/api/experiences/513/',
+      {'skills': SKILLS['billy'][0:2] + [{'name': 'Test'}]},
+      lambda: Experience.query.get(513),
+      lambda e: len(e.skills) == 3 and e.skills[0].name == 'Public Health' and e.skills[-1].name == 'Test',
       )
     ]
 )

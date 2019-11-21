@@ -9,9 +9,25 @@ from marshmallow import ValidationError
 
 from .skill_utils import get_skill_id, make_skill
 
+
 experience_schema = ExperienceSchema()
 experiences_schema = ExperienceSchema(many=True)
 type_list = [m for m in Type.__members__.keys()]
+
+def add_achievements(achievements, experience):
+    for achievement in achievements:
+        a = Achievement(**achievement)
+        a.contact_id = experience.contact_id
+        experience.achievements.append(a)
+
+def add_skills(skills, experience):
+    for skill in skills:
+        print(skill['name'], experience.contact_id)
+        s = SkillItem.query.get((get_skill_id(skill['name']), 
+                                 experience.contact_id))
+        if not s:
+            s = make_skill(skill['name'], experience.contact_id)
+        experience.skills.append(s)
 
 
 class ExperienceAll(Resource):
@@ -50,17 +66,9 @@ class ExperienceAll(Resource):
         #create the experience record
         exp = Experience(**data)
         if achievements:
-            for achievement in achievements:
-                a = Achievement(**achievement)
-                a.contact_id = exp.contact_id
-                exp.achievements.append(a)
+            add_achievements(achievements, exp)
         if skills:
-            for skill in skills:
-                s = SkillItem.query.get((get_skill_id(skill['name']), 
-                                         exp.contact_id))
-                if not s:
-                    s = make_skill(skill['name'], exp.contact_id)
-                exp.skills.append(s)
+            add_skills(skills, exp)
 
         db.session.add(exp)
         db.session.commit()
@@ -97,15 +105,18 @@ class ExperienceOne(Resource):
             return {'message': 'No data provided to update'}, 400
 
         achievements = data.pop('achievements', None)
+        skills = data.pop('skills', None)
 
         for k,v in data.items():
             setattr(exp, k, v)
         del exp.achievements[:]
         if achievements:
-            for achievement in achievements:
-                a = Achievement(**achievement)
-                a.contact_id = exp.contact_id
-                exp.achievements.append(a)
+            add_achievements(achievements, exp)
+
+        del exp.skills[:]
+        if skills:
+            add_skills(skills, exp)
+
         db.session.commit()
         result = experience_schema.dump(exp)
         return {'status': 'success', 'data': result}, 200

@@ -17,14 +17,6 @@ class Achievement(db.Model):
     contact = db.relationship('Contact', back_populates='achievements')
     resumes = db.relationship('ResumeItem', back_populates='achievement',
                               cascade='all, delete, delete-orphan')
-    skills = db.relationship('SkillItem', secondary=experience_skills, 
-                             order_by='SkillItem.name',
-                             lazy='subquery')
-
-    __table_args__ = (
-        db.UniqueConstraint('id', 'exp_id', name='achievement_exp_uniq'),
-    )
-
 
 class AchievementSchema(Schema):
     id = fields.Integer(dump_only=True)
