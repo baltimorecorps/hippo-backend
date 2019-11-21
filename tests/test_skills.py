@@ -1,6 +1,6 @@
 import pytest
 
-from resources.skill_utils import normalize_skill_name, get_skill_id
+from resources.skill_utils import normalize_skill_name, get_skill_id, Autocomplete
 
 @pytest.mark.parametrize(
     "arg,expected",
@@ -28,5 +28,35 @@ def test_normalize(arg, expected):
 )
 def test_get_id(arg, expected):
     assert get_skill_id(arg) == expected
+
+
+@pytest.fixture
+def autocomplete():
+    return Autocomplete(['Aaa', 'Aab', 'Abc'])
+
+class TestAutocomplete:
+    def test_match(self, autocomplete):
+        matches = autocomplete.match('Aa')
+        assert len(matches) == 2
+        assert matches[0] == 'Aaa'
+        assert matches[1] == 'Aab'
+
+    def test_match_single(self, autocomplete):
+        matches = autocomplete.match('Abc')
+        assert len(matches) == 1
+        assert matches[0] == 'Abc'
+
+    def test_match_empty(self, autocomplete):
+        matches = autocomplete.match('')
+        assert len(matches) == 3
+        assert matches[0] == 'Aaa'
+        assert matches[1] == 'Aab'
+        assert matches[2] == 'Abc'
+
+    def test_match_case(self, autocomplete):
+        matches = autocomplete.match('aA')
+        assert len(matches) == 2
+        assert matches[0] == 'Aaa'
+        assert matches[1] == 'Aab'
 
 

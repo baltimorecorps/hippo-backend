@@ -395,7 +395,6 @@ def test_post(app, url, data, query):
     id_ = post_request(app, url, data)
     assert query(id_) is not None
 
-
 def test_post_experience_date(app):
     id_ = post_request(app, '/api/contacts/123/experiences/',
                           POSTS['experience'])
@@ -538,6 +537,24 @@ def test_get(app, url, expected):
         data = json.loads(response.data)['data']
         assert len(data) > 0
         assert data == expected
+
+def test_get_autocomplete(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    query = {
+        'q': 'Pyth',
+    }
+    with app.test_client() as client:
+        response = client.get('/api/skills/autocomplete/', 
+                              query_string=query, headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        assert 'Python' in data
+
 
 @pytest.mark.parametrize(
     "url,expected",

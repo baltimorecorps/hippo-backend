@@ -1,13 +1,21 @@
-from flask import request as reqobj
 from flask_restful import Resource, request
 from models.skill_model import SkillItem, SkillItemSchema
 from models.base_model import db
 from marshmallow import ValidationError
 
-from .skill_utils import make_skill
+from .skill_utils import make_skill, normalize_skill_name, complete_skill
 
 skill_schema = SkillItemSchema()
 skills_schema = SkillItemSchema(many=True)
+
+class AutocompleteSkill(Resource):
+    def get(self):
+        query = request.args.get('q', '')
+        if normalize_skill_name(query) == '':
+            result = []
+        else:
+            result = complete_skill(query)
+        return {'status': 'success', 'data': result}, 200
 
 class ContactSkills(Resource):
     def get(self, contact_id):
