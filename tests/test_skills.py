@@ -32,31 +32,47 @@ def test_get_id(arg, expected):
 
 @pytest.fixture
 def autocomplete():
-    return Autocomplete(['Aaa', 'Aab', 'Abc'])
+    return Autocomplete(['Aaa', 'Aab', 'Abc', 'Bbb Bbb'])
+
+def get_matches(match_result):
+    return match_result['matches']
 
 class TestAutocomplete:
     def test_match(self, autocomplete):
-        matches = autocomplete.match('Aa')
+        matches = get_matches(autocomplete.match('Aa'))
         assert len(matches) == 2
         assert matches[0] == 'Aaa'
         assert matches[1] == 'Aab'
 
     def test_match_single(self, autocomplete):
-        matches = autocomplete.match('Abc')
+        matches = get_matches(autocomplete.match('Abc'))
         assert len(matches) == 1
         assert matches[0] == 'Abc'
 
     def test_match_empty(self, autocomplete):
-        matches = autocomplete.match('')
-        assert len(matches) == 3
+        matches = get_matches(autocomplete.match(''))
+        assert len(matches) == 4
         assert matches[0] == 'Aaa'
         assert matches[1] == 'Aab'
         assert matches[2] == 'Abc'
+        assert matches[3] == 'Bbb Bbb'
 
     def test_match_case(self, autocomplete):
-        matches = autocomplete.match('aA')
+        matches = get_matches(autocomplete.match('aA'))
         assert len(matches) == 2
         assert matches[0] == 'Aaa'
         assert matches[1] == 'Aab'
 
+    def test_match_spaces(self, autocomplete):
+        matches = get_matches(autocomplete.match('Bbb'))
+        assert len(matches) == 1
+        assert matches[0] == 'Bbb Bbb'
+
+    def test_exact(self, autocomplete):
+        result = autocomplete.match('Aaa')
+        assert result['got_exact'] 
+        assert get_matches(result)[0] == 'Aaa', "Exact result should be first"
+
+        result = autocomplete.match('Bbb')
+        assert not result['got_exact'] 
 

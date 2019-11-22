@@ -22,7 +22,6 @@ def add_achievements(achievements, experience):
 
 def add_skills(skills, experience):
     for skill in skills:
-        print(skill['name'], experience.contact_id)
         s = SkillItem.query.get((get_skill_id(skill['name']), 
                                  experience.contact_id))
         if not s:

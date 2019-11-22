@@ -545,7 +545,7 @@ def test_get_autocomplete(app):
         'Accept': mimetype
     }
     query = {
-        'q': 'Pyth',
+        'q': 'Pyt',
     }
     with app.test_client() as client:
         response = client.get('/api/skills/autocomplete/', 
@@ -553,7 +553,9 @@ def test_get_autocomplete(app):
         assert response.status_code == 200
         data = json.loads(response.data)['data']
         assert len(data) > 0
-        assert 'Python' in data
+        assert 'matches' in data
+        assert 'got_exact' in data
+        assert 'Python' in data['matches']
 
 
 @pytest.mark.parametrize(

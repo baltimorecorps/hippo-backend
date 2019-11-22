@@ -27,6 +27,10 @@ def make_skill(name, contact_id):
         contact_id=contact_id
     )
 
+def _sort_key(match):
+    # Put all exact matches first
+    return (not match['exact'], match['item'])
+
 class Autocomplete(object):
     def __init__(self, items):
         self.lookup = {}
@@ -35,21 +39,26 @@ class Autocomplete(object):
 
     def get_scores(self, query):
         prefix = normalize_skill_name(query)
-        return [self._make_score(value)
+        return [self._make_score(query, prefix, value)
             for (key, value) in self.lookup.items()
             if key.startswith(prefix)]
 
     def sort_scores(self, scored_items):
-        return sorted(scored_items, key=lambda x: x['item'])
+        return sorted(scored_items, key=_sort_key)
 
     def match(self, query):
-        return [
-            x['item'] for x in self.sort_scores(self.get_scores(query))
-        ]
+        results = self.sort_scores(self.get_scores(query))
+        # Exact matches should aways come first
+        return {
+            'matches': [x['item'] for x in results],
+            'got_exact': results[0]['exact']
+        }
 
-    def _make_score(self, value):
+    def _make_score(self, query, prefix, value):
+        exact_match = (prefix == normalize_skill_name(value))
         return {
             'item': value,
+            'exact': exact_match,
         }
 
 _instance = None

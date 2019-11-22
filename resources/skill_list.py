@@ -51513,5 +51513,5 @@ ZVM
 Zymography
 Zynx
 Zyxel
-""".split())
+""".splitlines())
 

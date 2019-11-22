@@ -72,7 +72,6 @@ class ContactOne(Resource):
             return {'message': 'No input data provided'}, 400
         email = data.pop('email_primary', None)
         email_list = data.pop('emails', None)
-        print(data)
         for k,v in data.items():
             setattr(contact, k, v)
         del contact.emails[:]
