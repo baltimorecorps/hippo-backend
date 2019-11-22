@@ -29,10 +29,11 @@ def test_normalize(arg, expected):
 def test_get_id(arg, expected):
     assert get_skill_id(arg) == expected
 
+MATCH_STRINGS = ['Aaa', 'Aab', 'Abc', 'Bbb Bbb', 'C++', 'Caa']
 
 @pytest.fixture
 def autocomplete():
-    return Autocomplete(['Aaa', 'Aab', 'Abc', 'Bbb Bbb'])
+    return Autocomplete(MATCH_STRINGS)
 
 def get_matches(match_result):
     return match_result['matches']
@@ -51,11 +52,8 @@ class TestAutocomplete:
 
     def test_match_empty(self, autocomplete):
         matches = get_matches(autocomplete.match(''))
-        assert len(matches) == 4
-        assert matches[0] == 'Aaa'
-        assert matches[1] == 'Aab'
-        assert matches[2] == 'Abc'
-        assert matches[3] == 'Bbb Bbb'
+        assert len(matches) == len(MATCH_STRINGS)
+        assert matches == MATCH_STRINGS
 
     def test_match_case(self, autocomplete):
         matches = get_matches(autocomplete.match('aA'))
@@ -67,6 +65,14 @@ class TestAutocomplete:
         matches = get_matches(autocomplete.match('Bbb'))
         assert len(matches) == 1
         assert matches[0] == 'Bbb Bbb'
+
+    def test_match_punctuation(self, autocomplete):
+        result = autocomplete.match('C++')
+        matches = get_matches(result)
+        assert len(matches) == 1
+        assert matches[0] == 'C++'
+        assert result['got_exact']
+
 
     def test_exact(self, autocomplete):
         result = autocomplete.match('Aaa')
