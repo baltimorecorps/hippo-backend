@@ -4,13 +4,23 @@ from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
+from models.skill_model import SkillItem
 from marshmallow import ValidationError
 from auth import requires_auth
+
+from .skill_utils import get_skill_id, make_skill
 
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
 
+def add_skills(skills, contact):
+    for skill in skills:
+        s = SkillItem.query.get((get_skill_id(skill['name']), 
+                                 contact.id))
+        if not s:
+            s = make_skill(skill['name'], contact.id)
+        contact.skills.append(s)
 
 class ContactAll(Resource):
 
@@ -65,18 +75,27 @@ class ContactOne(Resource):
             return {'message': 'Contact does not exist'}, 404
         json_data = request.get_json(force=True)
         try:
-            data = contact_schema.load(json_data)
+            data = contact_schema.load(json_data, partial=True)
         except ValidationError as e:
             return e.messages, 422
         if not data:
             return {'message': 'No input data provided'}, 400
         email = data.pop('email_primary', None)
         email_list = data.pop('emails', None)
+        skills = data.pop('skills', None)
+
         for k,v in data.items():
             setattr(contact, k, v)
-        del contact.emails[:]
+
         if email:
+            del contact.emails[:]
             contact.email_primary = Email(**email)
+
+        if skills:
+            del contact.skills[:]
+            add_skills(skills, contact)
+
         db.session.commit()
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 200
+

@@ -443,6 +443,16 @@ def test_post_experience_skills(app):
       lambda: Contact.query.get(123),
       lambda e: e.first_name == 'William' and e.gender == None,
       ),
+     ('/api/contacts/123/',
+      {'skills': [
+          { 'name': 'Python' }, 
+          { 'name': 'Workforce Development' }, 
+      ]},
+      lambda: Contact.query.get(123),
+      lambda e: (len(e.skills) == 2 
+                 and e.skills[0].name == 'Python' 
+                 and e.skills[1].name == 'Workforce Development'),
+      ),
      ('/api/experiences/512/',
       {'end_month': 'January', 'end_year': 2017},
       lambda: Experience.query.get(512),
@@ -482,6 +492,39 @@ def test_put(app, url, update, query, test):
     with app.test_client() as client:
         assert query() is not None, "Item to update should exist"
         assert not test(query())
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        print(response.json)
+        assert response.status_code == 200
+        assert test(query())
+
+@pytest.mark.parametrize(
+    "url,update,query,test",
+    [('/api/contacts/123/',
+      {'first_name': 'William', 'last_name':'Daly'},
+      lambda: Contact.query.get(123),
+      lambda e: len(e.skills) == len(SKILLS['billy']),
+      )
+    ,('/api/experiences/513/',
+      {'host': 'Test'},
+      lambda: Experience.query.get(513),
+      lambda e: len(e.achievements) == len(EXPERIENCES['baltimore']['achievements'])
+      )
+    ,('/api/experiences/513/',
+      {'host': 'Test'},
+      lambda: Experience.query.get(513),
+      lambda e: len(e.skills) == len(EXPERIENCES['baltimore']['skills'])
+      )
+    ])
+def test_put_preserves_list_fields(app, url, update, query, test):
+    from models.resume_section_model import ResumeSectionSchema
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        assert query() is not None, "Item to update should exist"
         response = client.put(url, data=json.dumps(update),
                               headers=headers)
         print(response.json)

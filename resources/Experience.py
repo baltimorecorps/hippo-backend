@@ -108,12 +108,12 @@ class ExperienceOne(Resource):
 
         for k,v in data.items():
             setattr(exp, k, v)
-        del exp.achievements[:]
         if achievements:
+            del exp.achievements[:]
             add_achievements(achievements, exp)
 
-        del exp.skills[:]
         if skills:
+            del exp.skills[:]
             add_skills(skills, exp)
 
         db.session.commit()
