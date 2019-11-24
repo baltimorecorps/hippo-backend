@@ -71,6 +71,4 @@ def _autocomplete():
 def complete_skill(skill):
     return _autocomplete().match(skill)
 
-if __name__ == '__main__':
-    import sys
-    print(get_skill_id(sys.argv[1]))
+

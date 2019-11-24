@@ -13,4 +13,4 @@ if [ "$#" -lt 1 ]; then
 fi
 
 source env/bin/activate
-python resources/skill_utils.py $1
+python ./get_skill_id.py $1
