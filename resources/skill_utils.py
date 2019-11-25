@@ -18,7 +18,7 @@ def normalize_skill_name(skill):
 
 def get_skill_id(skill):
     skill_bytes = normalize_skill_name(skill).encode('utf8');
-    return base64.b64encode(blake2b(skill_bytes, digest_size=16).digest()).decode('utf8')
+    return base64.urlsafe_b64encode(blake2b(skill_bytes, digest_size=16).digest()).decode('utf8')
 
 def make_skill(name, contact_id):
     return SkillItem(
@@ -48,10 +48,11 @@ class Autocomplete(object):
 
     def match(self, query):
         results = self.sort_scores(self.get_scores(query))
+        got_exact = len(results) > 0 and results[0]['exact']
         # Exact matches should aways come first
         return {
             'matches': [x['item'] for x in results],
-            'got_exact': results[0]['exact']
+            'got_exact': got_exact
         }
 
     def _make_score(self, query, prefix, value):

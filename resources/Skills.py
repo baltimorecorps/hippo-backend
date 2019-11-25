@@ -3,7 +3,7 @@ from models.skill_model import SkillItem, SkillItemSchema
 from models.base_model import db
 from marshmallow import ValidationError
 
-from .skill_utils import make_skill, normalize_skill_name, complete_skill
+from .skill_utils import make_skill, get_skill_id, normalize_skill_name, complete_skill
 
 skill_schema = SkillItemSchema()
 skills_schema = SkillItemSchema(many=True)
@@ -38,11 +38,19 @@ class ContactSkills(Resource):
         if not data:
             return {'message': 'No input data provided'}, 400
 
-        skill = make_skill(data['name'], contact_id)
-        db.session.add(skill)
-        db.session.commit()
-        result = skill_schema.dump(skill)
-        return {'status': 'success', 'data': result}, 201
+        name = data['name']
+        id_ = get_skill_id(name)
+        skill = SkillItem.query.get((id_, contact_id))
+        print(id_, contact_id, skill)
+        if not skill:
+            skill = make_skill(name, contact_id)
+            db.session.add(skill)
+            db.session.commit()
+            result = skill_schema.dump(skill)
+            return {'status': 'success', 'data': result}, 201
+        else: 
+            result = skill_schema.dump(skill)
+            return {'status': 'success', 'data': result}, 200
 
 class ContactSkillOne(Resource):
     def delete(self, contact_id, skill_id):

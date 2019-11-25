@@ -21,9 +21,9 @@ def test_normalize(arg, expected):
 
 @pytest.mark.parametrize(
     "arg,expected",
-    [('python', '4R9tqGuK2672PavRTJrN/A==')
-    ,('C++', 'sEVDZsMOqdfQ+vwoIAEk5A==')
-    ,(' c++  ', 'sEVDZsMOqdfQ+vwoIAEk5A==')
+    [('python', '4R9tqGuK2672PavRTJrN_A==')
+    ,('C++', 'sEVDZsMOqdfQ-vwoIAEk5A==')
+    ,(' c++  ', 'sEVDZsMOqdfQ-vwoIAEk5A==')
     ]
 )
 def test_get_id(arg, expected):
@@ -81,4 +81,9 @@ class TestAutocomplete:
 
         result = autocomplete.match('Bbb')
         assert not result['got_exact'] 
+
+    def test_no_results(self, autocomplete):
+        result = autocomplete.match('ZZZ')
+        assert not result['got_exact'] 
+        assert len(get_matches(result)) == 0
 

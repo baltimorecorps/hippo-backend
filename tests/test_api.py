@@ -21,7 +21,7 @@ SKILLS = {
             'contact_id': 123
         },
         {
-            'id': '4R9tqGuK2672PavRTJrN/A==',
+            'id': '4R9tqGuK2672PavRTJrN_A==',
             'name': 'Python',
             'contact_id': 123
         },
@@ -381,7 +381,7 @@ def post_request(app, url, data):
       {
         'name': 'C++',
       },
-      lambda id: SkillItem.query.get(('sEVDZsMOqdfQ+vwoIAEk5A==', 123))
+      lambda id: SkillItem.query.get(('sEVDZsMOqdfQ-vwoIAEk5A==', 123))
       )
     ]
 )
