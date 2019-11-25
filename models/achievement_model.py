@@ -1,4 +1,5 @@
 from models.base_model import db
+from models.skill_model import experience_skills, SkillItemSchema
 from marshmallow import Schema, fields, EXCLUDE
 
 
@@ -17,10 +18,10 @@ class Achievement(db.Model):
     resumes = db.relationship('ResumeItem', back_populates='achievement',
                               cascade='all, delete, delete-orphan')
 
-
 class AchievementSchema(Schema):
     id = fields.Integer(dump_only=True)
     description = fields.String()
+    skills = fields.Nested(SkillItemSchema, many=True)
 
     class Meta:
         unknown = EXCLUDE

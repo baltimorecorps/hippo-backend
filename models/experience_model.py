@@ -3,6 +3,7 @@ import enum
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from models.achievement_model import Achievement, AchievementSchema
+from models.skill_model import experience_skills, SkillItemSchema
 from sqlalchemy.ext.hybrid import hybrid_property
 import datetime as dt
 import math
@@ -36,6 +37,7 @@ class Month(enum.Enum):
     november = 'November'
     december = 'December'
 
+
 class Experience(db.Model):
     __tablename__ = 'experience'
 
@@ -59,6 +61,9 @@ class Experience(db.Model):
                                    cascade='all, delete, delete-orphan')
     resumes = db.relationship('ResumeItem', back_populates='experience',
                               cascade='all, delete, delete-orphan')
+    skills = db.relationship('SkillItem', secondary=experience_skills, 
+                             order_by='SkillItem.name',
+                             lazy='subquery')
 
     #calculated fields
     @hybrid_property
@@ -113,6 +118,7 @@ class ExperienceSchema(Schema):
     contact_id = fields.Integer(required=True)
     location = fields.String()
     achievements = fields.Nested(AchievementSchema, many=True)
+    skills = fields.Nested(SkillItemSchema, many=True)
 
     class Meta:
         unknown = EXCLUDE

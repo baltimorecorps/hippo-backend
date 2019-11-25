@@ -4,12 +4,43 @@ from pprint import pprint
 import pytest
 import math
 
+
 from models.contact_model import Contact
 from models.experience_model import Experience, Month
 from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.tag_model import Tag
 from models.tag_item_model import TagItem
+from models.skill_model import SkillItem
+
+SKILLS = {
+    'billy': [
+        {
+            'id': 'n1N02ypni69EZg0SggRIIg==',
+            'name': 'Public Health',
+            'contact_id': 123
+        },
+        {
+            'id': '4R9tqGuK2672PavRTJrN_A==',
+            'name': 'Python',
+            'contact_id': 123
+        },
+        {
+            'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
+            'name': 'Web Development',
+            'contact_id': 123
+        }
+    ],
+    'obama': [
+        {
+            'id': 'n1N02ypni69EZg0SggRIIg==',
+            'name': 'Public Health',
+            'contact_id': 124
+        },
+    ],
+}
+
+
 
 CONTACTS = {
     'billy': {
@@ -32,6 +63,8 @@ CONTACTS = {
         'birthdate': '1991-01-02',
         'phone_primary': "555-245-2351",
         'race_all': "White",
+        'account_id': 'billy|123',
+        'skills': SKILLS['billy'],
     },
 
     'obama': {
@@ -54,6 +87,8 @@ CONTACTS = {
         'birthdate': '1961-08-04',
         'phone_primary': "555-444-4444",
         'race_all': "Black",
+        'account_id': None,
+        'skills': SKILLS['obama'],
     },
 }
 
@@ -99,6 +134,7 @@ EXPERIENCES = {
         'contact_id': 124,
         'location': 'New York, NY, USA',
         'achievements': [],
+        'skills': [],
     },
     'goucher': {
         'id': 512,
@@ -119,6 +155,7 @@ EXPERIENCES = {
         'achievements': [
             ACHIEVEMENTS['goucher1'],
         ],
+        'skills': [],
     },
     'baltimore' : {
         'id': 513,
@@ -141,6 +178,7 @@ EXPERIENCES = {
             ACHIEVEMENTS['baltimore2'],
             ACHIEVEMENTS['baltimore3'],
         ],
+        'skills': SKILLS['billy'][1:3],
     },
 }
 
@@ -308,6 +346,7 @@ def post_request(app, url, data):
           "gender": "Female",
           "race_all": "Hispanic/Latino",
           "birthdate": "1973-04-23",
+          "account_id": 'tester|0123456789',
       },
       lambda id: Contact.query.get(id)
       )
@@ -338,6 +377,12 @@ def post_request(app, url, data):
       },
       lambda id: Resume.query.get(id)
       )
+    ,('/api/contacts/123/skills',
+      {
+        'name': 'C++',
+      },
+      lambda id: SkillItem.query.get(('sEVDZsMOqdfQ-vwoIAEk5A==', 123))
+      )
     ]
 )
 def test_post(app, url, data, query):
@@ -349,7 +394,6 @@ def test_post(app, url, data, query):
 
     id_ = post_request(app, url, data)
     assert query(id_) is not None
-
 
 def test_post_experience_date(app):
     id_ = post_request(app, '/api/contacts/123/experiences/',
@@ -383,6 +427,14 @@ def test_post_experience_dump_only(app):
     id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
 
+def test_post_experience_skills(app):
+    exp = POSTS['experience'].copy()
+    exp['skills'] = [{'name': 'C++'}, {'name': 'Python'}]
+    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    assert Experience.query.get(id_).skills[0].name == 'C++'
+    assert Experience.query.get(id_).skills[1].name == 'Python'
+
+
 @pytest.mark.parametrize(
     "url,update,query,test",
     [('/api/contacts/123/',
@@ -390,6 +442,16 @@ def test_post_experience_dump_only(app):
        'gender': None, 'birthdate': None},
       lambda: Contact.query.get(123),
       lambda e: e.first_name == 'William' and e.gender == None,
+      ),
+     ('/api/contacts/123/',
+      {'skills': [
+          { 'name': 'Python' }, 
+          { 'name': 'Workforce Development' }, 
+      ]},
+      lambda: Contact.query.get(123),
+      lambda e: (len(e.skills) == 2 
+                 and e.skills[0].name == 'Python' 
+                 and e.skills[1].name == 'Workforce Development'),
       ),
      ('/api/experiences/512/',
       {'end_month': 'January', 'end_year': 2017},
@@ -413,6 +475,11 @@ def test_post_experience_dump_only(app):
       lambda: Resume.query.get(51),
       lambda r: r.name == 'test',
       )
+    ,('/api/experiences/513/',
+      {'skills': SKILLS['billy'][0:2] + [{'name': 'Test'}]},
+      lambda: Experience.query.get(513),
+      lambda e: len(e.skills) == 3 and e.skills[0].name == 'Public Health' and e.skills[-1].name == 'Test',
+      )
     ]
 )
 def test_put(app, url, update, query, test):
@@ -432,9 +499,44 @@ def test_put(app, url, update, query, test):
         assert test(query())
 
 @pytest.mark.parametrize(
+    "url,update,query,test",
+    [('/api/contacts/123/',
+      {'first_name': 'William', 'last_name':'Daly'},
+      lambda: Contact.query.get(123),
+      lambda e: len(e.skills) == len(SKILLS['billy']),
+      )
+    ,('/api/experiences/513/',
+      {'host': 'Test'},
+      lambda: Experience.query.get(513),
+      lambda e: len(e.achievements) == len(EXPERIENCES['baltimore']['achievements'])
+      )
+    ,('/api/experiences/513/',
+      {'host': 'Test'},
+      lambda: Experience.query.get(513),
+      lambda e: len(e.skills) == len(EXPERIENCES['baltimore']['skills'])
+      )
+    ])
+def test_put_preserves_list_fields(app, url, update, query, test):
+    from models.resume_section_model import ResumeSectionSchema
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        assert query() is not None, "Item to update should exist"
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        print(response.json)
+        assert response.status_code == 200
+        assert test(query())
+
+@pytest.mark.parametrize(
     "delete_url,query",
     [('/api/experiences/512/', lambda: Experience.query.get(512))
     ,('/api/resumes/51/', lambda: Resume.query.get(51))
+    ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==', 
+      lambda: SkillItem.query.get(('n1N02ypni69EZg0SggRIIg==', 123)))
     ]
 )
 def test_delete(app, delete_url, query):
@@ -460,6 +562,7 @@ def test_delete(app, delete_url, query):
     ,('/api/tags/123/', TAGS['python'])
     ,('/api/tags/124/', TAGS['webdev'])
     ,('/api/resumes/51/', RESUMES['billy'])
+    ,('/api/contacts/123/skills', SKILLS['billy'])
     ]
 )
 def test_get(app, url, expected):
@@ -477,6 +580,26 @@ def test_get(app, url, expected):
         data = json.loads(response.data)['data']
         assert len(data) > 0
         assert data == expected
+
+def test_get_autocomplete(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    query = {
+        'q': 'Pyt',
+    }
+    with app.test_client() as client:
+        response = client.get('/api/skills/autocomplete/', 
+                              query_string=query, headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        assert 'matches' in data
+        assert 'got_exact' in data
+        assert 'Python' in data['matches']
+
 
 @pytest.mark.parametrize(
     "url,expected",
