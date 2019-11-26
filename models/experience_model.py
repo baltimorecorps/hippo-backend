@@ -46,7 +46,8 @@ class Experience(db.Model):
     description = db.Column(db.String(500))
     host = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(100), nullable=False)
-    degree = db.Column(db.Enum(Degree, name='Degree'))
+    degree = db.Column(db.String(100))
+    link = db.Column(db.String(255))
     start_month = db.Column(db.Enum(Month, name='MonthType'), nullable=False)
     start_year = db.Column(db.Integer, nullable=False)
     end_month = db.Column(db.Enum(Month, name='MonthType'), nullable=False)
@@ -61,7 +62,7 @@ class Experience(db.Model):
                                    cascade='all, delete, delete-orphan')
     resumes = db.relationship('ResumeItem', back_populates='experience',
                               cascade='all, delete, delete-orphan')
-    skills = db.relationship('SkillItem', secondary=experience_skills, 
+    skills = db.relationship('SkillItem', secondary=experience_skills,
                              order_by='SkillItem.name',
                              lazy='subquery')
 
@@ -106,7 +107,8 @@ class ExperienceSchema(Schema):
     description = fields.String()
     host = fields.String(required=True)
     title = fields.String(required=True)
-    degree = EnumField(Degree, by_value=True, missing=None)
+    degree = fields.String()
+    link = fields.String()
     is_current = fields.Boolean(dump_only=True)
     start_month = EnumField(Month, by_value=True, required=True)
     start_year = fields.Integer(required=True)
