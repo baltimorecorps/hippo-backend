@@ -78,8 +78,11 @@ class Experience(db.Model):
 
     @hybrid_property
     def date_start(self):
-        start_str = f'1 {self.start_month.value}, {self.start_year}'
-        return dt.datetime.strptime(start_str, '%d %B, %Y')
+         if self.start_month==Month.none or self.start_year==0:
+            return dt.datetime.today()
+         else:
+            start_str = f'1 {self.start_month.value}, {self.start_year}'
+            return dt.datetime.strptime(start_str, '%d %B, %Y')
 
     @hybrid_property
     def date_length(self):
