@@ -421,6 +421,17 @@ def test_post_experience_null_degree(app):
     assert Experience.query.get(id_) is not None
     pprint(Experience.query.get(id_).degree)
 
+def test_post_experience_null_start_date(app):
+    exp = POSTS['experience'].copy()
+    exp['start_month'] = 'none'
+    exp['start_year'] = 0
+    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    assert Experience.query.get(id_) is not None
+    assert Experience.query.get(id_).start_month == Month.none
+    assert Experience.query.get(id_).start_year == 0
+    pprint(Experience.query.get(id_).start_month)
+    pprint(Experience.query.get(id_).start_year)
+
 def test_post_experience_current(app):
     exp = POSTS['experience'].copy()
     exp['end_month'] = 'none'
