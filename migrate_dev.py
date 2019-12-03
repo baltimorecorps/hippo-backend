@@ -3,9 +3,9 @@ from flask_migrate import Migrate, MigrateCommand
 from models.contact_model import db
 from app import create_app
 
-```
+'''
  Use this to migrate changes on the dev database hosted on Heroku
-```
+'''
 
 app = create_app('dev')
 

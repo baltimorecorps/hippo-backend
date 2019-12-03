@@ -3,9 +3,9 @@ from flask_migrate import Migrate, MigrateCommand
 from models.contact_model import db
 from app import create_app
 
-```
+'''
 Use this to migrate changes on your local database
-```
+'''
 
 app = create_app('local')
 
