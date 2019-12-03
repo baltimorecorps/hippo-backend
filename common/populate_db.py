@@ -99,6 +99,7 @@ exp_goucher = Experience(
     host='Goucher College',
     title='Economics',
     degree='Undergraduate',
+    degree_other='Study Abroad',
     start_month=Month('September'),
     start_year=2012,
     end_month=Month('May'),
