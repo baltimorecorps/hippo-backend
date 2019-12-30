@@ -7,7 +7,7 @@ from resources.Achievement import AchievementAll
 from resources.Resume import ResumeAll, ResumeOne, GenerateResume
 from resources.Resume import ResumeSectionAll, ResumeSectionOne
 from resources.Skills import ContactSkills, ContactSkillOne, AutocompleteSkill
-from resources.Programs import ProgramContactOne, ProgramContactAll
+from resources.ProgramContacts import ProgramContactOne, ProgramContactAll
 
 api_bp = Blueprint('api',__name__)
 api = Api(api_bp)
