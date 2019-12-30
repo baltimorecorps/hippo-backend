@@ -12,6 +12,7 @@ from models.resume_section_model import ResumeSection
 from models.tag_model import Tag
 from models.tag_item_model import TagItem
 from models.skill_model import SkillItem
+from models.program_contact_model import ProgramContact
 
 SKILLS = {
     'billy': [
@@ -290,6 +291,78 @@ RESUME_OUTPUT = {
     'other_skills_dump': [TAG_ITEMS['billy_webdev']]
 }
 
+QUESTIONS = {
+    'q_pfp1': {
+        'id': 3,
+        'program_id': 1,
+        'question_text': 'Race and equity',
+        'limit_word': 200,
+        'limit_character': 2000
+    },
+    'q_pfp2': {
+        'id': 4,
+        'program_id': 1,
+        'question_text': 'Sector effectiveness',
+        'limit_word': 300,
+        'limit_character': 3000
+    }
+}
+
+CYCLES = {
+    'pfp': {
+        'id': 2,
+        'program_id': 1,
+        'date_start': '2020-01-06',
+        'date_end': '2025-01-06',
+        'intake_talent_board_id': 'intake_talent',
+        'intake_org_board_id': 'intake_org',
+        'match_talent_board_id': 'match_talent',
+        'match_opp_board_id': 'match_opp',
+        'is_active': True
+    }
+}
+
+PROGRAMS = {
+    'pfp': {
+        'id': 1,
+        'name': 'Place for Purpose',
+        'current_cycle': CYCLES['pfp'],
+        'questions': [
+            QUESTIONS['q_pfp1'],
+            QUESTIONS['q_pfp2'],
+        ]
+    }
+}
+
+RESPONSES = {
+    'r_billy1': {
+        'id': 6,
+        'program_contact_id': 5,
+        'question_id': 3,
+        'response_text': 'Race and equity answer'
+    },
+    'r_billy2': {
+        'id': 7,
+        'program_contact_id': 5,
+        'question_id': 4,
+        'response_text': 'Sector effectiveness answer'
+    }
+}
+
+PROGRAM_CONTACTS = {
+    'billy_pfp': {
+        'id': 5,
+        'program': PROGRAMS['pfp'],
+        'card_id': 'card',
+        'stage': 1,
+        'is_active': True,
+        'is_approved': False,
+        'responses': [
+            RESPONSES['r_billy1'],
+            RESPONSES['r_billy2']
+        ]
+    }
+}
 
 POSTS = {
     'experience': {
@@ -320,6 +393,13 @@ POSTS = {
         'other_achieve': [512],
         'relevant_skills': [21],
         'other_skills': [21],
+    },
+    'program_contact': {
+        'id': 5,
+        'program_id': 1,
+        'contact_id': 124,
+        'card_id': 'card',
+        'stage': 1
     }
 }
 
@@ -392,6 +472,10 @@ def post_request(app, url, data):
         'name': 'C++',
       },
       lambda id: SkillItem.query.get(('sEVDZsMOqdfQ-vwoIAEk5A==', 123))
+      )
+    ,('/api/contacts/124/programs/',
+      POSTS['program_contact'],
+      lambda id: ProgramContact.query.filter_by(contact_id=124,program_id=1).first()
       )
     ]
 )
@@ -502,6 +586,16 @@ def test_post_experience_skills(app):
       lambda: Experience.query.get(513),
       lambda e: len(e.skills) == 3 and e.skills[0].name == 'Public Health' and e.skills[-1].name == 'Test',
       )
+    ,('/api/contacts/123/programs/1/',
+      {'stage': 2},
+      lambda: ProgramContact.query.get(5),
+      lambda r: r.stage == 2,
+      )
+    ,('/api/contacts/123/programs/1/',
+      {'responses': [RESPONSES['r_billy1']]},
+      lambda: ProgramContact.query.get(5),
+      lambda r: len(r.responses) == 1 and r.responses[0].response_text == 'Race and equity answer'
+      )
     ]
 )
 def test_put(app, url, update, query, test):
@@ -585,6 +679,7 @@ def test_delete(app, delete_url, query):
     ,('/api/tags/124/', TAGS['webdev'])
     ,('/api/resumes/51/', RESUMES['billy'])
     ,('/api/contacts/123/skills', SKILLS['billy'])
+    ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
     ]
 )
 def test_get(app, url, expected):
@@ -633,6 +728,7 @@ def test_get_autocomplete(app):
     ,('/api/tags/', TAGS.values())
     ,('/api/contacts/123/tags/', TAG_ITEMS.values())
     ,('/api/contacts/123/resumes/', RESUMES.values())
+    ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
     ]
 )
 def test_get_many_unordered(app, url, expected):
