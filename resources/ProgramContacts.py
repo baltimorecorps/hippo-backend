@@ -89,3 +89,4 @@ class ProgramContactOne(Resource):
 
         db.session.commit()
         result = program_contact_schema.dump(program_contact)
+        return {"status": 'success', 'data': result}, 200
