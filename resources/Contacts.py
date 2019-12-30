@@ -1,10 +1,12 @@
-from flask import request as reqobj
+from flask import request as reqobj #ask David why this is here
 from flask_restful import Resource, request
 from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
 from models.skill_model import SkillItem
+from models.program_contact_model import ProgramContact
+from models.program_model import Program
 from marshmallow import ValidationError
 from auth import requires_auth
 
@@ -13,10 +15,11 @@ from .skill_utils import get_skill_id, make_skill
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
+DEFAULT_PROGRAM = 'Place for Purpose'
 
 def add_skills(skills, contact):
     for skill in skills:
-        s = SkillItem.query.get((get_skill_id(skill['name']), 
+        s = SkillItem.query.get((get_skill_id(skill['name']),
                                  contact.id))
         if not s:
             s = make_skill(skill['name'], contact.id)
@@ -98,4 +101,3 @@ class ContactOne(Resource):
         db.session.commit()
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 200
-
