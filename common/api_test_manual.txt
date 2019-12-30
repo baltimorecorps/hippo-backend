@@ -63,3 +63,9 @@ curl http://localhost:5000/api/resumes/1/sections/4 --request PUT --data '{"max_
 DELETE
 curl http://localhost:5000/api/resumes/1/sections/2 --request DELETE
 -----------------------------------------------
+Program Contact
+POST
+curl http://localhost:5000/api/contacts/1/programs/ --request POST --data '{"contact_id": 1, "program_id": 1, "card_id": "card","stage": 1}'
+
+PUT
+curl http://localhost:5000/api/contacts/1/programs/1 --request PUT --data '{"is_active": true, "responses": [{"program_contact_id":1, "question_id": 1, "response_text":"R&E"}, {"program_contact_id":1, "question_id": 2, "response_text":"SE"}], "is_approved": false, "stage": 1, "id": 1,"program": {"questions": [{"limit_character": 2000,"question_text": "Race and equity","limit_word": 200,"program_id": 1,"id": 1},{"limit_character": 2000,"question_text": "Sector effectiveness","limit_word": 200,"program_id": 1,"id": 2}],"current_cycle": {"is_active": true,"program_id": 1,"date_end": "2025-01-06","intake_talent_board_id":"intake_talent","intake_org_board_id": "intake_org","match_opp_board_id": "match_opp","match_talent_board_id": "match_talent","date_start": "2020-01-06","id": 1},"id": 1,"name": "Place for Purpose"},"card_id": "card"}'
