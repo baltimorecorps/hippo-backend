@@ -1,14 +1,14 @@
 from models.base_model import db
 from marshmallow import Schema, fields, post_dump, EXCLUDE
 import datetime as dt
-from models.program_model import Program
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class Cycle(db.Model):
 
     #table columns
     id = db.Column(db.Integer, nullable=False, primary_key=True)
-    contact_id = db.Column(db.Integer, db.ForeignKey('program.id'), nullable=False)
+    program_id = db.Column(db.Integer, db.ForeignKey('program.id'), nullable=False)
     date_start = db.Column(db.Date, nullable=False)
     date_end = db.Column(db.Date, nullable=False)
     intake_talent_board_id = db.Column(db.String)
@@ -22,15 +22,16 @@ class Cycle(db.Model):
     #calculated fields
     @hybrid_property
     def is_active(self):
-        if self.date_end >= dt.date.today()
-            return True
+        # this is to avoid a TypeError in the _and() condition of the
+        # primary join in Program
+        if self.date_end:
+            return self.date_end >= dt.date.today()
         else:
             return False
 
-class Cycle(Schema):
-    id = fields.String(dump_only=True)
-    name = fields.Pluck(Program, 'name', attribute='program', dump_only=True)
-    program_id = fields.String(required=True)
+class CycleSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    program_id = fields.Integer(required=True)
     is_active = fields.Boolean(dump_only=True)
     date_start = fields.Date()
     date_end = fields.Date()
