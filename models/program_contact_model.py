@@ -24,7 +24,7 @@ class ProgramContact(db.Model):
 
 class ProgramContactSchema(Schema):
     id = fields.Integer(dump_only=True)
-    contact_id = fields.Integer(load_only=True)
+    contact_id = fields.Integer()
     program_id = fields.Integer(load_only=True)
     program = fields.Nested(ProgramSchema, dump_only=True)
     responses = fields.Nested(ResponseSchema, many=True)

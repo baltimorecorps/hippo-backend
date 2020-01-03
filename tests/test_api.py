@@ -352,6 +352,7 @@ RESPONSES = {
 PROGRAM_CONTACTS = {
     'billy_pfp': {
         'id': 5,
+        'contact_id': 123,
         'program': PROGRAMS['pfp'],
         'card_id': 'card',
         'stage': 1,
