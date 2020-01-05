@@ -41,7 +41,7 @@ def copy_card(key, token, source_card, target_list, name):
     return response.json()
 
 @get_creds
-def set_custom_field(key, token, card_id, field_id, value='', value_id=''):
+def set_custom_field_val(key, token, card_id, field_id, value='', value_id=''):
     url = f'https://api.trello.com/1/card/{card_id}/customField/{field_id}/item'
     payload = {'idValue': value_id,
                'value': value,
@@ -56,7 +56,7 @@ class Board(object):
     def __init__(self, data):
         self.data = data
         self.id = data['id']
-        self.lists = {'index': {}, 'id': {}}
+        self.lists = {'stage': {}, 'id': {}}
         self.custom_fields = {}
         self.cards = []
 
@@ -68,7 +68,7 @@ class Board(object):
         sorted(self.data['lists'], key=op.itemgetter('pos'))
         for i, board_list in enumerate(self.data['lists']):
             _list = BoardList(board_list, i, self)
-            self.lists['index'][i] = _list
+            self.lists['stage'][i] = _list
             self.lists['id'][_list.id] = _list
 
     def parse_cards(self):
@@ -98,6 +98,16 @@ class Board(object):
                     fields[f['id']]['options']['val'][val] = _id
                     fields[f['id']]['options']['id'][_id] = val
 
+    def find_card_by_custom_field(self, field, value, many=False):
+        cards = [card for card in self.cards
+                 if card.custom_fields
+                 and card.custom_fields[field]['value']==value]
+        if not cards:
+            return None
+        elif many:
+            return cards
+        else:
+            return cards[0]
 class BoardList(object):
     def __init__(self, data, index, board):
         self.id = data['id']
