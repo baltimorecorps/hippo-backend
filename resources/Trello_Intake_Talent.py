@@ -25,7 +25,7 @@ class IntakeTalentBoard(Resource):
         board_id = get_intake_talent_board_id(program_id)
         data = query_board_data(BOARD_ID)
         board = Board(data)
-        return {'status': 'success', 'data': board.cards[0].list.name}, 200
+        return {'status': 'success', 'data': board.lists['stage'][1].template.name}, 200
 
     def put(self, program_id):
         board_id = get_intake_talent_board_id(program_id)
@@ -50,10 +50,12 @@ class IntakeTalentCard(Resource):
         program_contact = query_one_program_contact(contact_id, program_id)
         contact = program_contact.contact
 
-        template_id = '5e0d2fce847bc22ccf95e67e'
-        target_list = '5ddd7432fbe0215a8b7c5494'
+        data = query_board_data(BOARD_ID)
+        board = Board(data)
+
+        card_name = f'{contact.first_name} {contact.last_name}'
 
         new_card = copy_card(template_id, target_list,
-                             f'{contact.first_name} {contact.last_name}')
+                             )
 
         return {'status': 'success', 'data': new_card}, 201
