@@ -4,67 +4,28 @@ from models.program_model import Program
 from models.cycle_model import Cycle
 from models.program_contact_model import ProgramContact
 from .ProgramContacts import query_one_program_contact
+from .trello_utils import (
+    query_board_data,
+    Board,
+    Card,
+    BoardList
+)
 import configparser
 import requests
-
-
-def get_creds(func):
-    def pass_creds_to_func(*args):
-        config = configparser.ConfigParser()
-        config.read('secrets/trello.cfg')
-        key = config['DEFAULT']['TRELLO_API_KEY'],
-        token = config['DEFAULT']['TRELLO_API_TOKEN']
-        return func(key, token, *args)
-    return pass_creds_to_func
 
 def get_intake_talent_board_id(program_id):
     program = Program.query.get(program_id)
     return program.current_cycle.intake_talent_board_id
 
-@get_creds
-def query_all_cards(key, token, board_id):
-    url = f'https://api.trello.com/1/boards/{board_id}'
-    parameters = {'key': key,
-                  'token': token,
-                  'fields': 'id,name',
-                  'cards':'all',
-                  'card_fields':'id,name,idList,isTemplate,labels',
-                  'card_customFieldItems':'true',
-                  'customFields': 'true',
-                  'lists': 'all',
-                  'list_fields': 'id,name,pos'}
-    response = requests.get(url, params=parameters)
-    return response.json()
-
-@get_creds
-def copy_card(key, token, source_card, target_list, name):
-    url = 'https://api.trello.com/1/cards'
-    payload = {'key': key,
-               'token': token,
-               'idList': target_list,
-               'idCardSource': source_card,
-               'name': name,
-               'keepFromSource': 'all'}
-    response = requests.post(url, data=payload)
-    return response.json()
-
-@get_creds
-def set_custom_field(key, token, card_id, field_id, value='', value_id=''):
-    url = f'https://api.trello.com/1/card/{card_id}/customField/{field_id}/item'
-    payload = {'idValue': value_id,
-               'value': value,
-               'key': key,
-               'token': token}
-    response = requests.put(url, json=payload)
-    return response.json()
-
-
+BOARD_ID = '5ddd741f5cc43e2b21346dbb'
 
 class IntakeTalentBoard(Resource):
 
     def get(self, program_id):
         board_id = get_intake_talent_board_id(program_id)
-        return {'status': 'success', 'data': board_id}, 200
+        data = query_board_data(BOARD_ID)
+        board = Board(data)
+        return {'status': 'success', 'data': board.cards[0].list.name}, 200
 
     def put(self, program_id):
         board_id = get_intake_talent_board_id(program_id)
