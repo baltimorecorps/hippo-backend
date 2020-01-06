@@ -52,10 +52,7 @@ class IntakeTalentCard(Resource):
 
         data = query_board_data(BOARD_ID)
         board = Board(data)
-
-        card_name = f'{contact.first_name} {contact.last_name}'
-
-        new_card = copy_card(template_id, target_list,
-                             )
-
-        return {'status': 'success', 'data': new_card}, 201
+        started_list = board.lists['stage'][1]
+        data = {'name': f'{contact.first_name} {contact.last_name}'}
+        new_card = started_list.add_card_from_template(**data)
+        return {'status': 'success', 'data': new_card.list.id}, 201
