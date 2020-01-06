@@ -5,16 +5,19 @@ import operator as op
 
 # general methods
 def get_creds(func):
-    def pass_creds_to_func(*args):
+    def pass_creds_to_func(*args, **kwargs):
         config = configparser.ConfigParser()
         config.read('secrets/trello.cfg')
         key = config['DEFAULT']['TRELLO_API_KEY'],
         token = config['DEFAULT']['TRELLO_API_TOKEN']
-        return func(key, token, *args)
+        return func(key, token, *args, **kwargs)
     return pass_creds_to_func
 
 @get_creds
 def query_board_data(key, token, board_id):
+    '''
+    api docs: https://developers.trello.com/reference#boardsboardid-1
+    '''
     url = f'https://api.trello.com/1/boards/{board_id}'
     parameters = {'key': key,
                   'token': token,
@@ -29,27 +32,55 @@ def query_board_data(key, token, board_id):
     return response.json()
 
 @get_creds
-def copy_card(key, token, source_card, target_list, name):
+def query_checklists(key, token, card_id):
+    '''
+    api-doc: https://developers.trello.com/reference#cardsidchecklists
+    '''
+    url = f'https://api.trello.com/1/cards/{card_id}/checklists'
+    querystring = {'key': key,
+                   'token': token,
+                   'checkItems':'all',
+                   'checkItem_fields':'name,state',
+                   'filter':'all',
+                   'fields':'name,idCard',}
+    response = requests.get(url, params=querystring)
+    return response.json()
+
+@get_creds
+def insert_card(key, token, **card_data):
+    '''
+    api_docs: https://developers.trello.com/reference#cardsid-1
+    '''
     url = 'https://api.trello.com/1/cards'
     payload = {'key': key,
                'token': token,
-               'idList': target_list,
-               'idCardSource': source_card,
-               'name': name,
-               'keepFromSource': 'all'}
+               **card_data}
     response = requests.post(url, data=payload)
     return response.json()
 
 @get_creds
-def set_custom_field_val(key, token, card_id, field_id, value='', value_id=''):
+def update_custom_field_val(key, token, card_id, field_id, value='', value_id=''):
+    '''
+    api docs: https://developers.trello.com/reference#customfielditemsid
+    '''
     url = f'https://api.trello.com/1/card/{card_id}/customField/{field_id}/item'
-    payload = {'idValue': value_id,
+    payload = {'key': key,
+               'token': token,
                'value': value,
-               'key': key,
-               'token': token}
+               'idValue': value_id}
     response = requests.put(url, json=payload)
     return response.json()
 
+@get_creds
+def update_card(key, token, card_id, **new_values):
+    url = f'https://api.trello.com/1/card/{card_id}'
+    payload = {
+        'key': key,
+        'token': token,
+        **new_values
+    }
+    response = requests.put(url, data=payload)
+    return response.json()
 
 # classes
 class Board(object):
@@ -57,7 +88,7 @@ class Board(object):
         self.data = data
         self.id = data['id']
         self.lists = {'stage': {}, 'id': {}}
-        self.custom_fields = {}
+        self.custom_fields = {'id': {}, 'name': {}}
         self.cards = []
 
         self.parse_custom_fields()
@@ -84,19 +115,10 @@ class Board(object):
                 self.lists['id'][_card.idList].cards.append(_card)
 
     def parse_custom_fields(self):
-        fields = self.custom_fields
         for f in self.data['customFields']:
-            fields[f['id']] = {
-                'name': f['name'],
-                'type': f['type'],
-            }
-            if f['type']=='list':
-                fields[f['id']]['options'] = {'val': {}, 'id': {}}
-                for option in f['options']:
-                    val = option['value']['text']
-                    _id = option['id']
-                    fields[f['id']]['options']['val'][val] = _id
-                    fields[f['id']]['options']['id'][_id] = val
+            field = CustomField(f, self)
+            self.custom_fields['id'][field.id] = field
+            self.custom_fields['name'][field.name] = field
 
     def find_card_by_custom_field(self, field, value, many=False):
         cards = [card for card in self.cards
@@ -108,6 +130,35 @@ class Board(object):
             return cards
         else:
             return cards[0]
+            
+class CustomField(object):
+    def __init__(self, data, board):
+        self.id = data['id']
+        self.name = data['name']
+        self.type = data['type']
+        self.options = {}
+
+        self.board = board
+
+        self.parse_options(data)
+
+    def parse_options(self, data):
+        if self.type=='list':
+            self.options = {'val': {}, 'id': {}}
+            for option in data['options']:
+                val = option['value']['text']
+                _id = option['id']
+                self.options['val'][val] = _id
+                self.options['id'][_id] = val
+
+    def format_update(self, new_value):
+        updates = {'value': '', 'value_id': ''}
+        if self.type=='list':
+            updates['value_id'] = self.options['val'][new_value]
+        else:
+            updates['value'] = {self.type: new_value}
+        return updates
+
 class BoardList(object):
     def __init__(self, data, index, board):
         self.id = data['id']
@@ -126,6 +177,18 @@ class BoardList(object):
         def inactive_cards(self):
             return [card for card in self.cards if card.closed]
 
+    def add_card_from_template(self, **data):
+        card_data = {
+            'idList': self.id,
+            'idCardSource': self.template.id,
+            'keepFromSource': 'checklists,members,due,labels',
+            **data
+        }
+        result = insert_card(**card_data)
+        new_card = Card(result, self.board)
+        new_card.list = self
+        return new_card
+
 class Card(object):
     def __init__(self, data, board):
         self.data = data
@@ -142,17 +205,42 @@ class Card(object):
         self.parse_custom_field_items()
 
     def parse_custom_field_items(self):
-        fields = self.custom_fields
-        if self.data['customFieldItems']:
-            for f in self.data['customFieldItems']:
-                field = self.board.custom_fields[f['idCustomField']]
-                if field['type']=='list':
-                    val = field['options']['id'][f['idValue']]
+        field_items = self.data.get('customFieldItems')
+        if field_items:
+            for item in field_items:
+                field = self.get_custom_field_by_id(item['idCustomField'])
+                if field.type=='list':
+                    val = field.options['id'][item['idValue']]
                 else:
-                    val = f['value'][field['type']]
-                fields[field['name']] = {
-                    'id': f['id'],
-                    'field_id': f['idCustomField'],
-                    'type': field['type'],
-                    'value': val
+                    val = item['value'][field.type]
+                self.custom_fields[field.name] = {
+                    'id': item['id'],
+                    'value': val,
+                    'field': field
                 }
+
+    def get_custom_field_by_id(self, field_id):
+        return self.board.custom_fields['id'][field_id]
+
+    def get_custom_field_by_name(self, name):
+        return self.board.custom_fields['name'][name]
+
+    def get_checklists(self):
+        self.checklists = {}
+        data = query_checklists(self.id)
+        for checklist in data:
+            self.checklists[checklist['name']] = {
+                'id': checklist['id'],
+                'items': checklist['checkItems']
+            }
+    def update_checklist_from_template(self, template_card):
+        pass
+        #self.get_checklists()
+        #template_card.get_checklists()
+        #checklists_to_add = {}
+        #items_to_add = {}
+
+    def update_custom_field_val(self, field_name, value):
+        field = self.custom_fields[field_name]['field']
+        update = field.format_update(value)
+        set_custom_field_val(self.id, field.id, update['value'], update['value_id'])
