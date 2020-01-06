@@ -3,6 +3,10 @@ from flask_migrate import Migrate, MigrateCommand
 from models.contact_model import db
 from app import create_app
 
+'''
+Use this to migrate changes to the prod database hosted on Heroku
+'''
+
 app = create_app('prod')
 
 migrate = Migrate(app, db)
