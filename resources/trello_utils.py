@@ -19,16 +19,18 @@ def query_board_data(key, token, board_id):
     api docs: https://developers.trello.com/reference#boardsboardid-1
     '''
     url = f'https://api.trello.com/1/boards/{board_id}'
-    parameters = {'key': key,
-                  'token': token,
-                  'fields': 'id,name',
-                  'cards':'all',
-                  'card_fields':'id,name,idList,isTemplate,labels,closed,desc',
-                  'card_customFieldItems':'true',
-                  'customFields': 'true',
-                  'lists': 'all',
-                  'list_fields': 'id,name,pos'}
-    response = requests.get(url, params=parameters)
+    querystring = {'key': key,
+                   'token': token,
+                   'fields': 'id,name',
+                   'cards':'all',
+                   'card_fields':'id,name,idList,isTemplate,labels,closed,desc',
+                   'card_customFieldItems':'true',
+                   'customFields': 'true',
+                   'lists': 'all',
+                   'list_fields': 'id,name,pos',
+                   'labels': 'all',
+                   'label_fields': 'name'}
+    response = requests.get(url, params=querystring)
     return response.json()
 
 @get_creds
