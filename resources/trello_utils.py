@@ -94,6 +94,32 @@ def update_card(key, token, card_id, **new_values):
     response = requests.put(url, data=payload)
     return response.json()
 
+@get_creds
+def insert_checklist(key, token, card_id, **checklist_data):
+    '''
+    api docs: https://developers.trello.com/reference/#checklists
+    '''
+    url = 'https://api.trello.com/1/checklists'
+    payload = {'key': key,
+               'token': token,
+               'idCard': card_id,
+               **checklist_data}
+    response = requests.post(url, data=payload)
+    return response.text
+
+@get_creds
+def insert_checklist_item(key, token, checklist_id, name, **item_data):
+    '''
+    api docs: https://developers.trello.com/reference/#checklistsidcheckitems
+    '''
+    url = f'https://api.trello.com/1/checklists/{checklist_id}/checkItems'
+    payload = {'key': key,
+               'token': token,
+               'name': name,
+               **item_data}
+    response = requests.post(url, data=payload)
+    return response.text
+
 # classes
 class Board(object):
     def __init__(self, data):
