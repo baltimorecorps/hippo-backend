@@ -285,12 +285,35 @@ class Card(object):
                 'id': checklist['id'],
                 'items': checklist['checkItems']
             }
-    def update_checklist_from_template(self, template_card):
-        pass
-        #self.get_checklists()
-        #template_card.get_checklists()
-        #checklists_to_add = {}
-        #items_to_add = {}
+        return self.checklists
+
+    def add_missing_checklists(self, current_checklists, template_checklists):
+        to_add = []
+        for name, checklist in template_checklists.items():
+            if name not in current.keys():
+                data = {'idChecklistSource': checklist['id']}
+                insert_checklist(self.id, **data)
+
+    def add_missing_checklist_items(self, current_checklists, template_checklists):
+        for name, checklist in template_checklists.items():
+            current_checklist = current_checklists.get(name)
+            template_items = checklist['items']
+            if current_checklist and template_items:
+                current_id = current_checklist['id']
+                if current_checklist['items']:
+                    current_items = [item['name'] for item in current_checklist['items']]
+                else:
+                    current_items = []
+                for item in template_items:
+                    if item['name'] not in current_items:
+                        insert_checklist_item(current_id, item['name'])
+
+    def update_checklists_from_template(self, template_card):
+        current = self.get_checklists()
+        template = template_card.get_checklists()
+
+        self.add_missing_checklists(current, template)
+        self.add_missing_checklist_items(current, template)
 
     def update_custom_field_val(self, field_name, value):
         field = self.custom_fields[field_name]['field']
