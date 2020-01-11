@@ -49,6 +49,18 @@ def query_checklists(key, token, card_id):
     return response.json()
 
 @get_creds
+def query_card(key, token, card_id, **card_params):
+    '''
+    api_docs: https://developers.trello.com/reference#cardsid-1
+    '''
+    url = f'https://api.trello.com/1/cards/{card_id}'
+    querystring = {'key': key,
+                   'token': token,
+                   'fields': 'id,name,idList,isTemplate,labels,closed,desc'}
+    response = requests.get(url, params=querystring)
+    return response.json()
+
+@get_creds
 def insert_card(key, token, **card_data):
     '''
     api_docs: https://developers.trello.com/reference#cardsid-1
