@@ -319,3 +319,14 @@ class Card(object):
         field = self.custom_fields[field_name]['field']
         update = field.format_update(value)
         set_custom_field_val(self.id, field.id, update['value'], update['value_id'])
+
+    def move_card(self, new_list):
+        template = new_list.template
+        data = {
+            'idList': new_list.id,
+            'idLabels': template.data['labels'],
+        }
+        update_card(self.id, **data)
+        self.update_checklists_from_template(template)
+        result = query_card(self.id)
+        return result
