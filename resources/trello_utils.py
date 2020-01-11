@@ -243,7 +243,7 @@ class Card(object):
         self.id = data['id']
         self.name = data['name']
         self.idList = data['idList']
-        self.closed = data['closed']
+        self.archived = data['closed']
         self.desc = data['desc']
         self.custom_fields = {}
 
@@ -251,6 +251,10 @@ class Card(object):
         self.list = None
 
         self.parse_custom_field_items()
+
+    @property
+    def stage(self):
+        return self.list.stage
 
     def parse_custom_field_items(self):
         field_items = self.data.get('customFieldItems')
