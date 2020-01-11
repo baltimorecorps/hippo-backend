@@ -88,11 +88,9 @@ def update_custom_field_val(key, token, card_id, field_id, value='', value_id=''
 @get_creds
 def update_card(key, token, card_id, **new_values):
     url = f'https://api.trello.com/1/card/{card_id}'
-    payload = {
-        'key': key,
-        'token': token,
-        **new_values
-    }
+    payload = {'key': key,
+               'token': token,
+               **new_values}
     response = requests.put(url, data=payload)
     return response.json()
 
