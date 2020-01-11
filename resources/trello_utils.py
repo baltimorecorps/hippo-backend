@@ -225,11 +225,11 @@ class BoardList(object):
         def inactive_cards(self):
             return [card for card in self.cards if card.closed]
 
-    def add_card_from_template(self, **data):
+    def add_card_from_template(**data):
         card_data = {
             'idList': self.id,
             'idCardSource': self.template.id,
-            'keepFromSource': 'checklists,members,due,labels',
+            'keepFromSource': 'all',
             **data
         }
         result = insert_card(**card_data)
