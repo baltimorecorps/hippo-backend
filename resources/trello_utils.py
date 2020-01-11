@@ -128,10 +128,12 @@ class Board(object):
         self.lists = {'stage': {}, 'id': {}}
         self.custom_fields = {'id': {}, 'name': {}}
         self.cards = []
+        self.labels = {'id': {}, 'name': {}}
 
         self.parse_custom_fields()
         self.parse_lists()
         self.parse_cards()
+        self.parse_labels()
 
     def parse_lists(self):
         sorted(self.data['lists'], key=op.itemgetter('pos'))
@@ -158,6 +160,15 @@ class Board(object):
             self.custom_fields['id'][field.id] = field
             self.custom_fields['name'][field.name] = field
 
+    def parse_labels(self):
+        labels = self.data.get('labels')
+        for label in labels:
+            name = label['name']
+            _id = label['id']
+            if name:
+                self.labels['name'][name] = _id
+                self.labels['id'][_id] = name
+
     def find_card_by_custom_field(self, field, value, many=False):
         cards = [card for card in self.cards
                  if card.custom_fields
@@ -168,7 +179,7 @@ class Board(object):
             return cards
         else:
             return cards[0]
-            
+
 class CustomField(object):
     def __init__(self, data, board):
         self.id = data['id']
@@ -177,7 +188,6 @@ class CustomField(object):
         self.options = {}
 
         self.board = board
-
         self.parse_options(data)
 
     def parse_options(self, data):
