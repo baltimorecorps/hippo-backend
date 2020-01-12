@@ -217,13 +217,13 @@ class BoardList(object):
         self.template = None
         self.cards = []
 
-        @property
-        def active_cards(self):
-            return [card for card in self.cards if not card.closed]
+    @property
+    def active_cards(self):
+        return [card for card in self.cards if not card.archived]
 
-        @property
-        def inactive_cards(self):
-            return [card for card in self.cards if card.closed]
+    @property
+    def inactive_cards(self):
+        return [card for card in self.cards if card.archived]
 
     def add_card_from_template(**data):
         card_data = {
