@@ -225,7 +225,7 @@ class BoardList(object):
     def inactive_cards(self):
         return [card for card in self.cards if card.archived]
 
-    def add_card_from_template(**data):
+    def add_card_from_template(self, **data):
         card_data = {
             'idList': self.id,
             'idCardSource': self.template.id,
