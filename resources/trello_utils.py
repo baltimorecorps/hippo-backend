@@ -53,7 +53,13 @@ def query_card(key, token, card_id, **card_params):
     url = f'https://api.trello.com/1/cards/{card_id}'
     querystring = {'key': key,
                    'token': token,
-                   'fields': 'id,name,idList,isTemplate,labels,closed,desc'}
+                   'fields': 'id,name,idList,isTemplate,labels,closed,desc',
+                   'customFieldItems': 'true',
+                   'checklists': 'all',
+                   'checklist_fields': 'id, name',
+                   'checkItems':'all',
+                   'checkItem_fields':'name,state',
+                   **card_params}
     response = requests.get(url, params=querystring)
     return response.json()
 
@@ -109,6 +115,17 @@ def insert_checklist(key, token, card_id, **checklist_data):
     return response.text
 
 @get_creds
+def delete_checklist(key, token, card_id, checklist_id):
+    '''
+    api docs: https://developers.trello.com/reference/#cardsidchecklistsidchecklist
+    '''
+    url = f'https://api.trello.com/1/cards/{card_id}/checklists/{checklist_id}'
+    querystring = {"key": key,
+                   "token": token}
+    response = requests.delete(url, params=querystring)
+    return response.text
+
+@get_creds
 def insert_checklist_item(key, token, checklist_id, name, **item_data):
     '''
     api docs: https://developers.trello.com/reference/#checklistsidcheckitems
@@ -119,6 +136,29 @@ def insert_checklist_item(key, token, checklist_id, name, **item_data):
                'name': name,
                **item_data}
     response = requests.post(url, data=payload)
+    return response.text
+
+@get_creds
+def update_checklist_item(key, token, card_id, item_id, **item_data):
+    '''
+    api docs: https://developers.trello.com/reference/#cardsidcheckitemidcheckitem-1
+    '''
+    url = f'https://api.trello.com/1/cards/{card_id}/checkItem/{item_id}'
+    payload = {'key': key,
+               'token': token,
+               **item_data}
+    response = requests.put(url, data=payload)
+    return response.text
+
+@get_creds
+def delete_checklist_item(key, token, card_id, checklist_item_id):
+    '''
+    api docs: https://developers.trello.com/reference/#cardsidcheckitemidcheckitem-2
+    '''
+    url = f'https://api.trello.com/1/cards/{card_id}/checklists/{checklist_item_id}'
+    querystring = {"key": key,
+                   "token": token}
+    response = requests.delete(url, params=querystring)
     return response.text
 
 # classes
@@ -316,10 +356,11 @@ class Card(object):
         self.add_missing_checklists(current, template)
         self.add_missing_checklist_items(current, template)
 
-    def update_custom_field_val(self, field_name, value):
+    def set_custom_field_val(self, field_name, value):
         field = self.custom_fields[field_name]['field']
         update = field.format_update(value)
-        set_custom_field_val(self.id, field.id, update['value'], update['value_id'])
+        update_custom_field_val(self.id, field.id, update['value'], update['value_id'])
+
 
     def move_card(self, new_list):
         template = new_list.template
@@ -329,5 +370,16 @@ class Card(object):
         }
         update_card(self.id, **data)
         self.update_checklists_from_template(template)
+        result = query_card(self.id)
+        return result
+
+    def complete_checklist_items(self):
+        checklists = self.get_checklists()
+        for checklist in checklists.values():
+            items = checklist['items']
+            if items:
+                for item in items:
+                    data = {'state': 'complete'}
+                    update_checklist_item(self.id, item['id'], **data)
         result = query_card(self.id)
         return result
