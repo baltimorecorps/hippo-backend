@@ -34,18 +34,15 @@ def query_board_data(key, token, board_id):
     return response.json()
 
 @get_creds
-def query_checklists(key, token, card_id):
+def insert_card(key, token, **card_data):
     '''
-    api-doc: https://developers.trello.com/reference#cardsidchecklists
+    api_docs: https://developers.trello.com/reference#cardsid-1
     '''
-    url = f'https://api.trello.com/1/cards/{card_id}/checklists'
-    querystring = {'key': key,
-                   'token': token,
-                   'checkItems':'all',
-                   'checkItem_fields':'name,state',
-                   'filter':'all',
-                   'fields':'name,idCard',}
-    response = requests.get(url, params=querystring)
+    url = 'https://api.trello.com/1/cards'
+    payload = {'key': key,
+               'token': token,
+               **card_data}
+    response = requests.post(url, data=payload)
     return response.json()
 
 @get_creds
@@ -61,16 +58,29 @@ def query_card(key, token, card_id, **card_params):
     return response.json()
 
 @get_creds
-def insert_card(key, token, **card_data):
-    '''
-    api_docs: https://developers.trello.com/reference#cardsid-1
-    '''
-    url = 'https://api.trello.com/1/cards'
+def update_card(key, token, card_id, **new_values):
+    url = f'https://api.trello.com/1/card/{card_id}'
     payload = {'key': key,
                'token': token,
-               **card_data}
-    response = requests.post(url, data=payload)
+               **new_values}
+    response = requests.put(url, data=payload)
     return response.json()
+
+@get_creds
+def query_checklists(key, token, card_id):
+    '''
+    api-doc: https://developers.trello.com/reference#cardsidchecklists
+    '''
+    url = f'https://api.trello.com/1/cards/{card_id}/checklists'
+    querystring = {'key': key,
+                   'token': token,
+                   'checkItems':'all',
+                   'checkItem_fields':'name,state',
+                   'filter':'all',
+                   'fields':'name,idCard',}
+    response = requests.get(url, params=querystring)
+    return response.json()
+
 
 @get_creds
 def update_custom_field_val(key, token, card_id, field_id, value='', value_id=''):
@@ -83,15 +93,6 @@ def update_custom_field_val(key, token, card_id, field_id, value='', value_id=''
                'value': value,
                'idValue': value_id}
     response = requests.put(url, json=payload)
-    return response.json()
-
-@get_creds
-def update_card(key, token, card_id, **new_values):
-    url = f'https://api.trello.com/1/card/{card_id}'
-    payload = {'key': key,
-               'token': token,
-               **new_values}
-    response = requests.put(url, data=payload)
     return response.json()
 
 @get_creds
