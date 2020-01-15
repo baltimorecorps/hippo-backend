@@ -10,7 +10,7 @@ class Achievement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     exp_id = db.Column(db.Integer, db.ForeignKey('experience.id'), nullable=False)
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
-    description = db.Column(db.String(500))
+    description = db.Column(db.String(2000))
 
     #relationships
     experience = db.relationship('Experience', back_populates='achievements')

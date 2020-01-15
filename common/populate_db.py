@@ -52,11 +52,12 @@ billy = Contact(
         email='billy@example.com',
         type=EmailType.personal,
     ),
-    gender=Gender('Male'),
+    gender='Male',
     birthdate=date(1991, 1, 2),
     phone_primary='555-245-2351',
-    race_all=Race('White'),
-    account_id='billy|123'
+    race_all='White',
+    pronouns='He/Him/His',
+    account_id='billy|123',
 )
 obama = Contact(
     id=124,
@@ -68,10 +69,13 @@ obama = Contact(
         email='obama@whitehouse.gov',
         type=EmailType('Work'),
     ),
-    gender=Gender('Male'),
+    gender='Male',
     birthdate=date(1961, 8, 4),
     phone_primary='555-444-4444',
-    race_all=Race('Black'),
+    race_all='Black or African-American;White',
+    race_other='Test',
+    pronouns='Not Listed',
+    pronouns_other='They/Them/Their',
 )
 
 exp_columbia = Experience(
