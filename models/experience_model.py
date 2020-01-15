@@ -43,7 +43,7 @@ class Experience(db.Model):
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(500))
+    description = db.Column(db.String(2000))
     host = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     degree_other = db.Column(db.String(100))
