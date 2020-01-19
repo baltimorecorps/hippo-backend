@@ -7,6 +7,7 @@ from models.base_model import db
 from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
+from .ProgramContacts import create_program_contact
 from marshmallow import ValidationError
 from auth import requires_auth
 
@@ -15,7 +16,6 @@ from .skill_utils import get_skill_id, make_skill
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
-DEFAULT_PROGRAM = 'Place for Purpose'
 
 def add_skills(skills, contact):
     for skill in skills:
@@ -49,6 +49,11 @@ class ContactAll(Resource):
             contact.email_primary = Email(**email)
         db.session.add(contact)
         db.session.commit()
+        program_contact_data = {
+            'stage': 1,
+            'program_id': 1
+        }
+        create_program_contact(contact.id, **program_contact_data)
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 201
 
