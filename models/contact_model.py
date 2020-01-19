@@ -7,6 +7,7 @@ from models.email_model import Email, EmailSchema
 from models.address_model import Address
 from models.achievement_model import Achievement
 from models.skill_model import SkillItemSchema
+from models.program_contact_model import ProgramContactSchema
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -89,6 +90,7 @@ class ContactSchema(Schema):
     birthdate = fields.Date(allow_none=True)
     account_id = fields.String()
     skills = fields.Nested(SkillItemSchema, many=True)
+    programs = fields.Nested(ProgramContactSchema, many=True)
 
     class Meta:
         unknown = EXCLUDE

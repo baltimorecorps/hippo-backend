@@ -41,7 +41,79 @@ SKILLS = {
     ],
 }
 
+QUESTIONS = {
+    'q_pfp1': {
+        'id': 3,
+        'program_id': 1,
+        'question_text': 'Race and equity',
+        'limit_word': 200,
+        'limit_character': 2000
+    },
+    'q_pfp2': {
+        'id': 4,
+        'program_id': 1,
+        'question_text': 'Sector effectiveness',
+        'limit_word': 300,
+        'limit_character': 3000
+    }
+}
 
+CYCLES = {
+    'pfp': {
+        'id': 2,
+        'program_id': 1,
+        'date_start': '2020-01-06',
+        'date_end': '2025-01-06',
+        'intake_talent_board_id': 'intake_talent',
+        'intake_org_board_id': 'intake_org',
+        'match_talent_board_id': 'match_talent',
+        'match_opp_board_id': 'match_opp',
+        'is_active': True
+    }
+}
+
+PROGRAMS = {
+    'pfp': {
+        'id': 1,
+        'name': 'Place for Purpose',
+        'current_cycle': CYCLES['pfp'],
+        'questions': [
+            QUESTIONS['q_pfp1'],
+            QUESTIONS['q_pfp2'],
+        ]
+    }
+}
+
+RESPONSES = {
+    'r_billy1': {
+        'id': 6,
+        'program_contact_id': 5,
+        'question_id': 3,
+        'response_text': 'Race and equity answer'
+    },
+    'r_billy2': {
+        'id': 7,
+        'program_contact_id': 5,
+        'question_id': 4,
+        'response_text': 'Sector effectiveness answer'
+    }
+}
+
+PROGRAM_CONTACTS = {
+    'billy_pfp': {
+        'id': 5,
+        'contact_id': 123,
+        'program': PROGRAMS['pfp'],
+        'card_id': 'card',
+        'stage': 1,
+        'is_active': True,
+        'is_approved': False,
+        'responses': [
+            RESPONSES['r_billy1'],
+            RESPONSES['r_billy2']
+        ]
+    }
+}
 
 CONTACTS = {
     'billy': {
@@ -70,6 +142,7 @@ CONTACTS = {
         'pronouns_other': None,
         'account_id': 'billy|123',
         'skills': SKILLS['billy'],
+        'programs': [PROGRAM_CONTACTS['billy_pfp']]
     },
 
     'obama': {
@@ -98,6 +171,7 @@ CONTACTS = {
         'pronouns_other': 'They/Them/Their',
         'account_id': None,
         'skills': SKILLS['obama'],
+        'programs': []
     },
 }
 
@@ -299,80 +373,6 @@ RESUME_OUTPUT = {
     'other_skills_dump': [TAG_ITEMS['billy_webdev']]
 }
 
-QUESTIONS = {
-    'q_pfp1': {
-        'id': 3,
-        'program_id': 1,
-        'question_text': 'Race and equity',
-        'limit_word': 200,
-        'limit_character': 2000
-    },
-    'q_pfp2': {
-        'id': 4,
-        'program_id': 1,
-        'question_text': 'Sector effectiveness',
-        'limit_word': 300,
-        'limit_character': 3000
-    }
-}
-
-CYCLES = {
-    'pfp': {
-        'id': 2,
-        'program_id': 1,
-        'date_start': '2020-01-06',
-        'date_end': '2025-01-06',
-        'intake_talent_board_id': 'intake_talent',
-        'intake_org_board_id': 'intake_org',
-        'match_talent_board_id': 'match_talent',
-        'match_opp_board_id': 'match_opp',
-        'is_active': True
-    }
-}
-
-PROGRAMS = {
-    'pfp': {
-        'id': 1,
-        'name': 'Place for Purpose',
-        'current_cycle': CYCLES['pfp'],
-        'questions': [
-            QUESTIONS['q_pfp1'],
-            QUESTIONS['q_pfp2'],
-        ]
-    }
-}
-
-RESPONSES = {
-    'r_billy1': {
-        'id': 6,
-        'program_contact_id': 5,
-        'question_id': 3,
-        'response_text': 'Race and equity answer'
-    },
-    'r_billy2': {
-        'id': 7,
-        'program_contact_id': 5,
-        'question_id': 4,
-        'response_text': 'Sector effectiveness answer'
-    }
-}
-
-PROGRAM_CONTACTS = {
-    'billy_pfp': {
-        'id': 5,
-        'contact_id': 123,
-        'program': PROGRAMS['pfp'],
-        'card_id': 'card',
-        'stage': 1,
-        'is_active': True,
-        'is_approved': False,
-        'responses': [
-            RESPONSES['r_billy1'],
-            RESPONSES['r_billy2']
-        ]
-    }
-}
-
 POSTS = {
     'experience': {
         'description': 'Test description',
@@ -409,6 +409,21 @@ POSTS = {
         'contact_id': 124,
         'card_id': 'card',
         'stage': 1
+    },
+    'contact': {
+        "first_name": "Tester",
+        "last_name": "Byte",
+        "email_primary": {
+            "email": "testerb@example.com",
+            "is_primary": True,
+        },
+        "phone_primary": "111-111-1111",
+        "gender": "Female",
+        "race_all": "Hispanic/Latino;Other",
+        "race_other": "Cuban",
+        "pronouns": "She/Her/Hers",
+        "birthdate": "1973-04-23",
+        "account_id": 'tester|0123456789',
     }
 }
 
@@ -434,21 +449,7 @@ def post_request(app, url, data):
 @pytest.mark.parametrize(
     "url,data,query",
     [('/api/contacts/',
-      {
-          "first_name": "Tester",
-          "last_name": "Byte",
-          "email_primary": {
-              "email": "testerb@example.com",
-              "is_primary": True,
-          },
-          "phone_primary": "111-111-1111",
-          "gender": "Female",
-          "race_all": "Hispanic/Latino;Other",
-          "race_other": "Cuban",
-          "pronouns": "She/Her/Hers",
-          "birthdate": "1973-04-23",
-          "account_id": 'tester|0123456789',
-      },
+      POSTS['contact'],
       lambda id: Contact.query.get(id)
       )
     ,('/api/contacts/123/experiences/',
@@ -499,6 +500,16 @@ def test_post(app, url, data, query):
 
     id_ = post_request(app, url, data)
     assert query(id_) is not None
+
+def test_create_program_contact_with_contact(app):
+    id_ = post_request(app, 'api/contacts/', POSTS['contact'])
+    program_contacts = Contact.query.get(id_).programs
+    assert len(program_contacts) == 1
+    assert program_contacts[0].program_id == 1
+    assert program_contacts[0].stage == 1
+    assert program_contacts[0].program.name == 'Place for Purpose'
+    assert program_contacts[0].is_active == True
+    assert program_contacts[0].is_approved == False
 
 def test_post_experience_date(app):
     id_ = post_request(app, '/api/contacts/123/experiences/',
