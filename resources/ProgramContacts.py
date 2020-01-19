@@ -31,7 +31,7 @@ def create_program_contact(contact_id, program_id=1, **data):
     db.session.add(program_contact)
     db.session.commit()
     result = program_contact_schema.dump(program_contact)
-    return {'status': 'success', 'data': result}, 200
+    return  result
 
 class ProgramContactAll(Resource):
 
@@ -52,18 +52,9 @@ class ProgramContactAll(Resource):
             return {'message': 'No data provided to update'}, 400
 
         # checks to see if there's an existing program_contact record
-        program_id = data['program_id']
-        program_contact = query_one_program_contact(contact_id, program_id)
-        if program_contact:
-            return {'message': 'Record already exists'}, 400
-        # creates a new program_contact record and related response records
-        responses = data.pop('responses', None)
-        program_contact = ProgramContact(**data)
-        if responses:
-            add_responses(responses, program_contact)
-        db.session.add(program_contact)
-        db.session.commit()
-        result = program_contact_schema.dump(program_contact)
+        program = data.pop('program_id')
+        contact = data.pop('contact_id')
+        result = create_program_contact(contact_id, program_id=program, **data)
         return {"status": 'success', 'data': result}, 201
 
 class ProgramContactOne(Resource):
