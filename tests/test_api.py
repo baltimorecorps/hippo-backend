@@ -64,7 +64,7 @@ CYCLES = {
         'program_id': 1,
         'date_start': '2020-01-06',
         'date_end': '2025-01-06',
-        'intake_talent_board_id': 'intake_talent',
+        'intake_talent_board_id': '5e25dae2e640be7e5248a3e6',
         'intake_org_board_id': 'intake_org',
         'match_talent_board_id': 'match_talent',
         'match_opp_board_id': 'match_opp',
