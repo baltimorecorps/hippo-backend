@@ -21,6 +21,10 @@ def load_from_env(app):
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
     if os.environ.get('AUTH0_API_AUDIENCE'):
         app.config['AUTH0_API_AUDIENCE'] = os.environ['AUTH0_API_AUDIENCE']
+    if os.environ.get('TRELLO_API_KEY'):
+        app.config['TRELLO_API_KEY'] = os.environ['TRELLO_API_KEY']
+    if os.environ.get('TRELLO_API_TOKEN'):
+        app.config['TRELLO_API_TOKEN'] = os.environ['TRELLO_API_TOKEN']
 
 def load_config(app, env):
     if env is None:

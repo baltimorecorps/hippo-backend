@@ -1,10 +1,14 @@
-from flask import request as reqobj
+from flask import request as reqobj #ask David why this is here
 from flask_restful import Resource, request
 from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
 from models.skill_model import SkillItem
+from models.program_contact_model import ProgramContact
+from models.program_model import Program
+from .ProgramContacts import create_program_contact
+from .Trello_Intake_Talent import add_new_talent_card
 from marshmallow import ValidationError
 from auth import requires_auth
 
@@ -16,7 +20,7 @@ contacts_schema = ContactSchema(many=True)
 
 def add_skills(skills, contact):
     for skill in skills:
-        s = SkillItem.query.get((get_skill_id(skill['name']), 
+        s = SkillItem.query.get((get_skill_id(skill['name']),
                                  contact.id))
         if not s:
             s = make_skill(skill['name'], contact.id)
@@ -46,6 +50,12 @@ class ContactAll(Resource):
             contact.email_primary = Email(**email)
         db.session.add(contact)
         db.session.commit()
+        program_contact_data = {
+            'stage': 1,
+            'program_id': 1
+        }
+        create_program_contact(contact.id, **program_contact_data)
+        add_new_talent_card(contact.id)
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 201
 
@@ -98,4 +108,3 @@ class ContactOne(Resource):
         db.session.commit()
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 200
-

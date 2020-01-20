@@ -7,6 +7,7 @@ from models.email_model import Email, EmailSchema
 from models.address_model import Address
 from models.achievement_model import Achievement
 from models.skill_model import SkillItemSchema
+from models.program_contact_model import ProgramContactSchema
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -38,8 +39,12 @@ class Contact(db.Model):
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     phone_primary = db.Column(db.String(25))
-    gender = db.Column(db.Enum(Gender, name='Gender'))
-    race_all = db.Column(db.Enum(Race, name='Race'))
+    gender = db.Column(db.String(100))
+    gender_other = db.Column(db.String(255))
+    race_all = db.Column(db.String(255))
+    race_other = db.Column(db.String(255))
+    pronouns = db.Column(db.String(100))
+    pronouns_other = db.Column(db.String(255))
     birthdate = db.Column(db.Date)
     account_id = db.Column(db.String(255), nullable=True)
 
@@ -66,6 +71,8 @@ class Contact(db.Model):
                            cascade='all, delete, delete-orphan')
     experiences = db.relationship('Experience', back_populates='contact',
                                   cascade='all, delete, delete-orphan')
+    programs = db.relationship('ProgramContact', back_populates='contact',
+                               cascade='all, delete, delete-orphan')
 
 class ContactSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -74,11 +81,16 @@ class ContactSchema(Schema):
     email_primary = fields.Nested(EmailSchema)
     emails = fields.Nested(EmailSchema, many=True)
     phone_primary = fields.String()
-    gender = EnumField(Gender, by_value=True, missing=None)
-    race_all = EnumField(Race, by_value=True, missing=None)
+    gender = fields.String(allow_none=True)
+    gender_other = fields.String()
+    race_all = fields.String()
+    race_other = fields.String()
+    pronouns = fields.String()
+    pronouns_other = fields.String()
     birthdate = fields.Date(allow_none=True)
     account_id = fields.String()
     skills = fields.Nested(SkillItemSchema, many=True)
+    programs = fields.Nested(ProgramContactSchema, many=True)
 
     class Meta:
         unknown = EXCLUDE
