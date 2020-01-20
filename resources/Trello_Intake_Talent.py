@@ -56,13 +56,14 @@ class IntakeTalentBoard(Resource):
         board_id = get_intake_talent_board_id(program_id)
         data = query_board_data(BOARD_ID)
         board = Board(data)
-        fields_data = {
-            'Phone': 'Hi',
-            'Email': 'email',
-            'External ID': 'contact.id'
+        field_dict = {
+            'Email': 'new@gmail.com',
+            'Phone': '123-456-7890',
+            'External ID': '1'
         }
         card = board.cards[2]
-        result = card.set_custom_field_values(**fields_data)
+        print(card.board)
+        result = card.set_custom_field_values(**field_dict)
         return {'status': 'success', 'data': result}, 200
 
     def put(self, program_id):
