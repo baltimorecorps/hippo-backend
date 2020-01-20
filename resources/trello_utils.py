@@ -8,7 +8,7 @@ def get_creds(func):
     def pass_creds_to_func(*args, **kwargs):
         config = configparser.ConfigParser()
         config.read('secrets/trello.cfg')
-        key = config['DEFAULT']['TRELLO_API_KEY'],
+        key = config['DEFAULT']['TRELLO_API_KEY']
         token = config['DEFAULT']['TRELLO_API_TOKEN']
         return func(key, token, *args, **kwargs)
     return pass_creds_to_func
@@ -99,7 +99,7 @@ def update_custom_field_val(key, token, card_id, field_id, value='', value_id=''
                'value': value,
                'idValue': value_id}
     response = requests.put(url, json=payload)
-    return response.json()
+    return response.text
 
 @get_creds
 def insert_checklist(key, token, card_id, **checklist_data):
