@@ -2,7 +2,7 @@ from flask_restful import Resource, request
 from models.base_model import db
 from models.program_model import Program
 from models.cycle_model import Cycle
-from models.program_contact_model import ProgramContact
+from models.program_contact_model import ProgramContact, ProgramContactSchema
 from .ProgramContacts import query_one_program_contact
 from .trello_utils import (
     query_board_data,
@@ -13,13 +13,15 @@ from .trello_utils import (
 import configparser
 import requests
 
+program_contact_schema = ProgramContactSchema()
+
 def get_intake_talent_board_id(program_id):
     program = Program.query.get(program_id)
     return program.current_cycle.intake_talent_board_id
 
 BOARD_ID = '5ddd741f5cc43e2b21346dbb'
 
-def add_new_talent_card(program_id, contact_id):
+def add_new_talent_card(contact_id, program_id):
     board_id = get_intake_talent_board_id(program_id)
     program_contact = query_one_program_contact(contact_id, program_id)
     contact = program_contact.contact
@@ -32,15 +34,20 @@ def add_new_talent_card(program_id, contact_id):
     fields_data = {
         'Phone': contact.phone_primary,
         'Email': email,
-        'External ID':contact.id
+        'External ID': str(contact.id)
     }
     if existing_card:
+        existing_card.set_custom_field_values(**fields_data)
         result = existing_card.move_card(started_list)
+        program_contact.update(**{'card_id': existing_card.id})
     else:
         card_data = {
             'name': f'{contact.first_name} {contact.last_name}'
         }
         new_card = started_list.add_card_from_template(**card_data)
+        program_contact.update(**{'card_id': existing_card.id})
+        result = new_card.set_custom_field_values(**fields_data)
+    result['program_contact'] = program_contact_schema.dump(program_contact)
     return result
 
 class IntakeTalentBoard(Resource):
