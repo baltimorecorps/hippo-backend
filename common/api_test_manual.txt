@@ -1,6 +1,6 @@
 Contacts
 POST
-curl http://127.0.0.1:5000/api/contacts/ --request POST --data '{"phone_primary": "908-578-4622", "last_name": "Test", "gender": "Male", "first_name": "Test", "birthdate": "1993-12-04","race_all": "Asian", "email_primary": {"email": "test1@disney.org", "is_primary": true}}'
+curl http://127.0.0.1:5000/api/contacts/ --request POST --data '{"phone_primary": "908-578-4622", "last_name": "Take3", "gender": "Male", "first_name": "Take3", "birthdate": "1993-12-04","race_all": "Asian", "email_primary": {"email": "take3@disney.org", "is_primary": true}}'
 curl http://localhost:5000/api/contacts/ --request POST --data '{"phone_primary": "908-578-4622", "last_name": "Daly", "gender": "Male", "first_name": "Billy", "birthdate": "1993-12-04","race_all": "White"}'
 
 PUT
