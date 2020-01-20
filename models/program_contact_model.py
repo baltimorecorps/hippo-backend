@@ -22,6 +22,13 @@ class ProgramContact(db.Model):
     responses = db.relationship('Response', back_populates='program_contact',
                                 cascade='all, delete, delete-orphan')
 
+    # for more info on why to use setattr() read this:
+    # https://medium.com/@s.azad4/modifying-python-objects-within-the-sqlalchemy-framework-7b6c8dd71ab3
+    def update(self, **update_dict):
+        for field, value in update_dict.items():
+            setattr(self, field, value)
+        db.session.commit()
+
 class ProgramContactSchema(Schema):
     id = fields.Integer(dump_only=True)
     contact_id = fields.Integer()
