@@ -21,7 +21,7 @@ def get_intake_talent_board_id(program_id):
 
 BOARD_ID = '5ddd741f5cc43e2b21346dbb'
 
-def add_new_talent_card(contact_id, program_id):
+def add_new_talent_card(contact_id, program_id=1):
     board_id = get_intake_talent_board_id(program_id)
     program_contact = query_one_program_contact(contact_id, program_id)
     contact = program_contact.contact
@@ -45,7 +45,7 @@ def add_new_talent_card(contact_id, program_id):
             'name': f'{contact.first_name} {contact.last_name}'
         }
         new_card = started_list.add_card_from_template(**card_data)
-        program_contact.update(**{'card_id': existing_card.id})
+        program_contact.update(**{'card_id': new_card.id})
         result = new_card.set_custom_field_values(**fields_data)
     result['program_contact'] = program_contact_schema.dump(program_contact)
     return result
