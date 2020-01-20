@@ -8,6 +8,7 @@ from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
 from .ProgramContacts import create_program_contact
+from .Trello_Intake_Talent import add_new_talent_card
 from marshmallow import ValidationError
 from auth import requires_auth
 
@@ -54,6 +55,7 @@ class ContactAll(Resource):
             'program_id': 1
         }
         create_program_contact(contact.id, **program_contact_data)
+        add_new_talent_card(contact.id)
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 201
 
