@@ -27,14 +27,14 @@ def add_new_talent_card(contact_id, program_id=1):
     contact = program_contact.contact
     email = contact.email_primary.email
 
-    board_data = query_board_data(BOARD_ID)
+    board_data = query_board_data(board_id)
     board = Board(board_data)
     started_list = board.lists['stage'][1]
     existing_card = board.find_card_by_custom_field('Email', email)
     fields_data = {
         'Phone': contact.phone_primary,
         'Email': email,
-        'External ID': str(contact.id)
+        'External ID': str(program_contact.id)
     }
     if existing_card:
         existing_card.set_custom_field_values(**fields_data)
@@ -54,7 +54,7 @@ class IntakeTalentBoard(Resource):
 
     def get(self, program_id):
         board_id = get_intake_talent_board_id(program_id)
-        data = query_board_data(BOARD_ID)
+        data = query_board_data(board_id)
         board = Board(data)
         field_dict = {
             'Email': 'new@gmail.com',
