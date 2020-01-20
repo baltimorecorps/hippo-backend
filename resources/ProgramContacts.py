@@ -95,3 +95,11 @@ class ProgramContactOne(Resource):
         db.session.commit()
         result = program_contact_schema.dump(program_contact)
         return {"status": 'success', 'data': result}, 200
+
+    def delete(self, contact_id, program_id):
+        program_contact = query_one_program_contact(contact_id, program_id)
+        if not program_contact:
+            return {'message': 'Program contact does not exist'}, 404
+        db.session.delete(program_contact)
+        db.session.commit()
+        return {"status": 'success'}, 200
