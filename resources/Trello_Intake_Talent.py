@@ -72,16 +72,8 @@ class IntakeTalentBoard(Resource):
 class IntakeTalentCard(Resource):
 
     def get(self, contact_id, program_id):
-        board_id = get_intake_talent_board_id(program_id)
-        program_contact = query_one_program_contact(contact_id, program_id)
-        contact = program_contact.contact
-
-        data = {
-            'board_id': board_id,
-            'program_contact_id': program_contact.id,
-            'contact_id': contact.first_name
-        }
-        return {'status': 'success', 'data': data}, 200
+        result = add_new_talent_card(contact_id, program_id)
+        return {'status': 'success', 'data': result}, 200
 
     def post(self, contact_id, program_id):
         result = add_new_talent_card(contact_id, program_id)
