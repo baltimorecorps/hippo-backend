@@ -1,15 +1,15 @@
 import configparser
 import requests
 import operator as op
+from flask import current_app
 
 
 # general methods
 def get_creds(func):
     def pass_creds_to_func(*args, **kwargs):
-        config = configparser.ConfigParser()
-        config.read('secrets/trello.cfg')
-        key = config['DEFAULT']['TRELLO_API_KEY']
-        token = config['DEFAULT']['TRELLO_API_TOKEN']
+        config = current_app.config
+        key = config['TRELLO_API_KEY']
+        token = config['TRELLO_API_TOKEN']
         return func(key, token, *args, **kwargs)
     return pass_creds_to_func
 
