@@ -169,7 +169,7 @@ class Board(object):
         self.id = data['id']
         self.lists = {'stage': {}, 'id': {}}
         self.custom_fields = {'id': {}, 'name': {}}
-        self.cards = []
+        self.cards = {}
         self.labels = {'id': {}, 'name': {}}
 
         self.parse_custom_fields()
@@ -180,21 +180,21 @@ class Board(object):
     def parse_lists(self):
         sorted(self.data['lists'], key=op.itemgetter('pos'))
         for i, board_list in enumerate(self.data['lists']):
-            _list = BoardList(board_list, i, self)
-            self.lists['stage'][i] = _list
-            self.lists['id'][_list.id] = _list
+            list_ = BoardList(board_list, i, self)
+            self.lists['stage'][i] = list_
+            self.lists['id'][list_.id] = list_
 
     def parse_cards(self):
         for c in self.data['cards']:
-            _card = Card(c, self)
-            _list = self.lists['id'][_card.idList]
-            _card.list = _list
-            self.cards.append(_card)
+            card = Card(c, self)
+            list_ = self.lists['id'][card.idList]
+            card.list = list_
+            self.cards[card.id] = card
 
-            if _card.data['isTemplate']==True:
-                _list.template = _card
+            if card.data['isTemplate']==True:
+                list_.template = card
             else:
-                self.lists['id'][_card.idList].cards.append(_card)
+                self.lists['id'][card.idList].cards.append(card)
 
     def parse_custom_fields(self):
         for f in self.data['customFields']:
