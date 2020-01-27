@@ -212,7 +212,7 @@ class Board(object):
                 self.labels['id'][_id] = name
 
     def find_card_by_custom_field(self, field, value, many=False):
-        cards = [card for card in self.cards
+        cards = [card for card in self.cards.values()
                  if card.custom_fields
                  and card.custom_fields[field]['value']==value]
         if not cards:
