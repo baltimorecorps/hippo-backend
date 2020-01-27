@@ -3,6 +3,7 @@ import requests
 import operator as op
 from flask import current_app
 
+CARD_FIELDS = 'id,name,idMembers,idList,isTemplate,labels,closed,desc'
 
 # general methods
 def get_creds(func):
@@ -14,7 +15,7 @@ def get_creds(func):
     return pass_creds_to_func
 
 @get_creds
-def query_board_data(key, token, board_id):
+def query_board_data(key, token, board_id, card_fields=CARD_FIELDS):
     '''
     api docs: https://developers.trello.com/reference#boardsboardid-1
     '''
@@ -23,7 +24,7 @@ def query_board_data(key, token, board_id):
                    'token': token,
                    'fields': 'id,name',
                    'cards':'all',
-                   'card_fields':'id,name,idList,isTemplate,labels,closed,desc',
+                   'card_fields': card_fields,
                    'card_customFieldItems':'true',
                    'customFields': 'true',
                    'lists': 'all',
