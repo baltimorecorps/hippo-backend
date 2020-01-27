@@ -76,4 +76,4 @@ curl http://127.0.0.1:5000/api/contacts/2/programs/1/trello/intake-talent --requ
 ------------------------------------------------
 FormAssembly
 POST
-curl http://localhost:5000/api/form-assembly/talent-app/ --request POST --data "email=kdmandell1%40gmail.com&capabilities%5B0%5D=tfa_16252&capabilities%5B1%5D=tfa_16257"
+curl http://localhost:5000/api/form-assembly/talent-app/ --request POST --data "program_id=1&contact_id=2&capabilities%5B0%5D=tfa_16252&capabilities%5B1%5D=tfa_16257"
