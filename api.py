@@ -12,7 +12,6 @@ from resources.Trello_Intake_Talent import (
     IntakeTalentBoard,
     IntakeTalentCard
 )
-from resources.FormAssembly import TalentProgramApp
 
 api_bp = Blueprint('api',__name__)
 api = Api(api_bp)
@@ -84,6 +83,3 @@ api.add_resource(IntakeTalentBoard,
 api.add_resource(IntakeTalentCard,
                  '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent',
                  '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent/')
-api.add_resource(TalentProgramApp,
-                 '/form-assembly/talent-app',
-                 '/form-assembly/talent-app/')

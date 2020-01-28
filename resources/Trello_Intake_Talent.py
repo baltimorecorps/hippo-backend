@@ -10,6 +10,8 @@ from .trello_utils import (
     Card,
     BoardList
 )
+import configparser
+import requests
 
 program_contact_schema = ProgramContactSchema()
 
@@ -54,8 +56,15 @@ class IntakeTalentBoard(Resource):
         board_id = get_intake_talent_board_id(program_id)
         data = query_board_data(board_id)
         board = Board(data)
-        members = board.cards[0].data['idMembers']
-        return {'status': 'success', 'data': members}, 200
+        field_dict = {
+            'Email': 'new@gmail.com',
+            'Phone': '123-456-7890',
+            'External ID': '1'
+        }
+        card = board.cards[2]
+        print(card.board)
+        result = card.set_custom_field_values(**field_dict)
+        return {'status': 'success', 'data': result}, 200
 
     def put(self, program_id):
         board_id = get_intake_talent_board_id(program_id)
