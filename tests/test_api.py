@@ -679,7 +679,9 @@ def test_put_preserves_list_fields(app, url, update, query, test):
 
 @pytest.mark.parametrize(
     "delete_url,query",
-    [('/api/experiences/512/', lambda: Experience.query.get(512))
+    [('/api/contacts/123?token=testing_token',
+      lambda: Contact.query.get(123))
+    ,('/api/experiences/512/', lambda: Experience.query.get(512))
     ,('/api/resumes/51/', lambda: Resume.query.get(51))
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: SkillItem.query.get(('n1N02ypni69EZg0SggRIIg==', 123)))
