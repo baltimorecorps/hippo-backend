@@ -65,7 +65,8 @@ class Experience(db.Model):
                               cascade='all, delete, delete-orphan')
     skills = db.relationship('SkillItem', secondary=experience_skills,
                              order_by='SkillItem.name',
-                             lazy='subquery')
+                             lazy='subquery',
+                             back_populates='experiences')
 
     #calculated fields
     @hybrid_property
