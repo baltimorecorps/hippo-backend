@@ -578,6 +578,11 @@ def test_post_experience_skills(app):
       lambda e: e.first_name == 'William' and e.gender == None,
       ),
      ('/api/contacts/123/',
+      {'first_name': 'William', 'programs': 'This should be excluded from load'},
+       lambda: Contact.query.get(123),
+       lambda e: e.first_name == 'William'
+     ),
+     ('/api/contacts/123/',
       {'skills': [
           { 'name': 'Python' },
           { 'name': 'Workforce Development' },

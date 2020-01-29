@@ -92,7 +92,7 @@ class ContactSchema(Schema):
     account_id = fields.String()
     skills = fields.Nested(SkillItemSchema, many=True)
     terms_agreement = fields.Boolean()
-    programs = fields.Nested(ProgramContactSchema, many=True)
+    programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
