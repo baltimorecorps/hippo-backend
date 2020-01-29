@@ -10,7 +10,7 @@ from models.program_model import Program
 from .ProgramContacts import create_program_contact
 from .Trello_Intake_Talent import add_new_talent_card
 from marshmallow import ValidationError
-from auth import requires_auth
+from auth import validate_jwt
 
 from .skill_utils import get_skill_id, make_skill
 
@@ -54,15 +54,15 @@ class ContactAll(Resource):
             'stage': 1,
             'program_id': 1
         }
-        create_program_contact(contact.id, **program_contact_data)
-        add_new_talent_card(contact.id)
+        #create_program_contact(contact.id, **program_contact_data)
+        #add_new_talent_card(contact.id)
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 201
 
 class ContactAccount(Resource):
-    method_decorators = {'get': [requires_auth]}
+    @validate_jwt
     def get(self):
-        account_id = request.current_user['sub']
+        account_id = request.jwt['sub']
         contact = Contact.query.filter_by(account_id=account_id).first()
         if not contact:
             return {'message': 'Contact does not exist'}, 404

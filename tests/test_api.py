@@ -140,7 +140,7 @@ CONTACTS = {
         'race_other': None,
         'pronouns': 'He/Him/His',
         'pronouns_other': None,
-        'account_id': 'billy|123',
+        'account_id': 'auth0|0123456789abcdefabcdefff',
         'skills': SKILLS['billy'],
         'programs': [PROGRAM_CONTACTS['billy_pfp']],
         'terms_agreement': True
@@ -568,6 +568,21 @@ def test_post_experience_skills(app):
     assert Experience.query.get(id_).skills[0].name == 'C++'
     assert Experience.query.get(id_).skills[1].name == 'Python'
 
+def test_post_session(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid',
+    }
+    with app.test_client() as client:
+        response = client.post('/api/session/', headers=headers)
+        assert response.status_code == 201
+        set_cookie = response.headers.get('set-cookie')
+        assert set_cookie is not None
+        assert set_cookie.find('HttpOnly;') is not -1
+        # Note: Can't test "secure" due to non-https connection
+
 
 @pytest.mark.parametrize(
     "url,update,query,test",
@@ -730,6 +745,7 @@ def test_get(app, url, expected):
         data = json.loads(response.data)['data']
         assert len(data) > 0
         assert data == expected
+
 
 def test_get_autocomplete(app):
     mimetype = 'application/json'
