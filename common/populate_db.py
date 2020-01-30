@@ -58,6 +58,7 @@ billy = Contact(
     race_all='White',
     pronouns='He/Him/His',
     account_id='billy|123',
+    terms_agreement=True
 )
 obama = Contact(
     id=124,
@@ -76,6 +77,8 @@ obama = Contact(
     race_other='Test',
     pronouns='Not Listed',
     pronouns_other='They/Them/Their',
+    terms_agreement=True
+
 )
 
 exp_columbia = Experience(
