@@ -142,8 +142,7 @@ CONTACTS = {
         'pronouns_other': None,
         'account_id': 'billy|123',
         'skills': SKILLS['billy'],
-        'programs': [PROGRAM_CONTACTS['billy_pfp']],
-        'terms_agreement': True
+        'programs': [PROGRAM_CONTACTS['billy_pfp']]
     },
 
     'obama': {
@@ -172,8 +171,7 @@ CONTACTS = {
         'pronouns_other': 'They/Them/Their',
         'account_id': None,
         'skills': SKILLS['obama'],
-        'programs': [],
-        'terms_agreement': True
+        'programs': []
     },
 }
 
@@ -426,7 +424,6 @@ POSTS = {
         "pronouns": "She/Her/Hers",
         "birthdate": "1973-04-23",
         "account_id": 'tester|0123456789',
-        "terms_agreement": True
     }
 }
 
