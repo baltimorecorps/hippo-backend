@@ -29,8 +29,12 @@ keybase --version
 scripts/setup.sh
 source env/bin/activate
 pytest
+export TRELLO_API_KEY=<api key>
+export TRELLO_API_TOKEN=<token>
 python run.py
 ```
+### Must set local environtment variables everytime before running the server
+Trello keys are in the dev.cfg file in secrets/
 
 ## Database
 
