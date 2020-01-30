@@ -60,7 +60,6 @@ TEST_KEY = {
 
 TEST_JWT = {
   "iss": "https://baltimore-corps.auth0.com/",
-  "sub": "auth0|0123456789abcdefabcdefff",
   "aud": [
     "test",
   ],
@@ -101,8 +100,10 @@ def validate_jwt(f):
         if config.get('TESTING'):
             assert config.get('DEPLOY_ENV') == 'test'
             token = get_token_auth_header()
-            if token == 'test-valid':
-                request._get_current_object().jwt = TEST_JWT
+            if token.startswith('test-valid|'):
+                test_jwt = TEST_JWT.copy()
+                test_jwt['sub'] = token
+                request._get_current_object().jwt = test_jwt
             else:
                 raise AuthError({"code": "token_test_invalid",
                                 "description": "test token is invalid"}, 401)

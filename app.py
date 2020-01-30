@@ -1,6 +1,7 @@
 import os
 import os.path
 from flask import Flask, jsonify
+from flask_cors import CORS
 from flask_login import LoginManager
 from api import api_bp
 from auth import AuthError
@@ -55,6 +56,9 @@ def create_app(env=None):
     # Initialize app config
     app.config.from_object('defaultcfg')
     load_config(app, env)
+
+    # CORS setup
+    CORS(app, supports_credentials=True)
 
     # Sessions related initialization
     app.secret_key = app.config['SESSION_SECRET_KEY']

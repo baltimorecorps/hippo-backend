@@ -57,7 +57,7 @@ billy = Contact(
     phone_primary='555-245-2351',
     race_all='White',
     pronouns='He/Him/His',
-    account_id='auth0|0123456789abcdefabcdefff',
+    account_id='test-valid|0123456789abcdefabcdefff',
     terms_agreement=True
 )
 obama = Contact(

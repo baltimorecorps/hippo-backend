@@ -1,18 +1,15 @@
 import os
-import base64
-import json
 from datetime import datetime, timedelta
 from urllib.request import urlopen
 from functools import wraps
 
-from jose import jwt
 from flask_restful import Resource, request
 from flask_login import current_user, login_required, login_user
 from flask import current_app 
 
 from auth import validate_jwt, create_session
 from models.base_model import db
-from models.session_model import UserSession, UserSessionSchema
+from models.session_model import UserSessionSchema
 from models.contact_model import Contact
 
 session_schema = UserSessionSchema()
