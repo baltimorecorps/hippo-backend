@@ -25,6 +25,8 @@ def load_from_env(app):
         app.config['TRELLO_API_KEY'] = os.environ['TRELLO_API_KEY']
     if os.environ.get('TRELLO_API_TOKEN'):
         app.config['TRELLO_API_TOKEN'] = os.environ['TRELLO_API_TOKEN']
+    if os.environ.get('CONTACT_DELETE_TOKEN'):
+        app.config['CONTACT_DELETE_TOKEN'] = os.environ['CONTACT_DELETE_TOKEN']
 
 def load_config(app, env):
     if env is None:

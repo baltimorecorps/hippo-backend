@@ -1,4 +1,5 @@
 from flask import request as reqobj #ask David why this is here
+from flask import current_app
 from flask_restful import Resource, request
 from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
@@ -108,3 +109,18 @@ class ContactOne(Resource):
         db.session.commit()
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 200
+
+    def delete(self, contact_id):
+        config = current_app.config
+        secret_token = config['CONTACT_DELETE_TOKEN']
+        request_token = request.args.get('token')
+        if not request_token:
+            return {'message': 'No token supplied with request'}, 400
+        if request_token != secret_token:
+            return {'message': "This token isn't authorized "}, 403
+        contact = Contact.query.get(contact_id)
+        if not contact:
+            return {'message': 'Contact does not exist'}, 404
+        db.session.delete(contact)
+        db.session.commit()
+        return {"status": 'success'}, 200
