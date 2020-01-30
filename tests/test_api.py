@@ -142,7 +142,8 @@ CONTACTS = {
         'pronouns_other': None,
         'account_id': 'billy|123',
         'skills': SKILLS['billy'],
-        'programs': [PROGRAM_CONTACTS['billy_pfp']]
+        'programs': [PROGRAM_CONTACTS['billy_pfp']],
+        'terms_agreement': True
     },
 
     'obama': {
@@ -171,7 +172,8 @@ CONTACTS = {
         'pronouns_other': 'They/Them/Their',
         'account_id': None,
         'skills': SKILLS['obama'],
-        'programs': []
+        'programs': [],
+        'terms_agreement': True
     },
 }
 
@@ -424,6 +426,7 @@ POSTS = {
         "pronouns": "She/Her/Hers",
         "birthdate": "1973-04-23",
         "account_id": 'tester|0123456789',
+        "terms_agreement": True
     }
 }
 
@@ -574,6 +577,11 @@ def test_post_experience_skills(app):
       lambda: Contact.query.get(123),
       lambda e: e.first_name == 'William' and e.gender == None,
       ),
+     ('/api/contacts/123/',
+      {'first_name': 'William', 'programs': 'This should be excluded from load'},
+       lambda: Contact.query.get(123),
+       lambda e: e.first_name == 'William'
+     ),
      ('/api/contacts/123/',
       {'skills': [
           { 'name': 'Python' },

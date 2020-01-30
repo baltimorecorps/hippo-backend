@@ -47,6 +47,7 @@ class Contact(db.Model):
     pronouns_other = db.Column(db.String(255))
     birthdate = db.Column(db.Date)
     account_id = db.Column(db.String(255), nullable=True)
+    terms_agreement =db.Column(db.Boolean, default=False)
 
     #relationships
     emails = db.relationship('Email', back_populates='contact',
@@ -90,7 +91,8 @@ class ContactSchema(Schema):
     birthdate = fields.Date(allow_none=True)
     account_id = fields.String()
     skills = fields.Nested(SkillItemSchema, many=True)
-    programs = fields.Nested(ProgramContactSchema, many=True)
+    terms_agreement = fields.Boolean()
+    programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
