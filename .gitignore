@@ -9,3 +9,5 @@ secrets/
 
 *.swp
 *.swo
+
+.vscode
