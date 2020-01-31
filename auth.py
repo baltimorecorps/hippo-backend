@@ -5,6 +5,7 @@ import time
 from urllib.request import urlopen
 from functools import wraps
 from datetime import datetime, timedelta
+from flask_login import current_user
 
 from flask import current_app, request
 from jose import jwt
@@ -167,6 +168,14 @@ def create_session(contact_id, jwt_payload):
     db.session.commit()
 
     return user_session
+
+def refresh_session(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        current_user.expiration = datetime.utcnow() + SESSION_DURATION
+        db.session.commit()
+        return f(*args, **kwargs)
+    return decorated
 
 def delete_session(user_session):
     db.session.delete(user_session)

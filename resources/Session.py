@@ -7,7 +7,7 @@ from flask_restful import Resource, request
 from flask_login import current_user, login_required, login_user, logout_user
 from flask import current_app 
 
-from auth import validate_jwt, create_session, delete_session
+from auth import validate_jwt, create_session, delete_session, refresh_session
 from models.base_model import db
 from models.session_model import UserSessionSchema
 from models.contact_model import Contact
@@ -15,12 +15,13 @@ from models.contact_model import Contact
 session_schema = UserSessionSchema()
 class Session(Resource):
     method_decorators = {
-        'get': [login_required],
+        'get': [login_required, refresh_session],
         'post': [validate_jwt],
         'delete': [login_required],
     }
 
     def get(self):
+        print(current_user)
         result = session_schema.dump(current_user)
         return {'status': 'success', 'data': result }, 200
 
