@@ -28,7 +28,13 @@ class UserSession(UserMixin, db.Model):
 
 
 class UserSessionSchema(Schema):
-    id = fields.String(required=True)
+    # !!! The id being load only is security-critical, because the session id
+    # should not be exposed to the frontend out of the session cookie 
+    #
+    # Anyone who gets a valid session id can functionally log in as the user
+    # TODO: test this
+    id = fields.String(required=True, load_only=True)
+
     contact = fields.Nested(ContactSchema, required=True)
     jwt = fields.String(required=True)
 
