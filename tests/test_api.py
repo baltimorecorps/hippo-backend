@@ -13,6 +13,7 @@ from models.tag_model import Tag
 from models.tag_item_model import TagItem
 from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
+from models.session_model import UserSession
 
 SKILLS = {
     'billy': [
@@ -140,7 +141,7 @@ CONTACTS = {
         'race_other': None,
         'pronouns': 'He/Him/His',
         'pronouns_other': None,
-        'account_id': 'billy|123',
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'skills': SKILLS['billy'],
         'programs': [PROGRAM_CONTACTS['billy_pfp']],
         'terms_agreement': True
@@ -425,7 +426,7 @@ POSTS = {
         "race_other": "Cuban",
         "pronouns": "She/Her/Hers",
         "birthdate": "1973-04-23",
-        "account_id": 'tester|0123456789',
+        "account_id": 'test-valid|0123456789',
         "terms_agreement": True
     }
 }
@@ -455,6 +456,7 @@ def post_request(app, url, data):
       POSTS['contact'],
       lambda id: Contact.query.get(id),
       marks=pytest.mark.skip
+      # TODO: unskip when trello stuff is mocked out
       )
     ,('/api/contacts/123/experiences/',
       POSTS['experience'],
@@ -493,6 +495,7 @@ def post_request(app, url, data):
       POSTS['program_contact'],
       lambda id: ProgramContact.query.filter_by(contact_id=124,program_id=1).first(),
       marks=pytest.mark.skip
+      # TODO: unskip when trello stuff is mocked out
       )
     ]
 )
@@ -567,6 +570,46 @@ def test_post_experience_skills(app):
     id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_).skills[0].name == 'C++'
     assert Experience.query.get(id_).skills[1].name == 'Python'
+
+# TODO: unskip when trello stuff is mocked out
+@pytest.mark.skip
+def test_post_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+    with app.test_client() as client:
+        response = client.post('/api/contacts/', 
+                               data=json.dumps(POSTS['contact']),
+                               headers=headers)
+        assert response.status_code == 201
+        set_cookie = response.headers.get('set-cookie')
+        assert set_cookie is not None
+        assert set_cookie.find('HttpOnly;') is not -1
+        # Note: Can't test "secure" due to non-https connection
+        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
+        assert contact.first_name == 'Tester'
+
+        assert UserSession.query.filter_by(contact_id=contact.id).first()
+
+def test_post_session(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
+    }
+    with app.test_client() as client:
+        response = client.post('/api/session/', headers=headers)
+        assert response.status_code == 201
+        set_cookie = response.headers.get('set-cookie')
+        assert set_cookie is not None
+        assert set_cookie.find('HttpOnly;') is not -1
+        # Note: Can't test "secure" due to non-https connection
+
+        assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
 
 @pytest.mark.parametrize(
@@ -732,6 +775,7 @@ def test_get(app, url, expected):
         data = json.loads(response.data)['data']
         assert len(data) > 0
         assert data == expected
+
 
 def test_get_autocomplete(app):
     mimetype = 'application/json'
