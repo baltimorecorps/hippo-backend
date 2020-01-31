@@ -167,3 +167,7 @@ def create_session(contact_id, jwt_payload):
     db.session.commit()
 
     return user_session
+
+def delete_session(user_session):
+    db.session.delete(user_session)
+    db.session.commit()

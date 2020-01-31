@@ -4,10 +4,10 @@ from urllib.request import urlopen
 from functools import wraps
 
 from flask_restful import Resource, request
-from flask_login import current_user, login_required, login_user
+from flask_login import current_user, login_required, login_user, logout_user
 from flask import current_app 
 
-from auth import validate_jwt, create_session
+from auth import validate_jwt, create_session, delete_session
 from models.base_model import db
 from models.session_model import UserSessionSchema
 from models.contact_model import Contact
@@ -17,6 +17,7 @@ class Session(Resource):
     method_decorators = {
         'get': [login_required],
         'post': [validate_jwt],
+        'delete': [login_required],
     }
 
     def get(self):
@@ -34,5 +35,9 @@ class Session(Resource):
         
         result = session_schema.dump(user_session)
         return {'status': 'success', 'data': result}, 201
+
+    def delete(self):
+        delete_session(current_user)
+        logout_user()
 
 
