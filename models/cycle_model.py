@@ -15,6 +15,7 @@ class Cycle(db.Model):
     intake_org_board_id = db.Column(db.String)
     match_talent_board_id = db.Column(db.String)
     match_opp_board_id = db.Column(db.String)
+    review_talent_board_id = db.Column(db.String)
 
     #relationship fields
     program = db.relationship('Program', back_populates='cycles')
@@ -39,6 +40,7 @@ class CycleSchema(Schema):
     intake_org_board_id = fields.String()
     match_talent_board_id = fields.String()
     match_opp_board_id = fields.String()
+    review_talent_board_id = fields.String()
 
     class Meta:
         unknown = EXCLUDE

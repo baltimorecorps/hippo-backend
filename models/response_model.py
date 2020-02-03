@@ -11,7 +11,8 @@ class Response(db.Model):
     response_text = db.Column(db.String())
 
     #relationship fields
-    program_contact = db.relationship('ProgramContact', back_populates='responses')
+    program_contact = db.relationship('ProgramContact',
+                                      back_populates='responses')
 
 class ResponseSchema(Schema):
     id = fields.Integer(dump_only=True)
