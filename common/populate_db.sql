@@ -169,14 +169,16 @@ INSERT INTO cycle (
     intake_talent_board_id,
     intake_org_board_id,
     match_talent_board_id,
-    match_opp_board_id
+    match_opp_board_id,
+    review_talent_board_id
 )
 VALUES (
     1,
     '2020-01-01',
     '2020-03-30',
-    '5e25dae2e640be7e5248a3e6',
+    '5e37744114d9d01a03ddbcfe',
     'intake_org',
     'match_talent',
-    'match_opp'
+    'match_opp',
+    '5e3753cdaea77d37fce3496a'
 );

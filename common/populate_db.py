@@ -216,10 +216,11 @@ cycle_pfp = Cycle(
     program_id=1,
     date_start=date(2020, 1, 6),
     date_end=date(2025, 1, 6),
-    intake_talent_board_id='5e25dae2e640be7e5248a3e6',
+    intake_talent_board_id='5e37744114d9d01a03ddbcfe',
     intake_org_board_id='intake_org',
     match_talent_board_id='match_talent',
     match_opp_board_id='match_opp',
+    review_talent_board_id='5e3753cdaea77d37fce3496a',
 )
 
 q_pfp1 = Question(
