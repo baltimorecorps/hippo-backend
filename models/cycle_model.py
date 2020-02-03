@@ -40,6 +40,7 @@ class CycleSchema(Schema):
     intake_org_board_id = fields.String()
     match_talent_board_id = fields.String()
     match_opp_board_id = fields.String()
+    review_talent_board_id = fields.String()
 
     class Meta:
         unknown = EXCLUDE
