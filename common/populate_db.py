@@ -41,6 +41,7 @@ from models.program_contact_model import ProgramContact
 from models.cycle_model import Cycle
 from models.question_model import Question
 from models.response_model import Response
+from models.review_model import Review
 
 billy = Contact(
     id=123,
@@ -261,6 +262,14 @@ r_billy2 = Response(
     response_text='Sector effectiveness answer',
 )
 
+review_billy = Review(
+    id=1,
+    program_contact_id=5,
+    card_id='card_id',
+    score=1,
+    stage=1,
+)
+
 
 def populate(db):
     exp_baltimore.skills.append(skill_python)
@@ -290,4 +299,5 @@ def populate(db):
     db.session.add(billy_pfp)
     db.session.add(r_billy1)
     db.session.add(r_billy2)
+    db.session.add(review_billy)
     db.session.commit()
