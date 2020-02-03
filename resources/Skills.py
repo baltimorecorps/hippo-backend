@@ -5,6 +5,14 @@ from marshmallow import ValidationError
 
 from .skill_utils import make_skill, get_skill_id, normalize_skill_name, complete_skill
 
+from flask_login import login_required
+from auth import (
+    refresh_session, 
+    is_authorized, 
+    unauthorized
+)
+
+
 skill_schema = SkillItemSchema()
 skills_schema = SkillItemSchema(many=True)
 
@@ -18,7 +26,15 @@ class AutocompleteSkill(Resource):
         return {'status': 'success', 'data': result}, 200
 
 class ContactSkills(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'post': [login_required, refresh_session],
+    }
+
     def get(self, contact_id):
+        if not is_authorized_view(contact_id): 
+            return unauthorized()
+
         skills = (
             SkillItem.query
             .filter_by(contact_id=contact_id)
@@ -29,6 +45,9 @@ class ContactSkills(Resource):
         return {'status': 'success', 'data': skills}, 200
 
     def post(self, contact_id):
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
+
         json_data = request.get_json(force=True)
         try:
             data = skill_schema.load(json_data)
@@ -53,7 +72,14 @@ class ContactSkills(Resource):
             return {'status': 'success', 'data': result}, 200
 
 class ContactSkillOne(Resource):
+    method_decorators = {
+        'delete': [login_required, refresh_session],
+    }
+
     def delete(self, contact_id, skill_id):
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
+
         skill = SkillItem.query.get((skill_id, contact_id))
         if not skill:
             return {'message': 'Skill does not exist'}, 404

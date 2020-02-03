@@ -9,6 +9,15 @@ from marshmallow import ValidationError
 
 from .skill_utils import get_skill_id, make_skill
 
+from flask_login import login_required
+from auth import (
+    refresh_session, 
+    is_authorized_view, 
+    is_authorized_write, 
+    unauthorized
+)
+
+
 
 experience_schema = ExperienceSchema()
 experiences_schema = ExperienceSchema(many=True)
@@ -30,8 +39,15 @@ def add_skills(skills, experience):
 
 
 class ExperienceAll(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'post': [login_required, refresh_session],
+    }
 
     def get(self, contact_id):
+        if not is_authorized_view(contact_id): 
+            return unauthorized()
+
         type_arg = request.args.get('type')
         if type_arg:
             if type_arg not in Type.__members__:
@@ -49,8 +65,10 @@ class ExperienceAll(Resource):
         return {'status': 'success', 'data': exp_list}, 200
 
     def post(self, contact_id):
-        json_data = request.get_json(force=True)
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
 
+        json_data = request.get_json(force=True)
         try:
             data = experience_schema.load(json_data)
         except ValidationError as e:
@@ -75,11 +93,20 @@ class ExperienceAll(Resource):
         return {"status": 'success', 'data': result}, 201
 
 class ExperienceOne(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'delete': [login_required, refresh_session],
+        'put': [login_required, refresh_session],
+    }
 
     def get(self, experience_id):
         exp = Experience.query.get(experience_id)
         if not exp:
             return {'message': 'Experience does not exist'}, 404
+
+        if not is_authorized_view(exp.contact.id): 
+            return unauthorized()
+
         exp_data = experience_schema.dump(exp)
         return {'status': 'success', 'data': exp_data}, 200
 
@@ -87,6 +114,10 @@ class ExperienceOne(Resource):
         exp = Experience.query.get(experience_id)
         if not exp:
             return {'message': 'Experience does not exist'}, 404
+
+        if not is_authorized_write(exp.contact.id): 
+            return unauthorized()
+
         db.session.delete(exp)
         db.session.commit()
         return {"status": 'success'}, 200
@@ -95,6 +126,10 @@ class ExperienceOne(Resource):
         exp = Experience.query.get(experience_id)
         if not exp:
             return {'message': 'Experience does not exist'}, 404
+
+        if not is_authorized_write(exp.contact.id): 
+            return unauthorized()
+
         json_data = request.get_json(force=True)
         try:
             data = experience_schema.load(json_data, partial=True)
