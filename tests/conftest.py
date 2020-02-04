@@ -22,6 +22,7 @@ def _app(request):
     app = create_app('test')
     app.config['DEBUG'] = True
     app.config['TESTING'] = True
+    app.config['CONTACT_DELETE_TOKEN'] = 'testing_token'
     with Postgresql() as postgresql:
         app.config['SQLALCHEMY_DATABASE_URI'] = postgresql.url()
 
@@ -37,9 +38,9 @@ def _db(_app):
     Fixture needed to make pytest-flask-sqlalchemy work
 
     The '_app' fixture here is included to ensure that setup done in that
-    fixture runs first. 
+    fixture runs first.
     """
-    
+
     return db
 
 @pytest.fixture

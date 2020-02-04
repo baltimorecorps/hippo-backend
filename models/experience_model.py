@@ -43,7 +43,7 @@ class Experience(db.Model):
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(500))
+    description = db.Column(db.String(2000))
     host = db.Column(db.String(100), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     degree_other = db.Column(db.String(100))
@@ -65,7 +65,8 @@ class Experience(db.Model):
                               cascade='all, delete, delete-orphan')
     skills = db.relationship('SkillItem', secondary=experience_skills,
                              order_by='SkillItem.name',
-                             lazy='subquery')
+                             lazy='subquery',
+                             back_populates='experiences')
 
     #calculated fields
     @hybrid_property
@@ -78,8 +79,11 @@ class Experience(db.Model):
 
     @hybrid_property
     def date_start(self):
-        start_str = f'1 {self.start_month.value}, {self.start_year}'
-        return dt.datetime.strptime(start_str, '%d %B, %Y')
+         if self.start_month==Month.none or self.start_year==0:
+            return dt.datetime.today()
+         else:
+            start_str = f'1 {self.start_month.value}, {self.start_year}'
+            return dt.datetime.strptime(start_str, '%d %B, %Y')
 
     @hybrid_property
     def date_length(self):

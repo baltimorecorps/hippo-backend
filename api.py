@@ -7,6 +7,13 @@ from resources.Achievement import AchievementAll
 from resources.Resume import ResumeAll, ResumeOne, GenerateResume
 from resources.Resume import ResumeSectionAll, ResumeSectionOne
 from resources.Skills import ContactSkills, ContactSkillOne, AutocompleteSkill
+from resources.Session import Session
+from resources.ProgramContacts import ProgramContactOne, ProgramContactAll
+from resources.Trello_Intake_Talent import (
+    IntakeTalentBoard,
+    IntakeTalentCard
+)
+from resources.FormAssembly import TalentProgramApp
 
 api_bp = Blueprint('api',__name__)
 api = Api(api_bp)
@@ -66,3 +73,21 @@ api.add_resource(ResumeSectionOne,
                  '/resumes/<int:resume_id>/sections/<int:section_id>/')
 api.add_resource(GenerateResume,
                  '/contacts/<int:contact_id>/generate-resume/')
+api.add_resource(ProgramContactAll,
+                 '/contacts/<int:contact_id>/programs',
+                 '/contacts/<int:contact_id>/programs/')
+api.add_resource(ProgramContactOne,
+                 '/contacts/<int:contact_id>/programs/<int:program_id>',
+                 '/contacts/<int:contact_id>/programs/<int:program_id>/')
+api.add_resource(IntakeTalentBoard,
+                 '/programs/<int:program_id>/trello/intake-talent',
+                 '/programs/<int:program_id>/trello/intake-talent/')
+api.add_resource(IntakeTalentCard,
+                 '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent',
+                 '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent/')
+api.add_resource(TalentProgramApp,
+                 '/form-assembly/talent-app',
+                 '/form-assembly/talent-app/')
+api.add_resource(Session,
+                 '/session/',
+                 '/session')

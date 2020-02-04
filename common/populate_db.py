@@ -1,6 +1,5 @@
 from datetime import date
-from resources.skill_utils import get_skill_id
-
+# imports models related to the contact
 from models.contact_model import (
     Contact,
     Gender,
@@ -11,40 +10,38 @@ from models.email_model import (
     Email,
     Type as EmailType,
 )
+
+# imports models related to experiences
 from models.experience_model import (
     Experience,
     Degree,
     Type as ExpType,
     Month,
 )
+from models.achievement_model import Achievement
 
-from models.achievement_model import (
-    Achievement
-)
-
+#imports models related to skills
 from models.tag_model import (
     Tag,
     TagType,
     TagStatusType,
 )
+from models.tag_item_model import TagItem
+from models.skill_model import SkillItem
+from resources.skill_utils import get_skill_id
 
-from models.tag_item_model import (
-    TagItem,
-)
+#imports models related to the resume
+from models.resume_model import Resume
+from models.resume_section_model import ResumeSection
+from models.resume_item_model import ResumeItem
 
-from models.skill_model import (
-    SkillItem,
-)
-
-from models.resume_model import (
-    Resume,
-)
-from models.resume_section_model import (
-    ResumeSection,
-)
-from models.resume_item_model import (
-    ResumeItem,
-)
+# imports models related to the program and cycle
+from models.program_model import Program
+from models.program_contact_model import ProgramContact
+from models.cycle_model import Cycle
+from models.question_model import Question
+from models.response_model import Response
+from models.review_model import Review
 
 billy = Contact(
     id=123,
@@ -56,11 +53,13 @@ billy = Contact(
         email='billy@example.com',
         type=EmailType.personal,
     ),
-    gender=Gender('Male'),
+    gender='Male',
     birthdate=date(1991, 1, 2),
     phone_primary='555-245-2351',
-    race_all=Race('White'),
-    account_id='billy|123'
+    race_all='White',
+    pronouns='He/Him/His',
+    account_id='test-valid|0123456789abcdefabcdefff',
+    terms_agreement=True
 )
 obama = Contact(
     id=124,
@@ -72,10 +71,15 @@ obama = Contact(
         email='obama@whitehouse.gov',
         type=EmailType('Work'),
     ),
-    gender=Gender('Male'),
+    gender='Male',
     birthdate=date(1961, 8, 4),
     phone_primary='555-444-4444',
-    race_all=Race('Black'),
+    race_all='Black or African-American;White',
+    race_other='Test',
+    pronouns='Not Listed',
+    pronouns_other='They/Them/Their',
+    terms_agreement=True
+
 )
 
 exp_columbia = Experience(
@@ -206,6 +210,68 @@ skill_obama_health = SkillItem(
     contact_id=124,
 )
 
+program_pfp = Program(
+    id=1,
+    name='Place for Purpose',
+)
+
+cycle_pfp = Cycle(
+    id=2,
+    program_id=1,
+    date_start=date(2020, 1, 6),
+    date_end=date(2025, 1, 6),
+    intake_talent_board_id='5e37744114d9d01a03ddbcfe',
+    intake_org_board_id='intake_org',
+    match_talent_board_id='match_talent',
+    match_opp_board_id='match_opp',
+    review_talent_board_id='5e3753cdaea77d37fce3496a',
+)
+
+q_pfp1 = Question(
+    id=3,
+    program_id=1,
+    question_text='Race and equity',
+    limit_word=200,
+    limit_character=2000,
+)
+
+q_pfp2 = Question(
+    id=4,
+    program_id=1,
+    question_text='Sector effectiveness',
+    limit_word=300,
+    limit_character=3000,
+)
+
+billy_pfp = ProgramContact(
+    id=5,
+    program_id=1,
+    contact_id=123,
+    card_id='card',
+    stage=1,
+)
+
+r_billy1 = Response(
+    id=6,
+    program_contact_id=5,
+    question_id=3,
+    response_text='Race and equity answer',
+)
+
+r_billy2 = Response(
+    id=7,
+    program_contact_id=5,
+    question_id=4,
+    response_text='Sector effectiveness answer',
+)
+
+review_billy = Review(
+    id=1,
+    program_contact_id=5,
+    card_id='card_id',
+    score=1,
+    stage=1,
+)
 
 
 def populate(db):
@@ -229,4 +295,12 @@ def populate(db):
     db.session.add(skill_webdev)
     db.session.add(skill_health)
     db.session.add(skill_obama_health)
+    db.session.add(program_pfp)
+    db.session.add(cycle_pfp)
+    db.session.add(q_pfp1)
+    db.session.add(q_pfp2)
+    db.session.add(billy_pfp)
+    db.session.add(r_billy1)
+    db.session.add(r_billy2)
+    db.session.add(review_billy)
     db.session.commit()
