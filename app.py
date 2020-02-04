@@ -1,8 +1,11 @@
 import os
 import os.path
 from flask import Flask, jsonify
+from flask_cors import CORS
+from flask_login import LoginManager
 from api import api_bp
 from auth import AuthError
+from models.session_model import UserSession
 
 def load_from_dev(app):
     if os.path.isfile('secrets/dev.cfg'):
@@ -19,12 +22,15 @@ def load_from_prod(app):
 def load_from_env(app):
     if os.environ.get('DATABASE_URL'):
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-    if os.environ.get('AUTH0_API_AUDIENCE'):
-        app.config['AUTH0_API_AUDIENCE'] = os.environ['AUTH0_API_AUDIENCE']
-    if os.environ.get('TRELLO_API_KEY'):
-        app.config['TRELLO_API_KEY'] = os.environ['TRELLO_API_KEY']
-    if os.environ.get('TRELLO_API_TOKEN'):
-        app.config['TRELLO_API_TOKEN'] = os.environ['TRELLO_API_TOKEN']
+    def load_var(name):
+        if os.environ.get(name):
+            app.config[name] = os.environ[name]
+
+    load_var('AUTH0_API_AUDIENCE')
+    load_var('TRELLO_API_KEY')
+    load_var('TRELLO_API_TOKEN')
+    load_var('SESSION_SECRET_KEY')
+    load_var('CONTACT_DELETE_TOKEN')
 
 def load_config(app, env):
     if env is None:
@@ -46,8 +52,20 @@ def load_config(app, env):
 
 def create_app(env=None):
     app = Flask(__name__)
+
+    # Initialize app config
     app.config.from_object('defaultcfg')
     load_config(app, env)
+
+    # CORS setup
+    CORS(app, supports_credentials=True)
+
+    # Sessions related initialization
+    app.secret_key = app.config['SESSION_SECRET_KEY']
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    # Initialization for flask-restful
     app.register_blueprint(api_bp, url_prefix='/api')
 
     @app.route('/')
@@ -59,6 +77,10 @@ def create_app(env=None):
         response = jsonify(ex.error)
         response.status_code = ex.status_code
         return response
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        return UserSession.query.get(user_id)
 
     from models.base_model import db
     db.init_app(app)

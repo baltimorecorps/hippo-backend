@@ -13,6 +13,7 @@ from models.tag_model import Tag
 from models.tag_item_model import TagItem
 from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
+from models.session_model import UserSession
 
 SKILLS = {
     'billy': [
@@ -64,11 +65,12 @@ CYCLES = {
         'program_id': 1,
         'date_start': '2020-01-06',
         'date_end': '2025-01-06',
-        'intake_talent_board_id': '5e25dae2e640be7e5248a3e6',
+        'intake_talent_board_id': '5e37744114d9d01a03ddbcfe',
         'intake_org_board_id': 'intake_org',
         'match_talent_board_id': 'match_talent',
         'match_opp_board_id': 'match_opp',
-        'is_active': True
+        'is_active': True,
+        'review_talent_board_id': '5e3753cdaea77d37fce3496a'
     }
 }
 
@@ -99,6 +101,16 @@ RESPONSES = {
     }
 }
 
+REVIEWS = {
+    'review_billy': {
+        'id': 1,
+        'score': 1,
+        'stage': 1,
+        'is_active': True,
+        'card_id': 'card_id'
+    }
+}
+
 PROGRAM_CONTACTS = {
     'billy_pfp': {
         'id': 5,
@@ -111,6 +123,9 @@ PROGRAM_CONTACTS = {
         'responses': [
             RESPONSES['r_billy1'],
             RESPONSES['r_billy2']
+        ],
+        'reviews': [
+            REVIEWS['review_billy']
         ]
     }
 }
@@ -140,7 +155,7 @@ CONTACTS = {
         'race_other': None,
         'pronouns': 'He/Him/His',
         'pronouns_other': None,
-        'account_id': 'billy|123',
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'skills': SKILLS['billy'],
         'programs': [PROGRAM_CONTACTS['billy_pfp']],
         'terms_agreement': True
@@ -425,7 +440,7 @@ POSTS = {
         "race_other": "Cuban",
         "pronouns": "She/Her/Hers",
         "birthdate": "1973-04-23",
-        "account_id": 'tester|0123456789',
+        "account_id": 'test-valid|0123456789',
         "terms_agreement": True
     }
 }
@@ -455,6 +470,7 @@ def post_request(app, url, data):
       POSTS['contact'],
       lambda id: Contact.query.get(id),
       marks=pytest.mark.skip
+      # TODO: unskip when trello stuff is mocked out
       )
     ,('/api/contacts/123/experiences/',
       POSTS['experience'],
@@ -493,6 +509,7 @@ def post_request(app, url, data):
       POSTS['program_contact'],
       lambda id: ProgramContact.query.filter_by(contact_id=124,program_id=1).first(),
       marks=pytest.mark.skip
+      # TODO: unskip when trello stuff is mocked out
       )
     ]
 )
@@ -567,6 +584,46 @@ def test_post_experience_skills(app):
     id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_).skills[0].name == 'C++'
     assert Experience.query.get(id_).skills[1].name == 'Python'
+
+# TODO: unskip when trello stuff is mocked out
+@pytest.mark.skip
+def test_post_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+    with app.test_client() as client:
+        response = client.post('/api/contacts/', 
+                               data=json.dumps(POSTS['contact']),
+                               headers=headers)
+        assert response.status_code == 201
+        set_cookie = response.headers.get('set-cookie')
+        assert set_cookie is not None
+        assert set_cookie.find('HttpOnly;') is not -1
+        # Note: Can't test "secure" due to non-https connection
+        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
+        assert contact.first_name == 'Tester'
+
+        assert UserSession.query.filter_by(contact_id=contact.id).first()
+
+def test_post_session(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
+    }
+    with app.test_client() as client:
+        response = client.post('/api/session/', headers=headers)
+        assert response.status_code == 201
+        set_cookie = response.headers.get('set-cookie')
+        assert set_cookie is not None
+        assert set_cookie.find('HttpOnly;') is not -1
+        # Note: Can't test "secure" due to non-https connection
+
+        assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
 
 @pytest.mark.parametrize(
@@ -682,7 +739,9 @@ def test_put_preserves_list_fields(app, url, update, query, test):
 
 @pytest.mark.parametrize(
     "delete_url,query",
-    [('/api/experiences/512/', lambda: Experience.query.get(512))
+    [('/api/contacts/123?token=testing_token',
+      lambda: Contact.query.get(123))
+    ,('/api/experiences/512/', lambda: Experience.query.get(512))
     ,('/api/resumes/51/', lambda: Resume.query.get(51))
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: SkillItem.query.get(('n1N02ypni69EZg0SggRIIg==', 123)))
@@ -730,6 +789,7 @@ def test_get(app, url, expected):
         data = json.loads(response.data)['data']
         assert len(data) > 0
         assert data == expected
+
 
 def test_get_autocomplete(app):
     mimetype = 'application/json'

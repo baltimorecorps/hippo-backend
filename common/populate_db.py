@@ -41,6 +41,7 @@ from models.program_contact_model import ProgramContact
 from models.cycle_model import Cycle
 from models.question_model import Question
 from models.response_model import Response
+from models.review_model import Review
 
 billy = Contact(
     id=123,
@@ -57,7 +58,7 @@ billy = Contact(
     phone_primary='555-245-2351',
     race_all='White',
     pronouns='He/Him/His',
-    account_id='billy|123',
+    account_id='test-valid|0123456789abcdefabcdefff',
     terms_agreement=True
 )
 obama = Contact(
@@ -219,10 +220,11 @@ cycle_pfp = Cycle(
     program_id=1,
     date_start=date(2020, 1, 6),
     date_end=date(2025, 1, 6),
-    intake_talent_board_id='5e25dae2e640be7e5248a3e6',
+    intake_talent_board_id='5e37744114d9d01a03ddbcfe',
     intake_org_board_id='intake_org',
     match_talent_board_id='match_talent',
     match_opp_board_id='match_opp',
+    review_talent_board_id='5e3753cdaea77d37fce3496a',
 )
 
 q_pfp1 = Question(
@@ -263,6 +265,14 @@ r_billy2 = Response(
     response_text='Sector effectiveness answer',
 )
 
+review_billy = Review(
+    id=1,
+    program_contact_id=5,
+    card_id='card_id',
+    score=1,
+    stage=1,
+)
+
 
 def populate(db):
     exp_baltimore.skills.append(skill_python)
@@ -292,4 +302,5 @@ def populate(db):
     db.session.add(billy_pfp)
     db.session.add(r_billy1)
     db.session.add(r_billy2)
+    db.session.add(review_billy)
     db.session.commit()

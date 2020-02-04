@@ -7,6 +7,7 @@ from resources.Achievement import AchievementAll
 from resources.Resume import ResumeAll, ResumeOne, GenerateResume
 from resources.Resume import ResumeSectionAll, ResumeSectionOne
 from resources.Skills import ContactSkills, ContactSkillOne, AutocompleteSkill
+from resources.Session import Session
 from resources.ProgramContacts import ProgramContactOne, ProgramContactAll
 from resources.Trello_Intake_Talent import (
     IntakeTalentBoard,
@@ -87,3 +88,6 @@ api.add_resource(IntakeTalentCard,
 api.add_resource(TalentProgramApp,
                  '/form-assembly/talent-app',
                  '/form-assembly/talent-app/')
+api.add_resource(Session,
+                 '/session/',
+                 '/session')
