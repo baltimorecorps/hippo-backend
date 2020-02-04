@@ -8,7 +8,9 @@ from marshmallow import ValidationError
 from flask_login import login_required
 from auth import (
     refresh_session, 
-    is_authorized, 
+    is_authorized_view, 
+    is_authorized_write, 
+
     unauthorized
 )
 

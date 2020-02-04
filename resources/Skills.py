@@ -8,7 +8,8 @@ from .skill_utils import make_skill, get_skill_id, normalize_skill_name, complet
 from flask_login import login_required
 from auth import (
     refresh_session, 
-    is_authorized, 
+    is_authorized_view, 
+    is_authorized_write, 
     unauthorized
 )
 
