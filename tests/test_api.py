@@ -442,7 +442,13 @@ POSTS = {
         "birthdate": "1973-04-23",
         "account_id": 'test-valid|0123456789',
         "terms_agreement": True
+    },
+    'opportunity': {
+        "title": "Test Opportunity",
+        "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
+        "gdoc_link": "https://example.com/testdoc",
     }
+
 }
 
 def post_request(app, url, data):
@@ -511,6 +517,11 @@ def post_request(app, url, data):
       marks=pytest.mark.skip
       # TODO: unskip when trello stuff is mocked out
       )
+    ,pytest.param('/api/opportunity/',
+      POSTS['opportunity'],
+      lambda id: Opportunity.query.filter_by(title="Test Opportunity").first(),
+      )
+
     ]
 )
 def test_post(app, url, data, query):
