@@ -182,6 +182,7 @@ def delete_session(user_session):
     db.session.commit()
 
 def get_current_user_permissions():
+    print(current_user)
     payload = json.loads(current_user.jwt)
     return payload.get('permissions', [])
 
@@ -190,11 +191,19 @@ def has_permission(permission):
     print(permissions, permission)
     return permission in permissions
 
-def is_authorized_with_permission(permission):
-    if current_app.config.get('TESTING'):
+def is_testing():
+    if (current_app.config.get('TESTING') 
+        and not request.headers.get('X-Test-Authz')
+       ):
         assert current_app.config.get('DEPLOY_ENV') == 'test'
         return True
-    
+
+    return False
+
+
+def is_authorized_with_permission(permission):
+    if is_testing():
+        return True
     return has_permission(permission)
 
 def is_authorized_view(contact_id):
@@ -204,8 +213,7 @@ def is_authorized_write(contact_id):
     return is_authorized(contact_id, 'write')
 
 def is_authorized(contact_id, operation):
-    if current_app.config.get('TESTING'):
-        assert current_app.config.get('DEPLOY_ENV') == 'test'
+    if is_testing():
         return True
 
     if has_permission(f'{operation}:all-users'):

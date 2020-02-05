@@ -14,6 +14,9 @@ from models.tag_item_model import TagItem
 from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
+from models.opportunity_model import Opportunity
+
+from flask import g
 
 SKILLS = {
     'billy': [
@@ -874,3 +877,47 @@ def test_generate_resume(app, url, input, output):
         data = json.loads(response.data)['data']
         assert len(data) > 0
         assert data == output
+
+
+def make_session(contact_id, permissions=[]):
+    return UserSession(
+        id="fake_session_id",
+        auth_id="fake_auth_id",
+        contact_id=contact_id,
+        jwt=json.dumps({'permissions': permissions}),
+        expiration=(dt.datetime.utcnow() + dt.timedelta(days=1)),
+    )
+
+@pytest.mark.parametrize(
+    "method,url,data,successes,failures",
+    [pytest.param(
+        'POST',
+        '/api/opportunity/',
+      POSTS['opportunity'],
+      [make_session(1, ['write:opportunity'])],
+      [make_session(1)])
+    ]
+)
+def test_authz(app, method, url, data, successes, failures):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'X-Test-Authz': '1',
+    }
+
+    for success in successes:
+        with app.test_client() as client:
+            g.test_user = success
+            client_method = getattr(client, method.lower())
+            response = client_method(url, data=json.dumps(data), headers=headers)
+            assert response.status_code != 401
+
+    for failure in failures:
+        with app.test_client() as client:
+            g.test_user = failure
+            client_method = getattr(client, method.lower())
+            response = client_method(url, data=json.dumps(data), headers=headers)
+            assert response.status_code == 401
+
+
