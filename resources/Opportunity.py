@@ -13,10 +13,16 @@ from models.opportunity_model import Opportunity, OpportunitySchema
 from auth import is_authorized_with_permission, unauthorized
 
 opportunity_schema = OpportunitySchema()
+opportunities_schema = OpportunitySchema(many=True)
 class OpportunityAll(Resource):
     method_decorators = {
         'post': [login_required, refresh_session],
     }
+
+    def get(self):
+        opportunities = Opportunity.query.all();
+        opp_list = opportunities_schema.dump(opportunities)
+        return {'status': 'success', 'data': opp_list}, 200
 
     def post(self):
         json_data = request.get_json(force=True)

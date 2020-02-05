@@ -274,11 +274,18 @@ review_billy = Review(
     stage=1,
 )
 
-test_opp = Opportunity(
+test_opp1 = Opportunity(
     id='123abc',
     title="Test Opportunity",
     short_description="This is a test opportunity.",
     gdoc_link="https://docs.google.com/example-link",
+)
+
+test_opp2 = Opportunity(
+    id='222abc',
+    title="Another Test Opportunity",
+    short_description="This is another test opportunity.",
+    gdoc_link="https://docs.google.com/example-link-2",
 )
 
 
@@ -311,5 +318,6 @@ def populate(db):
     db.session.add(r_billy1)
     db.session.add(r_billy2)
     db.session.add(review_billy)
-    db.session.add(test_opp)
+    db.session.add(test_opp1)
+    db.session.add(test_opp2)
     db.session.commit()

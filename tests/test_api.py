@@ -134,12 +134,19 @@ PROGRAM_CONTACTS = {
 }
 
 OPPORTUNITIES = {
-    'test_opp': {
+    'test_opp1': {
         'id': '123abc',
         'title': "Test Opportunity",
         'short_description': "This is a test opportunity.",
         'gdoc_link': "https://docs.google.com/example-link",
     },
+    'test_opp2': {
+        'id': '222abc',
+        'title': "Another Test Opportunity",
+        'short_description': "This is another test opportunity.",
+        'gdoc_link': "https://docs.google.com/example-link-2",
+    },
+
 }
 
 
@@ -796,7 +803,7 @@ def test_delete(app, delete_url, query):
     ,('/api/resumes/51/', RESUMES['billy'])
     ,('/api/contacts/123/skills', SKILLS['billy'])
     ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
-    ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp'])
+    ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
     ]
 )
 def test_get(app, url, expected):
@@ -847,6 +854,7 @@ def test_get_autocomplete(app):
     ,('/api/contacts/123/tags/', TAG_ITEMS.values())
     ,('/api/contacts/123/resumes/', RESUMES.values())
     ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
+    ,('/api/opportunity/', OPPORTUNITIES.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):
