@@ -776,6 +776,7 @@ def test_put_preserves_list_fields(app, url, update, query, test):
     ,('/api/resumes/51/', lambda: Resume.query.get(51))
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: SkillItem.query.get(('n1N02ypni69EZg0SggRIIg==', 123)))
+    ,('/api/opportunity/123abc/', lambda: Opportunity.query.get('123abc'))
     ]
 )
 def test_delete(app, delete_url, query):

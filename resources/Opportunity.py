@@ -47,6 +47,7 @@ class OpportunityAll(Resource):
 class OpportunityOne(Resource):
     method_decorators = {
         'get': [],
+        'delete': [login_required, refresh_session],
     }
 
     def get(self, opportunity_id):
@@ -58,5 +59,18 @@ class OpportunityOne(Resource):
         opp_data = opportunity_schema.dump(opp)
         return {'status': 'success', 'data': opp_data}, 200
 
+    def delete(self, opportunity_id):
+
+        opportunity = Opportunity.query.get(opportunity_id)
+        if not opportunity:
+            return {'message': 'Opportunity does not exist'}, 404
+
+        if not is_authorized_with_permission('write:opportunity'):
+            return unauthorized()
+
+        db.session.delete(opportunity)
+        db.session.commit()
+        result = opportunity_schema.dump(opportunity)
+        return {"status": 'success'}, 200
 
 
