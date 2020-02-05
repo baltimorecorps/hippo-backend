@@ -717,6 +717,12 @@ def test_post_session(app):
       lambda: ProgramContact.query.get(5),
       lambda r: len(r.responses) == 1 and r.responses[0].response_text == 'Race and equity answer'
       )
+    ,('/api/opportunity/123abc/',
+      {'title': "New title"},
+      lambda: Opportunity.query.get('123abc'),
+      lambda r: r.title == 'New title',
+      )
+
     ]
 )
 def test_put(app, url, update, query, test):
@@ -767,6 +773,49 @@ def test_put_preserves_list_fields(app, url, update, query, test):
         print(response.json)
         assert response.status_code == 200
         assert test(query())
+
+@pytest.mark.parametrize(
+    "url,update,old_id,new_id",
+    [('/api/contacts/123/',
+      {'id': 111, 'first_name': 'test'},
+      lambda: Contact.query.get(123),
+      lambda: Contact.query.get(111),
+      ),
+     ('/api/experiences/512/',
+      {'id': 555, 'host': 'test'},
+      lambda: Experience.query.get(512),
+      lambda: Experience.query.get(555),
+      )
+    ,('/api/contacts/123/programs/1/',
+      {'id': 555, 'stage': 2},
+      lambda: ProgramContact.query.get(5),
+      lambda: ProgramContact.query.get(555),
+      )
+    ,('/api/opportunity/123abc/',
+      {'id': 'aaaaaa', 'title': 'new title'},
+      lambda: Opportunity.query.get('123abc'),
+      lambda: Opportunity.query.get('aaaaaa'),
+      )
+    ]
+)
+def test_put_rejects_id_update(app, url, update, old_id, new_id):
+    from models.resume_section_model import ResumeSectionSchema
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        assert old_id() is not None, "Item to update should exist"
+        assert new_id() is None, "New id should not exist before test"
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert old_id() is not None, "Item to update should still exist"
+        assert new_id() is None, "New id should not exist after test"
+
+
+
 
 @pytest.mark.parametrize(
     "delete_url,query",

@@ -79,6 +79,7 @@ class ProgramContactOne(Resource):
     method_decorators = {
         'get': [login_required, refresh_session],
         'post': [login_required, refresh_session],
+        'put': [login_required, refresh_session],
     }
 
     def get(self, contact_id, program_id):
