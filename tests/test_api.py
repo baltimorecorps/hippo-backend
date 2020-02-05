@@ -133,6 +133,16 @@ PROGRAM_CONTACTS = {
     }
 }
 
+OPPORTUNITIES = {
+    'test_opp': {
+        'id': '123abc',
+        'title': "Test Opportunity",
+        'short_description': "This is a test opportunity.",
+        'gdoc_link': "https://docs.google.com/example-link",
+    },
+}
+
+
 CONTACTS = {
     'billy': {
         'id': 123,
@@ -786,6 +796,7 @@ def test_delete(app, delete_url, query):
     ,('/api/resumes/51/', RESUMES['billy'])
     ,('/api/contacts/123/skills', SKILLS['billy'])
     ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
+    ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp'])
     ]
 )
 def test_get(app, url, expected):

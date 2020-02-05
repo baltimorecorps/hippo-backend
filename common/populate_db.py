@@ -42,6 +42,7 @@ from models.cycle_model import Cycle
 from models.question_model import Question
 from models.response_model import Response
 from models.review_model import Review
+from models.opportunity_model import Opportunity
 
 billy = Contact(
     id=123,
@@ -273,6 +274,13 @@ review_billy = Review(
     stage=1,
 )
 
+test_opp = Opportunity(
+    id='123abc',
+    title="Test Opportunity",
+    short_description="This is a test opportunity.",
+    gdoc_link="https://docs.google.com/example-link",
+)
+
 
 def populate(db):
     exp_baltimore.skills.append(skill_python)
@@ -303,4 +311,5 @@ def populate(db):
     db.session.add(r_billy1)
     db.session.add(r_billy2)
     db.session.add(review_billy)
+    db.session.add(test_opp)
     db.session.commit()

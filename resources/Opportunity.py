@@ -38,6 +38,19 @@ class OpportunityAll(Resource):
         result = opportunity_schema.dump(opportunity)
         return {"status": 'success', 'data': result}, 201
 
+class OpportunityOne(Resource):
+    method_decorators = {
+        'get': [],
+    }
+
+    def get(self, opportunity_id):
+        opp = Opportunity.query.get(opportunity_id)
+        if not opp:
+            return {'message': 'Opportunity does not exist'}, 404
+
+
+        opp_data = opportunity_schema.dump(opp)
+        return {'status': 'success', 'data': opp_data}, 200
 
 
 
