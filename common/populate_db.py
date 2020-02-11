@@ -297,6 +297,13 @@ app_billy = OpportunityApp(
     stage=1,
 )
 
+app_billy2 = OpportunityApp(
+    id='a2',
+    contact_id=123,
+    opportunity_id='222abc',
+    interest_statement="I'm also interested in this test opportunity",
+    stage=0,
+)
 
 def populate(db):
     exp_baltimore.skills.append(skill_python)
@@ -330,4 +337,5 @@ def populate(db):
     db.session.add(test_opp1)
     db.session.add(test_opp2)
     db.session.add(app_billy)
+    db.session.add(app_billy2)
     db.session.commit()

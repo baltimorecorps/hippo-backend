@@ -15,6 +15,7 @@ from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 from models.opportunity_model import Opportunity
+from models.opportunity_app_model import OpportunityApp, ApplicationStage
 
 from flask import g
 
@@ -218,8 +219,16 @@ APPLICATIONS = {
         'contact': CONTACTS['billy'],
         'opportunity': OPPORTUNITIES['test_opp1'],
         'interest_statement': "I'm interested in this test opportunity",
-        'stage': 1,
+        'status': 'submitted',
     },
+    'app_billy2': {
+        'id': 'a2',
+        'contact': CONTACTS['billy'],
+        'opportunity': OPPORTUNITIES['test_opp2'],
+        'interest_statement': "I'm also interested in this test opportunity",
+        'status': 'draft',
+    },
+
 }
 
 
@@ -479,10 +488,6 @@ POSTS = {
         "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
         "gdoc_link": "https://example.com/testdoc",
     },
-    'application': {
-        "contact_id": 124,
-        "opportunity_id": '123abc',
-    }
 }
 
 def post_request(app, url, data):
@@ -555,6 +560,11 @@ def post_request(app, url, data):
       POSTS['opportunity'],
       lambda id: Opportunity.query.filter_by(title="Test Opportunity").first(),
       )
+    ,pytest.param('/api/contacts/124/app/123abc/',
+      {},
+      lambda id: (OpportunityApp.query
+                  .filter_by(contact_id=124, opportunity_id='123abc').first()),
+      )
 
     ]
 )
@@ -586,6 +596,10 @@ def test_post_experience_date(app):
     assert Experience.query.get(id_).end_year == 2019
     assert Experience.query.get(id_).start_month == Month.september
     assert Experience.query.get(id_).start_year == 2000
+
+def test_post_opportunity_app_status(app):
+    id_ = post_request(app, '/api/contacts/124/app/123abc/', {})
+    assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
 
 @pytest.mark.skip
 def test_post_experience_null_degree(app):
@@ -736,7 +750,11 @@ def test_post_session(app):
       lambda: Opportunity.query.get('123abc'),
       lambda r: r.title == 'New title',
       )
-
+    ,('/api/contacts/123/app/123abc',
+      {'interest_statement': "New interest statement"},
+      lambda: OpportunityApp.query.get('a1'),
+      lambda r: r.interest_statement == 'New interest statement',
+      )
     ]
 )
 def test_put(app, url, update, query, test):
@@ -813,7 +831,6 @@ def test_put_preserves_list_fields(app, url, update, query, test):
     ]
 )
 def test_put_rejects_id_update(app, url, update, old_id, new_id):
-    from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -828,7 +845,36 @@ def test_put_rejects_id_update(app, url, update, old_id, new_id):
         assert old_id() is not None, "Item to update should still exist"
         assert new_id() is None, "New id should not exist after test"
 
+def test_put_rejects_app_stage_update(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {
+        'stage': 0,
+        'status': 'draft',
+    }
+    with app.test_client() as client:
+        response = client.put('/api/contacts/123/app/123abc/', 
+                              data=json.dumps(update),
+                              headers=headers)
+        assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
 
+def test_opportunity_app_submit(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {}
+    with app.test_client() as client:
+        assert OpportunityApp.query.get('a2').stage == ApplicationStage.draft.value
+        response = client.post('/api/contacts/123/app/222abc/submit/', 
+                              data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert OpportunityApp.query.get('a2').stage == ApplicationStage.submitted.value
 
 
 @pytest.mark.parametrize(
