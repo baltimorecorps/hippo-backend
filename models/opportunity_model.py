@@ -10,6 +10,10 @@ class Opportunity(db.Model):
     short_description = db.Column(db.String(2000), nullable=False)
     gdoc_link = db.Column(db.String(200), nullable=False)
 
+    applications = db.relationship('OpportunityApp', back_populates='opportunity',
+                                   cascade='all, delete, delete-orphan')
+
+
 class OpportunitySchema(Schema):
     id = fields.String(required=True, dump_only=True)
     title = fields.String(required=True)

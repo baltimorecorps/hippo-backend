@@ -212,6 +212,17 @@ CONTACTS = {
     },
 }
 
+APPLICATIONS = {
+    'app_billy': {
+        'id': 'a1',
+        'contact': CONTACTS['billy'],
+        'opportunity': OPPORTUNITIES['test_opp1'],
+        'interest_statement': "I'm interested in this test opportunity",
+        'stage': 1,
+    },
+}
+
+
 ACHIEVEMENTS = {
     'baltimore1': {
         'id': 81,
@@ -467,8 +478,11 @@ POSTS = {
         "title": "Test Opportunity",
         "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
         "gdoc_link": "https://example.com/testdoc",
+    },
+    'application': {
+        "contact_id": 124,
+        "opportunity_id": '123abc',
     }
-
 }
 
 def post_request(app, url, data):
@@ -854,6 +868,7 @@ def test_delete(app, delete_url, query):
     ,('/api/contacts/123/skills', SKILLS['billy'])
     ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
     ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
+    ,('/api/contacts/123/app/123abc', APPLICATIONS['app_billy'])
     ]
 )
 def test_get(app, url, expected):

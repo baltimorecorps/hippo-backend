@@ -182,13 +182,11 @@ def delete_session(user_session):
     db.session.commit()
 
 def get_current_user_permissions():
-    print(current_user)
     payload = json.loads(current_user.jwt)
     return payload.get('permissions', [])
 
 def has_permission(permission):
     permissions = get_current_user_permissions()
-    print(permissions, permission)
     return permission in permissions
 
 def is_testing():

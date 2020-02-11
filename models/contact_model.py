@@ -74,6 +74,8 @@ class Contact(db.Model):
                                   cascade='all, delete, delete-orphan')
     programs = db.relationship('ProgramContact', back_populates='contact',
                                cascade='all, delete, delete-orphan')
+    applications = db.relationship('OpportunityApp', back_populates='contact',
+                               cascade='all, delete, delete-orphan')
 
 class ContactSchema(Schema):
     id = fields.Integer(dump_only=True)

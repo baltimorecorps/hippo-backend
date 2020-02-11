@@ -43,6 +43,7 @@ from models.question_model import Question
 from models.response_model import Response
 from models.review_model import Review
 from models.opportunity_model import Opportunity
+from models.opportunity_app_model import OpportunityApp
 
 billy = Contact(
     id=123,
@@ -288,6 +289,14 @@ test_opp2 = Opportunity(
     gdoc_link="https://docs.google.com/example-link-2",
 )
 
+app_billy = OpportunityApp(
+    id='a1',
+    contact_id=123,
+    opportunity_id='123abc',
+    interest_statement="I'm interested in this test opportunity",
+    stage=1,
+)
+
 
 def populate(db):
     exp_baltimore.skills.append(skill_python)
@@ -320,4 +329,5 @@ def populate(db):
     db.session.add(review_billy)
     db.session.add(test_opp1)
     db.session.add(test_opp2)
+    db.session.add(app_billy)
     db.session.commit()
