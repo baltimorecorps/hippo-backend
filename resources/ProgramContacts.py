@@ -5,6 +5,15 @@ from models.response_model import Response, ResponseSchema
 from models.base_model import db
 from marshmallow import ValidationError
 
+from flask_login import login_required
+from auth import (
+    refresh_session, 
+    is_authorized_view, 
+    is_authorized_write, 
+
+    unauthorized
+)
+
 program_contact_schema = ProgramContactSchema()
 program_contacts_schema = ProgramContactSchema(many=True)
 
@@ -34,13 +43,22 @@ def create_program_contact(contact_id, program_id=1, **data):
     return  result
 
 class ProgramContactAll(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'post': [login_required, refresh_session],
+    }
 
     def get(self,contact_id):
+        if not is_authorized_view(contact_id): 
+            return unauthorized()
+
         program_contacts = ProgramContact.query.filter_by(contact_id=contact_id)
         result = program_contacts_schema.dump(program_contacts)
         return {'status': 'success', 'data': result}, 200
 
     def post(self, contact_id):
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
 
         #retrieve and parse request data
         json_data = request.get_json(force=True)
@@ -58,9 +76,15 @@ class ProgramContactAll(Resource):
         return {"status": 'success', 'data': result}, 201
 
 class ProgramContactOne(Resource):
-
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'post': [login_required, refresh_session],
+    }
 
     def get(self, contact_id, program_id):
+        if not is_authorized_view(contact_id): 
+            return unauthorized()
+
         program_contact = query_one_program_contact(contact_id, program_id)
         if not program_contact:
             return {'message': 'Record does not exist'}, 404
@@ -68,6 +92,8 @@ class ProgramContactOne(Resource):
         return {'status': 'success', 'data': result}, 200
 
     def put(self, contact_id, program_id):
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
 
         #retreives and parses request data
         json = request.get_json(force=True)
@@ -97,6 +123,9 @@ class ProgramContactOne(Resource):
         return {"status": 'success', 'data': result}, 200
 
     def delete(self, contact_id, program_id):
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
+
         program_contact = query_one_program_contact(contact_id, program_id)
         if not program_contact:
             return {'message': 'Program contact does not exist'}, 404

@@ -23,6 +23,7 @@ def _app(request):
     app.config['DEBUG'] = True
     app.config['TESTING'] = True
     app.config['CONTACT_DELETE_TOKEN'] = 'testing_token'
+
     with Postgresql() as postgresql:
         app.config['SQLALCHEMY_DATABASE_URI'] = postgresql.url()
 

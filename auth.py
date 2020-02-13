@@ -180,3 +180,40 @@ def refresh_session(f):
 def delete_session(user_session):
     db.session.delete(user_session)
     db.session.commit()
+
+def get_current_user_permissions():
+    payload = json.loads(current_user.jwt)
+    return payload.get('permissions', [])
+
+def has_permission(permission):
+    permissions = get_current_user_permissions()
+    print(permissions, permission)
+    return permission in permissions
+
+def is_authorized_with_permission(permission):
+    if current_app.config.get('TESTING'):
+        assert current_app.config.get('DEPLOY_ENV') == 'test'
+        return True
+    
+    return has_permission(permission)
+
+def is_authorized_view(contact_id):
+    return is_authorized(contact_id, 'view')
+
+def is_authorized_write(contact_id):
+    return is_authorized(contact_id, 'write')
+
+def is_authorized(contact_id, operation):
+    if current_app.config.get('TESTING'):
+        assert current_app.config.get('DEPLOY_ENV') == 'test'
+        return True
+
+    if has_permission(f'{operation}:all-users'):
+        return True
+
+    return contact_id == current_user.contact_id
+
+
+
+def unauthorized():
+    return ({'message': 'You are not authorized to access this endpoint'}, 401)
