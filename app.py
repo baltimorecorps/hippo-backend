@@ -48,10 +48,14 @@ def load_config(app, env):
             env = 'default'
         load_from_env(app)
 
+    if env == 'test':
+        app.config['LOGIN_DISABLED'] = True
+
     app.config['DEPLOY_ENV'] = env
 
 def create_app(env=None):
     app = Flask(__name__)
+
 
     # Initialize app config
     app.config.from_object('defaultcfg')

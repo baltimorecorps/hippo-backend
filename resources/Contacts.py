@@ -1,7 +1,7 @@
 from flask import request as reqobj #ask David why this is here
 from flask import current_app
 from flask_restful import Resource, request
-from flask_login import login_user
+from flask_login import login_user, current_user, login_required
 from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
@@ -12,7 +12,15 @@ from models.program_model import Program
 from .ProgramContacts import create_program_contact
 from .Trello_Intake_Talent import add_new_talent_card
 from marshmallow import ValidationError
-from auth import validate_jwt, create_session
+from auth import (
+    validate_jwt, 
+    create_session, 
+    refresh_session, 
+    is_authorized_view, 
+    is_authorized_write, 
+    is_authorized_with_permission, 
+    unauthorized
+)
 
 from .skill_utils import get_skill_id, make_skill
 
@@ -30,10 +38,14 @@ def add_skills(skills, contact):
 
 class ContactAll(Resource):
     method_decorators = {
+        'get': [login_required, refresh_session],
         'post': [validate_jwt],
     }
 
     def get(self):
+        if not is_authorized_with_permission('view:all-users'): 
+            return unauthorized()
+
         contacts = Contact.query.all()
         contacts = contacts_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
@@ -85,11 +97,17 @@ class ContactAccount(Resource):
 
 
 class ContactOne(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'put': [login_required, refresh_session],
+    }
 
     def get(self, contact_id):
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404
+        if not is_authorized_view(contact.id): 
+            return unauthorized()
         contact = contact_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
 
@@ -97,6 +115,8 @@ class ContactOne(Resource):
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404
+        if not is_authorized_write(contact.id): 
+            return unauthorized()
         json_data = request.get_json(force=True)
         try:
             data = contact_schema.load(json_data, partial=True)

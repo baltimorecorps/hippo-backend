@@ -11,6 +11,16 @@ from marshmallow import ValidationError
 import datetime as dt
 from pprint import pprint
 
+from flask_login import login_required
+from auth import (
+    refresh_session, 
+    is_authorized_view, 
+    is_authorized_write, 
+
+    unauthorized
+)
+
+
 resumes_schema = ResumeSchema(many=True)
 resume_schema = ResumeSchema()
 resume_generate_schema = ResumeSchemaNew()
@@ -20,8 +30,15 @@ resume_sections_schema = ResumeSectionSchema(many=True)
 resume_section_schema = ResumeSectionSchema()
 
 class GenerateResume(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session],
+    }
+
 
     def post(self, contact_id):
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
+
         #load the input data
         input_data = request.get_json(force=True)
         try:
@@ -79,13 +96,23 @@ class GenerateResume(Resource):
         return {'status': 'success', 'data': result}, 201
 
 class ResumeAll(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'post': [login_required, refresh_session],
+    }
 
     def get(self, contact_id):
+        if not is_authorized_view(contact_id): 
+            return unauthorized()
+
         res = Resume.query.filter_by(contact_id=contact_id)
         res_list = resumes_schema.dump(res)
         return {'status': 'success', 'data': res_list}, 200
 
     def post(self, contact_id):
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
+
         json_data = request.get_json(force=True)
         try:
             data = resume_schema.load(json_data)
@@ -100,11 +127,20 @@ class ResumeAll(Resource):
         return {'status': 'success', 'data': result}, 201
 
 class ResumeOne(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'post': [login_required, refresh_session],
+        'delete': [login_required, refresh_session],
+    }
 
     def get(self, resume_id):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
+
+        if not is_authorized_view(res.contact.id): 
+            return unauthorized()
+
         result = resume_schema.dump(res)
         return {'status': 'success', 'data': result}, 200
 
@@ -112,6 +148,9 @@ class ResumeOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
+        if not is_authorized_write(res.contact.id): 
+            return unauthorized()
+
         db.session.delete(res)
         db.session.commit()
         return {'status': 'success'}, 200
@@ -120,6 +159,9 @@ class ResumeOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
+        if not is_authorized_write(res.contact.id): 
+            return unauthorized()
+
         json_data = request.get_json(force=True)
         try:
             data = resume_schema.load(json_data, partial=True)
@@ -134,12 +176,29 @@ class ResumeOne(Resource):
         return {'status': 'success', 'data': result}, 200
 
 class ResumeSectionAll(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'post': [login_required, refresh_session],
+    }
+
     def get(self, resume_id):
+        res = Resume.query.get(resume_id)
+        if not res:
+            return {'message': 'Resume does not exist'}, 404
+        if not is_authorized_view(res.contact.id): 
+            return unauthorized()
+
         sections = ResumeSection.query.filter_by(resume_id=resume_id)
         result = resume_sections_schema.dump(sections)
         return {'status': 'success', 'data': result}, 200
 
     def post(self, resume_id):
+        res = Resume.query.get(resume_id)
+        if not res:
+            return {'message': 'Resume does not exist'}, 404
+        if not is_authorized_write(res.contact.id): 
+            return unauthorized()
+
         json_data = request.get_json(force=True)
         try:
             data = resume_section_schema.load(json_data)
@@ -160,8 +219,19 @@ class ResumeSectionAll(Resource):
         return {'status': 'success', 'data': result}, 201
 
 class ResumeSectionOne(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+        'put': [login_required, refresh_session],
+        'delete': [login_required, refresh_session],
+    }
 
     def get(self, resume_id, section_id):
+        res = Resume.query.get(resume_id)
+        if not res:
+            return {'message': 'Resume does not exist'}, 404
+        if not is_authorized_view(res.contact.id): 
+            return unauthorized()
+
         section = ResumeSection.query.get(section_id)
         if not section:
             return {'message': 'Resume section does not exist'}, 404
@@ -169,6 +239,12 @@ class ResumeSectionOne(Resource):
         return {'status': 'success', 'data': result}, 200
 
     def put(self, resume_id, section_id):
+        res = Resume.query.get(resume_id)
+        if not res:
+            return {'message': 'Resume does not exist'}, 404
+        if not is_authorized_write(res.contact.id): 
+            return unauthorized()
+
         section = ResumeSection.query.get(section_id)
         if not section:
             return {'message': 'Resume section does not exist'}, 404
@@ -193,6 +269,12 @@ class ResumeSectionOne(Resource):
         return {'status': 'success', 'data': result}, 200
 
     def delete(self, resume_id, section_id):
+        res = Resume.query.get(resume_id)
+        if not res:
+            return {'message': 'Resume does not exist'}, 404
+        if not is_authorized_write(res.contact.id): 
+            return unauthorized()
+
         section = ResumeSection.query.get(section_id)
         if not section:
             return {'message': 'Resume section does not exist'}, 404
