@@ -18,6 +18,11 @@ class Review(db.Model):
     program_contact = db.relationship('ProgramContact',
                                       back_populates='reviews')
 
+    def update(self, **update_dict):
+        for field, value in update_dict.items():
+            setattr(self, field, value)
+        db.session.commit()
+
 class ReviewSchema(Schema):
     id = fields.Integer(dump_only=True)
     is_active = fields.Boolean()
