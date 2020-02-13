@@ -3,6 +3,7 @@ from models.base_model import db
 from models.program_model import Program
 from models.cycle_model import Cycle
 from models.program_contact_model import ProgramContact, ProgramContactSchema
+from models.review_model import Review
 from .ProgramContacts import query_one_program_contact
 from .trello_utils import (
     query_board_data,
@@ -10,6 +11,18 @@ from .trello_utils import (
     Card,
     BoardList
 )
+
+REVIEW_SCORE_KEY = {
+    'Approved': 1,
+    'Not a Fit': -1,
+    'Approved with reservations': 0
+}
+
+ELIGIBILITY_KEY = {
+    'Approved': True,
+    'Not a Fit': False,
+    'Approved with reservations': True
+}
 
 program_contact_schema = ProgramContactSchema()
 
@@ -70,3 +83,31 @@ class IntakeTalentCard(Resource):
     def post(self, contact_id, program_id):
         result = add_new_talent_card(contact_id, program_id)
         return {'status': 'success', 'data': result}, 201
+
+class ReviewTalentCard(Resource):
+
+    def PUT(self, review_id):
+        json = request.get_json(force=True)
+        if not json:
+            return {'message': 'No input data provided'}, 400
+
+        # get review from url paramater and update it with response
+        review = Review.query.get(review_id)
+        if not review:
+            return {'message': 'No review found'}, 404
+        review_update_data = {
+            'score': REVEIW_SCORE_KEY[json['review_score']],
+            'is_active': False,
+            'stage': 2
+        }
+        review.update(**review_update_data)
+
+        # get program_contact associated with review
+        # and update the stage to stage 3,
+        program_contact = review.program_contact
+        program_contact.update(**{'stage': 3})
+
+        intake_board_id = get_intake_talent_board_id(program_contact.program_id)
+        intake_board_data = query_board_data(board_id)
+        intake_board = Board(intake_board_data)
+        intake_card = intake_board.cards.get(program_contact.card_id)
