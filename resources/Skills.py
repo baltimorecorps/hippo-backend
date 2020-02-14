@@ -23,6 +23,7 @@ from auth import (
 skill_schema = SkillSchema()
 skills_schema = SkillSchema(many=True)
 
+
 class AutocompleteSkill(Resource):
     def get(self):
         query = request.args.get('q', '')
@@ -78,6 +79,17 @@ class ContactSkills(Resource):
             result = skill_schema.dump(skill)
             return {'status': 'success', 'data': result}, 201
 
+def delete_skill(contact_id, skill_id):
+    skill = (ContactSkill.query
+             .filter_by(skill_id=skill_id, 
+                        contact_id=contact_id)
+             .first())
+    if not skill:
+        return {'message': 'Skill does not exist'}, 404
+    skill.deleted = True
+    db.session.commit()
+    return {'status': 'success'}, 200
+
 class ContactSkillOne(Resource):
     method_decorators = {
         'delete': [login_required, refresh_session],
@@ -87,15 +99,7 @@ class ContactSkillOne(Resource):
         if not is_authorized_write(contact_id): 
             return unauthorized()
 
-        skill = (ContactSkill.query
-                 .filter_by(skill_id=skill_id, 
-                            contact_id=contact_id)
-                 .first())
-        if not skill:
-            return {'message': 'Skill does not exist'}, 404
-        skill.deleted = True
-        db.session.commit()
-        return {'status': 'success'}, 200
+        return delete_skill(contact_id, skill_id)
 
 
 

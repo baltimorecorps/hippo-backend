@@ -11,6 +11,9 @@ from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
+from models.skill_model import (
+    CapabilitySkillSuggestion
+)
 from models.skill_item_model import (
     ContactSkill, 
     ExperienceSkill, 
@@ -22,84 +25,70 @@ SKILLS = {
         {
             'id': '74BgThI2os9wEdyArofEKA==',
             'name': 'Community Organizing',
-            'capabilities': [
-                {
-                    'id': 'cap:advocacy',
-                    'name': 'Advocacy and Public Policy',
-                },
-                {
-                    'id': 'cap:outreach',
-                    'name': 'Community Engagement and Outreach',
-                },
-            ],
+        },
+        {
+            'id': 'QUEVjv1tcq6uLmzCku6ikg==',
+            'name': 'Flask',
         },
         {
             'id': 'n1N02ypni69EZg0SggRIIg==',
             'name': 'Public Health',
-            'capabilities': [],
         },
         {
             'id': '4R9tqGuK2672PavRTJrN_A==',
             'name': 'Python',
-            'capabilities': [{
-                'id': 'cap:it',
-                'name': 'Information Technology',
-            }],
         },
         {
             'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
             'name': 'Web Development',
-            'capabilities': [{
-                'id': 'cap:it',
-                'name': 'Information Technology',
-            }],
         },
     ],
     'obama': [
         {
             'id': 'n1N02ypni69EZg0SggRIIg==',
             'name': 'Public Health',
-            'capabilities': [],
         },
     ],
 }
 
 CAPABILITIES = {
-    'billy': [
-        {
-            'id': 'cap:advocacy',
-            'name': 'Advocacy and Public Policy',
-            'cap_skill_id': '7I3Fm855cNIeTW1zsjLmFQ==',
-            'skills': [{
-                'id': '74BgThI2os9wEdyArofEKA==',
-                'name': 'Community Organizing',
-            }],
-        },
-        {
-            'id': 'cap:it',
-            'name': 'Information Technology',
-            'cap_skill_id': 'd1UwDZsOHpv__05Sxmelng==',
-            'skills': [
-                {
-                    'id': '4R9tqGuK2672PavRTJrN_A==',
-                    'name': 'Python',
-                },
-                {
-                    'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
-                    'name': 'Web Development',
-                }
-            ],
-        },
-        {
-            'id': 'cap:outreach',
-            'name': 'Community Engagement and Outreach',
-            'cap_skill_id': 'wNymMTgg_B1oSYgfT0dSyw==',
-            'skills': [{
-                'id': '74BgThI2os9wEdyArofEKA==',
-                'name': 'Community Organizing',
-            }],
-        },
-    ]
+    'billy': {
+        'capabilities': [
+            {
+                'id': 'cap:it',
+                'name': 'Information Technology',
+                'score': 2,
+                'skills': [
+                    {'id': '4R9tqGuK2672PavRTJrN_A==', 'name': 'Python'},
+                    {'id': 'hbBWJS6x6gDxGMUC5HAOYg==', 'name': 'Web Development'}
+                ],
+                'suggested_skills': [
+                    {'id': 'QUEVjv1tcq6uLmzCku6ikg==', 'name': 'Flask'}
+                ]
+            },
+            {
+                'id': 'cap:advocacy',
+                'name': 'Advocacy and Public Policy',
+                'score': 1,
+                'skills': [
+                    {'id': '74BgThI2os9wEdyArofEKA==', 'name': 'Community Organizing'}
+                ],
+                'suggested_skills': []
+            },
+            {
+                'id': 'cap:outreach',
+                'name': 'Community Engagement and Outreach',
+                'score': 0,
+                'skills': [
+                    {'id': '74BgThI2os9wEdyArofEKA==', 'name': 'Community Organizing'}
+                ],
+                'suggested_skills': []
+            }
+        ],
+        'other_skills': [
+            { 'id': 'n1N02ypni69EZg0SggRIIg==', 'name': 'Public Health'}
+        ]
+    }
 }
 
 
@@ -258,12 +247,16 @@ ACHIEVEMENTS = {
     'baltimore1': {
         'id': 81,
         'description': 'Redesigned the Salesforce architecture to facilitate easier reporting.',
-        'skills': [],
+        'skills': [{
+            'name': 'Flask', 'capability_id': 'cap:it',
+        }],
     },
     'baltimore2': {
         'id': 82,
         'description': 'Formalized organizational strategy for defining and analyzing KPIs.',
-        'skills': [],
+        'skills': [{
+            'name': 'Community Organizing', 'capability_id': 'cap:advocacy',
+        }],
     },
     'baltimore3': {
         'id': 83,
@@ -275,7 +268,9 @@ ACHIEVEMENTS = {
     'goucher1': {
         'id': 84,
         'description': 'Did some stuff',
-        'skills': [],
+        'skills': [{
+            'name': 'Python', 'capability_id': 'cap:it',
+        }],
     }
 }
 
@@ -308,7 +303,8 @@ EXPERIENCES = {
         'contact_id': 124,
         'location': 'New York, NY, USA',
         'achievements': [],
-        'skills': [],
+        'skills': [
+        ],
     },
     'goucher': {
         'id': 512,
@@ -331,7 +327,9 @@ EXPERIENCES = {
         'achievements': [
             ACHIEVEMENTS['goucher1'],
         ],
-        'skills': [],
+        'skills': [
+            SKILLS['billy'][3],
+        ],
     },
     'baltimore' : {
         'id': 513,
@@ -356,7 +354,7 @@ EXPERIENCES = {
             ACHIEVEMENTS['baltimore2'],
             ACHIEVEMENTS['baltimore3'],
         ],
-        'skills': SKILLS['billy'][2:4],
+        'skills': SKILLS['billy'][0:2] + SKILLS['billy'][3:5],
     },
 }
 
@@ -554,6 +552,14 @@ def post_request(app, url, data):
       lambda id: ContactSkill.query.filter_by(
           skill_id='sEVDZsMOqdfQ-vwoIAEk5A==', contact_id=123).first()
       )
+     ,('/api/contacts/123/capabilities/cap:it/skill/',
+      {
+        'name': 'Network Architecture',
+      },
+      lambda id: CapabilitySkillSuggestion.query.get(
+          (123, 'cap:it', '_s-apdaP_WZpH69G8hlcGA=='))
+      )
+
     ,pytest.param('/api/contacts/124/programs/',
       POSTS['program_contact'],
       lambda id: ProgramContact.query.filter_by(contact_id=124,program_id=1).first(),
@@ -646,28 +652,22 @@ def test_post_experience_achievement_skills(app):
     assert skills[1]['name'] == 'Test Skill 1'
     assert skills[1]['capability_id'] is None
 
-
-
-def test_post_undelete_contact_skill(app):
+def test_post_contact_skill_suggestion(app):
     # This skill was added and deleted in test setup
-    update = { 'name': 'Event Planning', }
+    url, update = (
+        '/api/contacts/123/capabilities/cap:it/skill/',
+        {
+            'name': 'Network Architecture',
+        }
+    )
 
-    post_request(app, '/api/contacts/123/skills/', update)
-
+    post_request(app, url, update)
     contact_skill = ContactSkill.query.filter_by(
-        skill_id='uaKCdVNgzL4vsJV06NQ9OA==', contact_id=123).first()
-    assert contact_skill
-    assert contact_skill.deleted == False
-
-    experience_skill = ExperienceSkill.query.filter_by( 
-        parent_id=contact_skill.id, experience_id=513).first()
-    assert experience_skill
-    assert experience_skill.deleted == False
-
-    achievement_skill = AchievementSkill.query.filter_by( 
-        parent_id=experience_skill.id, achievement_id=82).first()
-    assert achievement_skill
-    assert achievement_skill.deleted == False
+        contact_id=123,
+        skill_id='_s-apdaP_WZpH69G8hlcGA==',
+        deleted=False,
+    ).first()
+    assert contact_skill is not None
 
 # TODO: unskip when trello stuff is mocked out
 @pytest.mark.skip
@@ -764,7 +764,7 @@ def skill_name(skill):
       lambda: Experience.query.get(513),
       lambda e: (len(e.skills) == 3 
                  and sorted(e.skills, key=skill_name)[0].name == 'Community Organizing'
-                 and sorted(e.skills, key=skill_name)[1].name == 'Public Health'
+                 and sorted(e.skills, key=skill_name)[1].name == 'Flask'
                  and sorted(e.skills, key=skill_name)[2].name == 'Test'),
       )
     ,('/api/contacts/123/programs/1/',
@@ -886,10 +886,7 @@ def test_contact_put_preserves_experience_skills(app):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
-    update = { 'skills': [ 
-        { 'name': 'Python' },
-        { 'name': 'Web Development' },
-    ]}
+    update = { 'skills': EXPERIENCES['baltimore']['skills'] }
     with app.test_client() as client:
         response = client.put('/api/contacts/123/', data=json.dumps(update),
                               headers=headers)
@@ -906,7 +903,12 @@ def test_contact_put_preserves_experience_skills(app):
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: ContactSkill.query.filter_by(
           skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123, deleted=False).first())
+    ,('/api/contacts/123/capabilities/cap:it/skill/QUEVjv1tcq6uLmzCku6ikg==',
+      lambda: CapabilitySkillSuggestion.query.get(
+          (123, 'cap:it', 'QUEVjv1tcq6uLmzCku6ikg=='))
+      )
     ]
+
 )
 def test_delete(app, delete_url, query):
     mimetype = 'application/json'
@@ -1055,21 +1057,14 @@ def test_get_contact_capabilities(app):
         'Accept': mimetype
     }
     url, expected = ('/api/contacts/123/capabilities/', CAPABILITIES['billy'])
-    expected_map = {cap['id']: cap for cap in expected}
     with app.test_client() as client:
         response = client.get(url, headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
 
-        assert len(data) == len(expected)
-        pprint(list(expected))
-        for capability in data:
-            pprint(capability)
-            assert capability['id'] in expected_map
-            expected_capability = expected_map[capability['id']]
-            for key in expected_capability:
-                assert key in capability
-                assert capability[key] == expected_capability[key]
+        pprint(expected)
+        pprint(data)
+        assert data == expected
 
 
 @pytest.mark.skip

@@ -35,7 +35,6 @@ class Capability(db.Model):
     #table columns
     id = db.Column(db.String, nullable=False, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    cap_skill_id = db.Column(db.String, db.ForeignKey('skill.id'), nullable=False)
 
     #relationships
     related_skills = db.relationship('Skill', 
@@ -48,10 +47,34 @@ class Capability(db.Model):
 
     __table_args__ = (
         db.UniqueConstraint('name', name='capability_name_uniq'),
-        db.UniqueConstraint('cap_skill_id', name='cap_skill_id_uniq'),
+    )
+
+class CapabilitySkillSuggestion(db.Model):
+    """These are suggestions the user makes about which skills should be
+    associated with which capablities
+    """
+    __tablename__ = 'capability_skill_suggestions'
+
+    #table columns
+    capability_id = db.Column(db.String, db.ForeignKey('capability.id'), nullable=False)
+    skill_id = db.Column(db.String, db.ForeignKey('skill.id'), nullable=False)
+    contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
+
+
+    #relationships
+    capability = db.relationship('Capability')
+    skill = db.relationship('Skill')
+    contact = db.relationship('Contact', back_populates='capability_skill_suggestions')
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('contact_id', 'capability_id', 'skill_id', name='cap_skill_suggestion_pk'),
     )
 
 class SkillRecommendation(db.Model):
+    """These are recommendations the system makes to users about skills they
+    should consider choosing in certain capabilities
+    """
+
     __tablename__ = 'capability_skill_recommendations'
 
     #table columns
@@ -71,7 +94,6 @@ class SkillRecommendation(db.Model):
 class SkillSchema(Schema):
     id = fields.String(dump_only=True)
     name = fields.String(required=True)
-    capabilities = fields.List(fields.Nested(lambda: CapabilitySchema(only=('id', 'name'))), dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
@@ -85,9 +107,10 @@ class SkillRecommendationSchema(Schema):
 class CapabilitySchema(Schema):
     id = fields.String(dump_only=True)
     name = fields.String(required=True)
-    cap_skill_id = fields.String(dump_only=True)
-    related_skills = fields.List(fields.Nested(SkillSchema(exclude=('capabilities',))), dump_only=True)
+    related_skills = fields.List(fields.Nested(SkillSchema), dump_only=True)
     recommended_skills = fields.List(fields.Nested(SkillRecommendationSchema), dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
+
+

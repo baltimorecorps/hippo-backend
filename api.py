@@ -7,7 +7,12 @@ from resources.Achievement import AchievementAll
 from resources.Resume import ResumeAll, ResumeOne, GenerateResume
 from resources.Resume import ResumeSectionAll, ResumeSectionOne
 from resources.Skills import ContactSkills, ContactSkillOne, AutocompleteSkill
-from resources.Capability import CapabilityRecommended, ContactCapabilities
+from resources.Capability import (
+    CapabilityRecommended, 
+    ContactCapabilities, 
+    ContactCapabilitySuggestions,
+    ContactCapabilitySuggestionOne,
+)
 from resources.Session import Session
 from resources.ProgramContacts import ProgramContactOne, ProgramContactAll
 from resources.Trello_Intake_Talent import (
@@ -39,6 +44,12 @@ api.add_resource(ContactSkillOne,
 api.add_resource(ContactCapabilities,
                  '/contacts/<int:contact_id>/capabilities/',
                  '/contacts/<int:contact_id>/capabilities/')
+api.add_resource(ContactCapabilitySuggestions,
+                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill',
+                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill/')
+api.add_resource(ContactCapabilitySuggestionOne,
+                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill/<string:skill_id>',
+                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill/<string:skill_id>/')
 api.add_resource(CapabilityRecommended,
                  '/capabilities/recommended',
                  '/capabilities/recommended/')

@@ -70,6 +70,8 @@ class Contact(db.Model):
 
     skill_items = db.relationship('ContactSkill', 
                            cascade='all, delete, delete-orphan')
+    capability_skill_suggestions = db.relationship('CapabilitySkillSuggestion', 
+                           cascade='all, delete, delete-orphan')
 
     experiences = db.relationship('Experience', back_populates='contact',
                                   cascade='all, delete, delete-orphan')

@@ -27,7 +27,12 @@ from models.tag_model import (
     TagStatusType,
 )
 from models.tag_item_model import TagItem
-from models.skill_model import Skill, Capability, SkillRecommendation
+from models.skill_model import (
+    Skill, 
+    Capability, 
+    SkillRecommendation,
+    CapabilitySkillSuggestion
+)
 from models.skill_item_model import ContactSkill
 from resources.skill_utils import get_skill_id, make_skill
 
@@ -211,13 +216,13 @@ skills = [
         'Partnership Building',
         'Event Planning',
         'Information Technology',
+        'Flask',
     ]
 ]
 
 advocacy_capability = Capability(
     id='cap:advocacy',
     name='Advocacy and Public Policy',
-    cap_skill_id=get_skill_id('Advocacy and Public Policy')
 )
 advocacy_recommendations = [
     SkillRecommendation(
@@ -236,7 +241,6 @@ advocacy_recommendations = [
 outreach_capability = Capability(
     id='cap:outreach',
     name='Community Engagement and Outreach',
-    cap_skill_id=get_skill_id('Community Engagement and Outreach')
 )
 outreach_recommendations = [
     SkillRecommendation(
@@ -255,9 +259,13 @@ outreach_recommendations = [
 it_capability = Capability(
     id='cap:it',
     name='Information Technology',
-    cap_skill_id=get_skill_id('Information Technology')
 )
 
+billy_flask_suggestion = CapabilitySkillSuggestion(
+    contact_id=123,
+    capability_id='cap:it',
+    skill_id='QUEVjv1tcq6uLmzCku6ikg=='
+)
 
 program_pfp = Program(
     id=1,
@@ -367,9 +375,17 @@ def populate(db):
     billy.add_skill(get_skill('Public Health'))
     billy.add_skill(get_skill('Community Organizing'))
     obama.add_skill(get_skill('Public Health'))
+
+
     exp_baltimore.add_skill(get_skill('Python'))
     exp_baltimore.add_skill(get_skill('Web Development'))
+    a_baltimore1.add_skill(get_skill('Flask'), it_capability)
+    a_baltimore2.add_skill(get_skill('Community Organizing'), advocacy_capability)
     a_baltimore3.add_skill(get_skill('Web Development'), it_capability)
+    a_goucher1.add_skill(get_skill('Python'), it_capability)
+
+    billy.add_skill(get_skill('Flask'))
+    db.session.add(billy_flask_suggestion)
 
     # Test deleted skills as well
     billy.add_skill(get_skill('Event Planning'))
