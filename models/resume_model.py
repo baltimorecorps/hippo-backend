@@ -15,7 +15,7 @@ class Resume(db.Model):
     gdoc_id = db.Column(db.String(255))
 
     #relationships
-    contact = db.relationship('Contact', back_populates='resumes')
+    #contact = db.relationship('Contact', back_populates='resumes')
     #sections = db.relationship('ResumeSection', back_populates='resume',
     #                           cascade='all, delete, delete-orphan')
 

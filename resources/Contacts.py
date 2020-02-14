@@ -6,7 +6,7 @@ from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
-from models.skill_model import SkillItem
+from models.skill_item_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
 from .ProgramContacts import create_program_contact
@@ -29,12 +29,10 @@ contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
 
 def add_skills(skills, contact):
+    contact_skill_names = {s.name for s in contact.skills}
     for skill in skills:
-        s = SkillItem.query.get((get_skill_id(skill['name']),
-                                 contact.id))
-        if not s:
-            s = make_skill(skill['name'], contact.id)
-        contact.skills.append(s)
+        if not skill['name'] in contact_skill_names:
+            contact.skills.append(make_skill(skill['name']))
 
 class ContactAll(Resource):
     method_decorators = {

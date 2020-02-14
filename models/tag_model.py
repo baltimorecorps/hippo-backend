@@ -23,8 +23,8 @@ class Tag(db.Model):
     status = db.Column(db.Enum(TagStatusType, name='TagStatusType'))
 
     #relationships
-    contacts = db.relationship('TagItem', back_populates='tag',
-                               cascade='all, delete, delete-orphan')
+    #contacts = db.relationship('TagItem', back_populates='tag',
+    #                           cascade='all, delete, delete-orphan')
 
 
 class TagSchema(Schema):

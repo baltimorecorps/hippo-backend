@@ -27,13 +27,14 @@ from models.tag_model import (
     TagStatusType,
 )
 from models.tag_item_model import TagItem
-from models.skill_model import SkillItem
+from models.skill_model import Skill, Capability, SkillRecommendation
+from models.skill_item_model import SkillItem
 from resources.skill_utils import get_skill_id
 
 #imports models related to the resume
-from models.resume_model import Resume
-from models.resume_section_model import ResumeSection
-from models.resume_item_model import ResumeItem
+#from models.resume_model import Resume
+#from models.resume_section_model import ResumeSection
+#from models.resume_item_model import ResumeItem
 
 # imports models related to the program and cycle
 from models.program_model import Program
@@ -153,40 +154,121 @@ a_goucher1 = Achievement(
 )
 
 
-tag_python = Tag(
-    id=123,
-    name='Python',
-    type=TagType('Skill'),
-    status=TagStatusType('Active'),
-)
+#tag_python = Tag(
+#    id=123,
+#    name='Python',
+#    type=TagType('Skill'),
+#    status=TagStatusType('Active'),
+#)
+#
+#tag_webdev = Tag(
+#    id=124,
+#    name='Web Development',
+#    type=TagType('Function'),
+#    status=TagStatusType('Active'),
+#)
+#tag_health = Tag(
+#    id=125,
+#    name='Public Health',
+#    type=TagType('Topic'),
+#    status=TagStatusType('Active'),
+#)
+#
+#item_webdev = TagItem(
+#    id=21,
+#    contact_id=123,
+#    tag_id=124,
+#    score=2
+#)
+#
+#resume_billy = Resume(
+#    id=51,
+#    contact_id=123,
+#    name="Billy's Resume",
+#    date_created=date(2019,5,4),
+#    gdoc_id="abcdefghijklmnopqrstuvwxyz1234567890-_",
+#)
 
-tag_webdev = Tag(
-    id=124,
-    name='Web Development',
-    type=TagType('Function'),
-    status=TagStatusType('Active'),
-)
-tag_health = Tag(
-    id=125,
-    name='Public Health',
-    type=TagType('Topic'),
-    status=TagStatusType('Active'),
-)
+skills = [
+    Skill(
+        id=get_skill_id(name),
+        name=name,
+    ) 
+    for name in [
+        'Python',
+        'Web Development',
+        'Public Health',
+        'Advocacy and Public Policy',
+        'Community Organizing',
+        'Canvassing',
+        'Advocacy',
+        'Policy Writing',
+        'Volunteer Mobilization',
+        'Community Engagement and Outreach',
+        'Community Engagement',
+        'Client Recruitment',
+        'Partnership Building',
+        'Event Planning',
+    ]
+]
 
-item_webdev = TagItem(
-    id=21,
-    contact_id=123,
-    tag_id=124,
-    score=2
+advocacy_capability = Capability(
+    id='cap:advocacy',
+    name='Advocacy and Public Policy',
+    cap_skill_id=get_skill_id('Advocacy and Public Policy')
 )
-
-resume_billy = Resume(
-    id=51,
-    contact_id=123,
-    name="Billy's Resume",
-    date_created=date(2019,5,4),
-    gdoc_id="abcdefghijklmnopqrstuvwxyz1234567890-_",
+advocacy_recommendations = [
+    SkillRecommendation(
+        capability_id='cap:advocacy',
+        skill_id=get_skill_id(name),
+        order=i
+    ) 
+    for (i, name) in enumerate([
+        'Community Organizing',
+        'Canvassing',
+        'Advocacy',
+        'Policy Writing',
+        'Volunteer Mobilization',
+    ])
+]
+advocacy_capability = Capability(
+    id='cap:advocacy',
+    name='Advocacy and Public Policy',
+    cap_skill_id=get_skill_id('Advocacy and Public Policy')
 )
+advocacy_recommendations = [
+    SkillRecommendation(
+        capability_id='cap:advocacy',
+        skill_id=get_skill_id(name),
+        order=i
+    ) 
+    for (i, name) in enumerate([
+        'Community Organizing',
+        'Canvassing',
+        'Advocacy',
+        'Policy Writing',
+        'Volunteer Mobilization',
+    ])
+]
+outreach_capability = Capability(
+    id='cap:outreach',
+    name='Community Engagement and Outreach',
+    cap_skill_id=get_skill_id('Community Engagement and Outreach')
+)
+outreach_recommendations = [
+    SkillRecommendation(
+        capability_id='cap:outreach',
+        skill_id=get_skill_id(name),
+        order=i
+    ) 
+    for (i, name) in enumerate([
+        'Community Engagement',
+        'Client Recruitment',
+        'Partnership Building',
+        'Event Planning',
+        'Community Organizing',
+    ])
+]
 
 skill_python = SkillItem(
     id=get_skill_id('Python'),
@@ -209,6 +291,8 @@ skill_obama_health = SkillItem(
     name='Public Health',
     contact_id=124,
 )
+
+
 
 program_pfp = Program(
     id=1,
@@ -275,6 +359,11 @@ review_billy = Review(
 
 
 def populate(db):
+    for skill in skills:
+        print(skill.id, skill.name)
+        db.session.add(skill)
+    db.session.commit()
+
     exp_baltimore.skills.append(skill_python)
     exp_baltimore.skills.append(skill_webdev)
     db.session.add(billy)
@@ -286,11 +375,11 @@ def populate(db):
     db.session.add(a_baltimore1)
     db.session.add(a_baltimore2)
     db.session.add(a_baltimore3)
-    db.session.add(tag_python)
-    db.session.add(tag_webdev)
-    db.session.add(tag_health)
-    db.session.add(item_webdev)
-    db.session.add(resume_billy)
+    #db.session.add(tag_python)
+    #db.session.add(tag_webdev)
+    #db.session.add(tag_health)
+    #db.session.add(item_webdev)
+    #db.session.add(resume_billy)
     db.session.add(skill_python)
     db.session.add(skill_webdev)
     db.session.add(skill_health)
@@ -303,4 +392,13 @@ def populate(db):
     db.session.add(r_billy1)
     db.session.add(r_billy2)
     db.session.add(review_billy)
+
+    db.session.add(advocacy_capability)
+    for rec in advocacy_recommendations:
+        db.session.add(rec)
+    db.session.add(outreach_capability)
+    for rec in outreach_recommendations:
+        db.session.add(rec)
+
+
     db.session.commit()

@@ -3,7 +3,8 @@ import unicodedata
 import base64
 from hashlib import blake2b
 
-from models.skill_model import SkillItem
+from models.skill_model import Skill
+from models.skill_item_model import SkillItem
 from .skill_list import SKILL_LIST
 
 TO_WHITESPACE = str.maketrans('-/_()', '     ')
@@ -20,7 +21,14 @@ def get_skill_id(skill):
     skill_bytes = normalize_skill_name(skill).encode('utf8');
     return base64.urlsafe_b64encode(blake2b(skill_bytes, digest_size=16).digest()).decode('utf8')
 
+
 def make_skill(name, contact_id):
+    return Skill(
+        id=get_skill_id(name),
+        name=name,
+    )
+
+def make_skill_item(name, contact_id):
     return SkillItem(
         id=get_skill_id(name),
         name=name,

@@ -1,13 +1,13 @@
 from flask_restful import Resource, request
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.achievement_model import Achievement, AchievementSchema
-from models.skill_model import SkillItem
+from models.skill_item_model import SkillItem
 from models.base_model import db
 import datetime as dt
 from operator import attrgetter
 from marshmallow import ValidationError
 
-from .skill_utils import get_skill_id, make_skill
+from .skill_utils import get_skill_id, make_skill_item
 
 from flask_login import login_required
 from auth import (
@@ -34,7 +34,7 @@ def add_skills(skills, experience):
         s = SkillItem.query.get((get_skill_id(skill['name']), 
                                  experience.contact_id))
         if not s:
-            s = make_skill(skill['name'], experience.contact_id)
+            s = make_skill_item(skill['name'], experience.contact_id)
         experience.skills.append(s)
 
 

@@ -6,8 +6,10 @@ from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address
 from models.achievement_model import Achievement
-from models.skill_model import SkillItemSchema
+from models.skill_item_model import SkillItemSchema
 from models.program_contact_model import ProgramContactSchema
+
+from sqlalchemy.ext.associationproxy import association_proxy
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -63,13 +65,10 @@ class Contact(db.Model):
                                       uselist=False)
     achievements = db.relationship('Achievement', back_populates='contact',
                                    cascade='all, delete, delete-orphan')
-    resumes = db.relationship('Resume', back_populates='contact',
-                              cascade='all, delete, delete-orphan')
-    tags = db.relationship('TagItem', back_populates='contact',
+    skill_items = db.relationship('SkillItem', 
+                           order_by='SkillItem.name',
                            cascade='all, delete, delete-orphan')
-    skills = db.relationship('SkillItem', back_populates='contact',
-                             order_by='SkillItem.name',
-                           cascade='all, delete, delete-orphan')
+    skills = association_proxy('skill_items', 'skill')
     experiences = db.relationship('Experience', back_populates='contact',
                                   cascade='all, delete, delete-orphan')
     programs = db.relationship('ProgramContact', back_populates='contact',

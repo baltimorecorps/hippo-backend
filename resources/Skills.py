@@ -1,9 +1,10 @@
 from flask_restful import Resource, request
-from models.skill_model import SkillItem, SkillItemSchema
+from models.skill_model import Skill
+from models.skill_item_model import SkillItem, SkillItemSchema
 from models.base_model import db
 from marshmallow import ValidationError
 
-from .skill_utils import make_skill, get_skill_id, normalize_skill_name, complete_skill
+from .skill_utils import make_skill_item, get_skill_id, normalize_skill_name, complete_skill
 
 from flask_login import login_required
 from auth import (
@@ -16,6 +17,18 @@ from auth import (
 
 skill_schema = SkillItemSchema()
 skills_schema = SkillItemSchema(many=True)
+
+def get_or_create_skill(name):
+    id_ = get_skill_id(name)
+    skill = Skill.query.get(id_)
+    if not skill:
+        skill = Skill(
+            id=id_, 
+            name=name
+        )
+        db.session.add(skill)
+        db.session.commit()
+    return skill
 
 class AutocompleteSkill(Resource):
     def get(self):
@@ -59,11 +72,14 @@ class ContactSkills(Resource):
             return {'message': 'No input data provided'}, 400
 
         name = data['name']
-        id_ = get_skill_id(name)
-        skill = SkillItem.query.get((id_, contact_id))
-        print(id_, contact_id, skill)
-        if not skill:
-            skill = make_skill(name, contact_id)
+
+        # Make sure skill entry is in database
+        skill = get_or_create_skill(name)
+
+        skill_item = SkillItem.query.get((skill.id, contact_id))
+        print(skill.id, contact_id, skill)
+        if not skill_item:
+            skill = make_skill_item(name, contact_id)
             db.session.add(skill)
             db.session.commit()
             result = skill_schema.dump(skill)

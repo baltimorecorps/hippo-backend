@@ -11,7 +11,7 @@ from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.tag_model import Tag
 from models.tag_item_model import TagItem
-from models.skill_model import SkillItem
+from models.skill_item_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 
@@ -810,6 +810,39 @@ def test_get_autocomplete(app):
         assert 'got_exact' in data
         assert 'Python' in data['matches']
 
+def test_get_capability_recommendations(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    expected = {
+        'Advocacy and Public Policy': [
+            'Community Organizing',
+            'Canvassing',
+            'Advocacy',
+            'Policy Writing',
+            'Volunteer Mobilization',
+        ],
+        'Community Engagement and Outreach': [
+            'Community Engagement',
+            'Client Recruitment',
+            'Partnership Building',
+            'Event Planning',
+            'Community Organizing',
+        ],
+    }
+    with app.test_client() as client:
+        response = client.get('/api/capabilities/recommended/', 
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        #assert len(data) == 7
+        #assert set(expected.keys()) == set(x['name'] for x in data)
+        for capability in data:
+            assert capability['name'] in expected
+            for i, skill in enumerate(capability['skills']):
+                skill['skill']['name'] == expected[capability['name']][i]
 
 @pytest.mark.parametrize(
     "url,expected",
