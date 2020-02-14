@@ -11,7 +11,11 @@ from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
-from models.skill_item_model import ContactSkill, ExperienceSkill
+from models.skill_item_model import (
+    ContactSkill, 
+    ExperienceSkill, 
+    AchievementSkill,
+)
 
 SKILLS = {
     'billy': [
@@ -540,7 +544,7 @@ def post_request(app, url, data):
       POSTS['experience'],
       lambda id: Experience.query.get(id)
       )
-    ,('/api/contacts/123/skills',
+    ,('/api/contacts/123/skills/',
       {
         'name': 'C++',
       },
@@ -626,6 +630,27 @@ def test_post_experience_skills(app):
     id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_).skills[0].name == 'C++'
     assert Experience.query.get(id_).skills[1].name == 'Python'
+
+def test_post_undelete_contact_skill(app):
+    # This skill was added and deleted in test setup
+    update = { 'name': 'Event Planning', }
+
+    post_request(app, '/api/contacts/123/skills/', update)
+
+    contact_skill = ContactSkill.query.filter_by(
+        skill_id='uaKCdVNgzL4vsJV06NQ9OA==', contact_id=123).first()
+    assert contact_skill
+    assert contact_skill.deleted == False
+
+    experience_skill = ExperienceSkill.query.filter_by( 
+        parent_id=contact_skill.id, experience_id=513).first()
+    assert experience_skill
+    assert experience_skill.deleted == False
+
+    achievement_skill = AchievementSkill.query.filter_by( 
+        parent_id=experience_skill.id, achievement_id=82).first()
+    assert achievement_skill
+    assert achievement_skill.deleted == False
 
 # TODO: unskip when trello stuff is mocked out
 @pytest.mark.skip
@@ -738,7 +763,6 @@ def skill_name(skill):
     ]
 )
 def test_put(app, url, update, query, test):
-    from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -752,6 +776,29 @@ def test_put(app, url, update, query, test):
         pprint(response.json)
         assert response.status_code == 200
         assert test(query())
+
+def test_put_contact_saves_deleted_skills(app):
+    url, update = ('/api/contacts/123/', {'skills': [
+          { 'name': 'Python' },
+          { 'name': 'Workforce Development' },
+      ]})
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        public_health = ContactSkill.query.filter_by(
+            skill_id='n1N02ypni69EZg0SggRIIg==',
+            contact_id=123).first()
+        assert public_health is not None
+        assert public_health.deleted
+
 
 @pytest.mark.parametrize(
     "url,update,query,test",
@@ -841,7 +888,7 @@ def test_contact_put_preserves_experience_skills(app):
     ,('/api/experiences/512/', lambda: Experience.query.get(512))
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: ContactSkill.query.filter_by(
-          skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123).first())
+          skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123, deleted=False).first())
     ]
 )
 def test_delete(app, delete_url, query):
@@ -856,6 +903,22 @@ def test_delete(app, delete_url, query):
         response = client.delete(delete_url, headers=headers)
         assert response.status_code == 200
         assert query() is None, "Deleted item should not exist"
+
+
+def test_delete_contact_skill_saved(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    delete_url = '/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg=='
+    with app.test_client() as client:
+        response = client.delete(delete_url, headers=headers)
+        assert response.status_code == 200
+        contact_skill = ContactSkill.query.filter_by(
+            skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123).first()
+        assert contact_skill is not None
+        assert contact_skill.deleted
 
 
 @pytest.mark.parametrize(

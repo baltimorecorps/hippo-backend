@@ -36,15 +36,10 @@ def add_skills(skills, contact):
 def sync_skills(skills, contact):
     add_skills(skills, contact)
 
-    # Only delete the skills which are not in the current set of skills.
-    # We do this rather than deleting and recreating the skills because the
-    # ContactSkill element also owns all the ExperienceSkill items, and so
-    # deleting and recreating them would delete all ExperienceSkills for this
-    # contact
     current_skills = {s['name'] for s in skills}
     for skill_item in contact.skill_items:
         if skill_item.skill.name not in current_skills:
-            db.session.delete(skill_item)
+            skill_item.deleted = True
 
 class ContactAll(Resource):
     method_decorators = {
@@ -119,7 +114,6 @@ class ContactOne(Resource):
         if not is_authorized_view(contact.id): 
             return unauthorized()
         contact = contact_schema.dump(contact)
-        #contact['skills'].sort(key=lambda s: s['name'])
         return {'status': 'success', 'data': contact}, 200
 
     def put(self, contact_id):

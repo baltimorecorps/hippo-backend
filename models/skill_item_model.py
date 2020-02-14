@@ -11,6 +11,7 @@ class ContactSkill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     skill_id = db.Column(db.String, db.ForeignKey('skill.id'))
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
+    deleted = db.Column(db.Boolean, nullable=False, default=False)
 
     #relationships
     skill = db.relationship('Skill')
@@ -39,6 +40,7 @@ class ExperienceSkill(db.Model):
                                    cascade='all, delete, delete-orphan')
 
     skill = association_proxy('parent', 'skill')
+    deleted = association_proxy('parent', 'deleted')
     experience = db.relationship('Experience', back_populates='skill_items')
 
     def __init__(self, parent=None, experience=None):
@@ -56,6 +58,7 @@ class AchievementSkill(db.Model):
     #relationships
     parent = db.relationship('ExperienceSkill', back_populates='achievements')
     skill = association_proxy('parent', 'skill')
+    deleted = association_proxy('parent', 'deleted')
     achievement = db.relationship('Achievement', back_populates='skill_items')
 
     def __init__(self, parent=None, achievement=None):

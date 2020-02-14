@@ -41,15 +41,10 @@ def add_skills(skills, experience):
 def sync_skills(skills, experience):
     add_skills(skills, experience)
 
-    # Only delete the skills which are not in the current set of skills.
-    # We do this rather than deleting and recreating the skills because the
-    # ExperienceSkill element also owns all the AchievementSkill items, and so
-    # deleting and recreating them would delete all AchievementSkills for this
-    # contact
     current_skills = {s['name'] for s in skills}
     for skill_item in experience.skill_items:
         if skill_item.skill.name not in current_skills:
-            db.session.delete(skill_item)
+            skill_item.deleted = True
 
 
 

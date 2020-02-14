@@ -93,7 +93,7 @@ class ContactSkillOne(Resource):
                  .first())
         if not skill:
             return {'message': 'Skill does not exist'}, 404
-        db.session.delete(skill)
+        skill.deleted = True
         db.session.commit()
         return {'status': 'success'}, 200
 

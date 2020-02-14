@@ -2,7 +2,7 @@ from models.base_model import db
 from models.skill_model import SkillSchema
 from models.skill_item_model import AchievementSkill
 from marshmallow import Schema, fields, EXCLUDE
-from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.hybrid import hybrid_property
 
 def add_skill_error(_):
     assert False, "use experience.add_skill instead of experience.skills.append"
@@ -20,20 +20,28 @@ class Achievement(db.Model):
     experience = db.relationship('Experience', back_populates='achievements')
     contact = db.relationship('Contact', back_populates='achievements')
     skill_items = db.relationship('AchievementSkill', 
-                           cascade='all, delete, delete-orphan')
-    skills = association_proxy('skill_items', 'skill', creator=add_skill_error )
+                                  cascade='all, delete, delete-orphan')
 
     def add_skill(self, skill):
         experience_skill = self.experience.add_skill(skill)
-        if skill in self.skills:
-            return (AchievementSkill.query
+        achievement_skill = (AchievementSkill.query
                                    .filter_by(achievement_id=self.id,
-                                              parent_id=contact_skill.id)
+                                              parent_id=experience_skill.id)
                                    .first())
-        else:
+        if not achievement_skill:
             achievement_skill = AchievementSkill(experience_skill, self)
             self.skill_items.append(achievement_skill)
-            return achievement_skill
+        return achievement_skill
+
+    #calculated fields
+    @hybrid_property
+    def skills(self):
+        skills = []
+        for skill_item in self.skill_items:
+            if not skill_item.deleted:
+                skills.append(skill_item.skill)
+        return sorted(skills, key=lambda skill: skill.name)
+
 
 
 class AchievementSchema(Schema):

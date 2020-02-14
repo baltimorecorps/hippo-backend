@@ -1,6 +1,6 @@
 from models.base_model import db
 import enum
-from marshmallow import Schema, fields, EXCLUDE, post_dump
+from marshmallow import Schema, fields, EXCLUDE, pre_dump, post_dump
 from marshmallow_enum import EnumField
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
@@ -9,8 +9,7 @@ from models.achievement_model import Achievement
 from models.skill_model import Skill, SkillSchema
 from models.skill_item_model import ContactSkill
 from models.program_contact_model import ProgramContactSchema
-
-from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -71,8 +70,6 @@ class Contact(db.Model):
 
     skill_items = db.relationship('ContactSkill', 
                            cascade='all, delete, delete-orphan')
-    skills = association_proxy('skill_items', 'skill',
-                               creator=add_skill_error)
 
     experiences = db.relationship('Experience', back_populates='contact',
                                   cascade='all, delete, delete-orphan')
@@ -80,15 +77,24 @@ class Contact(db.Model):
                                cascade='all, delete, delete-orphan')
 
     def add_skill(self, skill):
-        if skill in self.skills:
-            return (ContactSkill.query
+        contact_skill = (ContactSkill.query
                                 .filter_by(contact_id=self.id,
                                            skill_id=skill.id)
                                 .first())
+        if contact_skill:
+            contact_skill.deleted = False
         else:
             contact_skill = ContactSkill(skill, self)
             self.skill_items.append(contact_skill)
-            return contact_skill
+        return contact_skill
+
+    @hybrid_property
+    def skills(self):
+        skills = []
+        for skill_item in self.skill_items:
+            if not skill_item.deleted:
+                skills.append(skill_item.skill)
+        return sorted(skills, key=lambda skill: skill.name)
 
 
 class ContactSchema(Schema):
@@ -109,11 +115,6 @@ class ContactSchema(Schema):
     skills = fields.Nested(SkillSchema, many=True)
     terms_agreement = fields.Boolean()
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
-
-    @post_dump
-    def sort_skills(self, contact, **kw):
-        contact['skills'].sort(key=lambda skill: skill['name'])
-        return contact
 
     class Meta:
         unknown = EXCLUDE

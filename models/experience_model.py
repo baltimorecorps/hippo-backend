@@ -6,7 +6,6 @@ from models.achievement_model import Achievement, AchievementSchema
 from models.skill_model import SkillSchema
 from models.skill_item_model import ExperienceSkill
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.ext.associationproxy import association_proxy
 import datetime as dt
 import math
 
@@ -67,23 +66,28 @@ class Experience(db.Model):
                                    cascade='all, delete, delete-orphan')
 
     skill_items = db.relationship('ExperienceSkill', 
-                           cascade='all, delete, delete-orphan')
-
-    skills = association_proxy('skill_items', 'skill', creator=add_skill_error)
+                                  cascade='all, delete, delete-orphan')
 
     def add_skill(self, skill):
         contact_skill = self.contact.add_skill(skill)
-        if skill in self.skills:
-            return (ExperienceSkill.query
+        exp_skill = (ExperienceSkill.query
                                    .filter_by(experience_id=self.id,
                                               parent_id=contact_skill.id)
                                    .first())
-        else:
+        if not exp_skill:
             exp_skill = ExperienceSkill(contact_skill, self)
             self.skill_items.append(exp_skill)
-            return exp_skill
+        return exp_skill
 
     #calculated fields
+    @hybrid_property
+    def skills(self):
+        skills = []
+        for skill_item in self.skill_items:
+            if not skill_item.deleted:
+                skills.append(skill_item.skill)
+        return sorted(skills, key=lambda skill: skill.name)
+
     @hybrid_property
     def date_end(self):
         if self.end_month==Month.none or self.end_year==0:

@@ -278,30 +278,6 @@ it_capability = Capability(
 )
 
 
-#skill_python = SkillItem(
-#    id=get_skill_id('Python'),
-#    name='Python',
-#    contact_id=123,
-#)
-#skill_webdev = SkillItem(
-#    id=get_skill_id('Web Development'),
-#    name='Web Development',
-#    contact_id=123,
-#)
-#skill_health = SkillItem(
-#    id=get_skill_id('Public Health'),
-#    name='Public Health',
-#    contact_id=123,
-#)
-#
-#skill_obama_health = SkillItem(
-#    id=get_skill_id('Public Health'),
-#    name='Public Health',
-#    contact_id=124,
-#)
-
-
-
 program_pfp = Program(
     id=1,
     name='Place for Purpose',
@@ -368,6 +344,10 @@ review_billy = Review(
 def get_skill(name):
     return Skill.query.get(get_skill_id(name))
 
+def get_contact_skill(contact_id, skill_name):
+    return ContactSkill.query.filter_by(
+        contact_id=contact_id, skill_id=get_skill_id(skill_name)).first()
+
 
 def populate(db):
     for skill in skills:
@@ -409,6 +389,12 @@ def populate(db):
     exp_baltimore.add_skill(get_skill('Python'))
     exp_baltimore.add_skill(get_skill('Web Development'))
 
+    # Test deleted skills as well
+    billy.add_skill(get_skill('Event Planning'))
+    a_baltimore2.add_skill(get_skill('Event Planning'))
+    billy_eventplan = get_contact_skill(123, 'Event Planning')
+    billy_eventplan.deleted = True
+
     advocacy_capability.related_skills.append(get_skill('Community Organizing'))
     outreach_capability.related_skills.append(get_skill('Community Organizing'))
     it_capability.related_skills.append(get_skill('Python'))
@@ -423,5 +409,5 @@ def populate(db):
         db.session.add(rec)
     db.session.add(it_capability)
 
-
     db.session.commit()
+
