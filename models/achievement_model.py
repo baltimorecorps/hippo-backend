@@ -22,14 +22,17 @@ class Achievement(db.Model):
     skill_items = db.relationship('AchievementSkill', 
                                   cascade='all, delete, delete-orphan')
 
-    def add_skill(self, skill):
+    def add_skill(self, skill, capability=None):
+        capability_id = capability.id if capability else None
         experience_skill = self.experience.add_skill(skill)
         achievement_skill = (AchievementSkill.query
                                    .filter_by(achievement_id=self.id,
-                                              parent_id=experience_skill.id)
+                                              parent_id=experience_skill.id,
+                                              capability_id=capability_id
+                                              )
                                    .first())
         if not achievement_skill:
-            achievement_skill = AchievementSkill(experience_skill, self)
+            achievement_skill = AchievementSkill(experience_skill, self, capability)
             self.skill_items.append(achievement_skill)
         return achievement_skill
 
@@ -39,15 +42,23 @@ class Achievement(db.Model):
         skills = []
         for skill_item in self.skill_items:
             if not skill_item.deleted:
-                skills.append(skill_item.skill)
-        return sorted(skills, key=lambda skill: skill.name)
+                skills.append({
+                    'name': skill_item.skill.name,
+                    'capability_id': skill_item.capability_id,
+                })
+        return sorted(skills, key=lambda skill: skill['name'])
 
+class AchievementSkillItemSchema(Schema):
+    name = fields.String(required=True)
+    capability_id = fields.String()
 
+    class Meta:
+        unknown = EXCLUDE
 
 class AchievementSchema(Schema):
     id = fields.Integer(dump_only=True)
     description = fields.String()
-    skills = fields.Nested(SkillSchema, many=True)
+    skills = fields.Nested(AchievementSkillItemSchema, many=True)
 
     class Meta:
         unknown = EXCLUDE

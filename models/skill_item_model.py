@@ -54,14 +54,18 @@ class AchievementSkill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('skill_item_experience.id'))
     achievement_id = db.Column(db.Integer, db.ForeignKey('achievement.id'))
+    capability_id = db.Column(db.String, db.ForeignKey('capability.id'), nullable=True)
 
     #relationships
     parent = db.relationship('ExperienceSkill', back_populates='achievements')
     skill = association_proxy('parent', 'skill')
     deleted = association_proxy('parent', 'deleted')
+    capability = db.relationship('Capability')
     achievement = db.relationship('Achievement', back_populates='skill_items')
 
-    def __init__(self, parent=None, achievement=None):
+    def __init__(self, parent=None, achievement=None, capability=None):
         self.parent = parent
         self.achievement = achievement
+        if capability is not None:
+            self.capability = capability
 

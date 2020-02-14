@@ -233,25 +233,6 @@ advocacy_recommendations = [
         'Volunteer Mobilization',
     ])
 ]
-advocacy_capability = Capability(
-    id='cap:advocacy',
-    name='Advocacy and Public Policy',
-    cap_skill_id=get_skill_id('Advocacy and Public Policy')
-)
-advocacy_recommendations = [
-    SkillRecommendation(
-        capability_id='cap:advocacy',
-        skill_id=get_skill_id(name),
-        order=i
-    ) 
-    for (i, name) in enumerate([
-        'Community Organizing',
-        'Canvassing',
-        'Advocacy',
-        'Policy Writing',
-        'Volunteer Mobilization',
-    ])
-]
 outreach_capability = Capability(
     id='cap:outreach',
     name='Community Engagement and Outreach',
@@ -388,6 +369,7 @@ def populate(db):
     obama.add_skill(get_skill('Public Health'))
     exp_baltimore.add_skill(get_skill('Python'))
     exp_baltimore.add_skill(get_skill('Web Development'))
+    a_baltimore3.add_skill(get_skill('Web Development'), it_capability)
 
     # Test deleted skills as well
     billy.add_skill(get_skill('Event Planning'))

@@ -268,7 +268,9 @@ ACHIEVEMENTS = {
     'baltimore3': {
         'id': 83,
         'description': 'Developed recruitment projection tools to model and track progress to goals.',
-        'skills': [],
+        'skills': [{
+            'name': 'Web Development', 'capability_id': 'cap:it',
+        }],
     },
     'goucher1': {
         'id': 84,
@@ -471,6 +473,7 @@ POSTS = {
         'achievements': [
             {'description': 'Test achievement 1'},
             {'description': 'Test achievement 2', 'skills': [
+                { 'name': 'Community Organizing', 'capability_id': 'cap:advocacy' },
                 { 'name': 'Test Skill 1' }
             ]},
         ],
@@ -629,7 +632,21 @@ def test_post_experience_skills(app):
     exp['skills'] = [{'name': 'C++'}, {'name': 'Python'}]
     id_ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_).skills[0].name == 'C++'
-    assert Experience.query.get(id_).skills[1].name == 'Python'
+    assert Experience.query.get(id_).skills[1].name == 'Community Organizing'
+    assert Experience.query.get(id_).skills[2].name == 'Python'
+    assert Experience.query.get(id_).skills[3].name == 'Test Skill 1'
+
+def test_post_experience_achievement_skills(app):
+    exp = POSTS['experience']
+    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    skills = Experience.query.get(id_).achievements[1].skills
+    assert len(Experience.query.get(id_).achievements[1].skills) == 2
+    assert skills[0]['name'] == 'Community Organizing'
+    assert skills[0]['capability_id'] == 'cap:advocacy'
+    assert skills[1]['name'] == 'Test Skill 1'
+    assert skills[1]['capability_id'] is None
+
+
 
 def test_post_undelete_contact_skill(app):
     # This skill was added and deleted in test setup
@@ -739,7 +756,7 @@ def skill_name(skill):
       }]},
       lambda: Experience.query.get(513),
       lambda e: (len(e.achievements[-1].skills) == 1 
-                 and e.achievements[-1].skills[0].name == 'Recruitment'),
+                 and e.achievements[-1].skills[0]['name'] == 'Recruitment'),
       )
 
     ,('/api/experiences/513/',
@@ -848,7 +865,7 @@ def test_put_update_achievement_skills(app):
     }]} 
     query = lambda: Experience.query.get(513)
     test = lambda e: (len(e.achievements[-1].skills) == 1 
-                      and e.achievements[-1].skills[0].name == 'Recruitment')
+                      and e.achievements[-1].skills[0]['name'] == 'Recruitment')
     with app.test_client() as client:
         assert query() is not None, "Item to update should exist"
         assert not test(query())

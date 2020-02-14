@@ -6,7 +6,7 @@ import datetime as dt
 from operator import attrgetter
 from marshmallow import ValidationError
 
-from models.skill_model import Skill
+from models.skill_model import Skill, Capability
 from .skill_utils import get_skill_id, get_or_make_skill
 
 from flask_login import login_required
@@ -30,7 +30,11 @@ def add_achievements(achievements, experience):
         a.experience = experience
         if 'skills' in achievement:
             for skill in achievement['skills']:
-                a.add_skill(get_or_make_skill(skill['name']))
+                capability = None
+                if skill.get('capability_id') is not None:
+                    capability = Capability.query.get(skill['capability_id'])
+
+                a.add_skill(get_or_make_skill(skill['name']), capability)
         db.session.add(a)
 
 def add_skills(skills, experience):
