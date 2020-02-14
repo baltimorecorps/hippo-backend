@@ -47,6 +47,7 @@ class ContactSkills(Resource):
             return {'message': 'Contact not found'}, 404
 
         skills = skills_schema.dump(contact.skills)
+        skills.sort(key=lambda s: s['name'])
         return {'status': 'success', 'data': skills}, 200
 
     def post(self, contact_id):

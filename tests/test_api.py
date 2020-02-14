@@ -16,6 +16,20 @@ from models.skill_item_model import ContactSkill, ExperienceSkill
 SKILLS = {
     'billy': [
         {
+            'id': '74BgThI2os9wEdyArofEKA==',
+            'name': 'Community Organizing',
+            'capabilities': [
+                {
+                    'id': 'cap:advocacy',
+                    'name': 'Advocacy and Public Policy',
+                },
+                {
+                    'id': 'cap:outreach',
+                    'name': 'Community Engagement and Outreach',
+                },
+            ],
+        },
+        {
             'id': 'n1N02ypni69EZg0SggRIIg==',
             'name': 'Public Health',
             'capabilities': [],
@@ -23,13 +37,19 @@ SKILLS = {
         {
             'id': '4R9tqGuK2672PavRTJrN_A==',
             'name': 'Python',
-            'capabilities': [],
+            'capabilities': [{
+                'id': 'cap:it',
+                'name': 'Information Technology',
+            }],
         },
         {
             'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
             'name': 'Web Development',
-            'capabilities': [],
-        }
+            'capabilities': [{
+                'id': 'cap:it',
+                'name': 'Information Technology',
+            }],
+        },
     ],
     'obama': [
         {
@@ -39,6 +59,46 @@ SKILLS = {
         },
     ],
 }
+
+CAPABILITIES = {
+    'billy': [
+        {
+            'id': 'cap:advocacy',
+            'name': 'Advocacy and Public Policy',
+            'cap_skill_id': '7I3Fm855cNIeTW1zsjLmFQ==',
+            'skills': [{
+                'id': '74BgThI2os9wEdyArofEKA==',
+                'name': 'Community Organizing',
+            }],
+        },
+        {
+            'id': 'cap:it',
+            'name': 'Information Technology',
+            'cap_skill_id': 'd1UwDZsOHpv__05Sxmelng==',
+            'skills': [
+                {
+                    'id': '4R9tqGuK2672PavRTJrN_A==',
+                    'name': 'Python',
+                },
+                {
+                    'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
+                    'name': 'Web Development',
+                }
+            ],
+        },
+        {
+            'id': 'cap:outreach',
+            'name': 'Community Engagement and Outreach',
+            'cap_skill_id': 'wNymMTgg_B1oSYgfT0dSyw==',
+            'skills': [{
+                'id': '74BgThI2os9wEdyArofEKA==',
+                'name': 'Community Organizing',
+            }],
+        },
+    ]
+}
+
+
 
 QUESTIONS = {
     'q_pfp1': {
@@ -290,7 +350,7 @@ EXPERIENCES = {
             ACHIEVEMENTS['baltimore2'],
             ACHIEVEMENTS['baltimore3'],
         ],
-        'skills': SKILLS['billy'][1:3],
+        'skills': SKILLS['billy'][2:4],
     },
 }
 
@@ -661,8 +721,8 @@ def skill_name(skill):
       {'skills': SKILLS['billy'][0:2] + [{'name': 'Test'}]},
       lambda: Experience.query.get(513),
       lambda e: (len(e.skills) == 3 
-                 and sorted(e.skills, key=skill_name)[0].name == 'Public Health'
-                 and sorted(e.skills, key=skill_name)[1].name == 'Python'
+                 and sorted(e.skills, key=skill_name)[0].name == 'Community Organizing'
+                 and sorted(e.skills, key=skill_name)[1].name == 'Public Health'
                  and sorted(e.skills, key=skill_name)[2].name == 'Test'),
       )
     ,('/api/contacts/123/programs/1/',
@@ -865,6 +925,7 @@ def test_get_capability_recommendations(app):
             'Event Planning',
             'Community Organizing',
         ],
+        'Information Technology': [],
     }
     with app.test_client() as client:
         response = client.get('/api/capabilities/recommended/', 
@@ -906,6 +967,29 @@ def test_get_many_unordered(app, url, expected):
         for item in data:
             pprint(item)
             assert item in expected
+
+def test_get_contact_capabilities(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    url, expected = ('/api/contacts/123/capabilities/', CAPABILITIES['billy'])
+    expected_map = {cap['id']: cap for cap in expected}
+    with app.test_client() as client:
+        response = client.get(url, headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+
+        assert len(data) == len(expected)
+        pprint(list(expected))
+        for capability in data:
+            pprint(capability)
+            assert capability['id'] in expected_map
+            expected_capability = expected_map[capability['id']]
+            for key in expected_capability:
+                assert key in capability
+                assert capability[key] == expected_capability[key]
 
 
 @pytest.mark.skip

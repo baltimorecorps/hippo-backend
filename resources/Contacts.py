@@ -119,6 +119,7 @@ class ContactOne(Resource):
         if not is_authorized_view(contact.id): 
             return unauthorized()
         contact = contact_schema.dump(contact)
+        #contact['skills'].sort(key=lambda s: s['name'])
         return {'status': 'success', 'data': contact}, 200
 
     def put(self, contact_id):

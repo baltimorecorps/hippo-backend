@@ -196,6 +196,7 @@ skills = [
     ) 
     for name in [
         'Python',
+        'C++',
         'Web Development',
         'Public Health',
         'Advocacy and Public Policy',
@@ -209,6 +210,7 @@ skills = [
         'Client Recruitment',
         'Partnership Building',
         'Event Planning',
+        'Information Technology',
     ]
 ]
 
@@ -269,6 +271,12 @@ outreach_recommendations = [
         'Community Organizing',
     ])
 ]
+it_capability = Capability(
+    id='cap:it',
+    name='Information Technology',
+    cap_skill_id=get_skill_id('Information Technology')
+)
+
 
 #skill_python = SkillItem(
 #    id=get_skill_id('Python'),
@@ -357,6 +365,9 @@ review_billy = Review(
     stage=1,
 )
 
+def get_skill(name):
+    return Skill.query.get(get_skill_id(name))
+
 
 def populate(db):
     for skill in skills:
@@ -392,10 +403,17 @@ def populate(db):
 
     db.session.commit()
 
-    billy.add_skill(Skill.query.get(get_skill_id('Public Health')))
-    obama.add_skill(Skill.query.get(get_skill_id('Public Health')))
-    exp_baltimore.add_skill(Skill.query.get(get_skill_id('Python')))
-    exp_baltimore.add_skill(Skill.query.get(get_skill_id('Web Development')))
+    billy.add_skill(get_skill('Public Health'))
+    billy.add_skill(get_skill('Community Organizing'))
+    obama.add_skill(get_skill('Public Health'))
+    exp_baltimore.add_skill(get_skill('Python'))
+    exp_baltimore.add_skill(get_skill('Web Development'))
+
+    advocacy_capability.related_skills.append(get_skill('Community Organizing'))
+    outreach_capability.related_skills.append(get_skill('Community Organizing'))
+    it_capability.related_skills.append(get_skill('Python'))
+    it_capability.related_skills.append(get_skill('C++'))
+    it_capability.related_skills.append(get_skill('Web Development'))
 
     db.session.add(advocacy_capability)
     for rec in advocacy_recommendations:
@@ -403,6 +421,7 @@ def populate(db):
     db.session.add(outreach_capability)
     for rec in outreach_recommendations:
         db.session.add(rec)
+    db.session.add(it_capability)
 
 
     db.session.commit()

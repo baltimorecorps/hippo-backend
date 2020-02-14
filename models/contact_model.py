@@ -1,6 +1,6 @@
 from models.base_model import db
 import enum
-from marshmallow import Schema, fields, EXCLUDE
+from marshmallow import Schema, fields, EXCLUDE, post_dump
 from marshmallow_enum import EnumField
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
@@ -109,6 +109,11 @@ class ContactSchema(Schema):
     skills = fields.Nested(SkillSchema, many=True)
     terms_agreement = fields.Boolean()
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
+
+    @post_dump
+    def sort_skills(self, contact, **kw):
+        contact['skills'].sort(key=lambda skill: skill['name'])
+        return contact
 
     class Meta:
         unknown = EXCLUDE
