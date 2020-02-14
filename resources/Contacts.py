@@ -22,8 +22,7 @@ from auth import (
 )
 
 from models.skill_model import Skill
-from models.skill_item_model import ContactSkill
-from .skill_utils import get_skill_id, make_skill
+from .skill_utils import get_skill_id, get_or_make_skill
 
 
 contact_schema = ContactSchema()
@@ -31,11 +30,7 @@ contacts_schema = ContactSchema(many=True)
 
 def add_skills(skills, contact):
     for skill_data in skills:
-        name = skill_data['name']
-        skill = Skill.query.get(get_skill_id(name))
-        if not skill:
-            skill = make_skill(name)
-
+        skill = get_or_make_skill(skill_data['name'])
         contact.add_skill(skill)
 
 def sync_skills(skills, contact):
@@ -47,13 +42,9 @@ def sync_skills(skills, contact):
     # deleting and recreating them would delete all ExperienceSkills for this
     # contact
     current_skills = {s['name'] for s in skills}
-    for skill in contact.skills:
-        if skill.name not in current_skills:
-            contact_skill = (ContactSkill.query
-                     .filter_by(skill_id=skill.id, 
-                                contact_id=contact.id)
-                     .first())
-            db.session.delete(contact_skill)
+    for skill_item in contact.skill_items:
+        if skill_item.skill.name not in current_skills:
+            db.session.delete(skill_item)
 
 class ContactAll(Resource):
     method_decorators = {

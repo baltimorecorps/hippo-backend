@@ -7,7 +7,7 @@ from operator import attrgetter
 from marshmallow import ValidationError
 
 from models.skill_model import Skill
-from .skill_utils import get_skill_id, make_skill
+from .skill_utils import get_skill_id, get_or_make_skill
 
 from flask_login import login_required
 from auth import (
@@ -25,17 +25,17 @@ type_list = [m for m in Type.__members__.keys()]
 
 def add_achievements(achievements, experience):
     for achievement in achievements:
-        a = Achievement(**achievement)
-        a.contact_id = experience.contact_id
-        experience.achievements.append(a)
+        a = Achievement(description=achievement['description'])
+        a.contact = experience.contact
+        a.experience = experience
+        if 'skills' in achievement:
+            for skill in achievement['skills']:
+                a.add_skill(get_or_make_skill(skill['name']))
+        db.session.add(a)
 
 def add_skills(skills, experience):
     for skill_data in skills:
-        name = skill_data['name']
-        skill = Skill.query.get(get_skill_id(name))
-        if not skill:
-            skill = make_skill(name)
-
+        skill = get_or_make_skill(skill_data['name'])
         experience.add_skill(skill)
 
 def sync_skills(skills, experience):
@@ -97,8 +97,6 @@ class ExperienceAll(Resource):
 
         #create the experience record
         exp = Experience(**data)
-        if achievements:
-            add_achievements(achievements, exp)
         db.session.add(exp)
         db.session.commit()
 
@@ -106,6 +104,9 @@ class ExperienceAll(Resource):
         # our 'Contact' object
         if skills:
             add_skills(skills, exp)
+
+        if achievements:
+            add_achievements(achievements, exp)
         db.session.commit()
 
         result = experience_schema.dump(exp)

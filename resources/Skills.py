@@ -5,7 +5,12 @@ from models.skill_item_model import ContactSkill
 from models.base_model import db
 from marshmallow import ValidationError
 
-from .skill_utils import get_skill_id, normalize_skill_name, complete_skill
+from .skill_utils import (
+    get_skill_id, 
+    get_or_make_skill, 
+    normalize_skill_name, 
+    complete_skill,
+)
 
 from flask_login import login_required
 from auth import (
@@ -17,16 +22,6 @@ from auth import (
 
 skill_schema = SkillSchema()
 skills_schema = SkillSchema(many=True)
-
-def get_or_create_skill(name):
-    id_ = get_skill_id(name)
-    skill = Skill.query.get(id_)
-    if not skill:
-        skill = Skill(
-            id=id_, 
-            name=name
-        )
-    return skill
 
 class AutocompleteSkill(Resource):
     def get(self):
@@ -72,7 +67,7 @@ class ContactSkills(Resource):
             return {'message': 'Contact not found'}, 404
 
         name = data['name']
-        skill = get_or_create_skill(name)
+        skill = get_or_make_skill(name)
         contact_skill_names = {s.name for s in contact.skills}
         if name in contact_skill_names:
             result = skill_schema.dump(skill)

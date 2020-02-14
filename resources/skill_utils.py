@@ -27,6 +27,13 @@ def make_skill(name):
         name=name,
     )
 
+def get_or_make_skill(name):
+    id_ = get_skill_id(name)
+    skill = Skill.query.get(id_)
+    if not skill:
+        skill = make_skill(name)
+    return skill
+
 def _sort_key(match):
     # Put all exact matches first
     return (not match['exact'], match['item'])

@@ -406,7 +406,9 @@ POSTS = {
         'location': 'Test City, MD, USA',
         'achievements': [
             {'description': 'Test achievement 1'},
-            {'description': 'Test achievement 2'},
+            {'description': 'Test achievement 2', 'skills': [
+                { 'name': 'Test Skill 1' }
+            ]},
         ],
     },
     'resume': {
@@ -644,6 +646,14 @@ def skill_name(skill):
       lambda: Experience.query.get(512),
       lambda e: e.achievements[-1].description == 'test',
       )
+    ,('/api/experiences/512/',
+      {'achievements': EXPERIENCES['goucher']['achievements'] + [
+          {'description': 'test'}
+      ]},
+      lambda: Experience.query.get(512),
+      lambda e: e.achievements[-1].description == 'test',
+      )
+
     ,('/api/experiences/513/',
       {'skills': SKILLS['billy'][0:2] + [{'name': 'Test'}]},
       lambda: Experience.query.get(513),
