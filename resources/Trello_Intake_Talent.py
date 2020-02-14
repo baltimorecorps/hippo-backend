@@ -7,6 +7,7 @@ from models.review_model import Review
 from .ProgramContacts import query_one_program_contact
 from .trello_utils import (
     query_board_data,
+    update_card,
     Board,
     Card,
     BoardList
@@ -18,11 +19,6 @@ REVIEW_SCORE_KEY = {
     'Approved with reservations': 0
 }
 
-ELIGIBILITY_KEY = {
-    'Approved': True,
-    'Not a Fit': False,
-    'Approved with reservations': True
-}
 
 program_contact_schema = ProgramContactSchema()
 
@@ -86,28 +82,36 @@ class IntakeTalentCard(Resource):
 
 class ReviewTalentCard(Resource):
 
-    def PUT(self, review_id):
+    def put(self, review_id):
         json = request.get_json(force=True)
         if not json:
             return {'message': 'No input data provided'}, 400
+        decision = json['review_score']
 
         # get review from url paramater and update it with response
         review = Review.query.get(review_id)
         if not review:
             return {'message': 'No review found'}, 404
         review_update_data = {
-            'score': REVEIW_SCORE_KEY[json['review_score']],
+            'score': REVIEW_SCORE_KEY[decision],
             'is_active': False,
             'stage': 2
         }
         review.update(**review_update_data)
 
         # get program_contact associated with review
-        # and update the stage to stage 3,
         program_contact = review.program_contact
-        program_contact.update(**{'stage': 3})
-
-        intake_board_id = get_intake_talent_board_id(program_contact.program_id)
-        intake_board_data = query_board_data(board_id)
+        program_id = program_contact.program_id
+        intake_board_id = get_intake_talent_board_id(program_id)
+        intake_board_data = query_board_data(intake_board_id)
         intake_board = Board(intake_board_data)
+        approved_list = intake_board.lists['stage'][3]
         intake_card = intake_board.cards.get(program_contact.card_id)
+
+        if decision=='Not a Fit':
+            program_contact.update(**{'stage': 2, 'is_active': False})
+            update_card(intake_card.id, **{'closed': 'true'})
+        else:
+            program_contact.update(**{'stage': 3, 'is_active': True})
+            intake_card.move_card(approved_list)
+        return program_contact_schema.dump(program_contact)
