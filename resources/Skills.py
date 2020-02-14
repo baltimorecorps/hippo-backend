@@ -1,10 +1,11 @@
 from flask_restful import Resource, request
-from models.skill_model import Skill
-from models.skill_item_model import SkillItem, SkillItemSchema
+from models.contact_model import Contact
+from models.skill_model import Skill, SkillSchema
+from models.skill_item_model import ContactSkill
 from models.base_model import db
 from marshmallow import ValidationError
 
-from .skill_utils import make_skill_item, get_skill_id, normalize_skill_name, complete_skill
+from .skill_utils import get_skill_id, normalize_skill_name, complete_skill
 
 from flask_login import login_required
 from auth import (
@@ -14,9 +15,8 @@ from auth import (
     unauthorized
 )
 
-
-skill_schema = SkillItemSchema()
-skills_schema = SkillItemSchema(many=True)
+skill_schema = SkillSchema()
+skills_schema = SkillSchema(many=True)
 
 def get_or_create_skill(name):
     id_ = get_skill_id(name)
@@ -26,8 +26,6 @@ def get_or_create_skill(name):
             id=id_, 
             name=name
         )
-        db.session.add(skill)
-        db.session.commit()
     return skill
 
 class AutocompleteSkill(Resource):
@@ -49,13 +47,11 @@ class ContactSkills(Resource):
         if not is_authorized_view(contact_id): 
             return unauthorized()
 
-        skills = (
-            SkillItem.query
-            .filter_by(contact_id=contact_id)
-            .order_by(SkillItem.name)
-            .all()
-        )
-        skills = skills_schema.dump(skills)
+        contact = Contact.query.get(contact_id)
+        if not contact:
+            return {'message': 'Contact not found'}, 404
+
+        skills = skills_schema.dump(contact.skills)
         return {'status': 'success', 'data': skills}, 200
 
     def post(self, contact_id):
@@ -71,22 +67,20 @@ class ContactSkills(Resource):
         if not data:
             return {'message': 'No input data provided'}, 400
 
+        contact = Contact.query.get(contact_id)
+        if not contact:
+            return {'message': 'Contact not found'}, 404
+
         name = data['name']
-
-        # Make sure skill entry is in database
         skill = get_or_create_skill(name)
-
-        skill_item = SkillItem.query.get((skill.id, contact_id))
-        print(skill.id, contact_id, skill)
-        if not skill_item:
-            skill = make_skill_item(name, contact_id)
-            db.session.add(skill)
-            db.session.commit()
-            result = skill_schema.dump(skill)
-            return {'status': 'success', 'data': result}, 201
-        else: 
+        contact_skill_names = {s.name for s in contact.skills}
+        if name in contact_skill_names:
             result = skill_schema.dump(skill)
             return {'status': 'success', 'data': result}, 200
+        else:
+            contact.add_skill(skill)
+            result = skill_schema.dump(skill)
+            return {'status': 'success', 'data': result}, 201
 
 class ContactSkillOne(Resource):
     method_decorators = {
@@ -97,7 +91,10 @@ class ContactSkillOne(Resource):
         if not is_authorized_write(contact_id): 
             return unauthorized()
 
-        skill = SkillItem.query.get((skill_id, contact_id))
+        skill = (ContactSkill.query
+                 .filter_by(skill_id=skill_id, 
+                            contact_id=contact_id)
+                 .first())
         if not skill:
             return {'message': 'Skill does not exist'}, 404
         db.session.delete(skill)

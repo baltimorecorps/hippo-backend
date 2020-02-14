@@ -1,6 +1,7 @@
 from models.base_model import db
-from models.skill_item_model import experience_skills, SkillItemSchema
+from models.skill_model import SkillSchema
 from marshmallow import Schema, fields, EXCLUDE
+from sqlalchemy.ext.associationproxy import association_proxy
 
 
 class Achievement(db.Model):
@@ -15,11 +16,15 @@ class Achievement(db.Model):
     #relationships
     experience = db.relationship('Experience', back_populates='achievements')
     contact = db.relationship('Contact', back_populates='achievements')
+    skill_items = db.relationship('AchievementSkill', 
+                           cascade='all, delete, delete-orphan')
+    skills = association_proxy('skill_items', 'skill')
+
 
 class AchievementSchema(Schema):
     id = fields.Integer(dump_only=True)
     description = fields.String()
-    skills = fields.Nested(SkillItemSchema, many=True)
+    skills = fields.Nested(SkillSchema, many=True)
 
     class Meta:
         unknown = EXCLUDE

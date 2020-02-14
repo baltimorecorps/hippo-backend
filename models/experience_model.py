@@ -3,8 +3,10 @@ import enum
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from models.achievement_model import Achievement, AchievementSchema
-from models.skill_item_model import experience_skills, SkillItemSchema
+from models.skill_model import SkillSchema
+from models.skill_item_model import ExperienceSkill
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.associationproxy import association_proxy
 import datetime as dt
 import math
 
@@ -37,6 +39,8 @@ class Month(enum.Enum):
     november = 'November'
     december = 'December'
 
+def add_skill_error(_):
+    assert False, "use experience.add_skill instead of experience.skills.append"
 
 class Experience(db.Model):
     __tablename__ = 'experience'
@@ -61,10 +65,23 @@ class Experience(db.Model):
     contact = db.relationship('Contact')
     achievements = db.relationship('Achievement', back_populates='experience',
                                    cascade='all, delete, delete-orphan')
-    skills = db.relationship('SkillItem', secondary=experience_skills,
-                             order_by='SkillItem.name',
-                             lazy='subquery',
-                             back_populates='experiences')
+
+    skill_items = db.relationship('ExperienceSkill', 
+                           cascade='all, delete, delete-orphan')
+
+    skills = association_proxy('skill_items', 'skill', creator=add_skill_error)
+
+    def add_skill(self, skill):
+        contact_skill = self.contact.add_skill(skill)
+        if skill in self.skills:
+            return (ExperienceSkill.query
+                                   .filter_by(experience_id=self.id,
+                                              parent_id=contact_skill.id)
+                                   .first())
+        else:
+            exp_skill = ExperienceSkill(contact_skill, self)
+            self.skill_items.append(exp_skill)
+            return exp_skill
 
     #calculated fields
     @hybrid_property
@@ -124,7 +141,7 @@ class ExperienceSchema(Schema):
     contact_id = fields.Integer(required=True)
     location = fields.String()
     achievements = fields.Nested(AchievementSchema, many=True)
-    skills = fields.Nested(SkillItemSchema, many=True)
+    skills = fields.Nested(SkillSchema, many=True)
 
     class Meta:
         unknown = EXCLUDE

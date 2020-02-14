@@ -28,8 +28,8 @@ from models.tag_model import (
 )
 from models.tag_item_model import TagItem
 from models.skill_model import Skill, Capability, SkillRecommendation
-from models.skill_item_model import SkillItem
-from resources.skill_utils import get_skill_id
+from models.skill_item_model import ContactSkill
+from resources.skill_utils import get_skill_id, make_skill
 
 #imports models related to the resume
 #from models.resume_model import Resume
@@ -270,27 +270,27 @@ outreach_recommendations = [
     ])
 ]
 
-skill_python = SkillItem(
-    id=get_skill_id('Python'),
-    name='Python',
-    contact_id=123,
-)
-skill_webdev = SkillItem(
-    id=get_skill_id('Web Development'),
-    name='Web Development',
-    contact_id=123,
-)
-skill_health = SkillItem(
-    id=get_skill_id('Public Health'),
-    name='Public Health',
-    contact_id=123,
-)
-
-skill_obama_health = SkillItem(
-    id=get_skill_id('Public Health'),
-    name='Public Health',
-    contact_id=124,
-)
+#skill_python = SkillItem(
+#    id=get_skill_id('Python'),
+#    name='Python',
+#    contact_id=123,
+#)
+#skill_webdev = SkillItem(
+#    id=get_skill_id('Web Development'),
+#    name='Web Development',
+#    contact_id=123,
+#)
+#skill_health = SkillItem(
+#    id=get_skill_id('Public Health'),
+#    name='Public Health',
+#    contact_id=123,
+#)
+#
+#skill_obama_health = SkillItem(
+#    id=get_skill_id('Public Health'),
+#    name='Public Health',
+#    contact_id=124,
+#)
 
 
 
@@ -364,8 +364,6 @@ def populate(db):
         db.session.add(skill)
     db.session.commit()
 
-    exp_baltimore.skills.append(skill_python)
-    exp_baltimore.skills.append(skill_webdev)
     db.session.add(billy)
     db.session.add(obama)
     db.session.add(exp_columbia)
@@ -380,10 +378,10 @@ def populate(db):
     #db.session.add(tag_health)
     #db.session.add(item_webdev)
     #db.session.add(resume_billy)
-    db.session.add(skill_python)
-    db.session.add(skill_webdev)
-    db.session.add(skill_health)
-    db.session.add(skill_obama_health)
+    #db.session.add(skill_python)
+    #db.session.add(skill_webdev)
+    #db.session.add(skill_health)
+    #db.session.add(skill_obama_health)
     db.session.add(program_pfp)
     db.session.add(cycle_pfp)
     db.session.add(q_pfp1)
@@ -392,6 +390,13 @@ def populate(db):
     db.session.add(r_billy1)
     db.session.add(r_billy2)
     db.session.add(review_billy)
+
+    db.session.commit()
+
+    billy.add_skill(Skill.query.get(get_skill_id('Public Health')))
+    obama.add_skill(Skill.query.get(get_skill_id('Public Health')))
+    exp_baltimore.add_skill(Skill.query.get(get_skill_id('Python')))
+    exp_baltimore.add_skill(Skill.query.get(get_skill_id('Web Development')))
 
     db.session.add(advocacy_capability)
     for rec in advocacy_recommendations:

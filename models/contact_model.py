@@ -6,7 +6,8 @@ from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address
 from models.achievement_model import Achievement
-from models.skill_item_model import SkillItemSchema
+from models.skill_model import Skill, SkillSchema
+from models.skill_item_model import ContactSkill
 from models.program_contact_model import ProgramContactSchema
 
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -31,6 +32,8 @@ class Salutation(enum.Enum):
     ms = 'Ms.'
     dr = 'Dr.'
 
+def add_skill_error(_):
+    assert False, "use contact.add_skill instead of contact.skills.append"
 
 class Contact(db.Model):
     __tablename__ = 'contact'
@@ -65,14 +68,28 @@ class Contact(db.Model):
                                       uselist=False)
     achievements = db.relationship('Achievement', back_populates='contact',
                                    cascade='all, delete, delete-orphan')
-    skill_items = db.relationship('SkillItem', 
-                           order_by='SkillItem.name',
+
+    skill_items = db.relationship('ContactSkill', 
                            cascade='all, delete, delete-orphan')
-    skills = association_proxy('skill_items', 'skill')
+    skills = association_proxy('skill_items', 'skill',
+                               creator=add_skill_error)
+
     experiences = db.relationship('Experience', back_populates='contact',
                                   cascade='all, delete, delete-orphan')
     programs = db.relationship('ProgramContact', back_populates='contact',
                                cascade='all, delete, delete-orphan')
+
+    def add_skill(self, skill):
+        if skill in self.skills:
+            return (ContactSkill.query
+                                .filter_by(contact_id=self.id,
+                                           skill_id=skill.id)
+                                .first())
+        else:
+            contact_skill = ContactSkill(skill, self)
+            self.skill_items.append(contact_skill)
+            return contact_skill
+
 
 class ContactSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -89,7 +106,7 @@ class ContactSchema(Schema):
     pronouns_other = fields.String()
     birthdate = fields.Date(allow_none=True)
     account_id = fields.String()
-    skills = fields.Nested(SkillItemSchema, many=True)
+    skills = fields.Nested(SkillSchema, many=True)
     terms_agreement = fields.Boolean()
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
 

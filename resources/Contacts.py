@@ -6,7 +6,6 @@ from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
-from models.skill_item_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
 from .ProgramContacts import create_program_contact
@@ -22,6 +21,8 @@ from auth import (
     unauthorized
 )
 
+from models.skill_model import Skill
+from models.skill_item_model import ContactSkill
 from .skill_utils import get_skill_id, make_skill
 
 
@@ -29,10 +30,30 @@ contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
 
 def add_skills(skills, contact):
-    contact_skill_names = {s.name for s in contact.skills}
-    for skill in skills:
-        if not skill['name'] in contact_skill_names:
-            contact.skills.append(make_skill(skill['name']))
+    for skill_data in skills:
+        name = skill_data['name']
+        skill = Skill.query.get(get_skill_id(name))
+        if not skill:
+            skill = make_skill(name)
+
+        contact.add_skill(skill)
+
+def sync_skills(skills, contact):
+    add_skills(skills, contact)
+
+    # Only delete the skills which are not in the current set of skills.
+    # We do this rather than deleting and recreating the skills because the
+    # ContactSkill element also owns all the ExperienceSkill items, and so
+    # deleting and recreating them would delete all ExperienceSkills for this
+    # contact
+    current_skills = {s['name'] for s in skills}
+    for skill in contact.skills:
+        if skill.name not in current_skills:
+            contact_skill = (ContactSkill.query
+                     .filter_by(skill_id=skill.id, 
+                                contact_id=contact.id)
+                     .first())
+            db.session.delete(contact_skill)
 
 class ContactAll(Resource):
     method_decorators = {
@@ -134,8 +155,7 @@ class ContactOne(Resource):
             contact.email_primary = Email(**email)
 
         if skills:
-            del contact.skills[:]
-            add_skills(skills, contact)
+            sync_skills(skills, contact)
 
         db.session.commit()
         result = contact_schema.dump(contact)

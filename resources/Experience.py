@@ -1,13 +1,13 @@
 from flask_restful import Resource, request
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.achievement_model import Achievement, AchievementSchema
-from models.skill_item_model import SkillItem
 from models.base_model import db
 import datetime as dt
 from operator import attrgetter
 from marshmallow import ValidationError
 
-from .skill_utils import get_skill_id, make_skill_item
+from models.skill_model import Skill
+from .skill_utils import get_skill_id, make_skill
 
 from flask_login import login_required
 from auth import (
@@ -30,12 +30,27 @@ def add_achievements(achievements, experience):
         experience.achievements.append(a)
 
 def add_skills(skills, experience):
-    for skill in skills:
-        s = SkillItem.query.get((get_skill_id(skill['name']), 
-                                 experience.contact_id))
-        if not s:
-            s = make_skill_item(skill['name'], experience.contact_id)
-        experience.skills.append(s)
+    for skill_data in skills:
+        name = skill_data['name']
+        skill = Skill.query.get(get_skill_id(name))
+        if not skill:
+            skill = make_skill(name)
+
+        experience.add_skill(skill)
+
+def sync_skills(skills, experience):
+    add_skills(skills, experience)
+
+    # Only delete the skills which are not in the current set of skills.
+    # We do this rather than deleting and recreating the skills because the
+    # ExperienceSkill element also owns all the AchievementSkill items, and so
+    # deleting and recreating them would delete all AchievementSkills for this
+    # contact
+    current_skills = {s['name'] for s in skills}
+    for skill_item in experience.skill_items:
+        if skill_item.skill.name not in current_skills:
+            db.session.delete(skill_item)
+
 
 
 class ExperienceAll(Resource):
@@ -84,11 +99,15 @@ class ExperienceAll(Resource):
         exp = Experience(**data)
         if achievements:
             add_achievements(achievements, exp)
-        if skills:
-            add_skills(skills, exp)
-
         db.session.add(exp)
         db.session.commit()
+
+        # Need to add after the first commit so that we have a reference to
+        # our 'Contact' object
+        if skills:
+            add_skills(skills, exp)
+        db.session.commit()
+
         result = experience_schema.dump(exp)
         return {"status": 'success', 'data': result}, 201
 
@@ -148,8 +167,7 @@ class ExperienceOne(Resource):
             add_achievements(achievements, exp)
 
         if skills:
-            del exp.skills[:]
-            add_skills(skills, exp)
+            sync_skills(skills, exp)
 
         db.session.commit()
         result = experience_schema.dump(exp)
