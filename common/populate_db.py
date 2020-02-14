@@ -360,7 +360,6 @@ review_billy = Review(
 
 def populate(db):
     for skill in skills:
-        print(skill.id, skill.name)
         db.session.add(skill)
     db.session.commit()
 

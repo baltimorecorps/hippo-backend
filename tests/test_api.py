@@ -646,12 +646,15 @@ def skill_name(skill):
       lambda: Experience.query.get(512),
       lambda e: e.achievements[-1].description == 'test',
       )
-    ,('/api/experiences/512/',
-      {'achievements': EXPERIENCES['goucher']['achievements'] + [
-          {'description': 'test'}
-      ]},
-      lambda: Experience.query.get(512),
-      lambda e: e.achievements[-1].description == 'test',
+    ,('/api/experiences/513/',
+      {'achievements': EXPERIENCES['baltimore']['achievements'][0:2] + [{
+          'id': 83,
+          'description': 'Developed recruitment projection tools to model and track progress to goals.',
+          'skills': [{'name': 'Recruitment'}],
+      }]},
+      lambda: Experience.query.get(513),
+      lambda e: (len(e.achievements[-1].skills) == 1 
+                 and e.achievements[-1].skills[0].name == 'Recruitment'),
       )
 
     ,('/api/experiences/513/',
@@ -723,6 +726,35 @@ def test_put_preserves_list_fields(app, url, update, query, test):
         assert response.status_code == 200
         assert test(query())
 
+def test_put_update_achievement_skills(app):
+    from models.resume_section_model import ResumeSectionSchema
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    url = '/api/experiences/513/'
+    update = {'achievements': EXPERIENCES['baltimore']['achievements'][0:2] + [{
+        'id': 83,
+        'description': 'Developed recruitment projection tools to model and track progress to goals.',
+        'skills': [{'name': 'Recruitment'}],
+    }]} 
+    query = lambda: Experience.query.get(513)
+    test = lambda e: (len(e.achievements[-1].skills) == 1 
+                      and e.achievements[-1].skills[0].name == 'Recruitment')
+    with app.test_client() as client:
+        assert query() is not None, "Item to update should exist"
+        assert not test(query())
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        exp = query()
+        assert test(exp)
+        skill_names = {skill.name for skill in exp.skills}
+        assert 'Recruitment' in skill_names
+
+
 def test_contact_put_preserves_experience_skills(app):
     from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
@@ -741,9 +773,6 @@ def test_contact_put_preserves_experience_skills(app):
 
         e = Experience.query.get(513)
         assert len(e.skills) == len(EXPERIENCES['baltimore']['skills'])
-
-
-
 
 @pytest.mark.parametrize(
     "delete_url,query",
