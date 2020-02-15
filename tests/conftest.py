@@ -5,17 +5,7 @@ from testing.postgresql import Postgresql
 
 from run import create_app
 from models.base_model import db
-from common.populate_db import populate
-
-_init_sql_path = os.path.join(os.path.dirname(__file__),
-                              '..', 'common', 'init.sql')
-with open(_init_sql_path, 'rb') as f:
-    _init_sql = f.read().decode('utf8')
-
-_init_sql_path = os.path.join(os.path.dirname(__file__),
-                              '..', 'common', 'populate_db.sql')
-with open(_init_sql_path, 'rb') as f:
-    _populate_sql = f.read().decode('utf8')
+from .populate_db import populate
 
 @pytest.fixture(scope='session')
 def _app(request):
