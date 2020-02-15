@@ -5,7 +5,7 @@ from testing.postgresql import Postgresql
 
 from run import create_app
 from models.base_model import db
-from common.populate_db import populate
+from .populate_db import populate
 
 _init_sql_path = os.path.join(os.path.dirname(__file__),
                               '..', 'common', 'init.sql')
