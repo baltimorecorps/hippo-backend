@@ -531,7 +531,7 @@ def post_request(app, url, data):
         assert len(data) > 0
         assert data['id'] is not None
         id = data['id']
-        return id
+        return id, data
 
 
 @pytest.mark.parametrize(
@@ -576,12 +576,12 @@ def test_post(app, url, data, query):
         'Accept': mimetype
     }
 
-    id_ = post_request(app, url, data)
+    id_, _ = post_request(app, url, data)
     assert query(id_) is not None
 
 @pytest.mark.skip
 def test_create_program_contact_with_contact(app):
-    id_ = post_request(app, 'api/contacts/', POSTS['contact'])
+    id_, _ = post_request(app, 'api/contacts/', POSTS['contact'])
     program_contacts = Contact.query.get(id_).programs
     assert len(program_contacts) == 1
     assert program_contacts[0].program_id == 1
@@ -591,7 +591,7 @@ def test_create_program_contact_with_contact(app):
     assert program_contacts[0].is_approved == False
 
 def test_post_experience_date(app):
-    id_ = post_request(app, '/api/contacts/123/experiences/',
+    id_, _ = post_request(app, '/api/contacts/123/experiences/',
                           POSTS['experience'])
     assert Experience.query.get(id_).end_month == Month.may
     assert Experience.query.get(id_).end_year == 2019
@@ -602,7 +602,7 @@ def test_post_experience_date(app):
 def test_post_experience_null_degree(app):
     exp = POSTS['experience'].copy()
     exp['degree'] = None
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     pprint(Experience.query.get(id_).degree)
 
@@ -610,7 +610,7 @@ def test_post_experience_null_start_date(app):
     exp = POSTS['experience'].copy()
     exp['start_month'] = 'none'
     exp['start_year'] = 0
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     assert Experience.query.get(id_).start_month == Month.none
     assert Experience.query.get(id_).start_year == 0
@@ -621,7 +621,7 @@ def test_post_experience_current(app):
     exp = POSTS['experience'].copy()
     exp['end_month'] = 'none'
     exp['end_year'] = 0
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     assert Experience.query.get(id_).is_current == True
 
@@ -631,13 +631,13 @@ def test_post_experience_dump_only(app):
     exp['length_month'] = 8
     exp['is_current'] = False
     exp['id'] = 1
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
 
 def test_post_experience_skills(app):
     exp = POSTS['experience'].copy()
     exp['skills'] = [{'name': 'C++'}, {'name': 'Python'}]
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_).skills[0].name == 'C++'
     assert Experience.query.get(id_).skills[1].name == 'Community Organizing'
     assert Experience.query.get(id_).skills[2].name == 'Python'
@@ -645,7 +645,7 @@ def test_post_experience_skills(app):
 
 def test_post_experience_achievement_skills(app):
     exp = POSTS['experience']
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     skills = Experience.query.get(id_).achievements[1].skills
     assert len(Experience.query.get(id_).achievements[1].skills) == 2
     assert skills[0]['name'] == 'Community Organizing'
@@ -653,8 +653,24 @@ def test_post_experience_achievement_skills(app):
     assert skills[1]['name'] == 'Test Skill 1'
     assert skills[1]['capability_id'] is None
 
+def test_post_contact_skill(app):
+    url, update = ('/api/contacts/123/skills/', { 'name': 'C++', })
+
+    _, response = post_request(app, url, update)
+    assert 'suggested_capabilities' in response
+    assert response['suggested_capabilities'] == []
+    assert 'capabilities' in response
+    assert len(response['capabilities']) == 1
+    assert response['capabilities'][0]['id'] == 'cap:it'
+
+    contact_skill = ContactSkill.query.filter_by(
+        contact_id=123,
+        skill_id='sEVDZsMOqdfQ-vwoIAEk5A==',
+        deleted=False,
+    ).first()
+    assert contact_skill is not None
+
 def test_post_contact_skill_suggestion(app):
-    # This skill was added and deleted in test setup
     url, update = (
         '/api/contacts/123/capabilities/cap:it/skill/',
         {
@@ -662,7 +678,14 @@ def test_post_contact_skill_suggestion(app):
         }
     )
 
-    post_request(app, url, update)
+    _, response = post_request(app, url, update)
+    assert 'capabilities' in response
+    assert response['capabilities'] == []
+    assert 'suggested_capabilities' in response
+    assert len(response['suggested_capabilities']) == 1
+    assert response['suggested_capabilities'][0]['id'] == 'cap:it'
+
+
     contact_skill = ContactSkill.query.filter_by(
         contact_id=123,
         skill_id='_s-apdaP_WZpH69G8hlcGA==',

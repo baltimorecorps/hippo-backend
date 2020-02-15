@@ -107,8 +107,10 @@ class SkillRecommendationSchema(Schema):
 class CapabilitySchema(Schema):
     id = fields.String(dump_only=True)
     name = fields.String(required=True)
-    related_skills = fields.List(fields.Nested(SkillSchema), dump_only=True)
-    recommended_skills = fields.List(fields.Nested(SkillRecommendationSchema), dump_only=True)
+    related_skills = fields.List(
+        fields.Nested(SkillSchema(only=('id', 'name'))), dump_only=True)
+    recommended_skills = fields.List(
+        fields.Nested(SkillRecommendationSchema), dump_only=True)
 
     class Meta:
         unknown = EXCLUDE

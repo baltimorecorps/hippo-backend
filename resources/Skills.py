@@ -10,6 +10,7 @@ from .skill_utils import (
     get_or_make_skill, 
     normalize_skill_name, 
     complete_skill,
+    dump_skill_with_capabilities,
 )
 
 from flask_login import login_required
@@ -71,13 +72,14 @@ class ContactSkills(Resource):
         name = data['name']
         skill = get_or_make_skill(name)
         contact_skill_names = {s.name for s in contact.skills}
-        if name in contact_skill_names:
-            result = skill_schema.dump(skill)
-            return {'status': 'success', 'data': result}, 200
-        else:
+        status_code = 200
+        if name not in contact_skill_names:
+            status_code = 201
             contact.add_skill(skill)
-            result = skill_schema.dump(skill)
-            return {'status': 'success', 'data': result}, 201
+            db.session.commit()
+
+        result = dump_skill_with_capabilities(skill, contact_id)
+        return {'status': 'success', 'data': result}, status_code
 
 def delete_skill(contact_id, skill_id):
     skill = (ContactSkill.query

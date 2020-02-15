@@ -13,7 +13,7 @@ from models.skill_model import (
 )
 from models.skill_item_model import ContactSkill
 from .Skills import delete_skill
-from .skill_utils import get_or_make_skill
+from .skill_utils import get_or_make_skill, dump_skill_with_capabilities
 from sqlalchemy.sql.expression import and_
 
 from flask_login import login_required
@@ -28,6 +28,7 @@ from auth import (
 capability_schema = CapabilitySchema()
 capabilities_schema = CapabilitySchema(many=True)
 capability_name_schema = CapabilitySchema(only=('id','name'))
+capability_names_schema = CapabilitySchema(only=('id','name'), many=True)
 skill_schema = SkillSchema()
 skill_names_schema = SkillSchema(only=('id', 'name'), many=True)
 skill_recs_schema = SkillRecommendationSchema(many=True)
@@ -72,7 +73,8 @@ class ContactCapabilitySuggestions(Resource):
         db.session.add(suggestion)
         db.session.commit()
 
-        result = skill_schema.dump(skill)
+        result = dump_skill_with_capabilities(skill, contact_id)
+
         return {'status': 'success', 'data': result}, 201
 
 

@@ -5,6 +5,14 @@ from hashlib import blake2b
 
 from models.skill_model import Skill
 from .skill_list import SKILL_LIST
+from models.skill_model import (
+    Capability, 
+    CapabilitySchema, 
+    CapabilitySkillSuggestion,
+    Skill,
+    SkillSchema, 
+    SkillRecommendationSchema
+)
 
 TO_WHITESPACE = str.maketrans('-/_()', '     ')
 
@@ -33,6 +41,21 @@ def get_or_make_skill(name):
     if not skill:
         skill = make_skill(name)
     return skill
+
+skill_schema = SkillSchema()
+capability_names_schema = CapabilitySchema(only=('id','name'), many=True)
+def dump_skill_with_capabilities(skill, contact_id):
+    result = skill_schema.dump(skill)
+    result['capabilities'] = capability_names_schema.dump(skill.capabilities)
+    result['suggested_capabilities'] = capability_names_schema.dump(
+        Capability.query
+        .join(CapabilitySkillSuggestion, 
+              Capability.id == CapabilitySkillSuggestion.capability_id)
+        .filter(CapabilitySkillSuggestion.skill_id==skill.id)
+        .filter(CapabilitySkillSuggestion.contact_id==contact_id)
+        .all())
+    return result
+
 
 def _sort_key(match):
     # Put all exact matches first
