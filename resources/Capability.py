@@ -16,6 +16,15 @@ from .Skills import delete_skill
 from .skill_utils import get_or_make_skill
 from sqlalchemy.sql.expression import and_
 
+from flask_login import login_required
+from auth import (
+    refresh_session, 
+    is_authorized_view, 
+    is_authorized_write, 
+    unauthorized
+)
+
+
 capability_schema = CapabilitySchema()
 capability_name_schema = CapabilitySchema(only=('id','name'))
 skill_schema = SkillSchema()
@@ -36,7 +45,14 @@ class CapabilityRecommended(Resource):
         return {'status': 'success', 'data': result}, 200
 
 class ContactCapabilitySuggestions(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session],
+    }
+
     def post(self, contact_id, capability_id):
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
+
         json_data = request.get_json(force=True)
         try:
             data = skill_schema.load(json_data)
@@ -67,7 +83,14 @@ class ContactCapabilitySuggestions(Resource):
 
 
 class ContactCapabilitySuggestionOne(Resource):
+    method_decorators = {
+        'delete': [login_required, refresh_session],
+    }
+
     def delete(self, contact_id, capability_id, skill_id):
+        if not is_authorized_write(contact_id): 
+            return unauthorized()
+
         (result, status_code) = delete_skill(contact_id, skill_id)
         print(result, status_code)
         if status_code != 200:
@@ -131,7 +154,14 @@ def get_suggested_skill_items(contact_id, capability_id):
 
 
 class ContactCapabilities(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+    }
+
     def get(self, contact_id):
+        if not is_authorized_view(contact_id): 
+            return unauthorized()
+
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404
