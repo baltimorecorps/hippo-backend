@@ -26,6 +26,7 @@ from auth import (
 
 
 capability_schema = CapabilitySchema()
+capabilities_schema = CapabilitySchema(many=True)
 capability_name_schema = CapabilitySchema(only=('id','name'))
 skill_schema = SkillSchema()
 skill_names_schema = SkillSchema(only=('id', 'name'), many=True)
@@ -33,14 +34,7 @@ skill_recs_schema = SkillRecommendationSchema(many=True)
 class CapabilityRecommended(Resource):
     def get(self):
         capabilities = Capability.query.all()
-        result = []
-        for capability in capabilities:
-            recs = skill_recs_schema.dump(capability.recommended_skills)
-            recs.sort(key=lambda r: r['order'])
-            result.append({
-                'name': capability.name,
-                'skills': recs,
-            })
+        result = capabilities_schema.dump(capabilities)
 
         return {'status': 'success', 'data': result}, 200
 

@@ -1010,15 +1010,14 @@ def test_get_capability_recommendations(app):
         'Information Technology': [],
     }
     with app.test_client() as client:
-        response = client.get('/api/capabilities/recommended/', 
+        response = client.get('/api/capabilities/', 
                               headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
-        #assert len(data) == 7
-        #assert set(expected.keys()) == set(x['name'] for x in data)
+        pprint(data)
         for capability in data:
             assert capability['name'] in expected
-            for i, skill in enumerate(capability['skills']):
+            for i, skill in enumerate(capability['recommended_skills']):
                 skill['skill']['name'] == expected[capability['name']][i]
 
 @pytest.mark.parametrize(

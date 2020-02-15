@@ -51,8 +51,8 @@ api.add_resource(ContactCapabilitySuggestionOne,
                  '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill/<string:skill_id>',
                  '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill/<string:skill_id>/')
 api.add_resource(CapabilityRecommended,
-                 '/capabilities/recommended',
-                 '/capabilities/recommended/')
+                 '/capabilities',
+                 '/capabilities/')
 api.add_resource(AutocompleteSkill,
                  '/skills/autocomplete',
                  '/skills/autocomplete/')
