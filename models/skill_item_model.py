@@ -5,7 +5,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 # We make heavy use of this to create a tree structure for skill associations
 # https://docs.sqlalchemy.org/en/13/orm/extensions/associationproxy.html
 class ContactSkill(db.Model):
-    __tablename__ = 'skill_item'
+    __tablename__ = 'contact_skill_item'
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
@@ -26,11 +26,11 @@ class ContactSkill(db.Model):
 
 
 class ExperienceSkill(db.Model):
-    __tablename__ = 'skill_item_experience'
+    __tablename__ = 'experience_skill_item'
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('skill_item.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('contact_skill_item.id'))
     experience_id = db.Column(db.Integer, db.ForeignKey('experience.id'))
 
     #relationships
@@ -48,11 +48,11 @@ class ExperienceSkill(db.Model):
         self.experience = experience
 
 class AchievementSkill(db.Model):
-    __tablename__ = 'skill_item_achievement'
+    __tablename__ = 'achievement_skill_item'
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('skill_item_experience.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('experience_skill_item.id'))
     achievement_id = db.Column(db.Integer, db.ForeignKey('achievement.id'))
     capability_id = db.Column(db.String, db.ForeignKey('capability.id'), nullable=True)
 
