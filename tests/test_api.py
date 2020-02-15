@@ -53,6 +53,7 @@ SKILLS = {
 
 CAPABILITIES = {
     'billy': {
+        'contact_id': 123,
         'capabilities': [
             {
                 'id': 'cap:it',

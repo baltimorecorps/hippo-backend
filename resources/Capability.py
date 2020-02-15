@@ -192,6 +192,7 @@ class ContactCapabilities(Resource):
             cap_results.append(cap)
 
         result = {
+            'contact_id': contact_id,
             'capabilities': cap_results,
             'other_skills': skill_names_schema.dump(other_skill_map.values())
         }
