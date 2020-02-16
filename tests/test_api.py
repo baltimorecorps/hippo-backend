@@ -553,7 +553,7 @@ def post_request(app, url, data):
       lambda id: ContactSkill.query.filter_by(
           skill_id='sEVDZsMOqdfQ-vwoIAEk5A==', contact_id=123).first()
       )
-     ,('/api/contacts/123/capabilities/cap:it/skill/',
+     ,('/api/contacts/123/capabilities/cap:it/suggestion/',
       {
         'name': 'Network Architecture',
       },
@@ -672,7 +672,7 @@ def test_post_contact_skill(app):
 
 def test_post_contact_skill_suggestion(app):
     url, update = (
-        '/api/contacts/123/capabilities/cap:it/skill/',
+        '/api/contacts/123/capabilities/cap:it/suggestion/',
         {
             'name': 'Network Architecture',
         }
@@ -927,7 +927,7 @@ def test_contact_put_preserves_experience_skills(app):
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: ContactSkill.query.filter_by(
           skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123, deleted=False).first())
-    ,('/api/contacts/123/capabilities/cap:it/skill/QUEVjv1tcq6uLmzCku6ikg==',
+    ,('/api/contacts/123/capabilities/cap:it/suggestion/QUEVjv1tcq6uLmzCku6ikg==',
       lambda: CapabilitySkillSuggestion.query.get(
           (123, 'cap:it', 'QUEVjv1tcq6uLmzCku6ikg=='))
       )

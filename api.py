@@ -45,11 +45,11 @@ api.add_resource(ContactCapabilities,
                  '/contacts/<int:contact_id>/capabilities/',
                  '/contacts/<int:contact_id>/capabilities/')
 api.add_resource(ContactCapabilitySuggestions,
-                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill',
-                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill/')
+                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/suggestion',
+                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/suggestion/')
 api.add_resource(ContactCapabilitySuggestionOne,
-                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill/<string:skill_id>',
-                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/skill/<string:skill_id>/')
+                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/suggestion/<string:skill_id>',
+                 '/contacts/<int:contact_id>/capabilities/<string:capability_id>/suggestion/<string:skill_id>/')
 api.add_resource(CapabilityRecommended,
                  '/capabilities',
                  '/capabilities/')
