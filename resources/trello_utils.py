@@ -374,6 +374,16 @@ class Card(object):
         result = query_card(self.id)
         return result
 
+    def checked_move_card(self, source_list, target_list):
+        '''This functions checks that a card is in the source_list
+        before moving it to the target_list. Always use this in the API
+        so cards don't get moved back into lists they've already been in
+        '''
+        if self.list != source_list:
+            # TODO: Create method for adding a comment to a card
+            print('ERROR: Card is not in the expected list')
+            return False
+        return self.move_card(target_list)
 
     def move_card(self, new_list):
         template = new_list.template
