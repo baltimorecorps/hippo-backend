@@ -44,7 +44,8 @@ class ProgramContactSchema(Schema):
     stage = fields.Integer()
     is_approved = fields.Boolean()
     is_active = fields.Boolean()
-    reviews = fields.Nested(ReviewSchema, many=True, dump_only=True)
+    reviews = fields.Nested(ReviewSchema, many=True, dump_only=True,
+                            cascade='all, delete, delete-orphan')
 
     class Meta:
         unknown = EXCLUDE

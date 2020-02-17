@@ -225,7 +225,7 @@ cycle_pfp = Cycle(
     intake_talent_board_id='5e37744114d9d01a03ddbcfe',
     intake_org_board_id='intake_org',
     match_talent_board_id='match_talent',
-    match_opp_board_id='match_opp',
+    match_opp_board_id='5e4acd35a35ee523c71f9e25',
     review_talent_board_id='5e3753cdaea77d37fce3496a',
 )
 
@@ -280,6 +280,7 @@ test_opp1 = Opportunity(
     title="Test Opportunity",
     short_description="This is a test opportunity.",
     gdoc_id="ABC123xx==",
+    card_id="card",
 )
 
 test_opp2 = Opportunity(
@@ -287,6 +288,7 @@ test_opp2 = Opportunity(
     title="Another Test Opportunity",
     short_description="This is another test opportunity.",
     gdoc_id="BBB222xx==",
+    card_id="card",
 )
 
 app_billy = OpportunityApp(

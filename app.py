@@ -37,8 +37,7 @@ def load_config(app, env):
         env = os.environ.get('DEPLOY_ENV')
 
     if env == 'local':
-        # Stick with the defaults
-        pass
+        load_from_env(app)
     elif env == 'dev':
         load_from_dev(app)
     elif env == 'prod':
@@ -88,7 +87,7 @@ def create_app(env=None):
 
     @login_manager.request_loader
     def load_test_user(user_id):
-        if (app.config.get('TESTING') 
+        if (app.config.get('TESTING')
                 and request.headers.get('X-Test-Authz')):
             assert app.config.get('DEPLOY_ENV') == 'test'
             return g.test_user
