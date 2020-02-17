@@ -1,6 +1,6 @@
 import os
 import os.path
-from flask import Flask, jsonify
+from flask import Flask, jsonify, g, request
 from flask_cors import CORS
 from flask_login import LoginManager
 from api import api_bp
@@ -85,6 +85,15 @@ def create_app(env=None):
     @login_manager.user_loader
     def load_user(user_id):
         return UserSession.query.get(user_id)
+
+    @login_manager.request_loader
+    def load_test_user(user_id):
+        if (app.config.get('TESTING') 
+                and request.headers.get('X-Test-Authz')):
+            assert app.config.get('DEPLOY_ENV') == 'test'
+            return g.test_user
+        return None
+
 
     from models.base_model import db
     db.init_app(app)

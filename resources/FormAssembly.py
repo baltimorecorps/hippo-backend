@@ -1,10 +1,12 @@
 from flask_restful import Resource, request
 from models.base_model import db
 from models.program_contact_model import ProgramContact, ProgramContactSchema
+from models.opportunity_model import OpportunitySchema
 from models.program_model import Program
 from models.review_model import Review
 from .Trello_Intake_Talent import get_intake_talent_board_id
 from .ProgramContacts import query_one_program_contact
+from .Opportunity import create_new_opportunity
 from .trello_utils import (
     query_board_data,
     update_card,
@@ -13,11 +15,26 @@ from .trello_utils import (
     BoardList
 )
 
+opportunity_schema = OpportunitySchema()
 program_contact_schema = ProgramContactSchema()
 
 def get_review_talent_board_id(program_id):
     program = Program.query.get(program_id)
     return program.current_cycle.review_talent_board_id
+
+class OpportunityIntakeApp(Resource):
+    def post(self):
+        from pprint import pprint
+        form_data = request.form
+        opp_data = {
+            'title': form_data['title'],
+            'short_description': '',
+            'gdoc_id': form_data['google_doc_id'],
+        }
+        opportunity = create_new_opportunity(opp_data)
+        result = opportunity_schema.dump(opportunity)
+        return {"status": 'success', 'data': result}, 201
+
 
 class TalentProgramApp(Resource):
 

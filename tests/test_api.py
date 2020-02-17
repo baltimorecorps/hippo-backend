@@ -14,6 +14,10 @@ from models.tag_item_model import TagItem
 from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
+from models.opportunity_model import Opportunity
+from models.opportunity_app_model import OpportunityApp, ApplicationStage
+
+from flask import g
 
 SKILLS = {
     'billy': [
@@ -130,6 +134,23 @@ PROGRAM_CONTACTS = {
     }
 }
 
+OPPORTUNITIES = {
+    'test_opp1': {
+        'id': '123abc',
+        'title': "Test Opportunity",
+        'short_description': "This is a test opportunity.",
+        'gdoc_id': "ABC123xx==",
+    },
+    'test_opp2': {
+        'id': '222abc',
+        'title': "Another Test Opportunity",
+        'short_description': "This is another test opportunity.",
+        'gdoc_id': "BBB222xx==",
+    },
+
+}
+
+
 CONTACTS = {
     'billy': {
         'id': 123,
@@ -191,6 +212,25 @@ CONTACTS = {
         'terms_agreement': True
     },
 }
+
+APPLICATIONS = {
+    'app_billy': {
+        'id': 'a1',
+        'contact': CONTACTS['billy'],
+        'opportunity': OPPORTUNITIES['test_opp1'],
+        'interest_statement': "I'm interested in this test opportunity",
+        'status': 'submitted',
+    },
+    'app_billy2': {
+        'id': 'a2',
+        'contact': CONTACTS['billy'],
+        'opportunity': OPPORTUNITIES['test_opp2'],
+        'interest_statement': "I'm also interested in this test opportunity",
+        'status': 'draft',
+    },
+
+}
+
 
 ACHIEVEMENTS = {
     'baltimore1': {
@@ -442,7 +482,12 @@ POSTS = {
         "birthdate": "1973-04-23",
         "account_id": 'test-valid|0123456789',
         "terms_agreement": True
-    }
+    },
+    'opportunity': {
+        "title": "Test Opportunity",
+        "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
+        "gdoc_id": "TESTABC11==",
+    },
 }
 
 def post_request(app, url, data):
@@ -511,6 +556,16 @@ def post_request(app, url, data):
       marks=pytest.mark.skip
       # TODO: unskip when trello stuff is mocked out
       )
+    ,pytest.param('/api/opportunity/',
+      POSTS['opportunity'],
+      lambda id: Opportunity.query.filter_by(title="Test Opportunity").first(),
+      )
+    ,pytest.param('/api/contacts/124/app/123abc/',
+      {},
+      lambda id: (OpportunityApp.query
+                  .filter_by(contact_id=124, opportunity_id='123abc').first()),
+      )
+
     ]
 )
 def test_post(app, url, data, query):
@@ -522,6 +577,7 @@ def test_post(app, url, data, query):
 
     id_ = post_request(app, url, data)
     assert query(id_) is not None
+
 
 @pytest.mark.skip
 def test_create_program_contact_with_contact(app):
@@ -541,6 +597,10 @@ def test_post_experience_date(app):
     assert Experience.query.get(id_).end_year == 2019
     assert Experience.query.get(id_).start_month == Month.september
     assert Experience.query.get(id_).start_year == 2000
+
+def test_post_opportunity_app_status(app):
+    id_ = post_request(app, '/api/contacts/124/app/123abc/', {})
+    assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
 
 @pytest.mark.skip
 def test_post_experience_null_degree(app):
@@ -626,6 +686,32 @@ def test_post_session(app):
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
 
+def test_post_formassembly_opportunity_intake(app):
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json', 
+    }
+
+    gdoc_id ='1b5erb67lgwvxj-g8u2iitvihhti6_nv-7dehdh8ldfw'
+
+    url = '/api/form-assembly/opportunity-app/'
+    data = f'google_doc_id={gdoc_id}&org=Balti&title=QA+Tester&salary_lower=50000&salary_upper=60000&google_doc_link=&capabilities%5B0%5D=tfa_16677&capabilities%5B1%5D=tfa_16678&supervisor_first_name=Billy&supervisor_last_name=Daly&supervisor_title=Director+of+Data&supervisor_email=billy%40baltimorecorps.org&supervisor_phone=4436408904&is_supervisor=tfa_16674&race=tfa_16656&gender=tfa_16662&pronouns=tfa_16668&response_id=157007055'
+
+    with app.test_client() as client:
+        response = client.post(url, data=data, headers=headers)
+        pprint(response.json)
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+
+        assert 'gdoc_id' in data
+        assert data['gdoc_id'] == gdoc_id
+        assert 'title' in data
+        assert data['title'] == 'QA Tester'
+
+        opp = Opportunity.query.filter_by(gdoc_id=gdoc_id).first()
+        assert opp is not None
+        assert opp.title == 'QA Tester'
+
 @pytest.mark.parametrize(
     "url,update,query,test",
     [('/api/contacts/123/',
@@ -686,6 +772,16 @@ def test_post_session(app):
       lambda: ProgramContact.query.get(5),
       lambda r: len(r.responses) == 1 and r.responses[0].response_text == 'Race and equity answer'
       )
+    ,('/api/opportunity/123abc/',
+      {'title': "New title"},
+      lambda: Opportunity.query.get('123abc'),
+      lambda r: r.title == 'New title',
+      )
+    ,('/api/contacts/123/app/123abc',
+      {'interest_statement': "New interest statement"},
+      lambda: OpportunityApp.query.get('a1'),
+      lambda r: r.interest_statement == 'New interest statement',
+      )
     ]
 )
 def test_put(app, url, update, query, test):
@@ -738,6 +834,77 @@ def test_put_preserves_list_fields(app, url, update, query, test):
         assert test(query())
 
 @pytest.mark.parametrize(
+    "url,update,old_id,new_id",
+    [('/api/contacts/123/',
+      {'id': 111, 'first_name': 'test'},
+      lambda: Contact.query.get(123),
+      lambda: Contact.query.get(111),
+      ),
+     ('/api/experiences/512/',
+      {'id': 555, 'host': 'test'},
+      lambda: Experience.query.get(512),
+      lambda: Experience.query.get(555),
+      )
+    ,('/api/contacts/123/programs/1/',
+      {'id': 555, 'stage': 2},
+      lambda: ProgramContact.query.get(5),
+      lambda: ProgramContact.query.get(555),
+      )
+    ,('/api/opportunity/123abc/',
+      {'id': 'aaaaaa', 'title': 'new title'},
+      lambda: Opportunity.query.get('123abc'),
+      lambda: Opportunity.query.get('aaaaaa'),
+      )
+    ]
+)
+def test_put_rejects_id_update(app, url, update, old_id, new_id):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        assert old_id() is not None, "Item to update should exist"
+        assert new_id() is None, "New id should not exist before test"
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert old_id() is not None, "Item to update should still exist"
+        assert new_id() is None, "New id should not exist after test"
+
+def test_put_rejects_app_stage_update(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {
+        'stage': 0,
+        'status': 'draft',
+    }
+    with app.test_client() as client:
+        response = client.put('/api/contacts/123/app/123abc/', 
+                              data=json.dumps(update),
+                              headers=headers)
+        assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
+
+def test_opportunity_app_submit(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {}
+    with app.test_client() as client:
+        assert OpportunityApp.query.get('a2').stage == ApplicationStage.draft.value
+        response = client.post('/api/contacts/123/app/222abc/submit/', 
+                              data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert OpportunityApp.query.get('a2').stage == ApplicationStage.submitted.value
+
+
+@pytest.mark.parametrize(
     "delete_url,query",
     [('/api/contacts/123?token=testing_token',
       lambda: Contact.query.get(123))
@@ -745,6 +912,7 @@ def test_put_preserves_list_fields(app, url, update, query, test):
     ,('/api/resumes/51/', lambda: Resume.query.get(51))
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: SkillItem.query.get(('n1N02ypni69EZg0SggRIIg==', 123)))
+    ,('/api/opportunity/123abc/', lambda: Opportunity.query.get('123abc'))
     ]
 )
 def test_delete(app, delete_url, query):
@@ -772,6 +940,8 @@ def test_delete(app, delete_url, query):
     ,('/api/resumes/51/', RESUMES['billy'])
     ,('/api/contacts/123/skills', SKILLS['billy'])
     ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
+    ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
+    ,('/api/contacts/123/app/123abc', APPLICATIONS['app_billy'])
     ]
 )
 def test_get(app, url, expected):
@@ -822,6 +992,7 @@ def test_get_autocomplete(app):
     ,('/api/contacts/123/tags/', TAG_ITEMS.values())
     ,('/api/contacts/123/resumes/', RESUMES.values())
     ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
+    ,('/api/opportunity/', OPPORTUNITIES.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):
@@ -863,3 +1034,47 @@ def test_generate_resume(app, url, input, output):
         data = json.loads(response.data)['data']
         assert len(data) > 0
         assert data == output
+
+
+def make_session(contact_id, permissions=[]):
+    return UserSession(
+        id="fake_session_id",
+        auth_id="fake_auth_id",
+        contact_id=contact_id,
+        jwt=json.dumps({'permissions': permissions}),
+        expiration=(dt.datetime.utcnow() + dt.timedelta(days=1)),
+    )
+
+@pytest.mark.parametrize(
+    "method,url,data,successes,failures",
+    [pytest.param(
+        'POST',
+        '/api/opportunity/',
+      POSTS['opportunity'],
+      [make_session(1, ['write:opportunity'])],
+      [make_session(1)])
+    ]
+)
+def test_authz(app, method, url, data, successes, failures):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'X-Test-Authz': '1',
+    }
+
+    for success in successes:
+        with app.test_client() as client:
+            g.test_user = success
+            client_method = getattr(client, method.lower())
+            response = client_method(url, data=json.dumps(data), headers=headers)
+            assert response.status_code != 401
+
+    for failure in failures:
+        with app.test_client() as client:
+            g.test_user = failure
+            client_method = getattr(client, method.lower())
+            response = client_method(url, data=json.dumps(data), headers=headers)
+            assert response.status_code == 401
+
+
