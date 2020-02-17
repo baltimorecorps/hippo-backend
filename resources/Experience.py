@@ -165,6 +165,9 @@ class ExperienceOne(Resource):
 
         for k,v in data.items():
             setattr(exp, k, v)
+
+        # This has to come before updaing achievements, otherwise deleting a
+        # skill here could wipe out an achievement skill that was just added
         if skills is not None:
             sync_skills(skills, exp)
 
