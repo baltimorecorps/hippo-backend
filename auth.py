@@ -187,7 +187,6 @@ def get_current_user_permissions():
 
 def has_permission(permission):
     permissions = get_current_user_permissions()
-    print(permissions, permission)
     return permission in permissions
 
 def is_authorized_with_permission(permission):

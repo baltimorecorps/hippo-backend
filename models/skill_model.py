@@ -99,7 +99,7 @@ class SkillSchema(Schema):
         unknown = EXCLUDE
 
 class SkillRecommendationSchema(Schema):
-    capabiliity_id = fields.String(required=True, load_only=True)
+    capability_id = fields.String(required=True, load_only=True)
     skill_id = fields.String(required=True, load_only=True)
     skill = fields.Nested(SkillSchema, dump_only=True)
     order = fields.Integer(required=True)

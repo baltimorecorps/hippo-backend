@@ -389,6 +389,7 @@ def populate(db):
 
     # Test deleted skills as well
     billy.add_skill(get_skill('Event Planning'))
+    outreach_capability.related_skills.append(get_skill('Event Planning'))
     a_baltimore2.add_skill(get_skill('Event Planning'))
     billy_eventplan = get_contact_skill(123, 'Event Planning')
     billy_eventplan.deleted = True

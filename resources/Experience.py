@@ -26,6 +26,8 @@ type_list = [m for m in Type.__members__.keys()]
 def add_achievements(achievements, experience):
     for achievement in achievements:
         a = Achievement(description=achievement['description'])
+        if 'id' in achievement:
+            a.id = achievement['id']
         a.contact = experience.contact
         a.experience = experience
         if 'skills' in achievement:
@@ -43,6 +45,7 @@ def add_skills(skills, experience):
         experience.add_skill(skill)
 
 def sync_skills(skills, experience):
+    print(skills)
     add_skills(skills, experience)
 
     current_skills = {s['name'] for s in skills}
@@ -162,12 +165,13 @@ class ExperienceOne(Resource):
 
         for k,v in data.items():
             setattr(exp, k, v)
-        if achievements:
+        if skills is not None:
+            sync_skills(skills, exp)
+
+        if achievements is not None:
             del exp.achievements[:]
             add_achievements(achievements, exp)
 
-        if skills:
-            sync_skills(skills, exp)
 
         db.session.commit()
         result = experience_schema.dump(exp)

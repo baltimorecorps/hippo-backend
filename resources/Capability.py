@@ -23,6 +23,7 @@ from auth import (
     is_authorized_write, 
     unauthorized
 )
+from marshmallow import ValidationError
 
 
 capability_schema = CapabilitySchema()
@@ -88,15 +89,14 @@ class ContactCapabilitySuggestionOne(Resource):
             return unauthorized()
 
         (result, status_code) = delete_skill(contact_id, skill_id)
-        print(result, status_code)
         if status_code != 200:
             return result, status_code
         
         suggestion = CapabilitySkillSuggestion.query.get(
             (contact_id, capability_id, skill_id))
-        print(suggestion)
-        db.session.delete(suggestion)
-        db.session.commit()
+        if suggestion is not None:
+            db.session.delete(suggestion)
+            db.session.commit()
 
         return {'status': 'success'}, 200
 
@@ -135,6 +135,7 @@ def get_capability_skill_items(contact_id, capability_id):
             .join(Skill)
             .join(Skill.capabilities)
             .filter(ContactSkill.contact_id == contact_id)
+            .filter(ContactSkill.deleted == False)
             .filter(Capability.id == capability_id)
             .all())
 
@@ -144,6 +145,7 @@ def get_suggested_skill_items(contact_id, capability_id):
                   and_(CapabilitySkillSuggestion.contact_id == ContactSkill.contact_id,
                        CapabilitySkillSuggestion.skill_id == ContactSkill.skill_id))
             .filter(ContactSkill.contact_id == contact_id)
+            .filter(ContactSkill.deleted == False)
             .filter(CapabilitySkillSuggestion.contact_id == contact_id)
             .filter(CapabilitySkillSuggestion.capability_id == capability_id)
             .all())
@@ -199,3 +201,4 @@ class ContactCapabilities(Resource):
             'other_skills': skill_names_schema.dump(other_skill_map.values())
         }
         return {'status': 'success', 'data': result}, 200
+

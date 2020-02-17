@@ -21,7 +21,6 @@ class Session(Resource):
     }
 
     def get(self):
-        print(current_user)
         result = session_schema.dump(current_user)
         return {'status': 'success', 'data': result }, 200
 

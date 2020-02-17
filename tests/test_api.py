@@ -653,6 +653,7 @@ def test_post_experience_achievement_skills(app):
     assert skills[1]['name'] == 'Test Skill 1'
     assert skills[1]['capability_id'] is None
 
+
 def test_post_contact_skill(app):
     url, update = ('/api/contacts/123/skills/', { 'name': 'C++', })
 
@@ -685,13 +686,25 @@ def test_post_contact_skill_suggestion(app):
     assert len(response['suggested_capabilities']) == 1
     assert response['suggested_capabilities'][0]['id'] == 'cap:it'
 
-
     contact_skill = ContactSkill.query.filter_by(
         contact_id=123,
         skill_id='_s-apdaP_WZpH69G8hlcGA==',
         deleted=False,
     ).first()
     assert contact_skill is not None
+
+def test_post_contact_skill_undelete(app):
+    url, update = ('/api/contacts/123/skills/', { 'name': 'Event Planning', })
+
+    _, response = post_request(app, url, update)
+    exp = Experience.query.get(513)
+    exp_skills = list(map(lambda s: s.name, exp.skills))
+    print(exp_skills)
+    assert 'Event Planning' in exp_skills
+    achievement_skills = list(map(lambda s: s['name'], exp.achievements[1].skills))
+    print(achievement_skills)
+    assert 'Event Planning' in achievement_skills
+
 
 # TODO: unskip when trello stuff is mocked out
 @pytest.mark.skip
@@ -776,11 +789,23 @@ def skill_name(skill):
       {'achievements': EXPERIENCES['baltimore']['achievements'][0:2] + [{
           'id': 83,
           'description': 'Developed recruitment projection tools to model and track progress to goals.',
-          'skills': [{'name': 'Recruitment'}],
+          'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
       }]},
       lambda: Experience.query.get(513),
       lambda e: (len(e.achievements[-1].skills) == 1 
-                 and e.achievements[-1].skills[0]['name'] == 'Recruitment'),
+                 and e.achievements[-1].skills[0]['name'] == 'Python'
+                 and e.achievements[-1].skills[0]['capability_id'] == 'cap:it'),
+      )
+    ,('/api/experiences/513/',
+      {'achievements': EXPERIENCES['baltimore']['achievements'][0:2] + [{
+          'id': 83,
+          'description': 'Developed recruitment projection tools to model and track progress to goals.',
+          'skills': [{'name': 'Recruitment', 'capability_id': 'cap:outreach'}],
+      }]},
+      lambda: Experience.query.get(513),
+      lambda e: (len(e.achievements[-1].skills) == 1 
+                 and e.achievements[-1].skills[0]['name'] == 'Recruitment'
+                 and e.achievements[-1].skills[0]['capability_id'] == 'cap:outreach'),
       )
 
     ,('/api/experiences/513/',
@@ -882,14 +907,19 @@ def test_put_update_achievement_skills(app):
         'Accept': mimetype
     }
     url = '/api/experiences/513/'
-    update = {'achievements': EXPERIENCES['baltimore']['achievements'][0:2] + [{
-        'id': 83,
-        'description': 'Developed recruitment projection tools to model and track progress to goals.',
-        'skills': [{'name': 'Recruitment'}],
-    }]} 
+    update = {
+        'achievements': 
+              EXPERIENCES['baltimore']['achievements'][0:2] + [{
+                  'id': 83,
+                  'description': 'Developed recruitment projection tools to model and track progress to goals.',
+                  'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
+              }],
+        # Achievement skills should add to experience level skills
+        'skills': [], 
+    } 
     query = lambda: Experience.query.get(513)
     test = lambda e: (len(e.achievements[-1].skills) == 1 
-                      and e.achievements[-1].skills[0]['name'] == 'Recruitment')
+                      and e.achievements[-1].skills[0]['name'] == 'Python')
     with app.test_client() as client:
         assert query() is not None, "Item to update should exist"
         assert not test(query())
@@ -897,10 +927,13 @@ def test_put_update_achievement_skills(app):
                               headers=headers)
         pprint(response.json)
         assert response.status_code == 200
+        data = response.json['data']
+        assert data['achievements'][-1]['skills'][0]['name'] == 'Python'
+        assert data['achievements'][-1]['skills'][0]['capability_id'] == 'cap:it'
         exp = query()
         assert test(exp)
         skill_names = {skill.name for skill in exp.skills}
-        assert 'Recruitment' in skill_names
+        assert 'Python' in skill_names
 
 
 def test_contact_put_preserves_experience_skills(app):
