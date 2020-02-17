@@ -50,7 +50,7 @@ class Achievement(db.Model):
 
 class AchievementSkillItemSchema(Schema):
     name = fields.String(required=True)
-    capability_id = fields.String()
+    capability_id = fields.String(required=False, missing=None)
 
     class Meta:
         unknown = EXCLUDE
