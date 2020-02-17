@@ -15,7 +15,10 @@ from resources.Trello_Intake_Talent import (
 )
 from resources.Opportunity import OpportunityAll, OpportunityOne
 from resources.OpportunityApp import OpportunityAppOne, OpportunityAppSubmit
-from resources.FormAssembly import TalentProgramApp
+from resources.FormAssembly import (
+    TalentProgramApp,
+    OpportunityIntakeApp,
+)
 
 api_bp = Blueprint('api',__name__)
 api = Api(api_bp)
@@ -98,6 +101,9 @@ api.add_resource(IntakeTalentCard,
 api.add_resource(TalentProgramApp,
                  '/form-assembly/talent-app',
                  '/form-assembly/talent-app/')
+api.add_resource(OpportunityIntakeApp,
+                 '/form-assembly/opportunity-app',
+                 '/form-assembly/opportunity-app/')
 api.add_resource(Session,
                  '/session/',
                  '/session')

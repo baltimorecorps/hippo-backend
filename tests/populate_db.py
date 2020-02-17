@@ -279,14 +279,14 @@ test_opp1 = Opportunity(
     id='123abc',
     title="Test Opportunity",
     short_description="This is a test opportunity.",
-    gdoc_link="https://docs.google.com/example-link",
+    gdoc_id="ABC123xx==",
 )
 
 test_opp2 = Opportunity(
     id='222abc',
     title="Another Test Opportunity",
     short_description="This is another test opportunity.",
-    gdoc_link="https://docs.google.com/example-link-2",
+    gdoc_id="BBB222xx==",
 )
 
 app_billy = OpportunityApp(

@@ -139,13 +139,13 @@ OPPORTUNITIES = {
         'id': '123abc',
         'title': "Test Opportunity",
         'short_description': "This is a test opportunity.",
-        'gdoc_link': "https://docs.google.com/example-link",
+        'gdoc_id': "ABC123xx==",
     },
     'test_opp2': {
         'id': '222abc',
         'title': "Another Test Opportunity",
         'short_description': "This is another test opportunity.",
-        'gdoc_link': "https://docs.google.com/example-link-2",
+        'gdoc_id': "BBB222xx==",
     },
 
 }
@@ -486,7 +486,7 @@ POSTS = {
     'opportunity': {
         "title": "Test Opportunity",
         "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
-        "gdoc_link": "https://example.com/testdoc",
+        "gdoc_id": "TESTABC11==",
     },
 }
 
@@ -577,6 +577,7 @@ def test_post(app, url, data, query):
 
     id_ = post_request(app, url, data)
     assert query(id_) is not None
+
 
 @pytest.mark.skip
 def test_create_program_contact_with_contact(app):
@@ -684,6 +685,32 @@ def test_post_session(app):
 
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
+
+def test_post_formassembly_opportunity_intake(app):
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json', 
+    }
+
+    gdoc_id ='1b5erb67lgwvxj-g8u2iitvihhti6_nv-7dehdh8ldfw'
+
+    url = '/api/form-assembly/opportunity-app/'
+    data = f'google_doc_id={gdoc_id}&org=Balti&title=QA+Tester&salary_lower=50000&salary_upper=60000&google_doc_link=&capabilities%5B0%5D=tfa_16677&capabilities%5B1%5D=tfa_16678&supervisor_first_name=Billy&supervisor_last_name=Daly&supervisor_title=Director+of+Data&supervisor_email=billy%40baltimorecorps.org&supervisor_phone=4436408904&is_supervisor=tfa_16674&race=tfa_16656&gender=tfa_16662&pronouns=tfa_16668&response_id=157007055'
+
+    with app.test_client() as client:
+        response = client.post(url, data=data, headers=headers)
+        pprint(response.json)
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+
+        assert 'gdoc_id' in data
+        assert data['gdoc_id'] == gdoc_id
+        assert 'title' in data
+        assert data['title'] == 'QA Tester'
+
+        opp = Opportunity.query.filter_by(gdoc_id=gdoc_id).first()
+        assert opp is not None
+        assert opp.title == 'QA Tester'
 
 @pytest.mark.parametrize(
     "url,update,query,test",
