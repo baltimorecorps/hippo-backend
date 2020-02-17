@@ -72,7 +72,7 @@ CYCLES = {
         'intake_talent_board_id': '5e37744114d9d01a03ddbcfe',
         'intake_org_board_id': 'intake_org',
         'match_talent_board_id': 'match_talent',
-        'match_opp_board_id': 'match_opp',
+        'match_opp_board_id': '5e4acd35a35ee523c71f9e25',
         'is_active': True,
         'review_talent_board_id': '5e3753cdaea77d37fce3496a'
     }
@@ -140,12 +140,14 @@ OPPORTUNITIES = {
         'title': "Test Opportunity",
         'short_description': "This is a test opportunity.",
         'gdoc_id': "ABC123xx==",
+        'status': 'submitted',
     },
     'test_opp2': {
         'id': '222abc',
         'title': "Another Test Opportunity",
         'short_description': "This is another test opportunity.",
         'gdoc_id': "BBB222xx==",
+        'status': 'submitted',
     },
 
 }
@@ -648,7 +650,7 @@ def test_post_contact(app):
         'Authorization': 'Bearer test-valid|0123456789',
     }
     with app.test_client() as client:
-        response = client.post('/api/contacts/', 
+        response = client.post('/api/contacts/',
                                data=json.dumps(POSTS['contact']),
                                headers=headers)
         assert response.status_code == 201
@@ -683,7 +685,7 @@ def test_post_session(app):
 def test_post_formassembly_opportunity_intake(app):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json', 
+        'Accept': 'application/json',
     }
 
     gdoc_id ='1b5erb67lgwvxj-g8u2iitvihhti6_nv-7dehdh8ldfw'
@@ -878,7 +880,7 @@ def test_put_rejects_app_stage_update(app):
         'status': 'draft',
     }
     with app.test_client() as client:
-        response = client.put('/api/contacts/123/app/123abc/', 
+        response = client.put('/api/contacts/123/app/123abc/',
                               data=json.dumps(update),
                               headers=headers)
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
@@ -892,7 +894,7 @@ def test_opportunity_app_submit(app):
     update = {}
     with app.test_client() as client:
         assert OpportunityApp.query.get('a2').stage == ApplicationStage.draft.value
-        response = client.post('/api/contacts/123/app/222abc/submit/', 
+        response = client.post('/api/contacts/123/app/222abc/submit/',
                               data=json.dumps(update),
                               headers=headers)
         assert response.status_code == 200
@@ -1072,5 +1074,3 @@ def test_authz(app, method, url, data, successes, failures):
             client_method = getattr(client, method.lower())
             response = client_method(url, data=json.dumps(data), headers=headers)
             assert response.status_code == 401
-
-
