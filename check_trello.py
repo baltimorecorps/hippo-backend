@@ -10,8 +10,14 @@ from resources.trello_utils import (
 )
 
 REVIEW_BOARDS = {
-    'local': '',
+    'local': '5e3753cdaea77d37fce3496a',
     'dev': '5e39bb0daf879105b1c24462',
+    'production': '',
+}
+
+OPP_BOARDS = {
+    'local': '5e4acd35a35ee523c71f9e25',
+    'dev': '',
     'production': '',
 }
 
@@ -26,17 +32,30 @@ def check_review_options(env):
 
     pprint(opt_values)
     assert opt_values == [
-        'Approved', 
+        'Approved',
         'Approved with reservations',
         'Not a Fit',
     ]
+
+def check_opportunity_board_custom_fields(env):
+    board_id = OPP_BOARDS[env]
+    board = Board(query_board_data(board_id))
+    gdoc_id = board.custom_fields['name'].get('Google Doc ID')
+    assert gdoc_id is not None
+    assert gdoc_id.type == 'text'
+
+    opp_id = board.custom_fields['name'].get('Opp ID')
+    assert opp_id is not None
+    assert opp_id.type == 'text'
 
 
 def main(env):
     app = create_app(env)
     with app.app_context():
+        check_opportunity_board_custom_fields(env)
         check_review_options(env)
 
 if __name__ == '__main__':
-    main('dev')
-
+    import sys
+    main_argv = sys.argv[1]
+    main(main_argv)
