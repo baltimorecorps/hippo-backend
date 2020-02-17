@@ -5,10 +5,3 @@ install:
 - pip install -r requirements.txt
 script:
 - pytest
-deploy:
-  provider: heroku
-  app:
-    dev: bcorps-hippo-backend-staging
-    master: bcorps-hippo-backend
-  api_key:
-    secure: nlWtRfCvFFFKZiGuhuSxCmByGWNWgxenxUkrmh0bEV7t3jikqtZLWj+vvUqgGucWTiqt98lL2x8wXwLWpE1Df7OwLq7rUJ1Qk4vC9D5W7tHI2DtgaiR9qoI2ZjtErE6kiMvq7PPKjnVG6Pa2tO4b10bHifMOqmsWbJDtJkekl2f1+bN3mznYH89hwJWHr4I/llP3T+XN6HaXkBbi0u9ZUtC0bC8uiYfx71Q4KoEfYclgeHCrfnQpZH5Mr6nnx0i//RIvgb37QDolfrE6e9yyMuVjftEydIIR/iKoRbgMRTJkcOuWOc4TG1UD9lf6mP2Xo9jR2wjlHEhTSLj0l12IcXazeHKJSua+9j9/OMlzMTEunnawPB8d9jjyVupezofNvmN71QXP87KOCLjGDexdDvuAIhuSwtX4bEcvSHxcBmORQxyMVuP550Ngb/ViOUMXJJXE0Bwmt3h1h8YH1KMH6ojC/Kyjlbd2xg6BvAjoMfioar+q2ncJI5R23JqFVxLXD5xALqWvoGED/upGqbfxFzwBEC5jyhxb4WuLtqZZVPHQAOtq+lsF/x04Xxw7E20iRbGg/uBTYsGgv3xNzWGbJvjTI8ypOPlp90pH0ubT5WL9Gb+Q/6UPFOHSknRDD35zTVfWSomXn2KxT0ozusUQc/TLl4OIj2E2DGVgC9IpeQ8=
