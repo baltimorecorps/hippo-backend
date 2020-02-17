@@ -42,7 +42,7 @@ def test_create_program_contact_with_contact(app):
         'Authorization': 'Bearer test-valid|0123456789',
     }
     with app.test_client() as client:
-        response = client.post('/api/contacts/', 
+        response = client.post('/api/contacts/',
                                data=json.dumps(POSTS['contact']),
                                headers=headers)
 
@@ -69,7 +69,7 @@ def test_post_contact(app):
         'Authorization': 'Bearer test-valid|0123456789',
     }
     with app.test_client() as client:
-        response = client.post('/api/contacts/', 
+        response = client.post('/api/contacts/',
                                data=json.dumps(POSTS['contact']),
                                headers=headers)
         assert response.status_code == 201
@@ -85,7 +85,7 @@ def test_post_contact(app):
 def test_post_formassembly_opportunity_intake(app):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json', 
+        'Accept': 'application/json',
     }
 
     card_id = '5e4acdc9ff72ae8a84b4204a'
@@ -97,9 +97,9 @@ def test_post_formassembly_opportunity_intake(app):
 
     pprint(card.data)
 
-    gdoc_id = '1b5erb67lgwvxj-g8u2iitvihhti6_nv-7dehdh8ldfw'
+    gdoc_id = '1B5ERb67LGwvxJ-g8u2iiTVIhHTi6_nv-7DeHdH8Ldfw'
     url = '/api/form-assembly/opportunity-app/'
-    data = f'google_doc_id={gdoc_id}&org=Balti&title=QA+Tester&salary_lower=50000&salary_upper=60000&google_doc_link=&capabilities%5B0%5D=tfa_16677&capabilities%5B1%5D=tfa_16678&supervisor_first_name=Billy&supervisor_last_name=Daly&supervisor_title=Director+of+Data&supervisor_email=billy%40baltimorecorps.org&supervisor_phone=4436408904&is_supervisor=tfa_16674&race=tfa_16656&gender=tfa_16662&pronouns=tfa_16668&response_id=157007055'
+    data = f'google_doc_id={gdoc_id}&org=Balti&title=QA+Tester&salary_lower=50000&salary_upper=60000&google_doc_link=&capabilities%5B0%5D=tfa_16677&capabilities%5B1%5D=tfa_16678&supervisor_first_name=Billy&supervisor_last_name=Daly&supervisor_title=Director+of+Data&supervisor_email=billy%40baltimorecorps.org&supervisor_phone=4436408904&is_supervisor=tfa_16674&race=tfa_16656&gender=tfa_16662&pronouns=tfa_16668&response_id=157007055&program_id=1'
 
     with app.test_client() as client:
         response = client.post(url, data=data, headers=headers)
@@ -119,7 +119,5 @@ def test_post_formassembly_opportunity_intake(app):
         board = Board(query_board_data(LOCAL_OPP_BOARD))
         card = board.cards.get(card_id)
         assert card is not None
-        assert card.custom_fields['Opp ID']['value'] == opp.id 
-        assert card.stage == 1 
-
-
+        assert card.custom_fields['Opp ID']['value'] == opp.id
+        assert card.stage == 1
