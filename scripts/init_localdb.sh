@@ -18,7 +18,7 @@ if [ -z "$(docker ps -f name=hippo_localdb -q)" ]; then
 fi
 
 run_db_cmd () {
-    docker run -it --rm --network hippo-localdb \
+    docker run -i --rm --network hippo-localdb \
                -e PGPASSWORD=localdbpw postgres \
            psql -h hippo_localdb -U postgres $@
 }
@@ -29,6 +29,8 @@ if ! run_db_cmd localdb -c "SELECT 1" >/dev/null; then
     source env/bin/activate
     python migrate.py db upgrade
     echo "Created database localdb."
+    cat common/local_base_data.sql | run_db_cmd localdb
+    echo "Added base data."
 else
     echo "Database localdb already found, skipping init"
 fi
