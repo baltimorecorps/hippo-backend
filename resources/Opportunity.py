@@ -12,6 +12,16 @@ from models.opportunity_model import Opportunity, OpportunitySchema
 
 from auth import is_authorized_with_permission, unauthorized
 
+def create_new_opportunity(opportunity_data):
+    # Make a new random id
+    opportunity_data['id'] = str(uuid.uuid4())
+    opportunity = Opportunity(**opportunity_data)
+
+    db.session.add(opportunity)
+    db.session.commit()
+    return opportunity
+
+
 opportunity_schema = OpportunitySchema()
 opportunities_schema = OpportunitySchema(many=True)
 class OpportunityAll(Resource):
@@ -36,11 +46,7 @@ class OpportunityAll(Resource):
             return e.messages, 422
 
         # Make a new random id
-        data['id'] = str(uuid.uuid4())
-        opportunity = Opportunity(**data)
-
-        db.session.add(opportunity)
-        db.session.commit()
+        opportunity = create_new_opportunity(data)
         result = opportunity_schema.dump(opportunity)
         return {"status": 'success', 'data': result}, 201
 
