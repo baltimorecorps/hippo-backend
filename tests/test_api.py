@@ -559,6 +559,7 @@ def post_request(app, url, data):
     ,pytest.param('/api/opportunity/',
       POSTS['opportunity'],
       lambda id: Opportunity.query.filter_by(title="Test Opportunity").first(),
+      marks=pytest.mark.skip
       )
     ,pytest.param('/api/contacts/124/app/123abc/',
       {},
@@ -581,7 +582,7 @@ def test_post(app, url, data, query):
 
 @pytest.mark.skip
 def test_create_program_contact_with_contact(app):
-    id_ = post_request(app, 'api/contacts/', POSTS['contact'])
+    id_ = post_request(app, '/api/contacts/', POSTS['contact'])
     program_contacts = Contact.query.get(id_).programs
     assert len(program_contacts) == 1
     assert program_contacts[0].program_id == 1
@@ -601,14 +602,6 @@ def test_post_experience_date(app):
 def test_post_opportunity_app_status(app):
     id_ = post_request(app, '/api/contacts/124/app/123abc/', {})
     assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
-
-@pytest.mark.skip
-def test_post_experience_null_degree(app):
-    exp = POSTS['experience'].copy()
-    exp['degree'] = None
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
-    assert Experience.query.get(id_) is not None
-    pprint(Experience.query.get(id_).degree)
 
 def test_post_experience_null_start_date(app):
     exp = POSTS['experience'].copy()
@@ -686,6 +679,7 @@ def test_post_session(app):
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
 
+@pytest.mark.skip
 def test_post_formassembly_opportunity_intake(app):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -772,10 +766,11 @@ def test_post_formassembly_opportunity_intake(app):
       lambda: ProgramContact.query.get(5),
       lambda r: len(r.responses) == 1 and r.responses[0].response_text == 'Race and equity answer'
       )
-    ,('/api/opportunity/123abc/',
+    ,pytest.param('/api/opportunity/123abc/',
       {'title': "New title"},
       lambda: Opportunity.query.get('123abc'),
       lambda r: r.title == 'New title',
+      marks=pytest.mark.skip
       )
     ,('/api/contacts/123/app/123abc',
       {'interest_statement': "New interest statement"},
@@ -1052,7 +1047,8 @@ def make_session(contact_id, permissions=[]):
         '/api/opportunity/',
       POSTS['opportunity'],
       [make_session(1, ['write:opportunity'])],
-      [make_session(1)])
+      [make_session(1)],
+      marks=pytest.mark.skip)
     ]
 )
 def test_authz(app, method, url, data, successes, failures):

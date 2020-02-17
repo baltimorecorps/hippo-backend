@@ -48,12 +48,28 @@ def check_opportunity_board_custom_fields(env):
     assert opp_id is not None
     assert opp_id.type == 'text'
 
+def check_opportunity_board_lists(env):
+    board_id = OPP_BOARDS[env]
+    board = Board(query_board_data(board_id))
+    BOARD_NAMES = [ 
+        'Started',
+        'Submitted',
+        'Approved',
+        'Posted',
+        'Interviewing',
+        'Filled',
+    ]
+    for stage, name in enumerate(BOARD_NAMES):
+        list_ = board.lists['stage'][stage]
+        assert list_.name == name, f'At stage {stage}, {list_.name} != {name}'
+
 
 def main(env):
     app = create_app(env)
     with app.app_context():
-        check_opportunity_board_custom_fields(env)
         check_review_options(env)
+        check_opportunity_board_custom_fields(env)
+        check_opportunity_board_lists(env)
 
 if __name__ == '__main__':
     import sys
