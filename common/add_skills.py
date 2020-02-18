@@ -4,7 +4,7 @@ from models.skill_model import (
     SkillRecommendation,
     CapabilitySkillSuggestion
 )
-from resources.skill_utils import get_skill_id, make_skill
+from resources.skill_utils import get_skill_id, get_or_make_skill
 
 CAPABILITIES = {
     ('cap:advocacy', 'Advocacy and Public Policy'): [
@@ -72,8 +72,8 @@ def get_skill(name):
     return Skill.query.get(get_skill_id(name))
 
 def populate(db):
-    for skill in capabilities_to_skills():
-        db.session.add(Skill(id=get_skill_id(skill), name=skill))
+    for name in capabilities_to_skills():
+        db.session.add(get_or_make_skill(name))
     for id_, name in CAPABILITIES:
         db.session.add(Capability(id=id_, name=name))
     db.session.commit()
