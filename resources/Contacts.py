@@ -6,7 +6,6 @@ from models.contact_model import Contact, ContactSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
-from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
 from .ProgramContacts import create_program_contact
@@ -22,19 +21,25 @@ from auth import (
     unauthorized
 )
 
-from .skill_utils import get_skill_id, make_skill
+from models.skill_model import Skill
+from .skill_utils import get_skill_id, get_or_make_skill
 
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
 
 def add_skills(skills, contact):
-    for skill in skills:
-        s = SkillItem.query.get((get_skill_id(skill['name']),
-                                 contact.id))
-        if not s:
-            s = make_skill(skill['name'], contact.id)
-        contact.skills.append(s)
+    for skill_data in skills:
+        skill = get_or_make_skill(skill_data['name'])
+        contact.add_skill(skill)
+
+def sync_skills(skills, contact):
+    add_skills(skills, contact)
+
+    current_skills = {s['name'] for s in skills}
+    for skill_item in contact.skill_items:
+        if skill_item.skill.name not in current_skills:
+            skill_item.deleted = True
 
 class ContactAll(Resource):
     method_decorators = {
@@ -136,8 +141,7 @@ class ContactOne(Resource):
             contact.email_primary = Email(**email)
 
         if skills:
-            del contact.skills[:]
-            add_skills(skills, contact)
+            sync_skills(skills, contact)
 
         db.session.commit()
         result = contact_schema.dump(contact)

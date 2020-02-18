@@ -30,6 +30,7 @@ if ! run_db_cmd localdb -c "SELECT 1" >/dev/null; then
     python migrate.py db upgrade
     echo "Created database localdb."
     cat common/local_base_data.sql | run_db_cmd localdb
+    python init_db_local.py
     echo "Added base data."
 else
     echo "Database localdb already found, skipping init"

@@ -12,8 +12,8 @@ class TagItem(db.Model):
     score = db.Column(db.Integer)
 
     #relationships
-    contact = db.relationship('Contact', back_populates='tags')
-    tag = db.relationship('Tag', back_populates='contacts')
+    #contact = db.relationship('Contact', back_populates='tags')
+    #tag = db.relationship('Tag', back_populates='contacts')
     resumes = db.relationship('ResumeItem', back_populates='tag',
                               cascade='all, delete, delete-orphan')
 

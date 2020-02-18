@@ -3,8 +3,16 @@ import unicodedata
 import base64
 from hashlib import blake2b
 
-from models.skill_model import SkillItem
+from models.skill_model import Skill
 from .skill_list import SKILL_LIST
+from models.skill_model import (
+    Capability, 
+    CapabilitySchema, 
+    CapabilitySkillSuggestion,
+    Skill,
+    SkillSchema, 
+    SkillRecommendationSchema
+)
 
 TO_WHITESPACE = str.maketrans('-/_()', '     ')
 
@@ -20,12 +28,34 @@ def get_skill_id(skill):
     skill_bytes = normalize_skill_name(skill).encode('utf8');
     return base64.urlsafe_b64encode(blake2b(skill_bytes, digest_size=16).digest()).decode('utf8')
 
-def make_skill(name, contact_id):
-    return SkillItem(
+
+def make_skill(name):
+    return Skill(
         id=get_skill_id(name),
         name=name,
-        contact_id=contact_id
     )
+
+def get_or_make_skill(name):
+    id_ = get_skill_id(name)
+    skill = Skill.query.get(id_)
+    if not skill:
+        skill = make_skill(name)
+    return skill
+
+skill_schema = SkillSchema()
+capability_names_schema = CapabilitySchema(only=('id','name'), many=True)
+def dump_skill_with_capabilities(skill, contact_id):
+    result = skill_schema.dump(skill)
+    result['capabilities'] = capability_names_schema.dump(skill.capabilities)
+    result['suggested_capabilities'] = capability_names_schema.dump(
+        Capability.query
+        .join(CapabilitySkillSuggestion, 
+              Capability.id == CapabilitySkillSuggestion.capability_id)
+        .filter(CapabilitySkillSuggestion.skill_id==skill.id)
+        .filter(CapabilitySkillSuggestion.contact_id==contact_id)
+        .all())
+    return result
+
 
 def _sort_key(match):
     # Put all exact matches first

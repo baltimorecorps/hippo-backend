@@ -9,42 +9,94 @@ from models.contact_model import Contact
 from models.experience_model import Experience, Month
 from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
-from models.tag_model import Tag
-from models.tag_item_model import TagItem
-from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
+from models.skill_model import (
+    CapabilitySkillSuggestion
+)
+from models.skill_item_model import (
+    ContactSkill, 
+    ExperienceSkill, 
+    AchievementSkill,
+)
 
 from flask import g
 
 SKILLS = {
     'billy': [
         {
+            'id': '74BgThI2os9wEdyArofEKA==',
+            'name': 'Community Organizing',
+        },
+        {
+            'id': 'QUEVjv1tcq6uLmzCku6ikg==',
+            'name': 'Flask',
+        },
+        {
             'id': 'n1N02ypni69EZg0SggRIIg==',
             'name': 'Public Health',
-            'contact_id': 123
         },
         {
             'id': '4R9tqGuK2672PavRTJrN_A==',
             'name': 'Python',
-            'contact_id': 123
         },
         {
             'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
             'name': 'Web Development',
-            'contact_id': 123
-        }
+        },
     ],
     'obama': [
         {
             'id': 'n1N02ypni69EZg0SggRIIg==',
             'name': 'Public Health',
-            'contact_id': 124
         },
     ],
 }
+
+CAPABILITIES = {
+    'billy': {
+        'contact_id': 123,
+        'capabilities': [
+            {
+                'id': 'cap:it',
+                'name': 'Information Technology',
+                'score': 2,
+                'skills': [
+                    {'id': '4R9tqGuK2672PavRTJrN_A==', 'name': 'Python'},
+                    {'id': 'hbBWJS6x6gDxGMUC5HAOYg==', 'name': 'Web Development'}
+                ],
+                'suggested_skills': [
+                    {'id': 'QUEVjv1tcq6uLmzCku6ikg==', 'name': 'Flask'}
+                ]
+            },
+            {
+                'id': 'cap:advocacy',
+                'name': 'Advocacy and Public Policy',
+                'score': 1,
+                'skills': [
+                    {'id': '74BgThI2os9wEdyArofEKA==', 'name': 'Community Organizing'}
+                ],
+                'suggested_skills': []
+            },
+            {
+                'id': 'cap:outreach',
+                'name': 'Community Engagement and Outreach',
+                'score': 0,
+                'skills': [
+                    {'id': '74BgThI2os9wEdyArofEKA==', 'name': 'Community Organizing'}
+                ],
+                'suggested_skills': []
+            }
+        ],
+        'other_skills': [
+            { 'id': 'n1N02ypni69EZg0SggRIIg==', 'name': 'Public Health'}
+        ]
+    }
+}
+
+
 
 QUESTIONS = {
     'q_pfp1': {
@@ -238,18 +290,30 @@ ACHIEVEMENTS = {
     'baltimore1': {
         'id': 81,
         'description': 'Redesigned the Salesforce architecture to facilitate easier reporting.',
+        'skills': [{
+            'name': 'Flask', 'capability_id': 'cap:it',
+        }],
     },
     'baltimore2': {
         'id': 82,
         'description': 'Formalized organizational strategy for defining and analyzing KPIs.',
+        'skills': [{
+            'name': 'Community Organizing', 'capability_id': 'cap:advocacy',
+        }],
     },
     'baltimore3': {
         'id': 83,
         'description': 'Developed recruitment projection tools to model and track progress to goals.',
+        'skills': [{
+            'name': 'Web Development', 'capability_id': 'cap:it',
+        }],
     },
     'goucher1': {
         'id': 84,
         'description': 'Did some stuff',
+        'skills': [{
+            'name': 'Python', 'capability_id': 'cap:it',
+        }],
     }
 }
 
@@ -282,7 +346,8 @@ EXPERIENCES = {
         'contact_id': 124,
         'location': 'New York, NY, USA',
         'achievements': [],
-        'skills': [],
+        'skills': [
+        ],
     },
     'goucher': {
         'id': 512,
@@ -305,7 +370,9 @@ EXPERIENCES = {
         'achievements': [
             ACHIEVEMENTS['goucher1'],
         ],
-        'skills': [],
+        'skills': [
+            SKILLS['billy'][3],
+        ],
     },
     'baltimore' : {
         'id': 513,
@@ -330,7 +397,7 @@ EXPERIENCES = {
             ACHIEVEMENTS['baltimore2'],
             ACHIEVEMENTS['baltimore3'],
         ],
-        'skills': SKILLS['billy'][1:3],
+        'skills': SKILLS['billy'][0:2] + SKILLS['billy'][3:5],
     },
 }
 
@@ -446,7 +513,10 @@ POSTS = {
         'location': 'Test City, MD, USA',
         'achievements': [
             {'description': 'Test achievement 1'},
-            {'description': 'Test achievement 2'},
+            {'description': 'Test achievement 2', 'skills': [
+                { 'name': 'Community Organizing', 'capability_id': 'cap:advocacy' },
+                { 'name': 'Test Skill 1' }
+            ]},
         ],
     },
     'resume': {
@@ -508,7 +578,7 @@ def post_request(app, url, data):
         assert len(data) > 0
         assert data['id'] is not None
         id = data['id']
-        return id
+        return id, data
 
 
 @pytest.mark.parametrize(
@@ -523,35 +593,21 @@ def post_request(app, url, data):
       POSTS['experience'],
       lambda id: Experience.query.get(id)
       )
-    ,('/api/tags/',
-      {
-          'name': 'Test Tag',
-          'type': 'Skill',
-      },
-      lambda id: Tag.query.get(id)
-      )
-    ,('/api/contacts/123/tags/',
-      {
-        'contact_id': 123,
-        'tag_id': 125,
-        'score': 4,
-      },
-      lambda id: TagItem.query.get(id)
-      )
-    ,('/api/contacts/123/resumes/',
-      {
-        'contact_id': 123,
-        'name': 'Test Resume',
-        'date_created': '2019-01-01',
-      },
-      lambda id: Resume.query.get(id)
-      )
-    ,('/api/contacts/123/skills',
+    ,('/api/contacts/123/skills/',
       {
         'name': 'C++',
       },
-      lambda id: SkillItem.query.get(('sEVDZsMOqdfQ-vwoIAEk5A==', 123))
+      lambda id: ContactSkill.query.filter_by(
+          skill_id='sEVDZsMOqdfQ-vwoIAEk5A==', contact_id=123).first()
       )
+     ,('/api/contacts/123/capabilities/cap:it/suggestion/',
+      {
+        'name': 'Network Architecture',
+      },
+      lambda id: CapabilitySkillSuggestion.query.get(
+          (123, 'cap:it', '_s-apdaP_WZpH69G8hlcGA=='))
+      )
+
     ,pytest.param('/api/contacts/124/programs/',
       POSTS['program_contact'],
       lambda id: ProgramContact.query.filter_by(contact_id=124,program_id=1).first(),
@@ -578,13 +634,13 @@ def test_post(app, url, data, query):
         'Accept': mimetype
     }
 
-    id_ = post_request(app, url, data)
+    id_, _ = post_request(app, url, data)
     assert query(id_) is not None
 
 
 @pytest.mark.skip
 def test_create_program_contact_with_contact(app):
-    id_ = post_request(app, '/api/contacts/', POSTS['contact'])
+    id_, _ = post_request(app, '/api/contacts/', POSTS['contact'])
     program_contacts = Contact.query.get(id_).programs
     assert len(program_contacts) == 1
     assert program_contacts[0].program_id == 1
@@ -594,7 +650,7 @@ def test_create_program_contact_with_contact(app):
     assert program_contacts[0].is_approved == False
 
 def test_post_experience_date(app):
-    id_ = post_request(app, '/api/contacts/123/experiences/',
+    id_, _ = post_request(app, '/api/contacts/123/experiences/',
                           POSTS['experience'])
     assert Experience.query.get(id_).end_month == Month.may
     assert Experience.query.get(id_).end_year == 2019
@@ -602,14 +658,14 @@ def test_post_experience_date(app):
     assert Experience.query.get(id_).start_year == 2000
 
 def test_post_opportunity_app_status(app):
-    id_ = post_request(app, '/api/contacts/124/app/123abc/', {})
+    id_, _ = post_request(app, '/api/contacts/124/app/123abc/', {})
     assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
 
 def test_post_experience_null_start_date(app):
     exp = POSTS['experience'].copy()
     exp['start_month'] = 'none'
     exp['start_year'] = 0
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     assert Experience.query.get(id_).start_month == Month.none
     assert Experience.query.get(id_).start_year == 0
@@ -620,7 +676,7 @@ def test_post_experience_current(app):
     exp = POSTS['experience'].copy()
     exp['end_month'] = 'none'
     exp['end_year'] = 0
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
     assert Experience.query.get(id_).is_current == True
 
@@ -630,15 +686,80 @@ def test_post_experience_dump_only(app):
     exp['length_month'] = 8
     exp['is_current'] = False
     exp['id'] = 1
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_) is not None
 
 def test_post_experience_skills(app):
     exp = POSTS['experience'].copy()
     exp['skills'] = [{'name': 'C++'}, {'name': 'Python'}]
-    id_ = post_request(app, '/api/contacts/123/experiences/', exp)
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
     assert Experience.query.get(id_).skills[0].name == 'C++'
-    assert Experience.query.get(id_).skills[1].name == 'Python'
+    assert Experience.query.get(id_).skills[1].name == 'Community Organizing'
+    assert Experience.query.get(id_).skills[2].name == 'Python'
+    assert Experience.query.get(id_).skills[3].name == 'Test Skill 1'
+
+def test_post_experience_achievement_skills(app):
+    exp = POSTS['experience']
+    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
+    skills = Experience.query.get(id_).achievements[1].skills
+    assert len(Experience.query.get(id_).achievements[1].skills) == 2
+    assert skills[0]['name'] == 'Community Organizing'
+    assert skills[0]['capability_id'] == 'cap:advocacy'
+    assert skills[1]['name'] == 'Test Skill 1'
+    assert skills[1]['capability_id'] is None
+
+
+def test_post_contact_skill(app):
+    url, update = ('/api/contacts/123/skills/', { 'name': 'C++', })
+
+    _, response = post_request(app, url, update)
+    assert 'suggested_capabilities' in response
+    assert response['suggested_capabilities'] == []
+    assert 'capabilities' in response
+    assert len(response['capabilities']) == 1
+    assert response['capabilities'][0]['id'] == 'cap:it'
+
+    contact_skill = ContactSkill.query.filter_by(
+        contact_id=123,
+        skill_id='sEVDZsMOqdfQ-vwoIAEk5A==',
+        deleted=False,
+    ).first()
+    assert contact_skill is not None
+
+def test_post_contact_skill_suggestion(app):
+    url, update = (
+        '/api/contacts/123/capabilities/cap:it/suggestion/',
+        {
+            'name': 'Network Architecture',
+        }
+    )
+
+    _, response = post_request(app, url, update)
+    assert 'capabilities' in response
+    assert response['capabilities'] == []
+    assert 'suggested_capabilities' in response
+    assert len(response['suggested_capabilities']) == 1
+    assert response['suggested_capabilities'][0]['id'] == 'cap:it'
+
+    contact_skill = ContactSkill.query.filter_by(
+        contact_id=123,
+        skill_id='_s-apdaP_WZpH69G8hlcGA==',
+        deleted=False,
+    ).first()
+    assert contact_skill is not None
+
+def test_post_contact_skill_undelete(app):
+    url, update = ('/api/contacts/123/skills/', { 'name': 'Event Planning', })
+
+    _, response = post_request(app, url, update)
+    exp = Experience.query.get(513)
+    exp_skills = list(map(lambda s: s.name, exp.skills))
+    print(exp_skills)
+    assert 'Event Planning' in exp_skills
+    achievement_skills = list(map(lambda s: s['name'], exp.achievements[1].skills))
+    print(achievement_skills)
+    assert 'Event Planning' in achievement_skills
+
 
 # TODO: unskip when trello stuff is mocked out
 @pytest.mark.skip
@@ -708,6 +829,9 @@ def test_post_formassembly_opportunity_intake(app):
         assert opp is not None
         assert opp.title == 'QA Tester'
 
+def skill_name(skill):
+    return skill.name
+
 @pytest.mark.parametrize(
     "url,update,query,test",
     [('/api/contacts/123/',
@@ -728,8 +852,8 @@ def test_post_formassembly_opportunity_intake(app):
       ]},
       lambda: Contact.query.get(123),
       lambda e: (len(e.skills) == 2
-                 and e.skills[0].name == 'Python'
-                 and e.skills[1].name == 'Workforce Development'),
+                 and sorted(e.skills, key=skill_name)[0].name == 'Python'
+                 and sorted(e.skills, key=skill_name)[1].name == 'Workforce Development'),
       ),
      ('/api/experiences/512/',
       {'end_month': 'January', 'end_year': 2017},
@@ -743,20 +867,36 @@ def test_post_formassembly_opportunity_intake(app):
       lambda: Experience.query.get(512),
       lambda e: e.achievements[-1].description == 'test',
       )
-    ,('/api/contacts/123/tags/124/',
-      {'score': 3},
-      lambda: TagItem.query.get(21),
-      lambda ti: ti.score == 3,
+    ,('/api/experiences/513/',
+      {'achievements': EXPERIENCES['baltimore']['achievements'][0:2] + [{
+          'id': 83,
+          'description': 'Developed recruitment projection tools to model and track progress to goals.',
+          'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
+      }]},
+      lambda: Experience.query.get(513),
+      lambda e: (len(e.achievements[-1].skills) == 1 
+                 and e.achievements[-1].skills[0]['name'] == 'Python'
+                 and e.achievements[-1].skills[0]['capability_id'] == 'cap:it'),
       )
-    ,('/api/resumes/51/',
-      {'name': 'test'},
-      lambda: Resume.query.get(51),
-      lambda r: r.name == 'test',
+    ,('/api/experiences/513/',
+      {'achievements': EXPERIENCES['baltimore']['achievements'][0:2] + [{
+          'id': 83,
+          'description': 'Developed recruitment projection tools to model and track progress to goals.',
+          'skills': [{'name': 'Recruitment', 'capability_id': 'cap:outreach'}],
+      }]},
+      lambda: Experience.query.get(513),
+      lambda e: (len(e.achievements[-1].skills) == 1 
+                 and e.achievements[-1].skills[0]['name'] == 'Recruitment'
+                 and e.achievements[-1].skills[0]['capability_id'] == 'cap:outreach'),
       )
+
     ,('/api/experiences/513/',
       {'skills': SKILLS['billy'][0:2] + [{'name': 'Test'}]},
       lambda: Experience.query.get(513),
-      lambda e: len(e.skills) == 3 and e.skills[0].name == 'Public Health' and e.skills[-1].name == 'Test',
+      lambda e: (len(e.skills) == 3 
+                 and sorted(e.skills, key=skill_name)[0].name == 'Community Organizing'
+                 and sorted(e.skills, key=skill_name)[1].name == 'Flask'
+                 and sorted(e.skills, key=skill_name)[2].name == 'Test'),
       )
     ,('/api/contacts/123/programs/1/',
       {'stage': 2},
@@ -782,7 +922,6 @@ def test_post_formassembly_opportunity_intake(app):
     ]
 )
 def test_put(app, url, update, query, test):
-    from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -793,9 +932,32 @@ def test_put(app, url, update, query, test):
         assert not test(query())
         response = client.put(url, data=json.dumps(update),
                               headers=headers)
-        print(response.json)
+        pprint(response.json)
         assert response.status_code == 200
         assert test(query())
+
+def test_put_contact_saves_deleted_skills(app):
+    url, update = ('/api/contacts/123/', {'skills': [
+          { 'name': 'Python' },
+          { 'name': 'Workforce Development' },
+      ]})
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        public_health = ContactSkill.query.filter_by(
+            skill_id='n1N02ypni69EZg0SggRIIg==',
+            contact_id=123).first()
+        assert public_health is not None
+        assert public_health.deleted
+
 
 @pytest.mark.parametrize(
     "url,update,query,test",
@@ -826,9 +988,62 @@ def test_put_preserves_list_fields(app, url, update, query, test):
         assert query() is not None, "Item to update should exist"
         response = client.put(url, data=json.dumps(update),
                               headers=headers)
-        print(response.json)
+        pprint(response.json)
         assert response.status_code == 200
         assert test(query())
+
+def test_put_update_achievement_skills(app):
+    from models.resume_section_model import ResumeSectionSchema
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    url = '/api/experiences/513/'
+    update = {
+        'achievements': 
+              EXPERIENCES['baltimore']['achievements'][0:2] + [{
+                  'id': 83,
+                  'description': 'Developed recruitment projection tools to model and track progress to goals.',
+                  'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
+              }],
+        # Achievement skills should add to experience level skills
+        'skills': [], 
+    } 
+    query = lambda: Experience.query.get(513)
+    test = lambda e: (len(e.achievements[-1].skills) == 1 
+                      and e.achievements[-1].skills[0]['name'] == 'Python')
+    with app.test_client() as client:
+        assert query() is not None, "Item to update should exist"
+        assert not test(query())
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        data = response.json['data']
+        assert data['achievements'][-1]['skills'][0]['name'] == 'Python'
+        assert data['achievements'][-1]['skills'][0]['capability_id'] == 'cap:it'
+        exp = query()
+        assert test(exp)
+        skill_names = {skill.name for skill in exp.skills}
+        assert 'Python' in skill_names
+
+
+def test_contact_put_preserves_experience_skills(app):
+    from models.resume_section_model import ResumeSectionSchema
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = { 'skills': EXPERIENCES['baltimore']['skills'] }
+    with app.test_client() as client:
+        response = client.put('/api/contacts/123/', data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+
+        e = Experience.query.get(513)
+        assert len(e.skills) == len(EXPERIENCES['baltimore']['skills'])
 
 @pytest.mark.parametrize(
     "url,update,old_id,new_id",
@@ -906,11 +1121,16 @@ def test_opportunity_app_submit(app):
     [('/api/contacts/123?token=testing_token',
       lambda: Contact.query.get(123))
     ,('/api/experiences/512/', lambda: Experience.query.get(512))
-    ,('/api/resumes/51/', lambda: Resume.query.get(51))
-    ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
-      lambda: SkillItem.query.get(('n1N02ypni69EZg0SggRIIg==', 123)))
     ,('/api/opportunity/123abc/', lambda: Opportunity.query.get('123abc'))
+    ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
+      lambda: ContactSkill.query.filter_by(
+          skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123, deleted=False).first())
+    ,('/api/contacts/123/capabilities/cap:it/suggestion/QUEVjv1tcq6uLmzCku6ikg==',
+      lambda: CapabilitySkillSuggestion.query.get(
+          (123, 'cap:it', 'QUEVjv1tcq6uLmzCku6ikg=='))
+      )
     ]
+
 )
 def test_delete(app, delete_url, query):
     mimetype = 'application/json'
@@ -926,15 +1146,28 @@ def test_delete(app, delete_url, query):
         assert query() is None, "Deleted item should not exist"
 
 
+def test_delete_contact_skill_saved(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    delete_url = '/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg=='
+    with app.test_client() as client:
+        response = client.delete(delete_url, headers=headers)
+        assert response.status_code == 200
+        contact_skill = ContactSkill.query.filter_by(
+            skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123).first()
+        assert contact_skill is not None
+        assert contact_skill.deleted
+
+
 @pytest.mark.parametrize(
     "url,expected",
     [('/api/contacts/123/', CONTACTS['billy'])
     ,('/api/contacts/124/', CONTACTS['obama'])
     ,('/api/experiences/512/', EXPERIENCES['goucher'])
     ,('/api/experiences/513/', EXPERIENCES['baltimore'])
-    ,('/api/tags/123/', TAGS['python'])
-    ,('/api/tags/124/', TAGS['webdev'])
-    ,('/api/resumes/51/', RESUMES['billy'])
     ,('/api/contacts/123/skills', SKILLS['billy'])
     ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
     ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
@@ -977,6 +1210,39 @@ def test_get_autocomplete(app):
         assert 'got_exact' in data
         assert 'Python' in data['matches']
 
+def test_get_capability_recommendations(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    expected = {
+        'Advocacy and Public Policy': [
+            'Community Organizing',
+            'Canvassing',
+            'Advocacy',
+            'Policy Writing',
+            'Volunteer Mobilization',
+        ],
+        'Community Engagement and Outreach': [
+            'Community Engagement',
+            'Client Recruitment',
+            'Partnership Building',
+            'Event Planning',
+            'Community Organizing',
+        ],
+        'Information Technology': [],
+    }
+    with app.test_client() as client:
+        response = client.get('/api/capabilities/', 
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        pprint(data)
+        for capability in data:
+            assert capability['name'] in expected
+            for i, skill in enumerate(capability['recommended_skills']):
+                skill['skill']['name'] == expected[capability['name']][i]
 
 @pytest.mark.parametrize(
     "url,expected",
@@ -985,9 +1251,6 @@ def test_get_autocomplete(app):
                                          EXPERIENCES['baltimore']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES['columbia']])
     ,('/api/contacts/123/achievements/', ACHIEVEMENTS.values())
-    ,('/api/tags/', TAGS.values())
-    ,('/api/contacts/123/tags/', TAG_ITEMS.values())
-    ,('/api/contacts/123/resumes/', RESUMES.values())
     ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
     ,('/api/opportunity/', OPPORTUNITIES.values())
     ]
@@ -1010,6 +1273,22 @@ def test_get_many_unordered(app, url, expected):
         for item in data:
             pprint(item)
             assert item in expected
+
+def test_get_contact_capabilities(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    url, expected = ('/api/contacts/123/capabilities/', CAPABILITIES['billy'])
+    with app.test_client() as client:
+        response = client.get(url, headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+
+        pprint(expected)
+        pprint(data)
+        assert data == expected
 
 
 @pytest.mark.skip

@@ -1,13 +1,15 @@
 from models.base_model import db
 import enum
-from marshmallow import Schema, fields, EXCLUDE
+from marshmallow import Schema, fields, EXCLUDE, pre_dump, post_dump
 from marshmallow_enum import EnumField
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.address_model import Address
 from models.achievement_model import Achievement
-from models.skill_model import SkillItemSchema
+from models.skill_model import Skill, SkillSchema
+from models.skill_item_model import ContactSkill
 from models.program_contact_model import ProgramContactSchema
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class Gender(enum.Enum):
     female = 'Female'
@@ -29,6 +31,8 @@ class Salutation(enum.Enum):
     ms = 'Ms.'
     dr = 'Dr.'
 
+def add_skill_error(_):
+    assert False, "use contact.add_skill instead of contact.skills.append"
 
 class Contact(db.Model):
     __tablename__ = 'contact'
@@ -63,19 +67,39 @@ class Contact(db.Model):
                                       uselist=False)
     achievements = db.relationship('Achievement', back_populates='contact',
                                    cascade='all, delete, delete-orphan')
-    resumes = db.relationship('Resume', back_populates='contact',
-                              cascade='all, delete, delete-orphan')
-    tags = db.relationship('TagItem', back_populates='contact',
+
+    skill_items = db.relationship('ContactSkill', 
                            cascade='all, delete, delete-orphan')
-    skills = db.relationship('SkillItem', back_populates='contact',
-                             order_by='SkillItem.name',
+    capability_skill_suggestions = db.relationship('CapabilitySkillSuggestion', 
                            cascade='all, delete, delete-orphan')
+
     experiences = db.relationship('Experience', back_populates='contact',
                                   cascade='all, delete, delete-orphan')
     programs = db.relationship('ProgramContact', back_populates='contact',
                                cascade='all, delete, delete-orphan')
     applications = db.relationship('OpportunityApp', back_populates='contact',
                                cascade='all, delete, delete-orphan')
+
+    def add_skill(self, skill):
+        contact_skill = (ContactSkill.query
+                                .filter_by(contact_id=self.id,
+                                           skill_id=skill.id)
+                                .first())
+        if contact_skill:
+            contact_skill.deleted = False
+        else:
+            contact_skill = ContactSkill(skill, self)
+            self.skill_items.append(contact_skill)
+        return contact_skill
+
+    @hybrid_property
+    def skills(self):
+        skills = []
+        for skill_item in self.skill_items:
+            if not skill_item.deleted:
+                skills.append(skill_item.skill)
+        return sorted(skills, key=lambda skill: skill.name)
+
 
 class ContactSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -92,7 +116,7 @@ class ContactSchema(Schema):
     pronouns_other = fields.String()
     birthdate = fields.Date(allow_none=True)
     account_id = fields.String()
-    skills = fields.Nested(SkillItemSchema, many=True)
+    skills = fields.Nested(SkillSchema, many=True)
     terms_agreement = fields.Boolean()
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
 
