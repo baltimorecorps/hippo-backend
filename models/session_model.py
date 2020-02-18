@@ -22,8 +22,6 @@ class UserSession(UserMixin, db.Model):
 
     @hybrid_property
     def is_authenticated(self):
-        print(self.expiration)
-        print(datetime.utcnow())
         return self.expiration > datetime.utcnow()
 
 

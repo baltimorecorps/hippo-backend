@@ -3,7 +3,8 @@ import enum
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from models.achievement_model import Achievement, AchievementSchema
-from models.skill_model import experience_skills, SkillItemSchema
+from models.skill_model import SkillSchema
+from models.skill_item_model import ExperienceSkill
 from sqlalchemy.ext.hybrid import hybrid_property
 import datetime as dt
 import math
@@ -37,6 +38,8 @@ class Month(enum.Enum):
     november = 'November'
     december = 'December'
 
+def add_skill_error(_):
+    assert False, "use experience.add_skill instead of experience.skills.append"
 
 class Experience(db.Model):
     __tablename__ = 'experience'
@@ -61,14 +64,30 @@ class Experience(db.Model):
     contact = db.relationship('Contact')
     achievements = db.relationship('Achievement', back_populates='experience',
                                    cascade='all, delete, delete-orphan')
-    resumes = db.relationship('ResumeItem', back_populates='experience',
-                              cascade='all, delete, delete-orphan')
-    skills = db.relationship('SkillItem', secondary=experience_skills,
-                             order_by='SkillItem.name',
-                             lazy='subquery',
-                             back_populates='experiences')
+
+    skill_items = db.relationship('ExperienceSkill', 
+                                  cascade='all, delete, delete-orphan')
+
+    def add_skill(self, skill):
+        contact_skill = self.contact.add_skill(skill)
+        exp_skill = (ExperienceSkill.query
+                                   .filter_by(experience_id=self.id,
+                                              parent_id=contact_skill.id)
+                                   .first())
+        if not exp_skill:
+            exp_skill = ExperienceSkill(contact_skill, self)
+            self.skill_items.append(exp_skill)
+        return exp_skill
 
     #calculated fields
+    @hybrid_property
+    def skills(self):
+        skills = []
+        for skill_item in self.skill_items:
+            if not skill_item.deleted:
+                skills.append(skill_item.skill)
+        return sorted(skills, key=lambda skill: skill.name)
+
     @hybrid_property
     def date_end(self):
         if self.end_month==Month.none or self.end_year==0:
@@ -126,7 +145,7 @@ class ExperienceSchema(Schema):
     contact_id = fields.Integer(required=True)
     location = fields.String()
     achievements = fields.Nested(AchievementSchema, many=True)
-    skills = fields.Nested(SkillItemSchema, many=True)
+    skills = fields.Nested(SkillSchema, many=True)
 
     class Meta:
         unknown = EXCLUDE
