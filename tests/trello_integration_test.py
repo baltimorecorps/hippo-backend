@@ -9,7 +9,6 @@ from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.tag_model import Tag
 from models.tag_item_model import TagItem
-from models.skill_model import SkillItem
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 from models.opportunity_model import Opportunity
