@@ -141,6 +141,7 @@ OPPORTUNITIES = {
         'short_description': "This is a test opportunity.",
         'gdoc_id': "ABC123xx==",
         'status': 'submitted',
+        'org_name': 'Test Org',
     },
     'test_opp2': {
         'id': '222abc',
@@ -148,6 +149,7 @@ OPPORTUNITIES = {
         'short_description': "This is another test opportunity.",
         'gdoc_id': "BBB222xx==",
         'status': 'submitted',
+        'org_name': 'Test Org',
     },
 
 }
@@ -990,6 +992,7 @@ def test_get_autocomplete(app):
     ,('/api/contacts/123/resumes/', RESUMES.values())
     ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
     ,('/api/opportunity/', OPPORTUNITIES.values())
+    ,('/api/contacts/123/app/', APPLICATIONS.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):
