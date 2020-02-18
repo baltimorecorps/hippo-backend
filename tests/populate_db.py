@@ -281,6 +281,7 @@ test_opp1 = Opportunity(
     short_description="This is a test opportunity.",
     gdoc_id="ABC123xx==",
     card_id="card",
+    org_name="Test Org",
 )
 
 test_opp2 = Opportunity(
@@ -289,6 +290,7 @@ test_opp2 = Opportunity(
     short_description="This is another test opportunity.",
     gdoc_id="BBB222xx==",
     card_id="card",
+    org_name="Test Org",
 )
 
 app_billy = OpportunityApp(
