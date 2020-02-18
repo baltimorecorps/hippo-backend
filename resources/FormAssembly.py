@@ -46,7 +46,8 @@ class OpportunityIntakeApp(Resource):
             'short_description': '',
             'gdoc_id': form_data['google_doc_id'],
             'card_id': opp_card.id,
-            'stage': OpportunityStage.submitted.value
+            'stage': OpportunityStage.submitted.value,
+            'org_name': form_data['org']
         }
         opp = create_new_opportunity(opp_data)
         opp_card.set_custom_field_values(**{'Opp ID': opp.id})
