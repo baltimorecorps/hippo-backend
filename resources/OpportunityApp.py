@@ -7,14 +7,31 @@ from flask_login import login_required
 from models.base_model import db
 
 from auth import (
-    is_authorized_view, 
-    is_authorized_write, 
-    unauthorized, 
+    is_authorized_view,
+    is_authorized_write,
+    unauthorized,
     refresh_session
 )
 from models.opportunity_app_model import OpportunityApp, OpportunityAppSchema, ApplicationStage
 
 opportunity_app_schema = OpportunityAppSchema()
+opportunity_app_schema_many = OpportunityAppSchema(many=True)
+
+class OpportunityAppAll(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session]
+    }
+
+    def get(self, contact_id):
+        if not is_authorized_view(contact_id):
+            return unauthorized()
+        opportunity_apps = (OpportunityApp.query
+            .filter_by(contact_id=contact_id)
+            .all())
+        if not opportunity_apps:
+            return {'message': 'No applications found'}, 404
+        data = opportunity_app_schema_many.dump(opportunity_apps)
+        return {'status': 'success', 'data': data}, 200
 
 class OpportunityAppOne(Resource):
     method_decorators = {
@@ -86,7 +103,7 @@ class OpportunityAppOne(Resource):
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200
-        
+
 class OpportunityAppSubmit(Resource):
     method_decorators = {
         'post': [login_required, refresh_session],
@@ -109,8 +126,3 @@ class OpportunityAppSubmit(Resource):
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200
-     
-
-
-
-
