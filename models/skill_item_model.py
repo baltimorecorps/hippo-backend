@@ -2,6 +2,9 @@ from models.base_model import db
 from marshmallow import Schema, fields, post_dump, EXCLUDE
 from sqlalchemy.ext.associationproxy import association_proxy
 
+# Just do this so alembic knows we want to keep these tables around
+from models.old_skill_model import SkillItem as OldSkillItem
+
 # We make heavy use of this to create a tree structure for skill associations
 # https://docs.sqlalchemy.org/en/13/orm/extensions/associationproxy.html
 class ContactSkill(db.Model):
