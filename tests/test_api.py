@@ -992,7 +992,7 @@ def test_get_autocomplete(app):
     ,('/api/contacts/123/resumes/', RESUMES.values())
     ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
     ,('/api/opportunity/', OPPORTUNITIES.values())
-    ,('/api/contacts/123/app/', APPLICATIONS.values())
+    ,('/api/contacts/123/app/', [APPLICATIONS['app_billy']])
     ]
 )
 def test_get_many_unordered(app, url, expected):
