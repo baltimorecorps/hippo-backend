@@ -26,7 +26,8 @@ class OpportunityAppAll(Resource):
         if not is_authorized_view(contact_id):
             return unauthorized()
         opportunity_apps = (OpportunityApp.query
-            .filter_by(contact_id=contact_id)
+            .filter(OpportunityApp.contact_id==contact_id,
+                    OpportunityApp.stage>=ApplicationStage.submitted.value)
             .all())
         if not opportunity_apps:
             return {'message': 'No applications found'}, 404
@@ -50,7 +51,7 @@ class OpportunityAppOne(Resource):
 
         if not opportunity_app:
             return {'message': 'Application does not exist'}, 404
-        
+
 
         data = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': data}, 200
