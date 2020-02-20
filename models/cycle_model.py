@@ -19,6 +19,8 @@ class Cycle(db.Model):
 
     #relationship fields
     program = db.relationship('Program', back_populates='cycles')
+    opportunities = db.relationship('Opportunity', back_populates='cycle',
+                                    cascade='all, delete, delete-orphan')
 
     #calculated fields
     @hybrid_property
