@@ -40,13 +40,11 @@ class ProgramContactSchema(Schema):
     contact_id = fields.Integer()
     program_id = fields.Integer(load_only=True)
     program = fields.Nested(ProgramSchema, dump_only=True)
-    responses = fields.Nested(ResponseSchema, many=True)
     card_id = fields.String()
     stage = fields.Integer()
     is_approved = fields.Boolean()
     is_active = fields.Boolean()
-    reviews = fields.Nested(ReviewSchema, many=True, dump_only=True,
-                            cascade='all, delete, delete-orphan')
+    reviews = fields.Nested(ReviewSchema, many=True, dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
