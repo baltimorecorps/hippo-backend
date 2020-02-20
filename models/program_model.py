@@ -23,7 +23,6 @@ class Program(db.Model):
 class ProgramSchema(Schema):
     id = fields.Integer(dump_only=True)
     name = fields.String(required=True)
-    questions = fields.Nested(QuestionSchema, many=True)
     current_cycle = fields.Nested(CycleSchema)
 
     class Meta:
