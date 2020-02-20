@@ -146,6 +146,8 @@ OPPORTUNITIES = {
         'gdoc_id': "ABC123xx==",
         'status': 'submitted',
         'org_name': 'Test Org',
+        'cycle_id': 2,
+        'program_id': 1
     },
     'test_opp2': {
         'id': '222abc',
@@ -154,6 +156,8 @@ OPPORTUNITIES = {
         'gdoc_id': "BBB222xx==",
         'status': 'submitted',
         'org_name': 'Test Org',
+        'cycle_id': 2,
+        'program_id': 1
     },
 
 }
