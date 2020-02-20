@@ -134,11 +134,7 @@ PROGRAMS = {
     'pfp': {
         'id': 1,
         'name': 'Place for Purpose',
-        'current_cycle': CYCLES['pfp'],
-        'questions': [
-            QUESTIONS['q_pfp1'],
-            QUESTIONS['q_pfp2'],
-        ]
+        'current_cycle': CYCLES['pfp']
     }
 }
 
@@ -175,14 +171,22 @@ PROGRAM_CONTACTS = {
         'card_id': 'card',
         'stage': 1,
         'is_active': True,
-        'is_approved': False,
-        'responses': [
-            RESPONSES['r_billy1'],
-            RESPONSES['r_billy2']
-        ],
+        'is_approved': True,
         'reviews': [
             REVIEWS['review_billy']
         ]
+    }
+}
+
+ELIGIBILITY = {
+    'billy_pfp': {
+        'id': 5,
+        'contact_id': 123,
+        'program_id': 1,
+        'cycles': [2],
+        'stage': 1,
+        'is_active': True,
+        'is_approved': True,
     }
 }
 
@@ -194,6 +198,8 @@ OPPORTUNITIES = {
         'gdoc_id': "ABC123xx==",
         'status': 'submitted',
         'org_name': 'Test Org',
+        'cycle_id': 2,
+        'program_id': 1
     },
     'test_opp2': {
         'id': '222abc',
@@ -202,6 +208,8 @@ OPPORTUNITIES = {
         'gdoc_id': "BBB222xx==",
         'status': 'submitted',
         'org_name': 'Test Org',
+        'cycle_id': 2,
+        'program_id': 1
     },
 
 }
@@ -905,10 +913,11 @@ def skill_name(skill):
       lambda: ProgramContact.query.get(5),
       lambda r: r.stage == 2,
       )
-    ,('/api/contacts/123/programs/1/',
+    ,pytest.param('/api/contacts/123/programs/1/',
       {'responses': [RESPONSES['r_billy1']]},
       lambda: ProgramContact.query.get(5),
-      lambda r: len(r.responses) == 1 and r.responses[0].response_text == 'Race and equity answer'
+      lambda r: len(r.responses) == 1 and r.responses[0].response_text == 'Race and equity answer',
+      marks=pytest.mark.skip
       )
     ,pytest.param('/api/opportunity/123abc/',
       {'title': "New title"},

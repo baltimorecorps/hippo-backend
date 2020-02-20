@@ -308,6 +308,7 @@ billy_pfp = ProgramContact(
     contact_id=123,
     card_id='card',
     stage=1,
+    is_approved=True
 )
 
 r_billy1 = Response(
@@ -339,6 +340,7 @@ test_opp1 = Opportunity(
     gdoc_id="ABC123xx==",
     card_id="card",
     org_name="Test Org",
+    cycle_id=2,
 )
 
 test_opp2 = Opportunity(
@@ -348,6 +350,7 @@ test_opp2 = Opportunity(
     gdoc_id="BBB222xx==",
     card_id="card",
     org_name="Test Org",
+    cycle_id=2,
 )
 
 app_billy = OpportunityApp(

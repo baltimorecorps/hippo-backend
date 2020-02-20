@@ -31,7 +31,8 @@ class ProgramContact(db.Model):
     # https://medium.com/@s.azad4/modifying-python-objects-within-the-sqlalchemy-framework-7b6c8dd71ab3
     def update(self, **update_dict):
         for field, value in update_dict.items():
-            setattr(self, field, value)
+            if field in UPDATE_FIELDS:
+                setattr(self, field, value)
         db.session.commit()
 
 class ProgramContactSchema(Schema):
@@ -39,13 +40,11 @@ class ProgramContactSchema(Schema):
     contact_id = fields.Integer()
     program_id = fields.Integer(load_only=True)
     program = fields.Nested(ProgramSchema, dump_only=True)
-    responses = fields.Nested(ResponseSchema, many=True)
     card_id = fields.String()
     stage = fields.Integer()
     is_approved = fields.Boolean()
     is_active = fields.Boolean()
-    reviews = fields.Nested(ReviewSchema, many=True, dump_only=True,
-                            cascade='all, delete, delete-orphan')
+    reviews = fields.Nested(ReviewSchema, many=True, dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
