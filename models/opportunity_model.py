@@ -1,4 +1,5 @@
 from models.base_model import db
+from models.cycle_model import Cycle, CycleSchema
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -17,6 +18,7 @@ class Opportunity(db.Model):
 
     #table columns
     id = db.Column(db.String, primary_key=True)
+    cycle_id = db.Column(db.Integer, db.ForeignKey('cycle.id'), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     short_description = db.Column(db.String(2000), nullable=False)
     gdoc_id = db.Column(db.String(200), nullable=False)
@@ -24,8 +26,10 @@ class Opportunity(db.Model):
     stage = db.Column(db.Integer, default=1)
     org_name = db.Column(db.String(255), nullable=False)
 
+    #relationships
     applications = db.relationship('OpportunityApp', back_populates='opportunity',
                                    cascade='all, delete, delete-orphan')
+    cycle = db.relationship('Cycle', back_populates='opportunities')
 
     @hybrid_property
     def status(self):
@@ -38,6 +42,8 @@ class OpportunitySchema(Schema):
     gdoc_id = fields.String(required=True)
     status = EnumField(OpportunityStage, dump_only=True)
     org_name = fields.String(dump_only=True)
+    cycle_id = fields.Integer(dump_only=True)
+    program_id = fields.Integer(attribute='cycle.program_id', dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
