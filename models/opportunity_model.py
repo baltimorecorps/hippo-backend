@@ -1,4 +1,6 @@
 from models.base_model import db
+from models.contact_model import ContactSchema
+from models.opportunity_app_model import ApplicationStage
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -30,12 +32,25 @@ class Opportunity(db.Model):
     def status(self):
         return OpportunityStage(self.stage)
 
+class OpportunityAppSchema(Schema):
+    id = fields.String(dump_only=True)
+    contact = fields.Nested(ContactSchema, dump_only=True)
+    # for info on why we use lambda here review this documentation:
+    # https://marshmallow.readthedocs.io/en/stable/nesting.html#two-way-nesting
+    opportunity = fields.Nested(lambda: OpportunitySchema(exclude=('applications',)))
+    interest_statement = fields.String()
+    status = EnumField(ApplicationStage, dump_only=True)
+
+    class Meta:
+        unknown = EXCLUDE
+
 class OpportunitySchema(Schema):
     id = fields.String(required=True, dump_only=True)
     title = fields.String(required=True)
     short_description = fields.String(required=True)
     gdoc_id = fields.String(required=True)
     status = EnumField(OpportunityStage, dump_only=True)
+    applications = fields.Nested(OpportunityAppSchema(exclude=('opportunity',), many=True))
 
     class Meta:
         unknown = EXCLUDE

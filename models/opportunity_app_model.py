@@ -4,7 +4,6 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from models.contact_model import ContactSchema
-from models.opportunity_model import OpportunitySchema
 
 class ApplicationStage(enum.Enum):
     draft = 0
@@ -30,20 +29,6 @@ class OpportunityApp(db.Model):
         return ApplicationStage(self.stage)
 
     __table_args__ = (
-        db.Index('oppapp_contact_opportunity', 
+        db.Index('oppapp_contact_opportunity',
                  'contact_id', 'opportunity_id', unique=True),
     )
-
-
-class OpportunityAppSchema(Schema):
-    id = fields.String(dump_only=True)
-    contact = fields.Nested(ContactSchema, dump_only=True)
-    opportunity = fields.Nested(OpportunitySchema, dump_only=True)
-    interest_statement = fields.String()
-    status = EnumField(ApplicationStage, dump_only=True)
-
-    class Meta:
-        unknown = EXCLUDE
-
-
-
