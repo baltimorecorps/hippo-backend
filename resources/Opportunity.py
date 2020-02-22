@@ -8,7 +8,7 @@ from flask import current_app
 from auth import refresh_session
 
 from models.base_model import db
-from models.opportunity_model import Opportunity, OpportunitySchema
+from models.opportunity_model import Opportunity, OpportunitySchema, OpportunityAppSchema
 
 from auth import is_authorized_with_permission, unauthorized
 
@@ -22,8 +22,9 @@ def create_new_opportunity(opportunity_data):
     return opportunity
 
 
-opportunity_schema = OpportunitySchema()
-opportunities_schema = OpportunitySchema(many=True)
+opportunity_schema = OpportunitySchema(exclude=['applications'])
+opportunities_internal_schema = OpportunitySchema(many=True)
+opportunities_schema = OpportunitySchema(exclude=['applications'],many=True)
 class OpportunityAll(Resource):
     method_decorators = {
         'post': [login_required, refresh_session],
@@ -49,6 +50,14 @@ class OpportunityAll(Resource):
         opportunity = create_new_opportunity(data)
         result = opportunity_schema.dump(opportunity)
         return {"status": 'success', 'data': result}, 201
+
+class OpportunityAllInternal(Resource):
+
+    def get(self):
+        opportunities = Opportunity.query.all();
+        opp_list = opportunities_internal_schema.dump(opportunities)
+        return {'status': 'success', 'data': opp_list}, 200
+        return {'status': 'success', 'data': 'Hello World'}, 200
 
 class OpportunityOne(Resource):
     method_decorators = {
