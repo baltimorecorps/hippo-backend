@@ -52,9 +52,14 @@ class OpportunityAll(Resource):
         return {"status": 'success', 'data': result}, 201
 
 class OpportunityAllInternal(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session]
+    }
 
     def get(self):
         opportunities = Opportunity.query.all();
+        if not is_authorized_with_permission('view:opportunity-internal'):
+            return unauthorized()
         opp_list = opportunities_internal_schema.dump(opportunities)
         return {'status': 'success', 'data': opp_list}, 200
         return {'status': 'success', 'data': 'Hello World'}, 200
