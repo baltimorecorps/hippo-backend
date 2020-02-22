@@ -268,6 +268,32 @@ CONTACTS = {
     },
 }
 
+OPPORTUNITIES_INTERNAL = {
+    'test_opp1': {
+        'id': '123abc',
+        'title': "Test Opportunity",
+        'short_description': "This is a test opportunity.",
+        'gdoc_id': "ABC123xx==",
+        'status': 'submitted',
+        'applications': [{'id': 'a1',
+                         'contact': CONTACTS['billy'],
+                         'interest_statement': "I'm interested in this test opportunity",
+                         'status': 'submitted'}]
+    },
+    'test_opp2': {
+        'id': '222abc',
+        'title': "Another Test Opportunity",
+        'short_description': "This is another test opportunity.",
+        'gdoc_id': "BBB222xx==",
+        'status': 'submitted',
+        'applications': [{'id': 'a2',
+                          'contact': CONTACTS['billy'],
+                          'interest_statement': "I'm also interested in this test opportunity",
+                          'status': 'draft'}]
+    },
+
+}
+
 APPLICATIONS = {
     'app_billy': {
         'id': 'a1',
@@ -1253,6 +1279,7 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/achievements/', ACHIEVEMENTS.values())
     ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
     ,('/api/opportunity/', OPPORTUNITIES.values())
+    ,('/api/opportunity/app/', OPPORTUNITIES_INTERNAL.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):
