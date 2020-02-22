@@ -86,7 +86,7 @@ class OpportunityAppOne(Resource):
         if not opportunity_app:
             return {'message': 'Application does not exist'}, 404
 
-        if 'resume' in data:
+        if data.get('resume') is not None:
             if opportunity_app.resume is None:
                 opportunity_app.resume = ResumeSnapshot(
                     **data['resume']

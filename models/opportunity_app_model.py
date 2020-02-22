@@ -43,7 +43,7 @@ class OpportunityAppSchema(Schema):
     contact = fields.Nested(ContactSchema, dump_only=True)
     opportunity = fields.Nested(OpportunitySchema, dump_only=True)
     interest_statement = fields.String()
-    resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume')
+    resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True) 
     status = EnumField(ApplicationStage, dump_only=True)
 
     class Meta:

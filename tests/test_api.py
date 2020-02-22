@@ -926,7 +926,7 @@ def skill_name(skill):
       marks=pytest.mark.skip
       )
     ,('/api/contacts/123/app/123abc',
-      {'interest_statement': "New interest statement"},
+      {'interest_statement': "New interest statement", 'resume': None},
       lambda: OpportunityApp.query.get('a1'),
       lambda r: r.interest_statement == 'New interest statement',
       )
