@@ -52,6 +52,7 @@ class ContactAll(Resource):
             return unauthorized()
 
         contacts = Contact.query.all()
+
         contacts = contacts_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 

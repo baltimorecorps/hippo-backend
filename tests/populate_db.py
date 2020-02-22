@@ -41,6 +41,8 @@ from resources.skill_utils import get_skill_id, make_skill
 #from models.resume_section_model import ResumeSection
 #from models.resume_item_model import ResumeItem
 
+from models.resume_model import ResumeSnapshot
+
 # imports models related to the program and cycle
 from models.program_model import Program
 from models.program_contact_model import ProgramContact
@@ -348,12 +350,18 @@ test_opp2 = Opportunity(
     card_id="card",
 )
 
+snapshot1 = ResumeSnapshot(
+    id=1111,
+    resume='{"test":"snapshot1"}',
+)
+
 app_billy = OpportunityApp(
     id='a1',
     contact_id=123,
     opportunity_id='123abc',
     interest_statement="I'm interested in this test opportunity",
     stage=1,
+    resume_id=1111,
 )
 
 app_billy2 = OpportunityApp(
@@ -404,6 +412,7 @@ def populate(db):
     db.session.add(review_billy)
     db.session.add(test_opp1)
     db.session.add(test_opp2)
+    db.session.add(snapshot1)
     db.session.add(app_billy)
     db.session.add(app_billy2)
 
