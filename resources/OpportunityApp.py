@@ -12,7 +12,8 @@ from auth import (
     unauthorized, 
     refresh_session
 )
-from models.opportunity_app_model import OpportunityApp, OpportunityAppSchema, ApplicationStage
+from models.opportunity_app_model import OpportunityApp, ApplicationStage
+from models.opportunity_model import OpportunityAppSchema
 
 opportunity_app_schema = OpportunityAppSchema()
 
