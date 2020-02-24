@@ -193,6 +193,7 @@ OPPORTUNITIES = {
         'title': "Test Opportunity",
         'short_description': "This is a test opportunity.",
         'gdoc_id': "ABC123xx==",
+        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
     },
     'test_opp2': {
@@ -200,6 +201,7 @@ OPPORTUNITIES = {
         'title': "Another Test Opportunity",
         'short_description': "This is another test opportunity.",
         'gdoc_id': "BBB222xx==",
+        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
     },
 
@@ -560,6 +562,7 @@ POSTS = {
         "title": "Test Opportunity",
         "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
         "gdoc_id": "TESTABC11==",
+        "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit"
     },
 }
 
@@ -615,10 +618,9 @@ def post_request(app, url, data):
       marks=pytest.mark.skip
       # TODO: unskip when trello stuff is mocked out
       )
-    ,pytest.param('/api/opportunity/',
+    ,('/api/opportunity/',
       POSTS['opportunity'],
-      lambda id: Opportunity.query.filter_by(title="Test Opportunity").first(),
-      marks=pytest.mark.skip
+      lambda id: Opportunity.query.filter_by(title="Test Opportunity").first()
       )
     ,pytest.param('/api/contacts/124/app/123abc/',
       {},
