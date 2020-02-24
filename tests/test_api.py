@@ -17,8 +17,8 @@ from models.skill_model import (
     CapabilitySkillSuggestion
 )
 from models.skill_item_model import (
-    ContactSkill, 
-    ExperienceSkill, 
+    ContactSkill,
+    ExperienceSkill,
     AchievementSkill,
 )
 
@@ -196,6 +196,7 @@ OPPORTUNITIES = {
         'title': "Test Opportunity",
         'short_description': "This is a test opportunity.",
         'gdoc_id': "ABC123xx==",
+        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
         'cycle_id': 2,
@@ -206,6 +207,7 @@ OPPORTUNITIES = {
         'title': "Another Test Opportunity",
         'short_description': "This is another test opportunity.",
         'gdoc_id': "BBB222xx==",
+        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
         'cycle_id': 2,
@@ -569,6 +571,7 @@ POSTS = {
         "title": "Test Opportunity",
         "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
         "gdoc_id": "TESTABC11==",
+        "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit"
     },
 }
 
@@ -624,10 +627,9 @@ def post_request(app, url, data):
       marks=pytest.mark.skip
       # TODO: unskip when trello stuff is mocked out
       )
-    ,pytest.param('/api/opportunity/',
+    ,('/api/opportunity/',
       POSTS['opportunity'],
-      lambda id: Opportunity.query.filter_by(title="Test Opportunity").first(),
-      marks=pytest.mark.skip
+      lambda id: Opportunity.query.filter_by(title="Test Opportunity").first()
       )
     ,pytest.param('/api/contacts/124/app/123abc/',
       {},
@@ -884,7 +886,7 @@ def skill_name(skill):
           'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
       }]},
       lambda: Experience.query.get(513),
-      lambda e: (len(e.achievements[-1].skills) == 1 
+      lambda e: (len(e.achievements[-1].skills) == 1
                  and e.achievements[-1].skills[0]['name'] == 'Python'
                  and e.achievements[-1].skills[0]['capability_id'] == 'cap:it'),
       )
@@ -895,7 +897,7 @@ def skill_name(skill):
           'skills': [{'name': 'Recruitment', 'capability_id': 'cap:outreach'}],
       }]},
       lambda: Experience.query.get(513),
-      lambda e: (len(e.achievements[-1].skills) == 1 
+      lambda e: (len(e.achievements[-1].skills) == 1
                  and e.achievements[-1].skills[0]['name'] == 'Recruitment'
                  and e.achievements[-1].skills[0]['capability_id'] == 'cap:outreach'),
       )
@@ -903,7 +905,7 @@ def skill_name(skill):
     ,('/api/experiences/513/',
       {'skills': SKILLS['billy'][0:2] + [{'name': 'Test'}]},
       lambda: Experience.query.get(513),
-      lambda e: (len(e.skills) == 3 
+      lambda e: (len(e.skills) == 3
                  and sorted(e.skills, key=skill_name)[0].name == 'Community Organizing'
                  and sorted(e.skills, key=skill_name)[1].name == 'Flask'
                  and sorted(e.skills, key=skill_name)[2].name == 'Test'),
@@ -1012,17 +1014,17 @@ def test_put_update_achievement_skills(app):
     }
     url = '/api/experiences/513/'
     update = {
-        'achievements': 
+        'achievements':
               EXPERIENCES['baltimore']['achievements'][0:2] + [{
                   'id': 83,
                   'description': 'Developed recruitment projection tools to model and track progress to goals.',
                   'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
               }],
         # Achievement skills should add to experience level skills
-        'skills': [], 
-    } 
+        'skills': [],
+    }
     query = lambda: Experience.query.get(513)
-    test = lambda e: (len(e.achievements[-1].skills) == 1 
+    test = lambda e: (len(e.achievements[-1].skills) == 1
                       and e.achievements[-1].skills[0]['name'] == 'Python')
     with app.test_client() as client:
         assert query() is not None, "Item to update should exist"
@@ -1245,7 +1247,7 @@ def test_get_capability_recommendations(app):
         'Information Technology': [],
     }
     with app.test_client() as client:
-        response = client.get('/api/capabilities/', 
+        response = client.get('/api/capabilities/',
                               headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']

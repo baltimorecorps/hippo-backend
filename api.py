@@ -8,14 +8,18 @@ from resources.Resume import ResumeAll, ResumeOne, GenerateResume
 from resources.Resume import ResumeSectionAll, ResumeSectionOne
 from resources.Skills import ContactSkills, ContactSkillOne, AutocompleteSkill
 from resources.Capability import (
-    CapabilityRecommended, 
-    ContactCapabilities, 
+    CapabilityRecommended,
+    ContactCapabilities,
     ContactCapabilitySuggestions,
     ContactCapabilitySuggestionOne,
 )
 from resources.Session import Session
 from resources.ProgramContacts import ProgramContactOne, ProgramContactAll
-from resources.Trello_Intake_Talent import IntakeTalentBoard, IntakeTalentCard
+from resources.Trello_Intake_Talent import (
+    IntakeTalentBoard,
+    IntakeTalentCard,
+    ReviewTalentCard
+)
 from resources.Opportunity import OpportunityAll, OpportunityOne
 from resources.OpportunityApp import (
     OpportunityAppAll,
@@ -119,6 +123,9 @@ api.add_resource(IntakeTalentBoard,
 api.add_resource(IntakeTalentCard,
                  '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent',
                  '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent/')
+api.add_resource(ReviewTalentCard,
+                 '/reviews/<int:review_id>/trello/review-talent',
+                 '/reviews/<int:review_id>/trello/review-talent/')
 api.add_resource(TalentProgramApp,
                  '/form-assembly/talent-app',
                  '/form-assembly/talent-app/')

@@ -45,14 +45,17 @@ class OpportunityIntakeApp(Resource):
         opp_card, board = find_opp_card(form_data)
         if opp_card is None:
             return {'message': 'No card found'}, 404
+        gdoc_id = form_data['google_doc_id']
+        gdoc_link = f'https://docs.google.com/document/d/{gdoc_id}/edit'
         opp_data = {
             'title': form_data['title'],
             'short_description': '',
-            'gdoc_id': form_data['google_doc_id'],
+            'gdoc_id': gdoc_id,
             'card_id': opp_card.id,
             'stage': OpportunityStage.submitted.value,
             'org_name': form_data['org'],
-            'cycle_id': get_current_cycle_id(form_data['program_id'])
+            'cycle_id': get_current_cycle_id(form_data['program_id']),
+            'gdoc_link': gdoc_link
         }
         opp = create_new_opportunity(opp_data)
         opp_card.set_custom_field_values(**{'Opp ID': opp.id})
