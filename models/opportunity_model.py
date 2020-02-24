@@ -19,8 +19,9 @@ class Opportunity(db.Model):
     id = db.Column(db.String, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     short_description = db.Column(db.String(2000), nullable=False)
-    gdoc_id = db.Column(db.String(200), nullable=False)
-    card_id = db.Column(db.String, nullable=False)
+    gdoc_id = db.Column(db.String(200))
+    gdoc_link = db.Column(db.String(200), nullable=False)
+    card_id = db.Column(db.String)
     stage = db.Column(db.Integer, default=1)
 
     applications = db.relationship('OpportunityApp', back_populates='opportunity',
@@ -34,7 +35,8 @@ class OpportunitySchema(Schema):
     id = fields.String(required=True, dump_only=True)
     title = fields.String(required=True)
     short_description = fields.String(required=True)
-    gdoc_id = fields.String(required=True)
+    gdoc_id = fields.String()
+    gdoc_link = fields.String(required=True)
     status = EnumField(OpportunityStage, dump_only=True)
 
     class Meta:
