@@ -43,8 +43,8 @@ class OpportunitySchema(Schema):
     gdoc_id = fields.String()
     gdoc_link = fields.String(required=True)
     status = EnumField(OpportunityStage, dump_only=True)
-    org_name = fields.String(dump_only=True)
-    cycle_id = fields.Integer(dump_only=True)
+    org_name = fields.String(required=True)
+    cycle_id = fields.Integer(required=True)
     program_id = fields.Integer(attribute='cycle.program_id', dump_only=True)
 
     class Meta:

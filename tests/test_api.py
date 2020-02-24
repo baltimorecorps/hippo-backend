@@ -569,6 +569,8 @@ POSTS = {
     },
     'opportunity': {
         "title": "Test Opportunity",
+        'cycle_id': 2,
+        'org_name': 'Test Org',
         "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
         "gdoc_id": "TESTABC11==",
         "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit"
