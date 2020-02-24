@@ -28,8 +28,8 @@ from models.tag_model import (
 )
 from models.tag_item_model import TagItem
 from models.skill_model import (
-    Skill, 
-    Capability, 
+    Skill,
+    Capability,
     SkillRecommendation,
     CapabilitySkillSuggestion
 )
@@ -200,7 +200,7 @@ skills = [
     Skill(
         id=get_skill_id(name),
         name=name,
-    ) 
+    )
     for name in [
         'Python',
         'C++',
@@ -231,7 +231,7 @@ advocacy_recommendations = [
         capability_id='cap:advocacy',
         skill_id=get_skill_id(name),
         order=i
-    ) 
+    )
     for (i, name) in enumerate([
         'Community Organizing',
         'Canvassing',
@@ -249,7 +249,7 @@ outreach_recommendations = [
         capability_id='cap:outreach',
         skill_id=get_skill_id(name),
         order=i
-    ) 
+    )
     for (i, name) in enumerate([
         'Community Engagement',
         'Client Recruitment',
@@ -308,6 +308,7 @@ billy_pfp = ProgramContact(
     contact_id=123,
     card_id='card',
     stage=1,
+    is_approved=True
 )
 
 r_billy1 = Response(
@@ -338,7 +339,9 @@ test_opp1 = Opportunity(
     short_description="This is a test opportunity.",
     gdoc_id="ABC123xx==",
     card_id="card",
-    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit"
+    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+    org_name="Test Org",
+    cycle_id=2,
 )
 
 test_opp2 = Opportunity(
@@ -347,7 +350,9 @@ test_opp2 = Opportunity(
     short_description="This is another test opportunity.",
     gdoc_id="BBB222xx==",
     card_id="card",
-    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit"
+    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+    org_name="Test Org",
+    cycle_id=2,
 )
 
 app_billy = OpportunityApp(
@@ -448,4 +453,3 @@ def populate(db):
     db.session.add(it_capability)
 
     db.session.commit()
-

@@ -3,12 +3,13 @@ import uuid
 
 from flask_restful import Resource, request
 from flask_login import login_required
-from flask import current_app 
+from flask import current_app
 
 from auth import refresh_session
 
 from models.base_model import db
 from models.opportunity_model import Opportunity, OpportunitySchema
+from marshmallow import ValidationError
 
 from auth import is_authorized_with_permission, unauthorized
 

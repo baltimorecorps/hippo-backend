@@ -26,6 +26,10 @@ def get_review_talent_board_id(program_id):
     program = Program.query.get(program_id)
     return program.current_cycle.review_talent_board_id
 
+def get_current_cycle_id(program_id):
+    program = Program.query.get(program_id)
+    return program.current_cycle.id
+
 def find_opp_card(form_data):
     board_id = get_matching_opp_board_id(form_data['program_id'])
     board_data = query_board_data(board_id)
@@ -49,7 +53,9 @@ class OpportunityIntakeApp(Resource):
             'gdoc_id': gdoc_id,
             'card_id': opp_card.id,
             'stage': OpportunityStage.submitted.value,
-            'gdoc_link': gdoc_link
+            'gdoc_link': gdoc_link,
+            'org_name': form_data['org'],
+            'cycle_id': get_current_cycle_id(form_data['program_id'])
         }
         opp = create_new_opportunity(opp_data)
         opp_card.set_custom_field_values(**{'Opp ID': opp.id})
