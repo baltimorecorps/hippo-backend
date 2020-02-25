@@ -5,6 +5,7 @@ from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from models.contact_model import ContactSchema
 from models.opportunity_model import OpportunitySchema
+from models.resume_model import ResumeSnapshotSchema
 
 class ApplicationStage(enum.Enum):
     draft = 0
@@ -17,9 +18,11 @@ class OpportunityApp(db.Model):
     id = db.Column(db.String, primary_key=True)
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
     opportunity_id = db.Column(db.String, db.ForeignKey('opportunity.id'), nullable=False)
+    resume_id = db.Column(db.Integer, db.ForeignKey('resume_snapshot.id'), nullable=True)
     interest_statement = db.Column(db.String(2000), nullable=True)
     stage = db.Column(db.Integer, nullable=False, default=0)
 
+    resume = db.relationship('ResumeSnapshot')
     contact = db.relationship('Contact', back_populates='applications')
 
     opportunity = db.relationship('Opportunity')
@@ -40,6 +43,7 @@ class OpportunityAppSchema(Schema):
     contact = fields.Nested(ContactSchema, dump_only=True)
     opportunity = fields.Nested(OpportunitySchema, dump_only=True)
     interest_statement = fields.String()
+    resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True) 
     status = EnumField(ApplicationStage, dump_only=True)
 
     class Meta:

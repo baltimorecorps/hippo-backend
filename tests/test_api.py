@@ -279,6 +279,15 @@ CONTACTS = {
     },
 }
 
+SNAPSHOTS = {
+    'snapshot1': {
+        'test': 'snapshot1'
+    },
+    'snapshot2': {
+        'test': 'snapshot2'
+    },
+}
+
 APPLICATIONS = {
     'app_billy': {
         'id': 'a1',
@@ -286,6 +295,7 @@ APPLICATIONS = {
         'opportunity': OPPORTUNITIES['test_opp1'],
         'interest_statement': "I'm interested in this test opportunity",
         'status': 'submitted',
+        'resume': SNAPSHOTS['snapshot1'],
     },
     'app_billy2': {
         'id': 'a2',
@@ -930,10 +940,21 @@ def skill_name(skill):
       marks=pytest.mark.skip
       )
     ,('/api/contacts/123/app/123abc',
-      {'interest_statement': "New interest statement"},
+      {'interest_statement': "New interest statement", 'resume': None},
       lambda: OpportunityApp.query.get('a1'),
       lambda r: r.interest_statement == 'New interest statement',
       )
+    ,('/api/contacts/123/app/123abc',
+      {'resume': {'test': 'snapshotnew'}},
+      lambda: OpportunityApp.query.get('a1'),
+      lambda r: r.resume.resume == '{"test":"snapshotnew"}',
+      )
+    ,('/api/contacts/123/app/222abc',
+      {'resume': {'test': 'snapshotnew'}},
+      lambda: OpportunityApp.query.get('a2'),
+      lambda r: r.resume and r.resume.resume == '{"test":"snapshotnew"}',
+      )
+
     ]
 )
 def test_put(app, url, update, query, test):
