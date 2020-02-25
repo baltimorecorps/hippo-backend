@@ -18,8 +18,8 @@ from models.skill_model import (
     CapabilitySkillSuggestion
 )
 from models.skill_item_model import (
-    ContactSkill, 
-    ExperienceSkill, 
+    ContactSkill,
+    ExperienceSkill,
     AchievementSkill,
 )
 
@@ -589,6 +589,94 @@ POSTS = {
     },
 }
 
+APP_PUT_FULL = {
+    "opportunity": {
+      "gdoc_id": "1rnG47mblCVi1mDhB-UNRjs31zrmVaC8jYHvE2wXT4ws",
+      "cycle_id": 1,
+      "program_id": 1,
+      "title": "Web Developer",
+      "id": "94a6103c-c985-4db1-bd4e-e9e815c4cdda",
+      "org_name": "Test Org",
+      "short_description": "",
+      "status": "submitted"
+    },
+    "interest_statement": "dfdddsdfff",
+    "id": "052904ba-7b83-436c-aee3-334a208fefd9",
+    "contact": {
+      "birthdate": null,
+      "race_all": "Black or African Descent;Native Hawaiian or Other Pacific Islander",
+      "programs": [
+        {
+          "card_id": "card",
+          "program": {
+            "id": 1,
+            "current_cycle": {
+              "match_talent_board_id": "match_talent",
+              "is_active": true,
+              "date_start": "2020-01-01",
+              "review_talent_board_id": "5e39bb0daf879105b1c24462",
+              "match_opp_board_id": "5e4b203d1e7b0c48258fb268",
+              "program_id": 1,
+              "intake_org_board_id": "intake_org",
+              "date_end": "2020-03-30",
+              "id": 1,
+              "intake_talent_board_id": "5e25dae2e640be7e5248a3e6"
+            },
+            "name": "Place for Purpose"
+          },
+          "is_active": true,
+          "stage": 1,
+          "is_approved": false,
+          "id": 123,
+          "reviews": [
+
+          ],
+          "contact_id": 78
+        }
+      ],
+      "email_primary": {
+        "id": 465,
+        "type": "Personal",
+        "is_primary": true,
+        "email": "bayBC@baltimorecorps.org"
+      },
+      "last_name": "Bay BAY",
+      "pronouns": "She/Her",
+      "gender_other": null,
+      "race_other": null,
+      "phone_primary": "+1 (555) 555-9999",
+      "skills": [
+        {
+          "id": "FsleYWdpSaCA_qO3nkdMVw==",
+          "name": "Budgeting"
+        },
+        {
+          "id": "ZjcmI1kzC_Nm0MBejLPhDQ==",
+          "name": "Grant Writing"
+        },
+        {
+          "id": "-PmqNY7802oljpcsgL0ZLQ==",
+          "name": "Metrics"
+        }
+      ],
+      "account_id": "google-oauth2|105475713561673035322",
+      "pronouns_other": null,
+      "terms_agreement": true,
+      "id": 78,
+      "emails": [
+        {
+          "id": 465,
+          "type": "Personal",
+          "is_primary": true,
+          "email": "bayBC@baltimorecorps.org"
+        }
+      ],
+      "first_name": "New TEST",
+      "gender": "Non-Binary"
+    },
+    "status": "draft"
+  }
+
 def post_request(app, url, data):
     mimetype = 'application/json'
     headers = {
@@ -901,7 +989,7 @@ def skill_name(skill):
           'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
       }]},
       lambda: Experience.query.get(513),
-      lambda e: (len(e.achievements[-1].skills) == 1 
+      lambda e: (len(e.achievements[-1].skills) == 1
                  and e.achievements[-1].skills[0]['name'] == 'Python'
                  and e.achievements[-1].skills[0]['capability_id'] == 'cap:it'),
       )
@@ -912,7 +1000,7 @@ def skill_name(skill):
           'skills': [{'name': 'Recruitment', 'capability_id': 'cap:outreach'}],
       }]},
       lambda: Experience.query.get(513),
-      lambda e: (len(e.achievements[-1].skills) == 1 
+      lambda e: (len(e.achievements[-1].skills) == 1
                  and e.achievements[-1].skills[0]['name'] == 'Recruitment'
                  and e.achievements[-1].skills[0]['capability_id'] == 'cap:outreach'),
       )
@@ -920,7 +1008,7 @@ def skill_name(skill):
     ,('/api/experiences/513/',
       {'skills': SKILLS['billy'][0:2] + [{'name': 'Test'}]},
       lambda: Experience.query.get(513),
-      lambda e: (len(e.skills) == 3 
+      lambda e: (len(e.skills) == 3
                  and sorted(e.skills, key=skill_name)[0].name == 'Community Organizing'
                  and sorted(e.skills, key=skill_name)[1].name == 'Flask'
                  and sorted(e.skills, key=skill_name)[2].name == 'Test'),
@@ -946,6 +1034,11 @@ def skill_name(skill):
       lambda: OpportunityApp.query.get('a1'),
       lambda r: r.interest_statement == 'New interest statement',
       )
+     ,('/api/contacts/123/app/123abc',
+       {'interest_statement': "New interest statement"},
+       lambda: OpportunityApp.query.get('a1'),
+       lambda r: r.interest_statement == 'New interest statement',
+       )
     ]
 )
 def test_put(app, url, update, query, test):
@@ -1028,17 +1121,17 @@ def test_put_update_achievement_skills(app):
     }
     url = '/api/experiences/513/'
     update = {
-        'achievements': 
+        'achievements':
               EXPERIENCES['baltimore']['achievements'][0:2] + [{
                   'id': 83,
                   'description': 'Developed recruitment projection tools to model and track progress to goals.',
                   'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
               }],
         # Achievement skills should add to experience level skills
-        'skills': [], 
-    } 
+        'skills': [],
+    }
     query = lambda: Experience.query.get(513)
-    test = lambda e: (len(e.achievements[-1].skills) == 1 
+    test = lambda e: (len(e.achievements[-1].skills) == 1
                       and e.achievements[-1].skills[0]['name'] == 'Python')
     with app.test_client() as client:
         assert query() is not None, "Item to update should exist"
@@ -1260,7 +1353,7 @@ def test_get_capability_recommendations(app):
         'Information Technology': [],
     }
     with app.test_client() as client:
-        response = client.get('/api/capabilities/', 
+        response = client.get('/api/capabilities/',
                               headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
