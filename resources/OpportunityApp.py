@@ -3,6 +3,7 @@ import uuid
 
 from flask_restful import Resource, request
 from flask_login import login_required
+from marshmallow import ValidationError
 
 from models.base_model import db
 
@@ -12,7 +13,12 @@ from auth import (
     unauthorized,
     refresh_session
 )
-from models.opportunity_app_model import OpportunityApp, OpportunityAppSchema, ApplicationStage
+from models.opportunity_app_model import (
+    OpportunityApp, 
+    OpportunityAppSchema, 
+    ApplicationStage
+)
+from models.resume_model import ResumeSnapshot
 
 opportunity_app_schema = OpportunityAppSchema()
 opportunity_app_schema_many = OpportunityAppSchema(many=True)
@@ -97,6 +103,15 @@ class OpportunityAppOne(Resource):
 
         if not opportunity_app:
             return {'message': 'Application does not exist'}, 404
+
+        if data.get('resume') is not None:
+            if opportunity_app.resume is None:
+                opportunity_app.resume = ResumeSnapshot(
+                    **data['resume']
+                )
+            else:
+                opportunity_app.resume.resume = data['resume']['resume']
+            del data['resume']
 
         for k,v in data.items():
             setattr(opportunity_app, k, v)
