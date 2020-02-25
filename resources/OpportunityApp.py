@@ -81,13 +81,12 @@ class OpportunityAppOne(Resource):
         if not opportunity_app:
             return {'message': 'Application does not exist'}, 404
 
-        for k,v in data.items():
-            setattr(opportunity_app, k, v)
+        opportunity_app.update(**data)
 
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200
-        
+
 class OpportunityAppSubmit(Resource):
     method_decorators = {
         'post': [login_required, refresh_session],
