@@ -9,6 +9,8 @@ class ApplicationStage(enum.Enum):
     draft = 0
     submitted = 1
 
+UPDATE_FIELDS = ['interest_statement', 'stage']
+
 class OpportunityApp(db.Model):
     __tablename__ = 'opportunity_app'
 
@@ -23,12 +25,21 @@ class OpportunityApp(db.Model):
 
     opportunity = db.relationship('Opportunity')
 
+    __table_args__ = (
+        db.Index('oppapp_contact_opportunity',
+                 'contact_id', 'opportunity_id', unique=True),
+    )
+
     #calculated fields
     @hybrid_property
     def status(self):
         return ApplicationStage(self.stage)
 
-    __table_args__ = (
-        db.Index('oppapp_contact_opportunity',
-                 'contact_id', 'opportunity_id', unique=True),
-    )
+    # for more info on why to use setattr() read this:
+    # https://medium.com/@s.azad4/modifying-python-objects-within-the-sqlalchemy-framework-7b6c8dd71ab3
+    def update(self, **update_dict):
+        for field, value in update_dict.items():
+            print(field, value)
+            if field in UPDATE_FIELDS:
+                setattr(self, field, value)
+        db.session.commit()
