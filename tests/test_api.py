@@ -590,90 +590,10 @@ POSTS = {
 }
 
 APP_PUT_FULL = {
-    "opportunity": {
-      "gdoc_id": "1rnG47mblCVi1mDhB-UNRjs31zrmVaC8jYHvE2wXT4ws",
-      "cycle_id": 1,
-      "program_id": 1,
-      "title": "Web Developer",
-      "id": "94a6103c-c985-4db1-bd4e-e9e815c4cdda",
-      "org_name": "Test Org",
-      "short_description": "",
-      "status": "submitted"
-    },
+    "opportunity": OPPORTUNITIES['test_opp1'],
     "interest_statement": "dfdddsdfff",
     "id": "052904ba-7b83-436c-aee3-334a208fefd9",
-    "contact": {
-      "birthdate": null,
-      "race_all": "Black or African Descent;Native Hawaiian or Other Pacific Islander",
-      "programs": [
-        {
-          "card_id": "card",
-          "program": {
-            "id": 1,
-            "current_cycle": {
-              "match_talent_board_id": "match_talent",
-              "is_active": true,
-              "date_start": "2020-01-01",
-              "review_talent_board_id": "5e39bb0daf879105b1c24462",
-              "match_opp_board_id": "5e4b203d1e7b0c48258fb268",
-              "program_id": 1,
-              "intake_org_board_id": "intake_org",
-              "date_end": "2020-03-30",
-              "id": 1,
-              "intake_talent_board_id": "5e25dae2e640be7e5248a3e6"
-            },
-            "name": "Place for Purpose"
-          },
-          "is_active": true,
-          "stage": 1,
-          "is_approved": false,
-          "id": 123,
-          "reviews": [
-
-          ],
-          "contact_id": 78
-        }
-      ],
-      "email_primary": {
-        "id": 465,
-        "type": "Personal",
-        "is_primary": true,
-        "email": "bayBC@baltimorecorps.org"
-      },
-      "last_name": "Bay BAY",
-      "pronouns": "She/Her",
-      "gender_other": null,
-      "race_other": null,
-      "phone_primary": "+1 (555) 555-9999",
-      "skills": [
-        {
-          "id": "FsleYWdpSaCA_qO3nkdMVw==",
-          "name": "Budgeting"
-        },
-        {
-          "id": "ZjcmI1kzC_Nm0MBejLPhDQ==",
-          "name": "Grant Writing"
-        },
-        {
-          "id": "-PmqNY7802oljpcsgL0ZLQ==",
-          "name": "Metrics"
-        }
-      ],
-      "account_id": "google-oauth2|105475713561673035322",
-      "pronouns_other": null,
-      "terms_agreement": true,
-      "id": 78,
-      "emails": [
-        {
-          "id": 465,
-          "type": "Personal",
-          "is_primary": true,
-          "email": "bayBC@baltimorecorps.org"
-        }
-      ],
-      "first_name": "New TEST",
-      "gender": "Non-Binary"
-    },
+    "contact": CONTACTS['billy'],
     "status": "draft"
   }
 
@@ -1035,9 +955,9 @@ def skill_name(skill):
       lambda r: r.interest_statement == 'New interest statement',
       )
      ,('/api/contacts/123/app/123abc',
-       {'interest_statement': "New interest statement"},
+       APP_PUT_FULL,
        lambda: OpportunityApp.query.get('a1'),
-       lambda r: r.interest_statement == 'New interest statement',
+       lambda r: r.interest_statement == 'dfdddsdfff',
        )
     ]
 )
