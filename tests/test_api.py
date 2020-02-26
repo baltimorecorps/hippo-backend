@@ -1292,7 +1292,7 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/achievements/', ACHIEVEMENTS.values())
     ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
     ,('/api/opportunity/', OPPORTUNITIES.values())
-    ,('/api/opportunity/app/', OPPORTUNITIES_INTERNAL.values())
+    ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):

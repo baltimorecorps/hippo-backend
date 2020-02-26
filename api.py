@@ -8,8 +8,8 @@ from resources.Resume import ResumeAll, ResumeOne, GenerateResume
 from resources.Resume import ResumeSectionAll, ResumeSectionOne
 from resources.Skills import ContactSkills, ContactSkillOne, AutocompleteSkill
 from resources.Capability import (
-    CapabilityRecommended, 
-    ContactCapabilities, 
+    CapabilityRecommended,
+    ContactCapabilities,
     ContactCapabilitySuggestions,
     ContactCapabilitySuggestionOne,
 )
@@ -133,8 +133,8 @@ api.add_resource(OpportunityAll,
                  '/opportunity',
                  '/opportunity/')
 api.add_resource(OpportunityAllInternal,
-                 '/opportunity/app/',
-                 '/opportunity/app')
+                 '/internal/opportunities/',
+                 'internal/opportunities')
 api.add_resource(OpportunityOne,
                  '/opportunity/<string:opportunity_id>',
                  '/opportunity/<string:opportunity_id>/')
