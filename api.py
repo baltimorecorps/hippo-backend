@@ -143,8 +143,8 @@ api.add_resource(OpportunityAll,
                  '/opportunity',
                  '/opportunity/')
 api.add_resource(OpportunityAllInternal,
-                 '/opportunity/app/',
-                 '/opportunity/app')
+                 '/internal/opportunities/',
+                 'internal/opportunities')
 api.add_resource(OpportunityOne,
                  '/opportunity/<string:opportunity_id>',
                  '/opportunity/<string:opportunity_id>/')
