@@ -20,7 +20,11 @@ from resources.Trello_Intake_Talent import (
     IntakeTalentCard,
     ReviewTalentCard
 )
-from resources.Opportunity import OpportunityAll, OpportunityOne
+from resources.Opportunity import (
+    OpportunityAll,
+    OpportunityAllInternal,
+    OpportunityOne
+)
 from resources.OpportunityApp import (
     OpportunityAppAll,
     OpportunityAppOne,
@@ -138,6 +142,9 @@ api.add_resource(Session,
 api.add_resource(OpportunityAll,
                  '/opportunity',
                  '/opportunity/')
+api.add_resource(OpportunityAllInternal,
+                 '/opportunity/app/',
+                 '/opportunity/app')
 api.add_resource(OpportunityOne,
                  '/opportunity/<string:opportunity_id>',
                  '/opportunity/<string:opportunity_id>/')

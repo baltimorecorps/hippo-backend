@@ -13,11 +13,9 @@ from auth import (
     unauthorized,
     refresh_session
 )
-from models.opportunity_app_model import (
-    OpportunityApp, 
-    OpportunityAppSchema, 
-    ApplicationStage
-)
+
+from models.opportunity_app_model import OpportunityApp, ApplicationStage
+from models.opportunity_model import OpportunityAppSchema
 from models.resume_model import ResumeSnapshot
 
 opportunity_app_schema = OpportunityAppSchema()
@@ -113,8 +111,7 @@ class OpportunityAppOne(Resource):
                 opportunity_app.resume.resume = data['resume']['resume']
             del data['resume']
 
-        for k,v in data.items():
-            setattr(opportunity_app, k, v)
+        opportunity_app.update(**data)
 
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
