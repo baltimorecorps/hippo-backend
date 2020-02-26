@@ -341,9 +341,9 @@ test_opp1 = Opportunity(
     short_description="This is a test opportunity.",
     gdoc_id="ABC123xx==",
     card_id="card",
+    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
     org_name="Test Org",
     cycle_id=2,
-    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit"
 )
 
 test_opp2 = Opportunity(

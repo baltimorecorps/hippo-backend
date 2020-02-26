@@ -106,8 +106,8 @@ def test_post_formassembly_opportunity_intake(app):
         assert response.status_code == 201
         data = json.loads(response.data)['data']
 
-        assert 'gdoc_id' in data
-        assert data['gdoc_id'] == gdoc_id
+        # assert 'gdoc_id' in data
+        # assert data['gdoc_id'] == gdoc_id
         assert 'title' in data
         assert data['title'] == 'QA Tester'
 

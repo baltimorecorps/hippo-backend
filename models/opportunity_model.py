@@ -56,7 +56,6 @@ class OpportunitySchema(Schema):
     id = fields.String(required=True, dump_only=True)
     title = fields.String(required=True)
     short_description = fields.String(required=True)
-    gdoc_id = fields.String()
     gdoc_link = fields.String(required=True)
     status = EnumField(OpportunityStage, dump_only=True)
     org_name = fields.String(required=True)
