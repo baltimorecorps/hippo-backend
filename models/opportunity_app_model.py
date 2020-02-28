@@ -10,6 +10,7 @@ from models.resume_model import ResumeSnapshotSchema
 class ApplicationStage(enum.Enum):
     draft = 0
     submitted = 1
+    recommended = 2
 
 class OpportunityApp(db.Model):
     __tablename__ = 'opportunity_app'
