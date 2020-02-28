@@ -11,11 +11,12 @@ from auth import (
     is_authorized_view,
     is_authorized_write,
     unauthorized,
-    refresh_session
+    refresh_session,
+    is_authorized_with_permission
 )
 from models.opportunity_app_model import (
-    OpportunityApp, 
-    OpportunityAppSchema, 
+    OpportunityApp,
+    OpportunityAppSchema,
     ApplicationStage
 )
 from models.resume_model import ResumeSnapshot
