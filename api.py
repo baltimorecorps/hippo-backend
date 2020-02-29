@@ -28,7 +28,8 @@ from resources.Opportunity import (
 from resources.OpportunityApp import (
     OpportunityAppAll,
     OpportunityAppOne,
-    OpportunityAppSubmit
+    OpportunityAppSubmit,
+    OpportunityAppRecommend,
 )
 from resources.FormAssembly import (
     TalentProgramApp,
@@ -120,7 +121,9 @@ api.add_resource(OpportunityAppSubmit,
 api.add_resource(OpportunityAppAll,
                  '/contacts/<int:contact_id>/app',
                  '/contacts/<int:contact_id>/app/')
-
+api.add_resource(OpportunityAppRecommend,
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/recommend',
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/recommend/')
 api.add_resource(IntakeTalentBoard,
                  '/programs/<int:program_id>/trello/intake-talent',
                  '/programs/<int:program_id>/trello/intake-talent/')

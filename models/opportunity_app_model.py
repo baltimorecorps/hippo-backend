@@ -8,6 +8,7 @@ from models.contact_model import ContactSchema
 class ApplicationStage(enum.Enum):
     draft = 0
     submitted = 1
+    recommended = 2
 
 UPDATE_FIELDS = ['interest_statement', 'stage']
 
