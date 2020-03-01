@@ -1401,6 +1401,21 @@ def test_get_contact_capabilities(app):
         pprint(data)
         assert data == expected
 
+def test_get_contact_without_apps(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    url, expected = ('/api/contacts/124/app/', [])
+    with app.test_client() as client:
+        response = client.get(url, headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+
+        pprint(expected)
+        pprint(data)
+        assert data == expected
 
 @pytest.mark.skip
 @pytest.mark.parametrize(
