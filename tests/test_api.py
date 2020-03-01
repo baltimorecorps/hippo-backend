@@ -1210,6 +1210,7 @@ def test_opportunity_app_recommend(app):
         assert response.status_code == 200
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.recommended.value
 
+
 def test_opportunity_app_reopen(app):
     mimetype = 'application/json'
     headers = {
