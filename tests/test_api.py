@@ -1210,6 +1210,21 @@ def test_opportunity_app_recommend(app):
         assert response.status_code == 200
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.recommended.value
 
+def test_opportunity_app_reopen(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {}
+    with app.test_client() as client:
+        assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
+        response = client.post('/api/contacts/123/app/123abc/reopen/',
+                              data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert OpportunityApp.query.get('a1').stage == ApplicationStage.draft.value
+
 @pytest.mark.parametrize(
     "delete_url,query",
     [('/api/contacts/123?token=testing_token',
