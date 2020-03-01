@@ -14,8 +14,8 @@ from auth import (
     refresh_session
 )
 from models.opportunity_app_model import (
-    OpportunityApp, 
-    OpportunityAppSchema, 
+    OpportunityApp,
+    OpportunityAppSchema,
     ApplicationStage
 )
 from models.resume_model import ResumeSnapshot
@@ -35,8 +35,6 @@ class OpportunityAppAll(Resource):
             .filter(OpportunityApp.contact_id==contact_id,
                     OpportunityApp.stage>=ApplicationStage.submitted.value)
             .all())
-        if not opportunity_apps:
-            return {'message': 'No applications found'}, 404
         data = opportunity_app_schema_many.dump(opportunity_apps)
         return {'status': 'success', 'data': data}, 200
 
