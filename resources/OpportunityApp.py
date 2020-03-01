@@ -121,6 +121,30 @@ class OpportunityAppOne(Resource):
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200
 
+class OpportunityAppReopen(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session],
+    }
+
+    def post(self, contact_id, opportunity_id):
+        if not is_authorized_with_permission("write:app"):
+            return unauthorized()
+
+        opportunity_app = (OpportunityApp.query
+            .filter_by(contact_id=contact_id, opportunity_id=opportunity_id)
+            .first())
+
+        if not opportunity_app:
+            return {'message': 'Application does not exist'}, 404
+        if opportunity_app.stage == ApplicationStage.draft.value:
+            return {'message': 'Application is already open for editing'}, 400
+
+        opportunity_app.stage = ApplicationStage.draft.value
+        db.session.commit()
+        result = opportunity_app_schema.dump(opportunity_app)
+        return {'status': 'success', 'data': result}, 200
+
+
 class OpportunityAppSubmit(Resource):
     method_decorators = {
         'post': [login_required, refresh_session],
