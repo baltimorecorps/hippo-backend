@@ -315,7 +315,8 @@ OPPORTUNITIES_INTERNAL = {
         'applications': [{'id': 'a2',
                           'contact': CONTACTS['billy'],
                           'interest_statement': "I'm also interested in this test opportunity",
-                          'status': 'draft'}]
+                          'status': 'draft',
+                          'resume': None}]
     },
 }
 
