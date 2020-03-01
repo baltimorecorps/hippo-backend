@@ -21,6 +21,7 @@ class OpportunityApp(db.Model):
     resume_id = db.Column(db.Integer, db.ForeignKey('resume_snapshot.id'), nullable=True)
     interest_statement = db.Column(db.String(2000), nullable=True)
     stage = db.Column(db.Integer, nullable=False, default=0)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
 
     resume = db.relationship('ResumeSnapshot')
     contact = db.relationship('Contact', back_populates='applications')
@@ -45,6 +46,7 @@ class OpportunityAppSchema(Schema):
     interest_statement = fields.String()
     resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True) 
     status = EnumField(ApplicationStage, dump_only=True)
+    is_active = fields.Boolean(dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
