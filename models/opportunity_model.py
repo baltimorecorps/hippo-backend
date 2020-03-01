@@ -1,5 +1,8 @@
 from models.base_model import db
 from models.cycle_model import Cycle, CycleSchema
+from models.contact_model import ContactSchema
+from models.opportunity_app_model import ApplicationStage
+from models.resume_model import ResumeSnapshotSchema
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -36,6 +39,19 @@ class Opportunity(db.Model):
     def status(self):
         return OpportunityStage(self.stage)
 
+class OpportunityAppSchema(Schema):
+    id = fields.String(dump_only=True)
+    contact = fields.Nested(ContactSchema, dump_only=True)
+    # for info on why we use lambda here review this documentation:
+    # https://marshmallow.readthedocs.io/en/stable/nesting.html#two-way-nesting
+    opportunity = fields.Nested(lambda: OpportunitySchema(exclude=('applications',)))
+    interest_statement = fields.String()
+    status = EnumField(ApplicationStage, dump_only=True)
+    resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True)
+
+    class Meta:
+        unknown = EXCLUDE
+
 class OpportunitySchema(Schema):
     id = fields.String(required=True, dump_only=True)
     title = fields.String(required=True)
@@ -45,6 +61,7 @@ class OpportunitySchema(Schema):
     org_name = fields.String(required=True)
     cycle_id = fields.Integer(required=True)
     program_id = fields.Integer(attribute='cycle.program_id', dump_only=True)
+    applications = fields.Nested(OpportunityAppSchema(exclude=('opportunity',), many=True))
 
     class Meta:
         unknown = EXCLUDE

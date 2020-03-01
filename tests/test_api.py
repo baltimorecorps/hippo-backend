@@ -287,6 +287,38 @@ SNAPSHOTS = {
     },
 }
 
+OPPORTUNITIES_INTERNAL = {
+    'test_opp1': {
+        'id': '123abc',
+        'title': "Test Opportunity",
+        'short_description': "This is a test opportunity.",
+        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+        'status': 'submitted',
+        'org_name': 'Test Org',
+        'cycle_id': 2,
+        'program_id': 1,
+        'applications': [{'id': 'a1',
+                         'contact': CONTACTS['billy'],
+                         'interest_statement': "I'm interested in this test opportunity",
+                         'status': 'submitted',
+                         'resume': SNAPSHOTS['snapshot1']}]
+    },
+    'test_opp2': {
+        'id': '222abc',
+        'title': "Another Test Opportunity",
+        'short_description': "This is another test opportunity.",
+        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+        'status': 'submitted',
+        'org_name': 'Test Org',
+        'cycle_id': 2,
+        'program_id': 1,
+        'applications': [{'id': 'a2',
+                          'contact': CONTACTS['billy'],
+                          'interest_statement': "I'm also interested in this test opportunity",
+                          'status': 'draft'}]
+    },
+}
+
 APPLICATIONS = {
     'app_billy': {
         'id': 'a1',
@@ -585,6 +617,14 @@ POSTS = {
         "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit"
     },
 }
+
+APP_PUT_FULL = {
+    "opportunity": OPPORTUNITIES['test_opp1'],
+    "interest_statement": "dfdddsdfff",
+    "id": "052904ba-7b83-436c-aee3-334a208fefd9",
+    "contact": CONTACTS['billy'],
+    "status": "draft"
+  }
 
 def post_request(app, url, data):
     mimetype = 'application/json'
@@ -953,7 +993,11 @@ def skill_name(skill):
       lambda: OpportunityApp.query.get('a2'),
       lambda r: r.resume and r.resume.resume == '{"test":"snapshotnew"}',
       )
-
+     ,('/api/contacts/123/app/123abc',
+       APP_PUT_FULL,
+       lambda: OpportunityApp.query.get('a1'),
+       lambda r: r.interest_statement == 'dfdddsdfff',
+       )
     ]
 )
 def test_put(app, url, update, query, test):
@@ -1164,7 +1208,7 @@ def test_opportunity_app_recommend(app):
                               headers=headers)
         assert response.status_code == 200
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.recommended.value
-        
+
 def test_opportunity_app_reopen(app):
     mimetype = 'application/json'
     headers = {
@@ -1318,6 +1362,7 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
     ,('/api/opportunity/', OPPORTUNITIES.values())
     ,('/api/contacts/123/app/', [APPLICATIONS['app_billy']])
+    ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):
