@@ -11,11 +11,12 @@ from auth import (
     is_authorized_view,
     is_authorized_write,
     unauthorized,
-    refresh_session
+    refresh_session,
+    is_authorized_with_permission
 )
 from models.opportunity_app_model import (
-    OpportunityApp, 
-    OpportunityAppSchema, 
+    OpportunityApp,
+    OpportunityAppSchema,
     ApplicationStage
 )
 from models.resume_model import ResumeSnapshot
@@ -139,6 +140,30 @@ class OpportunityAppSubmit(Resource):
             return {'message': 'Application is already submitted'}, 400
 
         opportunity_app.stage = ApplicationStage.submitted.value
+        db.session.commit()
+        result = opportunity_app_schema.dump(opportunity_app)
+        return {'status': 'success', 'data': result}, 200
+
+class OpportunityAppRecommend(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session],
+    }
+
+    def post(self, contact_id, opportunity_id):
+
+        if not is_authorized_with_permission('write:app'):
+            return unauthorized()
+
+        opportunity_app = (OpportunityApp.query
+            .filter_by(contact_id=contact_id, opportunity_id=opportunity_id)
+            .first())
+
+        if not opportunity_app:
+            return {'message': 'Application does not exist'}, 404
+        if opportunity_app.stage >= ApplicationStage.recommended.value:
+            return {'message': 'Application is already recommended'}, 400
+
+        opportunity_app.stage = ApplicationStage.recommended.value
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200
