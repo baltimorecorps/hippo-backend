@@ -1150,7 +1150,7 @@ def test_opportunity_app_submit(app):
         assert response.status_code == 200
         assert OpportunityApp.query.get('a2').stage == ApplicationStage.submitted.value
 
-def test_opportunity_app_submit(app):
+def test_opportunity_app_reopen(app):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
