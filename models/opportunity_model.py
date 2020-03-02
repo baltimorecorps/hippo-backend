@@ -48,6 +48,7 @@ class OpportunityAppSchema(Schema):
     interest_statement = fields.String()
     status = EnumField(ApplicationStage, dump_only=True)
     resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True)
+    is_active = fields.Boolean(dump_only=True)
 
     class Meta:
         unknown = EXCLUDE

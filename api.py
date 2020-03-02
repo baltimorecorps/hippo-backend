@@ -26,6 +26,7 @@ from resources.Opportunity import (
     OpportunityOne
 )
 from resources.OpportunityApp import (
+    OpportunityAppReject,
     OpportunityAppAll,
     OpportunityAppOne,
     OpportunityAppSubmit,
@@ -119,6 +120,9 @@ api.add_resource(OpportunityAppOne,
 api.add_resource(OpportunityAppSubmit,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/submit',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/submit/')
+api.add_resource(OpportunityAppReject,
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit',
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit/')
 api.add_resource(OpportunityAppAll,
                  '/contacts/<int:contact_id>/app',
                  '/contacts/<int:contact_id>/app/')

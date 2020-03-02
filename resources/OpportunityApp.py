@@ -186,3 +186,24 @@ class OpportunityAppRecommend(Resource):
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200
+
+class OpportunityAppReject(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session],
+    }
+
+    def post(self, contact_id, opportunity_id):
+
+        opportunity_app = (OpportunityApp.query
+            .filter_by(contact_id=contact_id, opportunity_id=opportunity_id)
+            .first())
+
+        if not opportunity_app:
+            return {'message': 'Application does not exist'}, 404
+        if opportunity_app.is_active == False:
+            return {'message': 'Application is already marked "Not a Fit"'}, 400
+
+        opportunity_app.is_active = False
+        db.session.commit()
+        result = opportunity_app_schema.dump(opportunity_app)
+        return {'status': 'success', 'data': result}, 200
