@@ -47,6 +47,7 @@ class OpportunityAppSchema(Schema):
     opportunity = fields.Nested(lambda: OpportunitySchema(exclude=('applications',)))
     interest_statement = fields.String()
     status = EnumField(ApplicationStage, dump_only=True)
+    is_active = fields.Boolean(dump_only=True)
     resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True)
 
     class Meta:

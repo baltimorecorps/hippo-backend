@@ -301,6 +301,7 @@ OPPORTUNITIES_INTERNAL = {
                          'contact': CONTACTS['billy'],
                          'interest_statement': "I'm interested in this test opportunity",
                          'status': 'submitted',
+                         'is_active': True,
                          'resume': SNAPSHOTS['snapshot1']}]
     },
     'test_opp2': {
@@ -316,6 +317,7 @@ OPPORTUNITIES_INTERNAL = {
                           'contact': CONTACTS['billy'],
                           'interest_statement': "I'm also interested in this test opportunity",
                           'status': 'draft',
+                          'is_active': True,
                           'resume': None}]
     },
 }
@@ -328,6 +330,7 @@ APPLICATIONS = {
         'interest_statement': "I'm interested in this test opportunity",
         'status': 'submitted',
         'resume': SNAPSHOTS['snapshot1'],
+        'is_active': True,
     },
     'app_billy2': {
         'id': 'a2',
@@ -335,6 +338,7 @@ APPLICATIONS = {
         'opportunity': OPPORTUNITIES['test_opp2'],
         'interest_statement': "I'm also interested in this test opportunity",
         'status': 'draft',
+        'is_active': True,
     },
 
 }
@@ -1179,6 +1183,21 @@ def test_put_rejects_app_stage_update(app):
                               data=json.dumps(update),
                               headers=headers)
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
+
+def test_opportunity_app_not_a_fit(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {}
+    with app.test_client() as client:
+        assert OpportunityApp.query.get('a1').is_active == True
+        response = client.post('/api/contacts/123/app/123abc/not-a-fit/',
+                              data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert OpportunityApp.query.get('a1').is_active == False
 
 def test_opportunity_app_submit(app):
     mimetype = 'application/json'
