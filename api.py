@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api
-from resources.Contacts import ContactAll, ContactOne, ContactAccount
+from resources.Contacts import ContactAll, ContactOne, ContactAccount, ContactShort
 from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne
 from resources.Experience import ExperienceAll, ExperienceOne
 from resources.Achievement import AchievementAll
@@ -48,6 +48,9 @@ api.add_resource(ContactOne,
 api.add_resource(ContactAccount,
                  '/contacts/me',
                  '/contacts/me/')
+api.add_resource(ContactShort,
+                 '/contacts/short',
+                 '/contacts/short/')
 api.add_resource(ContactSkills,
                  '/contacts/<int:contact_id>/skills',
                  '/contacts/<int:contact_id>/skills/')
