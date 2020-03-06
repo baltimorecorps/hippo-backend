@@ -277,6 +277,21 @@ CONTACTS = {
     },
 }
 
+CONTACTS_SHORT = {
+    'billy': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+    },
+    'obama': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+    }
+}
+
 SNAPSHOTS = {
     'snapshot1': {
         'test': 'snapshot1'
@@ -300,7 +315,7 @@ OPPORTUNITIES_INTERNAL = {
                          'interest_statement': "I'm interested in this test opportunity",
                          'status': 'submitted',
                          'is_active': True,
-                         'resume': {'test': 'snapshot1'}}]
+                         'resume': SNAPSHOTS['snapshot1']}]
     },
     'test_opp2': {
         'id': '222abc',
@@ -1384,6 +1399,7 @@ def test_get_capability_recommendations(app):
     ,('/api/opportunity/', OPPORTUNITIES.values())
     ,('/api/contacts/123/app/', [APPLICATIONS['app_billy']])
     ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
+    ,('/api/contacts/short/', CONTACTS_SHORT.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):

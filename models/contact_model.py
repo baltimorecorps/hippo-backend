@@ -100,6 +100,9 @@ class Contact(db.Model):
                 skills.append(skill_item.skill)
         return sorted(skills, key=lambda skill: skill.name)
 
+    @hybrid_property
+    def email(self):
+        return self.email_primary.email
 
 class ContactSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -122,3 +125,9 @@ class ContactSchema(Schema):
 
     class Meta:
         unknown = EXCLUDE
+
+class ContactShortSchema(Schema):
+    id = fields.Integer()
+    first_name = fields.String()
+    last_name = fields.String()
+    email = fields.String(dump_only=True)
