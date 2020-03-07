@@ -1,5 +1,6 @@
 from flask_restful import Resource, request
 from models.program_model import Program, ProgramSchema
+from models.contact_model import ContactShortSchema
 from models.program_contact_model import ProgramContact, ProgramContactSchema, UPDATE_FIELDS
 from models.response_model import Response, ResponseSchema
 from models.base_model import db
@@ -7,15 +8,16 @@ from marshmallow import ValidationError
 
 from flask_login import login_required
 from auth import (
-    refresh_session, 
-    is_authorized_view, 
-    is_authorized_write, 
-
+    refresh_session,
+    is_authorized_view,
+    is_authorized_write,
+    is_authorized_with_permission,
     unauthorized
 )
 
 program_contact_schema = ProgramContactSchema()
 program_contacts_schema = ProgramContactSchema(many=True)
+contacts_short_schema = ContactShortSchema(many=True)
 
 def add_responses(responses, program_contact):
     for response in responses:
@@ -39,6 +41,42 @@ def create_program_contact(contact_id, program_id=1, **data):
     result = program_contact_schema.dump(program_contact)
     return  result
 
+class ProgramContactApproveMany(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session]
+    }
+
+    def post(self, program_id):
+        if not is_authorized_with_permission('write:all-users'):
+            return unauthorized()
+
+        json_data = request.get_json(force=True)
+        try:
+            data = contacts_short_schema.load(json_data)
+        except ValidationError as e:
+            return e.messages, 422
+        if not data:
+            return {'message': 'No data provided to update'}, 400
+
+        contact_ids = [contact['id'] for contact in data]
+        program_contacts = (ProgramContact
+                            .query
+                            .filter(ProgramContact.contact_id.in_(contact_ids),
+                                    ProgramContact.program_id==1,
+                                    ProgramContact.is_approved==False)
+                            .all())
+        if len(data) > len(program_contacts):
+            return {'message': ('Payload included contacts '
+                                'who were already approved') }, 400
+        elif len(data) > len(program_contacts):
+            return {'message': ('Query returned more contacts'
+                                'than passed in payload')}, 400
+        for program_contact in program_contacts:
+            program_contact.is_approved = True
+        db.session.commit()
+        result = program_contacts_schema.dump(program_contacts)
+        return {'status': 'success', 'data': result}, 200
+
 class ProgramContactAll(Resource):
     method_decorators = {
         'get': [login_required, refresh_session],
@@ -46,7 +84,7 @@ class ProgramContactAll(Resource):
     }
 
     def get(self,contact_id):
-        if not is_authorized_view(contact_id): 
+        if not is_authorized_view(contact_id):
             return unauthorized()
 
         program_contacts = ProgramContact.query.filter_by(contact_id=contact_id)
@@ -54,7 +92,7 @@ class ProgramContactAll(Resource):
         return {'status': 'success', 'data': result}, 200
 
     def post(self, contact_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         #retrieve and parse request data
@@ -80,7 +118,7 @@ class ProgramContactOne(Resource):
     }
 
     def get(self, contact_id, program_id):
-        if not is_authorized_view(contact_id): 
+        if not is_authorized_view(contact_id):
             return unauthorized()
 
         program_contact = query_one_program_contact(contact_id, program_id)
@@ -90,7 +128,7 @@ class ProgramContactOne(Resource):
         return {'status': 'success', 'data': result}, 200
 
     def put(self, contact_id, program_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         #retreives and parses request data
@@ -114,7 +152,7 @@ class ProgramContactOne(Resource):
         return {"status": 'success', 'data': result}, 200
 
     def delete(self, contact_id, program_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         program_contact = query_one_program_contact(contact_id, program_id)

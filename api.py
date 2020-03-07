@@ -14,7 +14,11 @@ from resources.Capability import (
     ContactCapabilitySuggestionOne,
 )
 from resources.Session import Session
-from resources.ProgramContacts import ProgramContactOne, ProgramContactAll
+from resources.ProgramContacts import (
+    ProgramContactOne,
+    ProgramContactAll,
+    ProgramContactApproveMany
+)
 from resources.Trello_Intake_Talent import (
     IntakeTalentBoard,
     IntakeTalentCard,
@@ -117,6 +121,9 @@ api.add_resource(ProgramContactAll,
 api.add_resource(ProgramContactOne,
                  '/contacts/<int:contact_id>/programs/<int:program_id>',
                  '/contacts/<int:contact_id>/programs/<int:program_id>/')
+api.add_resource(ProgramContactApproveMany,
+                 '/programs/<int:program_id>/contacts/approve-many',
+                 '/programs/<int:program_id>/contacts/approve-many/')
 api.add_resource(OpportunityAppOne,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/')

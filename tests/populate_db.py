@@ -313,6 +313,14 @@ billy_pfp = ProgramContact(
     is_approved=True
 )
 
+obama_pfp = ProgramContact(
+    id=6,
+    program_id=1,
+    contact_id=124,
+    card_id='card',
+    stage=1,
+)
+
 r_billy1 = Response(
     id=6,
     program_contact_id=5,
@@ -414,6 +422,7 @@ def populate(db):
     db.session.add(q_pfp1)
     db.session.add(q_pfp2)
     db.session.add(billy_pfp)
+    db.session.add(obama_pfp)
     db.session.add(r_billy1)
     db.session.add(r_billy2)
     db.session.add(review_billy)
