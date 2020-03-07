@@ -176,6 +176,16 @@ PROGRAM_CONTACTS = {
         'reviews': [
             REVIEWS['review_billy']
         ]
+    },
+    'obama_pfp': {
+        'id': 6,
+        'contact_id': 124,
+        'program': PROGRAMS['pfp'],
+        'card_id': 'card',
+        'stage': 1,
+        'is_active': True,
+        'is_approved': False,
+        'reviews': []
     }
 }
 
@@ -273,7 +283,7 @@ CONTACTS = {
         'pronouns_other': 'They/Them/Their',
         'account_id': None,
         'skills': SKILLS['obama'],
-        'programs': [],
+        'programs': [PROGRAM_CONTACTS['obama_pfp']],
         'terms_agreement': True
     },
 }
@@ -1259,6 +1269,37 @@ def test_opportunity_app_reopen(app):
         assert response.status_code == 200
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.draft.value
 
+
+def test_approve_many_program_contacts(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    payload = [CONTACTS_SHORT['obama']]
+    with app.test_client() as client:
+        assert ProgramContact.query.get(6).is_approved == False
+        response = client.post('/api/programs/1/contacts/approve-many/',
+                              data=json.dumps(payload),
+                              headers=headers)
+        assert response.status_code == 200
+        assert ProgramContact.query.get(6).is_approved == True
+
+def test_reapprove_eligible_program_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    payload = [CONTACTS_SHORT['billy']]
+    with app.test_client() as client:
+        assert ProgramContact.query.get(5).is_approved == True
+        response = client.post('/api/programs/1/contacts/approve-many/',
+                              data=json.dumps(payload),
+                              headers=headers)
+        assert response.status_code == 400
+        message = json.loads(response.data)['message']
+        assert message == 'Payload included contacts who were already approved'
 
 @pytest.mark.parametrize(
     "delete_url,query",
