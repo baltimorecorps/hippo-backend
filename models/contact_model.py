@@ -68,9 +68,9 @@ class Contact(db.Model):
     achievements = db.relationship('Achievement', back_populates='contact',
                                    cascade='all, delete, delete-orphan')
 
-    skill_items = db.relationship('ContactSkill', 
+    skill_items = db.relationship('ContactSkill',
                            cascade='all, delete, delete-orphan')
-    capability_skill_suggestions = db.relationship('CapabilitySkillSuggestion', 
+    capability_skill_suggestions = db.relationship('CapabilitySkillSuggestion',
                            cascade='all, delete, delete-orphan')
 
     experiences = db.relationship('Experience', back_populates='contact',
@@ -131,3 +131,6 @@ class ContactShortSchema(Schema):
     first_name = fields.String()
     last_name = fields.String()
     email = fields.String(dump_only=True)
+
+    class Meta:
+        unknown = EXCLUDE
