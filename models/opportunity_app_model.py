@@ -39,6 +39,9 @@ class OpportunityApp(db.Model):
     def status(self):
         return ApplicationStage(self.stage)
 
+    @hybrid_property
+    def program_id(self):
+        return self.opportunity.cycle.program_id
 
     # for more info on why to use setattr() read this:
     # https://medium.com/@s.azad4/modifying-python-objects-within-the-sqlalchemy-framework-7b6c8dd71ab3

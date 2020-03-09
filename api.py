@@ -17,7 +17,8 @@ from resources.Session import Session
 from resources.ProgramContacts import (
     ProgramContactOne,
     ProgramContactAll,
-    ProgramContactApproveMany
+    ProgramContactApproveMany,
+    ApplicationsInternal
 )
 from resources.Trello_Intake_Talent import (
     IntakeTalentBoard,
@@ -120,6 +121,9 @@ api.add_resource(ProgramContactOne,
 api.add_resource(ProgramContactApproveMany,
                  '/programs/<int:program_id>/contacts/approve-many',
                  '/programs/<int:program_id>/contacts/approve-many/')
+api.add_resource(ApplicationsInternal,
+                 '/internal/applications',
+                 '/internal/applications/')
 api.add_resource(OpportunityAppOne,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/')
@@ -161,7 +165,7 @@ api.add_resource(OpportunityAll,
                  '/opportunity/')
 api.add_resource(OpportunityAllInternal,
                  '/internal/opportunities/',
-                 'internal/opportunities')
+                 '/internal/opportunities')
 api.add_resource(OpportunityOne,
                  '/opportunity/<string:opportunity_id>',
                  '/opportunity/<string:opportunity_id>/')

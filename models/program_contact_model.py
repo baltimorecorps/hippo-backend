@@ -3,6 +3,7 @@ from marshmallow import Schema, fields, EXCLUDE
 from models.program_model import Program, ProgramSchema
 from models.response_model import Response, ResponseSchema
 from models.review_model import Review, ReviewSchema
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class ProgramContact(db.Model):
@@ -34,6 +35,11 @@ class ProgramContact(db.Model):
             if field in UPDATE_FIELDS:
                 setattr(self, field, value)
         db.session.commit()
+
+    @hybrid_property
+    def applications(self):
+        return [app for app in self.contact.applications
+                if app.program_id == self.program_id]
 
 class ProgramContactSchema(Schema):
     id = fields.Integer(dump_only=True)
