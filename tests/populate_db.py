@@ -276,9 +276,26 @@ program_pfp = Program(
     name='Place for Purpose',
 )
 
+program_mayoral = Program(
+    id=2,
+    name='Mayoral Fellowship',
+)
+
 cycle_pfp = Cycle(
     id=2,
     program_id=1,
+    date_start=date(2020, 1, 6),
+    date_end=date(2025, 1, 6),
+    intake_talent_board_id='5e37744114d9d01a03ddbcfe',
+    intake_org_board_id='intake_org',
+    match_talent_board_id='match_talent',
+    match_opp_board_id='5e4acd35a35ee523c71f9e25',
+    review_talent_board_id='5e3753cdaea77d37fce3496a',
+)
+
+cycle_mayoral = Cycle(
+    id=3,
+    program_id=2,
     date_start=date(2020, 1, 6),
     date_end=date(2025, 1, 6),
     intake_talent_board_id='5e37744114d9d01a03ddbcfe',
@@ -307,6 +324,15 @@ q_pfp2 = Question(
 billy_pfp = ProgramContact(
     id=5,
     program_id=1,
+    contact_id=123,
+    card_id='card',
+    stage=1,
+    is_approved=True
+)
+
+billy_mayoral = ProgramContact(
+    id=7,
+    program_id=2,
     contact_id=123,
     card_id='card',
     stage=1,
@@ -361,7 +387,7 @@ test_opp2 = Opportunity(
     gdoc_id="BBB222xx==",
     card_id="card",
     org_name="Test Org",
-    cycle_id=2,
+    cycle_id=3,
     gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit"
 )
 
@@ -418,10 +444,13 @@ def populate(db):
     #db.session.add(skill_health)
     #db.session.add(skill_obama_health)
     db.session.add(program_pfp)
+    db.session.add(program_mayoral)
     db.session.add(cycle_pfp)
+    db.session.add(cycle_mayoral)
     db.session.add(q_pfp1)
     db.session.add(q_pfp2)
     db.session.add(billy_pfp)
+    db.session.add(billy_mayoral)
     db.session.add(obama_pfp)
     db.session.add(r_billy1)
     db.session.add(r_billy2)
