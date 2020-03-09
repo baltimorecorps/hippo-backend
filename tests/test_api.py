@@ -1520,9 +1520,11 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/app/', [APPLICATIONS['app_billy']])
     ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
     ,('/api/contacts/short/', CONTACTS_SHORT.values())
-    ,('/api/internal/applications/', APPLICATIONS_INTERNAL.values())
+    ,('/api/internal/applications/',
+      [APPLICATIONS_INTERNAL['billy_pfp'],
+       APPLICATIONS_INTERNAL['billy_mayoral']])
     ,('/api/internal/applications/?program_id=1',
-      [APPLICATIONS_INTERNAL['billy_pfp'], APPLICATIONS_INTERNAL['obama_pfp']])
+      [APPLICATIONS_INTERNAL['billy_pfp']])
     ,('/api/internal/applications/?program_id=2',
       [APPLICATIONS_INTERNAL['billy_mayoral']])
     ]
