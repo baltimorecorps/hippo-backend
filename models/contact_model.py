@@ -104,6 +104,10 @@ class Contact(db.Model):
     def email(self):
         return self.email_primary.email
 
+    def query_program_contact(self, program_id):
+        return next((p for p in self.programs
+                     if p.program_id == program_id), None)
+
 class ContactSchema(Schema):
     id = fields.Integer(dump_only=True)
     first_name = fields.String(required=True)
