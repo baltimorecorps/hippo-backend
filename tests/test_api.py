@@ -1350,7 +1350,33 @@ def test_opportunity_app_reopen(app):
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.draft.value
 
 
-def test_approve_many_program_contacts(app):
+def test_approve_many_program_contacts_new(app, ):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    payload = [CONTACTS_SHORT['obama']]
+    with app.test_client() as client:
+        program_contact = (ProgramContact
+                           .query
+                           .filter_by(contact_id=124, program_id=2)
+                           .first())
+        assert program_contact is None
+        response = client.post('/api/programs/2/contacts/approve-many/',
+                              data=json.dumps(payload),
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        print(data)
+        program_contact = (ProgramContact
+                           .query
+                           .filter_by(contact_id=124, program_id=2)
+                           .first())
+        assert program_contact is not None
+        assert program_contact.is_approved == True
+
+def test_approve_many_program_contacts_existing(app, ):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -1365,21 +1391,24 @@ def test_approve_many_program_contacts(app):
         assert response.status_code == 200
         assert ProgramContact.query.get(6).is_approved == True
 
-def test_reapprove_eligible_program_contact(app):
+def test_approve_program_contact_fake_contact(app):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
         'Accept': mimetype
     }
-    payload = [CONTACTS_SHORT['billy']]
+    payload = [{'id': 4,
+                'first_name': 'Fake',
+                'last_name': 'Person',
+                'email': 'fake@gmail.com'}]
     with app.test_client() as client:
         assert ProgramContact.query.get(5).is_approved == True
         response = client.post('/api/programs/1/contacts/approve-many/',
                               data=json.dumps(payload),
                               headers=headers)
-        assert response.status_code == 400
+        assert response.status_code == 404
         message = json.loads(response.data)['message']
-        assert message == 'Payload included contacts who were already approved'
+        assert message == "Payload contained contacts that couldn't be found"
 
 @pytest.mark.parametrize(
     "delete_url,query",
