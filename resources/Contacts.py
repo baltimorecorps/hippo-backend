@@ -2,7 +2,7 @@ from flask import request as reqobj #ask David why this is here
 from flask import current_app
 from flask_restful import Resource, request
 from flask_login import login_user, current_user, login_required
-from models.contact_model import Contact, ContactSchema
+from models.contact_model import Contact, ContactSchema, ContactShortSchema
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
@@ -27,6 +27,7 @@ from .skill_utils import get_skill_id, get_or_make_skill
 
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
+contacts_short_schema = ContactShortSchema(many=True)
 
 def add_skills(skills, contact):
     for skill_data in skills:
@@ -88,6 +89,20 @@ class ContactAll(Resource):
         result = contact_schema.dump(contact)
         return {"status": 'success', 'data': result}, 201
 
+class ContactShort(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+    }
+
+    def get(self):
+        if not is_authorized_with_permission('view:all-users'):
+            return unauthorized()
+
+        contacts = Contact.query.all()
+
+        contacts = contacts_short_schema.dump(contacts)
+        return {'status': 'success', 'data': contacts}, 200
+
 class ContactAccount(Resource):
     method_decorators = {
         'get': [validate_jwt],
@@ -112,7 +127,7 @@ class ContactOne(Resource):
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404
-        if not is_authorized_view(contact.id): 
+        if not is_authorized_view(contact.id):
             return unauthorized()
         contact = contact_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
@@ -121,7 +136,7 @@ class ContactOne(Resource):
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404
-        if not is_authorized_write(contact.id): 
+        if not is_authorized_write(contact.id):
             return unauthorized()
         json_data = request.get_json(force=True)
         try:

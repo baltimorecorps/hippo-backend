@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api
-from resources.Contacts import ContactAll, ContactOne, ContactAccount
+from resources.Contacts import ContactAll, ContactOne, ContactAccount, ContactShort
 from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne
 from resources.Experience import ExperienceAll, ExperienceOne
 from resources.Achievement import AchievementAll
@@ -14,7 +14,12 @@ from resources.Capability import (
     ContactCapabilitySuggestionOne,
 )
 from resources.Session import Session
-from resources.ProgramContacts import ProgramContactOne, ProgramContactAll
+from resources.ProgramContacts import (
+    ProgramContactOne,
+    ProgramContactAll,
+    ProgramContactApproveMany,
+    ApplicationsInternal
+)
 from resources.Trello_Intake_Talent import (
     IntakeTalentBoard,
     IntakeTalentCard,
@@ -48,6 +53,9 @@ api.add_resource(ContactOne,
 api.add_resource(ContactAccount,
                  '/contacts/me',
                  '/contacts/me/')
+api.add_resource(ContactShort,
+                 '/contacts/short',
+                 '/contacts/short/')
 api.add_resource(ContactSkills,
                  '/contacts/<int:contact_id>/skills',
                  '/contacts/<int:contact_id>/skills/')
@@ -110,6 +118,12 @@ api.add_resource(ProgramContactAll,
 api.add_resource(ProgramContactOne,
                  '/contacts/<int:contact_id>/programs/<int:program_id>',
                  '/contacts/<int:contact_id>/programs/<int:program_id>/')
+api.add_resource(ProgramContactApproveMany,
+                 '/programs/<int:program_id>/contacts/approve-many',
+                 '/programs/<int:program_id>/contacts/approve-many/')
+api.add_resource(ApplicationsInternal,
+                 '/internal/applications',
+                 '/internal/applications/')
 api.add_resource(OpportunityAppOne,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/')
@@ -151,7 +165,7 @@ api.add_resource(OpportunityAll,
                  '/opportunity/')
 api.add_resource(OpportunityAllInternal,
                  '/internal/opportunities/',
-                 'internal/opportunities')
+                 '/internal/opportunities')
 api.add_resource(OpportunityOne,
                  '/opportunity/<string:opportunity_id>',
                  '/opportunity/<string:opportunity_id>/')

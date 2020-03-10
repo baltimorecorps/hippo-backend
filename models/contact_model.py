@@ -68,9 +68,9 @@ class Contact(db.Model):
     achievements = db.relationship('Achievement', back_populates='contact',
                                    cascade='all, delete, delete-orphan')
 
-    skill_items = db.relationship('ContactSkill', 
+    skill_items = db.relationship('ContactSkill',
                            cascade='all, delete, delete-orphan')
-    capability_skill_suggestions = db.relationship('CapabilitySkillSuggestion', 
+    capability_skill_suggestions = db.relationship('CapabilitySkillSuggestion',
                            cascade='all, delete, delete-orphan')
 
     experiences = db.relationship('Experience', back_populates='contact',
@@ -100,6 +100,9 @@ class Contact(db.Model):
                 skills.append(skill_item.skill)
         return sorted(skills, key=lambda skill: skill.name)
 
+    @hybrid_property
+    def email(self):
+        return self.email_primary.email
 
 class ContactSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -119,6 +122,15 @@ class ContactSchema(Schema):
     skills = fields.Nested(SkillSchema, many=True)
     terms_agreement = fields.Boolean()
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
+
+    class Meta:
+        unknown = EXCLUDE
+
+class ContactShortSchema(Schema):
+    id = fields.Integer()
+    first_name = fields.String()
+    last_name = fields.String()
+    email = fields.String(dump_only=True)
 
     class Meta:
         unknown = EXCLUDE

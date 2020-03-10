@@ -128,6 +128,18 @@ CYCLES = {
         'match_opp_board_id': '5e4acd35a35ee523c71f9e25',
         'is_active': True,
         'review_talent_board_id': '5e3753cdaea77d37fce3496a'
+    },
+    'mayoral': {
+        'id': 3,
+        'program_id': 2,
+        'date_start': '2020-01-06',
+        'date_end': '2025-01-06',
+        'intake_talent_board_id': '5e37744114d9d01a03ddbcfe',
+        'intake_org_board_id': 'intake_org',
+        'match_talent_board_id': 'match_talent',
+        'match_opp_board_id': '5e4acd35a35ee523c71f9e25',
+        'is_active': True,
+        'review_talent_board_id': '5e3753cdaea77d37fce3496a'
     }
 }
 
@@ -136,6 +148,11 @@ PROGRAMS = {
         'id': 1,
         'name': 'Place for Purpose',
         'current_cycle': CYCLES['pfp']
+    },
+    'mayoral': {
+        'id': 2,
+        'name': 'Mayoral Fellowship',
+        'current_cycle': CYCLES['mayoral']
     }
 }
 
@@ -176,6 +193,26 @@ PROGRAM_CONTACTS = {
         'reviews': [
             REVIEWS['review_billy']
         ]
+    },
+    'obama_pfp': {
+        'id': 6,
+        'contact_id': 124,
+        'program': PROGRAMS['pfp'],
+        'card_id': 'card',
+        'stage': 1,
+        'is_active': True,
+        'is_approved': False,
+        'reviews': []
+    },
+    'billy_mayoral': {
+        'id': 7,
+        'contact_id': 123,
+        'program': PROGRAMS['mayoral'],
+        'card_id': 'card',
+        'stage': 1,
+        'is_active': True,
+        'is_approved': True,
+        'reviews': []
     }
 }
 
@@ -209,8 +246,8 @@ OPPORTUNITIES = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
-        'program_id': 1
+        'cycle_id': 3,
+        'program_id': 2
     },
 
 }
@@ -243,7 +280,8 @@ CONTACTS = {
         'pronouns_other': None,
         'account_id': 'test-valid|0123456789abcdefabcdefff',
         'skills': SKILLS['billy'],
-        'programs': [PROGRAM_CONTACTS['billy_pfp']],
+        'programs': [PROGRAM_CONTACTS['billy_pfp'],
+                     PROGRAM_CONTACTS['billy_mayoral']],
         'terms_agreement': True
     },
 
@@ -273,9 +311,24 @@ CONTACTS = {
         'pronouns_other': 'They/Them/Their',
         'account_id': None,
         'skills': SKILLS['obama'],
-        'programs': [],
+        'programs': [PROGRAM_CONTACTS['obama_pfp']],
         'terms_agreement': True
     },
+}
+
+CONTACTS_SHORT = {
+    'billy': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+    },
+    'obama': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+    }
 }
 
 SNAPSHOTS = {
@@ -284,6 +337,58 @@ SNAPSHOTS = {
     },
     'snapshot2': {
         'test': 'snapshot2'
+    },
+}
+
+APPLICATIONS_INTERNAL = {
+    'billy_pfp': {
+        'id': 5,
+        'is_approved': True,
+        'is_active': True,
+        'program_id': 1,
+        'contact': {
+            'id': 123,
+            'first_name': 'Billy',
+            'last_name': 'Daly',
+            'email': 'billy@example.com',
+        },
+        'applications': [{
+            'id': 'a1',
+            'status': 'submitted',
+            'is_active': True,
+            'opportunity': OPPORTUNITIES['test_opp1']
+        }]
+    },
+    'obama_pfp': {
+        'contact': {
+            'email': 'obama@whitehouse.gov',
+            'first_name': 'Barack',
+            'id': 124,
+            'last_name': 'Obama'},
+        'id': 6,
+        'is_active': True,
+        'is_approved': False,
+        'program_id': 1,
+        'applications': []
+    },
+    'billy_mayoral': {
+        'id': 7,
+        'is_approved': True,
+        'is_active': True,
+        'program_id': 2,
+        'contact': {
+            'id': 123,
+            'first_name': 'Billy',
+            'last_name': 'Daly',
+            'email': 'billy@example.com',
+        },
+        'applications': [
+        {
+            'id': 'a2',
+            'status': 'draft',
+            'is_active': True,
+            'opportunity': OPPORTUNITIES['test_opp2']
+        }]
     },
 }
 
@@ -311,8 +416,8 @@ OPPORTUNITIES_INTERNAL = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
-        'program_id': 1,
+        'cycle_id': 3,
+        'program_id': 2,
         'applications': [{'id': 'a2',
                           'contact': CONTACTS['billy'],
                           'interest_statement': "I'm also interested in this test opportunity",
@@ -1245,6 +1350,37 @@ def test_opportunity_app_reopen(app):
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.draft.value
 
 
+def test_approve_many_program_contacts(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    payload = [CONTACTS_SHORT['obama']]
+    with app.test_client() as client:
+        assert ProgramContact.query.get(6).is_approved == False
+        response = client.post('/api/programs/1/contacts/approve-many/',
+                              data=json.dumps(payload),
+                              headers=headers)
+        assert response.status_code == 200
+        assert ProgramContact.query.get(6).is_approved == True
+
+def test_reapprove_eligible_program_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    payload = [CONTACTS_SHORT['billy']]
+    with app.test_client() as client:
+        assert ProgramContact.query.get(5).is_approved == True
+        response = client.post('/api/programs/1/contacts/approve-many/',
+                              data=json.dumps(payload),
+                              headers=headers)
+        assert response.status_code == 400
+        message = json.loads(response.data)['message']
+        assert message == 'Payload included contacts who were already approved'
+
 @pytest.mark.parametrize(
     "delete_url,query",
     [('/api/contacts/123?token=testing_token',
@@ -1379,10 +1515,18 @@ def test_get_capability_recommendations(app):
                                          EXPERIENCES['baltimore']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES['columbia']])
     ,('/api/contacts/123/achievements/', ACHIEVEMENTS.values())
-    ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp']])
+    ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp'], PROGRAM_CONTACTS['billy_mayoral']])
     ,('/api/opportunity/', OPPORTUNITIES.values())
     ,('/api/contacts/123/app/', [APPLICATIONS['app_billy']])
     ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
+    ,('/api/contacts/short/', CONTACTS_SHORT.values())
+    ,('/api/internal/applications/',
+      [APPLICATIONS_INTERNAL['billy_pfp'],
+       APPLICATIONS_INTERNAL['billy_mayoral']])
+    ,('/api/internal/applications/?program_id=1',
+      [APPLICATIONS_INTERNAL['billy_pfp']])
+    ,('/api/internal/applications/?program_id=2',
+      [APPLICATIONS_INTERNAL['billy_mayoral']])
     ]
 )
 def test_get_many_unordered(app, url, expected):
@@ -1398,8 +1542,8 @@ def test_get_many_unordered(app, url, expected):
 
         # Test that the data and expected contain the same items, but not
         # necessarily in the same order
-        assert len(data) == len(expected)
         pprint(list(expected))
+        assert len(data) == len(expected)
         for item in data:
             pprint(item)
             assert item in expected
