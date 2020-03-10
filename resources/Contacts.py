@@ -81,6 +81,7 @@ class ContactAll(Resource):
             'program_id': 1
         }
         create_program_contact(contact.id, **program_contact_data)
+        db.session.commit()
         add_new_talent_card(contact.id)
 
         user_session = create_session(contact.id, request.jwt)

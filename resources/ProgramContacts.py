@@ -39,7 +39,6 @@ def create_program_contact(contact_id, program_id=1, **data):
     data['program_id'] = program_id
     program_contact = ProgramContact(**data)
     db.session.add(program_contact)
-    db.session.commit()
     result = program_contact_schema.dump(program_contact)
     return  result
 
