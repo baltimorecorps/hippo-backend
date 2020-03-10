@@ -1,6 +1,6 @@
 from flask_restful import Resource, request
 from models.program_model import Program, ProgramSchema
-from models.contact_model import ContactShortSchema
+from models.contact_model import Contact, ContactShortSchema
 from models.opportunity_model import ProgramContactShortSchema
 from models.program_contact_model import ProgramContact, ProgramContactSchema, UPDATE_FIELDS
 from models.response_model import Response, ResponseSchema
@@ -59,21 +59,24 @@ class ProgramContactApproveMany(Resource):
         if not data:
             return {'message': 'No data provided to update'}, 400
 
-        contact_ids = [contact['id'] for contact in data]
-        program_contacts = (ProgramContact
-                            .query
-                            .filter(ProgramContact.contact_id.in_(contact_ids),
-                                    ProgramContact.program_id==1,
-                                    ProgramContact.is_approved==False)
-                            .all())
-        if len(data) > len(program_contacts):
-            return {'message': ('Payload included contacts '
-                                'who were already approved') }, 400
-        elif len(data) > len(program_contacts):
-            return {'message': ('Query returned more contacts'
-                                'than passed in payload')}, 400
-        for program_contact in program_contacts:
-            program_contact.is_approved = True
+        contact_ids = [c['id'] for c in data]
+        contacts = Contact.query.filter(Contact.id.in_(contact_ids)).all()
+        if len(data) != len(contacts):
+            return {'message': ("Payload contained contacts "
+                                "that couldn't be found")}, 404
+        program_contacts = []
+        for contact in contacts:
+            program_contact = contact.query_program_contact(program_id)
+            if not program_contact:
+                insert_data = {
+                    'contact_id': contact.id,
+                    'program_id': program_id,
+                    'is_approved': True
+                }
+                program_contact = create_program_contact(**insert_data)
+            else:
+                program_contact.is_approved = True
+            program_contacts.append(program_contact)
         db.session.commit()
         result = program_contacts_schema.dump(program_contacts)
         return {'status': 'success', 'data': result}, 200
