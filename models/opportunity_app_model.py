@@ -9,6 +9,7 @@ class ApplicationStage(enum.Enum):
     draft = 0
     submitted = 1
     recommended = 2
+    interviewed = 3
 
 UPDATE_FIELDS = ['interest_statement', 'stage']
 
