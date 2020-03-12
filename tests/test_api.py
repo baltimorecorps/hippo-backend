@@ -1369,14 +1369,22 @@ def test_approve_many_program_contacts_new(app, ):
                               data=json.dumps(payload),
                               headers=headers)
         assert response.status_code == 200
-        data = json.loads(response.data)['data']
-        print(data)
         program_contact = (ProgramContact
                            .query
                            .filter_by(contact_id=124, program_id=2)
                            .first())
         assert program_contact is not None
         assert program_contact.is_approved == True
+        data = json.loads(response.data)['data']
+        obama_mayoral = APPLICATIONS_INTERNAL['obama_pfp'].copy()
+        obama_mayoral['program_id'] = 2
+        obama_mayoral['id'] = 1
+        obama_mayoral['is_approved'] = True
+        expected = [obama_mayoral]
+        print(expected)
+        for item in data:
+            print(item)
+            assert item in expected
 
 def test_approve_many_program_contacts_existing(app, ):
     mimetype = 'application/json'
@@ -1392,6 +1400,37 @@ def test_approve_many_program_contacts_existing(app, ):
                               headers=headers)
         assert response.status_code == 200
         assert ProgramContact.query.get(6).is_approved == True
+        data = json.loads(response.data)['data']
+        expected = [APPLICATIONS_INTERNAL['obama_pfp']]
+        expected[0]['is_approved'] = True
+        print(expected)
+        for item in data:
+            print(item)
+            assert item in expected
+
+def test_reapprove_many_program_contacts(app, ):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    payload = [CONTACTS_SHORT['billy'], CONTACTS_SHORT['obama']]
+    with app.test_client() as client:
+        assert ProgramContact.query.get(6).is_approved == False
+        assert ProgramContact.query.get(5).is_approved == True
+        response = client.post('/api/programs/1/contacts/approve-many/',
+                              data=json.dumps(payload),
+                              headers=headers)
+        assert response.status_code == 200
+        assert ProgramContact.query.get(6).is_approved == True
+        assert ProgramContact.query.get(5).is_approved == True
+        data = json.loads(response.data)['data']
+        expected = [APPLICATIONS_INTERNAL['obama_pfp'],
+                    APPLICATIONS_INTERNAL['billy_pfp']]
+        print(expected)
+        for item in data:
+            print(item)
+            assert item in expected
 
 def test_approve_program_contact_fake_contact(app):
     mimetype = 'application/json'
