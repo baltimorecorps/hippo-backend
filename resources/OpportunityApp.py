@@ -217,6 +217,22 @@ class OpportunityAppInterview(Resource):
             return {'message': 'Application does not exist'}, 404
 
         opportunity_app.stage = ApplicationStage.interviewed.value
+        opportunity_app.is_active = True
+        db.session.commit()
+        result = opportunity_app_schema.dump(opportunity_app)
+        return {'status': 'success', 'data': result}, 200
+
+class OpportunityAppMakeOffer(Resource):
+
+    def post(self, contact_id, opportunity_id):
+        opportunity_app = (OpportunityApp.query
+            .filter_by(contact_id=contact_id, opportunity_id=opportunity_id)
+            .first())
+        if not opportunity_app:
+            return {'message': 'Application does not exist'}, 404
+
+        opportunity_app.stage = ApplicationStage.offer_made.value
+        opportunity_app.is_active = True
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200
