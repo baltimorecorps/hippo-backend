@@ -1319,6 +1319,21 @@ def test_opportunity_app_submit(app):
         assert response.status_code == 200
         assert OpportunityApp.query.get('a2').stage == ApplicationStage.submitted.value
 
+def test_opportunity_app_submit(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {}
+    with app.test_client() as client:
+        assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
+        response = client.post('/api/contacts/123/app/123abc/interview/',
+                              data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert OpportunityApp.query.get('a1').stage == ApplicationStage.interviewed.value
+
 def test_opportunity_app_recommend(app):
     mimetype = 'application/json'
     headers = {
