@@ -32,7 +32,8 @@ from resources.OpportunityApp import (
     OpportunityAppOne,
     OpportunityAppSubmit,
     OpportunityAppRecommend,
-    OpportunityAppReopen
+    OpportunityAppReopen,
+    OpportunityAppInterview,
 )
 from resources.FormAssembly import (
     TalentProgramApp,
@@ -133,6 +134,9 @@ api.add_resource(OpportunityAppSubmit,
 api.add_resource(OpportunityAppReject,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit/')
+api.add_resource(OpportunityAppInterview,
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/interview',
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/interview/')
 api.add_resource(OpportunityAppAll,
                  '/contacts/<int:contact_id>/app',
                  '/contacts/<int:contact_id>/app/')
