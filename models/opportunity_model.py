@@ -1,7 +1,7 @@
 from models.base_model import db
 from models.cycle_model import Cycle, CycleSchema
 from models.contact_model import ContactSchema, ContactShortSchema
-from models.opportunity_app_model import ApplicationStage
+from models.opportunity_app_model import OpportunityApp, ApplicationStage
 from models.resume_model import ResumeSnapshotSchema
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
@@ -34,6 +34,12 @@ class Opportunity(db.Model):
     applications = db.relationship('OpportunityApp', back_populates='opportunity',
                                    cascade='all, delete, delete-orphan')
     cycle = db.relationship('Cycle', back_populates='opportunities')
+    recommended_apps = db.relationship(
+        'OpportunityApp',
+        primaryjoin=db.and_(id == OpportunityApp.opportunity_id,
+                            OpportunityApp.stage >= 2),
+        back_populates='opportunity'
+    )
 
     @hybrid_property
     def status(self):
@@ -41,10 +47,10 @@ class Opportunity(db.Model):
 
 class OpportunityAppSchema(Schema):
     id = fields.String(dump_only=True)
-    contact = fields.Nested(ContactSchema, dump_only=True)
+    contact = fields.Nested(ContactShortSchema, dump_only=True)
     # for info on why we use lambda here review this documentation:
     # https://marshmallow.readthedocs.io/en/stable/nesting.html#two-way-nesting
-    opportunity = fields.Nested(lambda: OpportunitySchema(exclude=('applications',)))
+    opportunity = fields.Nested(lambda: OpportunitySchema(exclude=('applications','recommended_apps')))
     interest_statement = fields.String()
     status = EnumField(ApplicationStage, dump_only=True)
     is_active = fields.Boolean(dump_only=True)
@@ -62,7 +68,11 @@ class OpportunitySchema(Schema):
     org_name = fields.String(required=True)
     cycle_id = fields.Integer(required=True)
     program_id = fields.Integer(attribute='cycle.program_id', dump_only=True)
-    applications = fields.Nested(OpportunityAppSchema(exclude=('opportunity',), many=True))
+    applications = fields.Nested(OpportunityAppSchema(exclude=('opportunity','resume'), many=True))
+    recommended_apps = fields.Nested(
+        OpportunityAppSchema(exclude=('opportunity', 'resume'), many=True),
+        dump_only=True
+    )
 
     class Meta:
         unknown = EXCLUDE
