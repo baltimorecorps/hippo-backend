@@ -23,9 +23,10 @@ def create_new_opportunity(opportunity_data):
     return opportunity
 
 
-opportunity_schema = OpportunitySchema(exclude=['applications'])
-opportunities_internal_schema = OpportunitySchema(many=True)
-opportunities_schema = OpportunitySchema(exclude=['applications'],many=True)
+opportunity_schema = OpportunitySchema(exclude=['applications','recommended_apps'])
+opportunities_internal_schema = OpportunitySchema(exclude=['recommended_apps'], many=True)
+opportunity_org_schema = OpportunitySchema(exclude=['applications'])
+opportunities_schema = OpportunitySchema(exclude=['applications', 'recommended_apps'],many=True)
 class OpportunityAll(Resource):
     method_decorators = {
         'post': [login_required, refresh_session],
@@ -65,6 +66,16 @@ class OpportunityAllInternal(Resource):
         return {'status': 'success', 'data': opp_list}, 200
         return {'status': 'success', 'data': 'Hello World'}, 200
 
+class OpportunityOneOrg(Resource):
+
+    def get(self, opportunity_id):
+        opp = Opportunity.query.get(opportunity_id)
+        if not opp:
+            return {'message': 'Opportunity does not exist'}, 404
+
+        opp_data = opportunity_org_schema.dump(opp)
+        return {'status': 'success', 'data': opp_data}, 200
+
 class OpportunityOne(Resource):
     method_decorators = {
         'get': [],
@@ -76,7 +87,6 @@ class OpportunityOne(Resource):
         opp = Opportunity.query.get(opportunity_id)
         if not opp:
             return {'message': 'Opportunity does not exist'}, 404
-
 
         opp_data = opportunity_schema.dump(opp)
         return {'status': 'success', 'data': opp_data}, 200
