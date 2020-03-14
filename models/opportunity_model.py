@@ -34,12 +34,6 @@ class Opportunity(db.Model):
     applications = db.relationship('OpportunityApp', back_populates='opportunity',
                                    cascade='all, delete, delete-orphan')
     cycle = db.relationship('Cycle', back_populates='opportunities')
-    recommended_apps = db.relationship(
-        'OpportunityApp',
-        primaryjoin=db.and_(id == OpportunityApp.opportunity_id,
-                            OpportunityApp.stage >= 2),
-        back_populates='opportunity'
-    )
 
     @hybrid_property
     def status(self):
@@ -50,7 +44,7 @@ class OpportunityAppSchema(Schema):
     contact = fields.Nested(ContactShortSchema, dump_only=True)
     # for info on why we use lambda here review this documentation:
     # https://marshmallow.readthedocs.io/en/stable/nesting.html#two-way-nesting
-    opportunity = fields.Nested(lambda: OpportunitySchema(exclude=('applications','recommended_apps')))
+    opportunity = fields.Nested(lambda: OpportunitySchema(exclude=('applications',)))
     interest_statement = fields.String()
     status = EnumField(ApplicationStage, dump_only=True)
     resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True)
@@ -69,10 +63,6 @@ class OpportunitySchema(Schema):
     cycle_id = fields.Integer(required=True)
     program_id = fields.Integer(attribute='cycle.program_id', dump_only=True)
     applications = fields.Nested(OpportunityAppSchema(exclude=('opportunity','resume'), many=True))
-    recommended_apps = fields.Nested(
-        OpportunityAppSchema(exclude=('opportunity', 'resume'), many=True),
-        dump_only=True
-    )
 
     class Meta:
         unknown = EXCLUDE

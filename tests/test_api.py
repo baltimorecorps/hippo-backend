@@ -440,26 +440,6 @@ OPPORTUNITIES_INTERNAL = {
     },
 }
 
-OPPORTUNITIES_ORG = {
-    'test_opp1': {
-        'id': '123abc',
-        'title': "Test Opportunity",
-        'short_description': "This is a test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'cycle_id': 2,
-        'program_id': 1,
-        'recommended_apps': [
-            {'id': 'a3',
-            'contact': CONTACTS_SHORT['obama'],
-            'interest_statement': "I'm also interested in this test opportunity",
-            'status': 'recommended',
-            'is_active': True}
-        ]
-    }
-}
-
 APPLICATIONS = {
     'app_billy': {
         'id': 'a1',
@@ -1574,7 +1554,7 @@ def test_delete_contact_skill_saved(app):
     ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
     ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
     ,('/api/contacts/123/app/123abc', APPLICATIONS['app_billy'])
-    ,('/api/org/opportunities/123abc', OPPORTUNITIES_ORG['test_opp1'])
+    ,('/api/org/opportunities/123abc', OPPORTUNITIES_INTERNAL['test_opp1'])
     ]
 )
 def test_get(app, url, expected):
