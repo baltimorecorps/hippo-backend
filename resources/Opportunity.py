@@ -23,10 +23,10 @@ def create_new_opportunity(opportunity_data):
     return opportunity
 
 
-opportunity_schema = OpportunitySchema(exclude=['applications','recommended_apps'])
-opportunities_internal_schema = OpportunitySchema(exclude=['recommended_apps'], many=True)
-opportunity_org_schema = OpportunitySchema(exclude=['applications'])
-opportunities_schema = OpportunitySchema(exclude=['applications', 'recommended_apps'],many=True)
+opportunity_schema = OpportunitySchema(exclude=['applications'])
+opportunities_internal_schema = OpportunitySchema(many=True)
+opportunity_org_schema = OpportunitySchema()
+opportunities_schema = OpportunitySchema(exclude=['applications'],many=True)
 class OpportunityAll(Resource):
     method_decorators = {
         'post': [login_required, refresh_session],
