@@ -372,7 +372,7 @@ APPLICATIONS_INTERNAL = {
         'program_id': 1,
         'applications': [{
             'id': 'a3',
-            'status': 'reviewed',
+            'status': 'recommended',
             'is_active': True,
             'opportunity': OPPORTUNITIES['test_opp1']
         }]
