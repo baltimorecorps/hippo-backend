@@ -372,10 +372,9 @@ APPLICATIONS_INTERNAL = {
         'program_id': 1,
         'applications': [{
             'id': 'a3',
-            'contact': CONTACTS_SHORT['obama'],
-            'interest_statement': "I'm interested in this test opportunity",
-            'status': 'recommended',
-            'is_active': True
+            'status': 'reviewed',
+            'is_active': True,
+            'opportunity': OPPORTUNITIES['test_opp1']
         }]
     },
     'billy_mayoral': {
