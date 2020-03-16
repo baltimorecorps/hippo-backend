@@ -1491,6 +1491,7 @@ def test_approve_many_program_contacts_new(app, ):
         obama_mayoral['program_id'] = 2
         obama_mayoral['id'] = 1
         obama_mayoral['is_approved'] = True
+        obama_mayoral['applications'] = []
         expected = [obama_mayoral]
         print(expected)
         for item in data:
