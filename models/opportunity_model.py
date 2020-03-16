@@ -51,7 +51,7 @@ class OpportunityAppSchema(Schema):
     resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True)
     interview_date = fields.Date()
     interview_time = fields.String()
-    interview_completed = fields.Boolean()
+    interview_completed = fields.Boolean(dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
