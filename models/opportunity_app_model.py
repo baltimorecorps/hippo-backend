@@ -4,15 +4,19 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 from models.contact_model import ContactSchema
+import datetime as dt
 
 class ApplicationStage(enum.Enum):
     draft = 0
     submitted = 1
     recommended = 2
     interviewed = 3
-    offer_made = 4
+    considered_for_role = 4
 
-UPDATE_FIELDS = ['interest_statement', 'stage']
+UPDATE_FIELDS = ['interest_statement',
+                 'stage',
+                 'interview_date',
+                 'interview_time']
 
 class OpportunityApp(db.Model):
     __tablename__ = 'opportunity_app'
@@ -25,6 +29,8 @@ class OpportunityApp(db.Model):
     interest_statement = db.Column(db.String(2000), nullable=True)
     stage = db.Column(db.Integer, nullable=False, default=0)
     is_active = db.Column(db.Boolean, nullable=False, default=True)
+    interview_date = db.Column(db.Date)
+    interview_time = db.Column(db.String)
 
     resume = db.relationship('ResumeSnapshot')
     contact = db.relationship('Contact', back_populates='applications')
@@ -45,6 +51,17 @@ class OpportunityApp(db.Model):
     def program_id(self):
         return self.opportunity.cycle.program_id
 
+    @hybrid_property
+    def interview_completed(self):
+        if self.interview_date and self.interview_time:
+            interview_scheduled = dt.datetime.strptime(
+                f'{self.interview_date} {self.interview_time}',
+                '%Y-%m-%d %I:%M %p'
+            )
+            return interview_scheduled < dt.datetime.now()
+        else:
+            return False
+
     # for more info on why to use setattr() read this:
     # https://medium.com/@s.azad4/modifying-python-objects-within-the-sqlalchemy-framework-7b6c8dd71ab3
     def update(self, **update_dict):
@@ -52,4 +69,3 @@ class OpportunityApp(db.Model):
             print(field, value)
             if field in UPDATE_FIELDS:
                 setattr(self, field, value)
-        db.session.commit()

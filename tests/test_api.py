@@ -4,7 +4,7 @@ from pprint import pprint
 import pytest
 import math
 
-
+from models.base_model import db
 from models.contact_model import Contact
 from models.experience_model import Experience, Month
 from models.resume_model import Resume
@@ -361,7 +361,10 @@ APPLICATIONS_INTERNAL = {
             'id': 'a1',
             'status': 'submitted',
             'is_active': True,
-            'opportunity': OPPORTUNITIES['test_opp1']
+            'opportunity': OPPORTUNITIES['test_opp1'],
+            'interview_date': None,
+            'interview_time': None,
+            'interview_completed': False
         }]
     },
     'obama_pfp': {
@@ -374,7 +377,10 @@ APPLICATIONS_INTERNAL = {
             'id': 'a3',
             'status': 'recommended',
             'is_active': True,
-            'opportunity': OPPORTUNITIES['test_opp1']
+            'opportunity': OPPORTUNITIES['test_opp1'],
+            'interview_date': None,
+            'interview_time': None,
+            'interview_completed': False
         }]
     },
     'billy_mayoral': {
@@ -387,7 +393,10 @@ APPLICATIONS_INTERNAL = {
             'id': 'a2',
             'status': 'draft',
             'is_active': True,
-            'opportunity': OPPORTUNITIES['test_opp2']
+            'opportunity': OPPORTUNITIES['test_opp2'],
+            'interview_date': None,
+            'interview_time': None,
+            'interview_completed': False
         }]
     },
 }
@@ -406,12 +415,18 @@ OPPORTUNITIES_INTERNAL = {
                           'contact': CONTACTS_SHORT['billy'],
                           'interest_statement': "I'm interested in this test opportunity",
                           'status': 'submitted',
-                          'is_active': True},
+                          'is_active': True,
+                          'interview_date': None,
+                          'interview_time': None,
+                          'interview_completed': False},
                          {'id': 'a3',
                           'contact': CONTACTS_SHORT['obama'],
                           'interest_statement': "I'm also interested in this test opportunity",
                           'status': 'recommended',
-                          'is_active': True}]
+                          'is_active': True,
+                          'interview_date': None,
+                          'interview_time': None,
+                          'interview_completed': False}]
     },
     'test_opp2': {
         'id': '222abc',
@@ -426,7 +441,10 @@ OPPORTUNITIES_INTERNAL = {
                           'contact': CONTACTS_SHORT['billy'],
                           'interest_statement': "I'm also interested in this test opportunity",
                           'status': 'draft',
-                          'is_active': True}]
+                          'is_active': True,
+                          'interview_date': None,
+                          'interview_time': None,
+                          'interview_completed': False}]
     },
     'test_opp3': {
         'id': '333abc',
@@ -450,6 +468,9 @@ APPLICATIONS = {
         'status': 'submitted',
         'resume': SNAPSHOTS['snapshot1'],
         'is_active': True,
+        'interview_date': None,
+        'interview_time': None,
+        'interview_completed': False
     },
     'app_billy2': {
         'id': 'a2',
@@ -457,7 +478,11 @@ APPLICATIONS = {
         'opportunity': OPPORTUNITIES['test_opp2'],
         'interest_statement': "I'm also interested in this test opportunity",
         'status': 'draft',
+        'resume': None,
         'is_active': True,
+        'interview_date': None,
+        'interview_time': None,
+        'interview_completed': False,
     },
 
 }
@@ -1333,23 +1358,65 @@ def test_opportunity_app_submit(app):
         assert response.status_code == 200
         assert OpportunityApp.query.get('a2').stage == ApplicationStage.submitted.value
 
-def test_opportunity_interview(app):
+def test_opportunity_app_interview_completed_property(app):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
         'Accept': mimetype
     }
-    update = {}
+    with app.test_client() as client:
+        opp_app = OpportunityApp.query.get('a1')
+        assert  opp_app.interview_completed == False
+
+        # set interview to tomorrow
+        now = dt.datetime.now()
+        tomorrow = now + dt.timedelta(days=1)
+        yesterday = now - dt.timedelta(days=1)
+        opp_app.interview_date = tomorrow.date()
+        opp_app.interview_time = tomorrow.strftime('%I:%M %p')
+        db.session.commit()
+
+        # test that interview fields were set
+        # and that interview_completed == False
+        opp_app = OpportunityApp.query.get('a1')
+        assert opp_app.interview_date == tomorrow.date()
+        assert opp_app.interview_time == tomorrow.strftime('%I:%M %p')
+        assert opp_app.interview_completed == False
+
+        # set interview to yesterday
+        opp_app.interview_date = yesterday.date()
+        opp_app.interview_time = yesterday.strftime('%I:%M %p')
+        db.session.commit()
+
+        # test that interview fields were set
+        # and that interview_completed == False
+        opp_app = OpportunityApp.query.get('a1')
+        assert opp_app.interview_date == yesterday.date()
+        assert opp_app.interview_time == yesterday.strftime('%I:%M %p')
+        assert opp_app.interview_completed == True
+
+def test_opportunity_app_interview(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {'interview_date': '2050-02-01',
+              'interview_time': '12:00 PM'}
     with app.test_client() as client:
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
         response = client.post('/api/contacts/123/app/123abc/interview/',
                               data=json.dumps(update),
                               headers=headers)
         assert response.status_code == 200
-        assert OpportunityApp.query.get('a1').stage == ApplicationStage.interviewed.value
-        assert OpportunityApp.query.get('a1').is_active == True
+        opp_app = OpportunityApp.query.get('a1')
+        assert opp_app.stage == ApplicationStage.interviewed.value
+        assert opp_app.is_active == True
+        assert opp_app.interview_date == dt.date(2050,2,1)
+        assert opp_app.interview_time == '12:00 PM'
+        assert opp_app.interview_completed == False
 
-def test_opportunity_offer_made(app):
+def test_opportunity_app_consider(app):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -1358,11 +1425,11 @@ def test_opportunity_offer_made(app):
     update = {}
     with app.test_client() as client:
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
-        response = client.post('/api/contacts/123/app/123abc/make-offer/',
+        response = client.post('/api/contacts/123/app/123abc/consider/',
                               data=json.dumps(update),
                               headers=headers)
         assert response.status_code == 200
-        assert OpportunityApp.query.get('a1').stage == ApplicationStage.offer_made.value
+        assert OpportunityApp.query.get('a1').stage == ApplicationStage.considered_for_role.value
         assert OpportunityApp.query.get('a1').is_active == True
 
 def test_opportunity_app_recommend(app):

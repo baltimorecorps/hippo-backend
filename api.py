@@ -39,7 +39,7 @@ from resources.OpportunityApp import (
     OpportunityAppRecommend,
     OpportunityAppReopen,
     OpportunityAppInterview,
-    OpportunityAppMakeOffer,
+    OpportunityAppConsider,
 )
 from resources.FormAssembly import (
     TalentProgramApp,
@@ -143,9 +143,9 @@ api.add_resource(OpportunityAppReject,
 api.add_resource(OpportunityAppInterview,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/interview',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/interview/')
-api.add_resource(OpportunityAppMakeOffer,
-                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/make-offer',
-                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/make-offer/')
+api.add_resource(OpportunityAppConsider,
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/consider',
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/consider/')
 api.add_resource(OpportunityAppAll,
                  '/contacts/<int:contact_id>/app',
                  '/contacts/<int:contact_id>/app/')

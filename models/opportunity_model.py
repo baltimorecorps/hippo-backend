@@ -49,6 +49,9 @@ class OpportunityAppSchema(Schema):
     status = EnumField(ApplicationStage, dump_only=True)
     is_active = fields.Boolean(dump_only=True)
     resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True)
+    interview_date = fields.Date()
+    interview_time = fields.String()
+    interview_completed = fields.Boolean()
 
     class Meta:
         unknown = EXCLUDE
@@ -75,7 +78,7 @@ class ProgramContactShortSchema(Schema):
     is_active = fields.Boolean(dump_only=True)
     applications = fields.Nested(
         OpportunityAppSchema,
-        only=['id', 'status', 'is_active', 'opportunity'],
+        exclude=['contact', 'interest_statement', 'resume'],
         many=True
     )
 
