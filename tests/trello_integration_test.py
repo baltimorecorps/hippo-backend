@@ -93,6 +93,8 @@ def test_talent_intake_board(app):
         card = board.cards.get(card_id)
         assert card.stage == 2
         assert 'Race' in card.desc
+        assert 'Data Analysis' in card.desc
+        assert '0-2 years' in card.desc
         for label in TALENT_INTAKE_LABELS[1:]:
             assert label in card.label_names
         pprint(card.attachments)
