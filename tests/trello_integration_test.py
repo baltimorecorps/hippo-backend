@@ -31,6 +31,79 @@ REVIEW_BOARDS = {
 }
 
 LOCAL_OPP_BOARD = '5e4acd35a35ee523c71f9e25'
+TALENT_INTAKE_BOARDS = {
+    'local': '5e37744114d9d01a03ddbcfe',
+    'production': '5ddd741f5cc43e2b21346dbb'
+}
+
+TALENT_INTAKE_LABELS = [
+    'New', 'Fellowship', 'Mayoral Fellowship', 'PFP', 'PA', 'JHU'
+]
+
+TALENT_INTAKE_ATTACHMENTS = ['Profile', 'Full Response']
+
+def check_labels(board_id, expected_labels):
+    board = Board(query_board_data(board_id))
+    labels = board.labels['name'].keys()
+    print(labels)
+    for label in expected_labels:
+        assert label in labels
+
+def test_talent_intake_board_labels(app):
+    local_board_id = TALENT_INTAKE_BOARDS['local']
+    check_labels(local_board_id, TALENT_INTAKE_LABELS)
+    prod_board_id = TALENT_INTAKE_BOARDS['production']
+    check_labels(prod_board_id, TALENT_INTAKE_LABELS)
+
+def test_talent_intake_board(app):
+    mimetype = 'application/x-www-form-urlencoded'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+    }
+
+    card_id = '5e4af2d6fc3c0954ff187ddc'
+
+    board_id = TALENT_INTAKE_BOARDS['local']
+    board = Board(query_board_data(board_id))
+    card = board.cards.get(card_id)
+    started_list = board.lists['stage'][1]
+
+    for attachment in TALENT_INTAKE_ATTACHMENTS:
+        response = card.remove_attachment(attachment)
+    card.set_labels(remove_all=True)
+    card.move_card(started_list)
+
+    board = Board(query_board_data(board_id))
+    card = board.cards.get(card_id)
+
+    assert card.attachments == {}
+    assert card.label_names == []
+    assert card.stage == 1
+
+    url = '/api/form-assembly/talent-app/'
+    data = (
+        'contact_id=123&program_id=1&first_name=Billy&last_name=Daly&email=billy%40example.com&phone=908-578-4622&street1=2401+Liberty+Heights+Ave&street2=Suite+2730&city=Baltimore&state=MD&postal_code=21215&equity=Race+and+equity&effectiveness=Sector+effectiveness&programs%5B0%5D=Fellowship&programs%5B1%5D=JHU&programs%5B2%5D=Mayoral+Fellowship&programs%5B3%5D=PFP&programs%5B4%5D=PA&experience=0-2+years&capabilities%5B0%5D=Community+Engagement+and+Outreach&capabilities%5B1%5D=Data+Analysis&capabilities%5B2%5D=Fundraising+and+Development&alum_radio=No&race_all%5B0%5D=American+Indian+or+Alaskan+Native&race_all%5B1%5D=White&gender=Male&pronouns=He%2FHim&response_id=159679585'
+    )
+    with app.test_client() as client:
+        response = client.post(url, data=data, headers=headers)
+        pprint(response.json)
+        assert response.status_code == 201
+        board = Board(query_board_data(board_id))
+        card = board.cards.get(card_id)
+        assert card.stage == 2
+        assert 'Race' in card.desc
+        for label in TALENT_INTAKE_LABELS[1:]:
+            assert label in card.label_names
+        pprint(card.attachments)
+        assert card.attachments['Profile']['url'] == (
+            'https://app.baltimorecorps.org/profile/123'
+        )
+        assert card.attachments['Full Response']['url'] == (
+            'https://app.formassembly.com/responses/view/159679585'
+        )
+        data = json.loads(response.data)['data']
+        assert False == True
 
 # TODO: Add trello specific checks
 def test_create_program_contact_with_contact(app):
@@ -81,6 +154,7 @@ def test_post_contact(app):
 
         assert UserSession.query.filter_by(contact_id=contact.id).first()
 
+@pytest.mark.skip
 def test_post_formassembly_opportunity_intake(app):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',

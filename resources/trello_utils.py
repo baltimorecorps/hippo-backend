@@ -3,7 +3,7 @@ import requests
 import operator as op
 from flask import current_app
 
-CARD_FIELDS = 'id,name,idMembers,idList,isTemplate,labels,closed,desc'
+CARD_FIELDS = 'id,name,idMembers,idList,isTemplate,labels,closed,desc,attachments'
 
 # general methods
 def get_creds(func):
@@ -30,7 +30,9 @@ def query_board_data(key, token, board_id, card_fields=CARD_FIELDS):
                    'lists': 'all',
                    'list_fields': 'id,name,pos',
                    'labels': 'all',
-                   'label_fields': 'name'}
+                   'label_fields': 'name',
+                   'card_attachments': 'true',
+                   'card_attachment_fields': 'url,name'}
     response = requests.get(url, params=querystring)
     return response.json()
 
@@ -162,6 +164,29 @@ def delete_checklist_item(key, token, card_id, checklist_item_id):
     response = requests.delete(url, params=querystring)
     return response.text
 
+@get_creds
+def insert_attachment(key, token, card_id, **attachment_data):
+    '''
+    api docs: https://developers.trello.com/reference/#cardsidattachments-1
+    '''
+    url = f'https://api.trello.com/1/cards/{card_id}/attachments'
+    payload = {'key': key,
+               'token': token,
+               **attachment_data}
+    response = requests.post(url, data=payload)
+    return response
+
+@get_creds
+def delete_attachment(key, token, card_id, attachment_id):
+    '''
+    api docs: https://developers.trello.com/reference#cardsidattachmentsidattachment-1
+    '''
+    url = f'https://api.trello.com/1/cards/{card_id}/attachments/{attachment_id}'
+    querystring = {"key": key,
+                   "token": token}
+    response = requests.delete(url, params=querystring)
+    return response
+
 # classes
 class Board(object):
     def __init__(self, data):
@@ -288,15 +313,28 @@ class Card(object):
         self.archived = data['closed']
         self.desc = data['desc']
         self.custom_fields = {}
+        self.attachments = {}
 
         self.board = board
         self.list = None
 
         self.parse_custom_field_items()
+        self.parse_attachments()
 
     @property
     def stage(self):
         return self.list.stage
+
+    @property
+    def label_names(self):
+        return [label['name'] for label in self.data['labels']]
+
+    def parse_attachments(self):
+        for attachment in self.data['attachments']:
+            name = attachment['name']
+            url = attachment['url']
+            id_ = attachment['id']
+            self.attachments[name] = {'url': url, 'id': id_}
 
     def parse_custom_field_items(self):
         custom_fields = self.board.custom_fields['id'].values()
@@ -395,6 +433,10 @@ class Card(object):
         result = query_card(self.id)
         return result
 
+    def update(self, **data):
+        response = update_card(self.id, **data)
+        return response
+
     def complete_checklist_items(self):
         checklists = self.get_checklists()
         for checklist in checklists.values():
@@ -405,3 +447,35 @@ class Card(object):
                     update_checklist_item(self.id, item['id'], **data)
         result = query_card(self.id)
         return result
+
+    def add_attachment(self, url=None, name=None, **data):
+        insert_data = {'url': url,'name': name, **data}
+        response = insert_attachment(self.id, **insert_data)
+        return response
+
+    def remove_attachment(self, name=None, attachment_id=None):
+        if name:
+            attachment = self.attachments.get(name)
+            if not attachment:
+                return {'message': 'No attachment matched that name'}, 400
+            else:
+                attachment_id = attachment['id']
+        elif not attachment_id:
+            return {'message': 'No name or attachment_id provided'}, 400
+
+        response = delete_attachment(self.id, attachment_id)
+        return response
+
+    def set_labels(self, label_names=None, label_ids=None, remove_all=False):
+        if label_names:
+            board_labels = self.board.labels['name']
+            label_ids = [board_labels[name] for name in label_names
+                         if board_labels.get(name)]
+        if label_ids:
+            ids = ",".join(label_ids)
+        elif remove_all:
+            ids = ''
+        else:
+            return {'message': 'No label names or ids provided'}, 400
+        response = self.update(**{'idLabels': ids})
+        return response
