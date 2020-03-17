@@ -1368,31 +1368,31 @@ def test_opportunity_app_interview_completed_property(app):
         opp_app = OpportunityApp.query.get('a1')
         assert  opp_app.interview_completed == False
 
-        # set interview to tomorrow
+        # set interview to a scheduled date
         now = dt.datetime.now()
-        tomorrow = now + dt.timedelta(days=1)
-        yesterday = now - dt.timedelta(days=1)
-        opp_app.interview_date = tomorrow.date()
-        opp_app.interview_time = tomorrow.strftime('%I:%M %p')
+        scheduled = now + dt.timedelta(hours=1)
+        completed = now - dt.timedelta(hours=1)
+        opp_app.interview_date = scheduled.date()
+        opp_app.interview_time = scheduled.strftime('%H:%M:%S')
         db.session.commit()
 
         # test that interview fields were set
         # and that interview_completed == False
         opp_app = OpportunityApp.query.get('a1')
-        assert opp_app.interview_date == tomorrow.date()
-        assert opp_app.interview_time == tomorrow.strftime('%I:%M %p')
+        assert opp_app.interview_date == scheduled.date()
+        assert opp_app.interview_time == scheduled.strftime('%H:%M:%S')
         assert opp_app.interview_completed == False
 
-        # set interview to yesterday
-        opp_app.interview_date = yesterday.date()
-        opp_app.interview_time = yesterday.strftime('%I:%M %p')
+        # set interview to a completed date
+        opp_app.interview_date = completed.date()
+        opp_app.interview_time = completed.strftime('%H:%M:%S')
         db.session.commit()
 
         # test that interview fields were set
         # and that interview_completed == False
         opp_app = OpportunityApp.query.get('a1')
-        assert opp_app.interview_date == yesterday.date()
-        assert opp_app.interview_time == yesterday.strftime('%I:%M %p')
+        assert opp_app.interview_date == completed.date()
+        assert opp_app.interview_time == completed.strftime('%H:%M:%S')
         assert opp_app.interview_completed == True
 
 def test_opportunity_app_interview(app):
@@ -1402,7 +1402,7 @@ def test_opportunity_app_interview(app):
         'Accept': mimetype
     }
     update = {'interview_date': '2050-02-01',
-              'interview_time': '12:00 PM'}
+              'interview_time': '13:00:00'}
     with app.test_client() as client:
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
         response = client.post('/api/contacts/123/app/123abc/interview/',
@@ -1413,7 +1413,7 @@ def test_opportunity_app_interview(app):
         assert opp_app.stage == ApplicationStage.interviewed.value
         assert opp_app.is_active == True
         assert opp_app.interview_date == dt.date(2050,2,1)
-        assert opp_app.interview_time == '12:00 PM'
+        assert opp_app.interview_time == '13:00:00'
         assert opp_app.interview_completed == False
 
 def test_opportunity_app_consider(app):
