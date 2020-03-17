@@ -56,7 +56,7 @@ class OpportunityApp(db.Model):
         if self.interview_date and self.interview_time:
             interview_scheduled = dt.datetime.strptime(
                 f'{self.interview_date} {self.interview_time}',
-                '%Y-%m-%d %I:%M %p'
+                '%Y-%m-%d %H:%M:%S'
             )
             return interview_scheduled < dt.datetime.now()
         else:
