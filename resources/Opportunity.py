@@ -25,6 +25,7 @@ def create_new_opportunity(opportunity_data):
 
 opportunity_schema = OpportunitySchema(exclude=['applications'])
 opportunities_internal_schema = OpportunitySchema(many=True)
+opportunity_org_schema = OpportunitySchema()
 opportunities_schema = OpportunitySchema(exclude=['applications'],many=True)
 class OpportunityAll(Resource):
     method_decorators = {
@@ -65,6 +66,16 @@ class OpportunityAllInternal(Resource):
         return {'status': 'success', 'data': opp_list}, 200
         return {'status': 'success', 'data': 'Hello World'}, 200
 
+class OpportunityOneOrg(Resource):
+
+    def get(self, opportunity_id):
+        opp = Opportunity.query.get(opportunity_id)
+        if not opp:
+            return {'message': 'Opportunity does not exist'}, 404
+
+        opp_data = opportunity_org_schema.dump(opp)
+        return {'status': 'success', 'data': opp_data}, 200
+
 class OpportunityOne(Resource):
     method_decorators = {
         'get': [],
@@ -76,7 +87,6 @@ class OpportunityOne(Resource):
         opp = Opportunity.query.get(opportunity_id)
         if not opp:
             return {'message': 'Opportunity does not exist'}, 404
-
 
         opp_data = opportunity_schema.dump(opp)
         return {'status': 'success', 'data': opp_data}, 200

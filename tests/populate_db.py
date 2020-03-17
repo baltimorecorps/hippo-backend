@@ -391,6 +391,17 @@ test_opp2 = Opportunity(
     cycle_id=3,
 )
 
+test_opp3 = Opportunity(
+    id='333abc',
+    title="A Third Test Opportunity",
+    short_description="This is another test opportunity.",
+    gdoc_id="CCC333xx==",
+    card_id="card",
+    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+    org_name="Test Org",
+    cycle_id=2,
+)
+
 snapshot1 = ResumeSnapshot(
     id=1111,
     resume='{"test":"snapshot1"}',
@@ -411,6 +422,14 @@ app_billy2 = OpportunityApp(
     opportunity_id='222abc',
     interest_statement="I'm also interested in this test opportunity",
     stage=0,
+)
+
+app_obama = OpportunityApp(
+    id='a3',
+    contact_id=124,
+    opportunity_id='123abc',
+    interest_statement="I'm also interested in this test opportunity",
+    stage=2,
 )
 
 def get_skill(name):
@@ -457,9 +476,11 @@ def populate(db):
     db.session.add(review_billy)
     db.session.add(test_opp1)
     db.session.add(test_opp2)
+    db.session.add(test_opp3)
     db.session.add(snapshot1)
     db.session.add(app_billy)
     db.session.add(app_billy2)
+    db.session.add(app_obama)
 
     db.session.commit()
 

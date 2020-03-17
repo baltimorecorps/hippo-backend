@@ -39,8 +39,7 @@ def create_program_contact(contact_id, program_id=1, **data):
     data['program_id'] = program_id
     program_contact = ProgramContact(**data)
     db.session.add(program_contact)
-    result = program_contact_schema.dump(program_contact)
-    return  result
+    return  program_contact
 
 class ProgramContactApproveMany(Resource):
     method_decorators = {
@@ -74,11 +73,12 @@ class ProgramContactApproveMany(Resource):
                     'is_approved': True
                 }
                 program_contact = create_program_contact(**insert_data)
+                program_contact.contact = contact
             else:
                 program_contact.is_approved = True
             program_contacts.append(program_contact)
         db.session.commit()
-        result = program_contacts_schema.dump(program_contacts)
+        result = program_contacts_short_schema.dump(program_contacts)
         return {'status': 'success', 'data': result}, 200
 
 class ProgramContactAll(Resource):
@@ -111,7 +111,13 @@ class ProgramContactAll(Resource):
         # checks to see if there's an existing program_contact record
         program = data.pop('program_id')
         contact = data.pop('contact_id')
-        result = create_program_contact(contact_id, program_id=program, **data)
+        program_contact = create_program_contact(
+            contact_id,
+            program_id=program,
+            **data
+        )
+        db.session.commit()
+        result = program_contact_schema.dump(program_contact)
         return {"status": 'success', 'data': result}, 201
 
 class ProgramContactOne(Resource):

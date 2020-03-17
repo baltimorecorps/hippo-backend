@@ -21,6 +21,7 @@ from models.resume_model import ResumeSnapshot
 opportunity_app_schema = OpportunityAppSchema()
 opportunity_app_schema_many = OpportunityAppSchema(many=True)
 
+# TODO: Change this so it returns all applications instead of just submitted ones
 class OpportunityAppAll(Resource):
     method_decorators = {
         'get': [login_required, refresh_session]
@@ -203,6 +204,46 @@ class OpportunityAppReject(Resource):
             return {'message': 'Application is already marked "Not a Fit"'}, 400
 
         opportunity_app.is_active = False
+        db.session.commit()
+        result = opportunity_app_schema.dump(opportunity_app)
+        return {'status': 'success', 'data': result}, 200
+
+class OpportunityAppInterview(Resource):
+
+    def post(self, contact_id, opportunity_id):
+
+        json_data = request.get_json(force=True)
+        try:
+            data = opportunity_app_schema.load(json_data, partial=True)
+        except ValidationError as e:
+            return e.messages, 422
+        if not data:
+            return {'message': 'No data provided to update'}, 400
+
+        opportunity_app = (OpportunityApp.query
+            .filter_by(contact_id=contact_id, opportunity_id=opportunity_id)
+            .first())
+        if not opportunity_app:
+            return {'message': 'Application does not exist'}, 404
+
+        opportunity_app.stage = ApplicationStage.interviewed.value
+        opportunity_app.is_active = True
+        opportunity_app.update(**data)
+        db.session.commit()
+        result = opportunity_app_schema.dump(opportunity_app)
+        return {'status': 'success', 'data': result}, 200
+
+class OpportunityAppConsider(Resource):
+
+    def post(self, contact_id, opportunity_id):
+        opportunity_app = (OpportunityApp.query
+            .filter_by(contact_id=contact_id, opportunity_id=opportunity_id)
+            .first())
+        if not opportunity_app:
+            return {'message': 'Application does not exist'}, 404
+
+        opportunity_app.stage = ApplicationStage.considered_for_role.value
+        opportunity_app.is_active = True
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200

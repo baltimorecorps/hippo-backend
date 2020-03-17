@@ -1,7 +1,7 @@
 from models.base_model import db
 from models.cycle_model import Cycle, CycleSchema
 from models.contact_model import ContactSchema, ContactShortSchema
-from models.opportunity_app_model import ApplicationStage
+from models.opportunity_app_model import OpportunityApp, ApplicationStage
 from models.resume_model import ResumeSnapshotSchema
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
@@ -41,7 +41,7 @@ class Opportunity(db.Model):
 
 class OpportunityAppSchema(Schema):
     id = fields.String(dump_only=True)
-    contact = fields.Nested(ContactSchema, dump_only=True)
+    contact = fields.Nested(ContactShortSchema, dump_only=True)
     # for info on why we use lambda here review this documentation:
     # https://marshmallow.readthedocs.io/en/stable/nesting.html#two-way-nesting
     opportunity = fields.Nested(lambda: OpportunitySchema(exclude=('applications',)))
@@ -49,6 +49,9 @@ class OpportunityAppSchema(Schema):
     status = EnumField(ApplicationStage, dump_only=True)
     is_active = fields.Boolean(dump_only=True)
     resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True)
+    interview_date = fields.Date(allow_none=True)
+    interview_time = fields.String(allow_none=True)
+    interview_completed = fields.Boolean(dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
@@ -62,7 +65,7 @@ class OpportunitySchema(Schema):
     org_name = fields.String(required=True)
     cycle_id = fields.Integer(required=True)
     program_id = fields.Integer(attribute='cycle.program_id', dump_only=True)
-    applications = fields.Nested(OpportunityAppSchema(exclude=('opportunity',), many=True))
+    applications = fields.Nested(OpportunityAppSchema(exclude=('opportunity','resume'), many=True))
 
     class Meta:
         unknown = EXCLUDE
@@ -75,7 +78,7 @@ class ProgramContactShortSchema(Schema):
     is_active = fields.Boolean(dump_only=True)
     applications = fields.Nested(
         OpportunityAppSchema,
-        only=['id', 'status', 'is_active', 'opportunity'],
+        exclude=['contact', 'interest_statement', 'resume'],
         many=True
     )
 
