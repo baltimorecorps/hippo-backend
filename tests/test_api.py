@@ -772,7 +772,9 @@ APP_PUT_FULL = {
     "interest_statement": "dfdddsdfff",
     "id": "052904ba-7b83-436c-aee3-334a208fefd9",
     "contact": CONTACTS['billy'],
-    "status": "draft"
+    "status": "draft",
+    'interview_date': None,
+    'interview_time': None,
   }
 
 def post_request(app, url, data):

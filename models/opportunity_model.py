@@ -49,8 +49,8 @@ class OpportunityAppSchema(Schema):
     status = EnumField(ApplicationStage, dump_only=True)
     is_active = fields.Boolean(dump_only=True)
     resume = fields.Pluck(ResumeSnapshotSchema, field_name='resume', allow_none=True)
-    interview_date = fields.Date()
-    interview_time = fields.String()
+    interview_date = fields.Date(allow_none=True)
+    interview_time = fields.String(allow_none=True)
     interview_completed = fields.Boolean(dump_only=True)
 
     class Meta:
