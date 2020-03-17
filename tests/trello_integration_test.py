@@ -37,7 +37,7 @@ TALENT_INTAKE_BOARDS = {
 }
 
 TALENT_INTAKE_LABELS = [
-    'New', 'Fellowship', 'Mayoral Fellowship', 'PFP', 'PA', 'JHU'
+    'New', 'Fellowship', 'Mayoral Fellowship', 'PFP', 'PA', 'JHU - Carey'
 ]
 
 TALENT_INTAKE_ATTACHMENTS = ['Profile', 'Full Response']
