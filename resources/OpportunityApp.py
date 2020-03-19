@@ -40,12 +40,16 @@ class OpportunityAppAll(Resource):
 
 class OpportunityAppOne(Resource):
     method_decorators = {
-        'get': [],
+        'get': [], #this used to be [login_required, refresh_session]
         'post': [login_required, refresh_session],
         'put': [login_required, refresh_session],
     }
 
     def get(self, contact_id, opportunity_id):
+
+        # TODO: Create permission for employers so we can restore AuthZ
+        #if not is_authorized_view(contact_id):
+        #    return unauthorized()
 
         opportunity_app = (OpportunityApp.query
             .filter_by(contact_id=contact_id, opportunity_id=opportunity_id)
