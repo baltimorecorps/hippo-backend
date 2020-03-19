@@ -11,9 +11,9 @@ from .skill_utils import get_skill_id, get_or_make_skill
 
 from flask_login import login_required
 from auth import (
-    refresh_session, 
-    is_authorized_view, 
-    is_authorized_write, 
+    refresh_session,
+    is_authorized_view,
+    is_authorized_write,
     unauthorized
 )
 
@@ -57,13 +57,14 @@ def sync_skills(skills, experience):
 
 class ExperienceAll(Resource):
     method_decorators = {
-        'get': [login_required, refresh_session],
+        'get': [], # used to be [login_required, refresh_session]
         'post': [login_required, refresh_session],
     }
 
     def get(self, contact_id):
-        if not is_authorized_view(contact_id): 
-            return unauthorized()
+        # TODO: Create employer permissions so we can restore AuthZ
+        #if not is_authorized_view(contact_id):
+        #    return unauthorized()
 
         type_arg = request.args.get('type')
         if type_arg:
@@ -82,7 +83,7 @@ class ExperienceAll(Resource):
         return {'status': 'success', 'data': exp_list}, 200
 
     def post(self, contact_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         json_data = request.get_json(force=True)
@@ -126,7 +127,7 @@ class ExperienceOne(Resource):
         if not exp:
             return {'message': 'Experience does not exist'}, 404
 
-        if not is_authorized_view(exp.contact.id): 
+        if not is_authorized_view(exp.contact.id):
             return unauthorized()
 
         exp_data = experience_schema.dump(exp)
@@ -137,7 +138,7 @@ class ExperienceOne(Resource):
         if not exp:
             return {'message': 'Experience does not exist'}, 404
 
-        if not is_authorized_write(exp.contact.id): 
+        if not is_authorized_write(exp.contact.id):
             return unauthorized()
 
         db.session.delete(exp)
@@ -149,7 +150,7 @@ class ExperienceOne(Resource):
         if not exp:
             return {'message': 'Experience does not exist'}, 404
 
-        if not is_authorized_write(exp.contact.id): 
+        if not is_authorized_write(exp.contact.id):
             return unauthorized()
 
         json_data = request.get_json(force=True)

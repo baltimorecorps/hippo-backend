@@ -12,12 +12,12 @@ from .ProgramContacts import create_program_contact
 from .Trello_Intake_Talent import add_new_talent_card
 from marshmallow import ValidationError
 from auth import (
-    validate_jwt, 
-    create_session, 
-    refresh_session, 
-    is_authorized_view, 
-    is_authorized_write, 
-    is_authorized_with_permission, 
+    validate_jwt,
+    create_session,
+    refresh_session,
+    is_authorized_view,
+    is_authorized_write,
+    is_authorized_with_permission,
     unauthorized
 )
 
@@ -49,7 +49,7 @@ class ContactAll(Resource):
     }
 
     def get(self):
-        if not is_authorized_with_permission('view:all-users'): 
+        if not is_authorized_with_permission('view:all-users'):
             return unauthorized()
 
         contacts = Contact.query.all()
@@ -120,7 +120,7 @@ class ContactAccount(Resource):
 
 class ContactOne(Resource):
     method_decorators = {
-        'get': [login_required, refresh_session],
+        'get': [], #used to be [login_required, refresh_session]
         'put': [login_required, refresh_session],
     }
 
@@ -128,8 +128,11 @@ class ContactOne(Resource):
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404
-        if not is_authorized_view(contact.id):
-            return unauthorized()
+
+        # TODO: Create employer permission to restore AuthZ
+        #if not is_authorized_view(contact.id):
+        #    return unauthorized()
+        
         contact = contact_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
 
