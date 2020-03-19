@@ -83,7 +83,7 @@ def test_talent_intake_board(app):
 
     url = '/api/form-assembly/talent-app/'
     data = (
-        'contact_id=123&program_id=1&first_name=Billy&last_name=Daly&email=billy%40example.com&phone=908-578-4622&street1=2401+Liberty+Heights+Ave&street2=Suite+2730&city=Baltimore&state=MD&postal_code=21215&equity=Race+and+equity&effectiveness=Sector+effectiveness&programs%5B0%5D=Fellowship&programs%5B1%5D=JHU&programs%5B2%5D=Mayoral+Fellowship&programs%5B3%5D=PFP&programs%5B4%5D=PA&experience=0-2+years&capabilities%5B0%5D=Community+Engagement+and+Outreach&capabilities%5B1%5D=Data+Analysis&capabilities%5B2%5D=Fundraising+and+Development&alum_radio=No&race_all%5B0%5D=American+Indian+or+Alaskan+Native&race_all%5B1%5D=White&gender=Male&pronouns=He%2FHim&response_id=159679585'
+        'contact_id=123&program_id=1&first_name=Billy&last_name=Daly&email=billy%40example.com&phone=908-578-4622&street1=2401+Liberty+Heights+Ave&street2=Suite+2730&city=Baltimore&state=MD&postal_code=21215&equity=Race+and+equity&effectiveness=Sector+effectiveness&programs%5B0%5D=Fellowship&programs%5B1%5D=JHU+-+Carey&programs%5B2%5D=Mayoral+Fellowship&programs%5B3%5D=PFP&programs%5B4%5D=PA&experience=0-2+years&capabilities%5B0%5D=Community+Engagement+and+Outreach&capabilities%5B1%5D=Data+Analysis&capabilities%5B2%5D=Fundraising+and+Development&alum_radio=No&race_all%5B0%5D=American+Indian+or+Alaskan+Native&race_all%5B1%5D=White&gender=Male&pronouns=He%2FHim&response_id=159679585'
     )
     with app.test_client() as client:
         response = client.post(url, data=data, headers=headers)
@@ -92,11 +92,11 @@ def test_talent_intake_board(app):
         board = Board(query_board_data(board_id))
         card = board.cards.get(card_id)
         assert card.stage == 2
+        for label in TALENT_INTAKE_LABELS[1:]:
+            assert label in card.label_names
         assert 'Race' in card.desc
         assert 'Data Analysis' in card.desc
         assert '0-2 years' in card.desc
-        for label in TALENT_INTAKE_LABELS[1:]:
-            assert label in card.label_names
         pprint(card.attachments)
         assert card.attachments['Profile']['url'] == (
             'https://app.baltimorecorps.org/profile/123'

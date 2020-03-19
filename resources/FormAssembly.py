@@ -86,19 +86,24 @@ class TalentProgramApp(Resource):
         if not card:
             return {'message': 'No intake card found'}, 400
 
-
         # sets the data to create or update the card
+        capabilities = ['- '+v for k,v in form_data.items()
+                        if 'capabilities' in k]
+        capabilities_str = '\n'.join(capabilities)
         card_data = {
-            'name': f'Applicant {contact_id}',
+            'name': f"{form_data['first_name']} {form_data['last_name']}",
             'desc': (
-                '**Racial Equity & Baltimore: '
-                'Why is racial equity work in Baltimore '
-                'important to you?**\n\n'
+                "**Racial Equity & Baltimore: "
+                "Why is racial equity work in Baltimore "
+                "important to you?**\n\n"
                 f"{form_data['equity']}\n\n---\n\n"
-                '**Sector Effectiveness: How has your background'
-                ' and experiences prepared you for today’s work'
-                ' in Baltimore’s social impact sector?**\n\n'
-                f"{form_data['effectiveness']}\n\n"
+                "**Sector Effectiveness: How has your background"
+                " and experiences prepared you for today’s work"
+                " in Baltimore’s social impact sector?**\n\n"
+                f"{form_data['effectiveness']}\n\n---\n\n"
+                f"**Level of Experience:** {form_data['experience']}\n\n"
+                f"**Types of roles they're interested in:**\n\n"
+                f"{capabilities_str}\n\n"
             )
         }
         card.update(**card_data)
