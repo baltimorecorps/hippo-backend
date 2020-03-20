@@ -33,7 +33,7 @@ REVIEW_BOARDS = {
 LOCAL_OPP_BOARD = '5e4acd35a35ee523c71f9e25'
 TALENT_INTAKE_BOARDS = {
     'local': '5e37744114d9d01a03ddbcfe',
-    'dev': '5e25dae2e640be7e5248a3e6'
+    'dev': '5e25dae2e640be7e5248a3e6',
     'production': '5ddd741f5cc43e2b21346dbb'
 }
 
