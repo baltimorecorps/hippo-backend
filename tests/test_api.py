@@ -1435,6 +1435,27 @@ def test_opportunity_app_consider(app):
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.considered_for_role.value
         assert OpportunityApp.query.get('a1').is_active == True
 
+def test_opportunity_app_recommend_from_not_a_fit(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {}
+    with app.test_client() as client:
+        OpportunityApp.query.get('a1').is_active = False
+        db.session.commit()
+        opp_app = OpportunityApp.query.get('a1')
+        assert opp_app.stage == ApplicationStage.submitted.value
+        assert opp_app.is_active == False
+        response = client.post('/api/contacts/123/app/123abc/recommend/',
+                              data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        opp_app = OpportunityApp.query.get('a1')
+        assert opp_app.stage == ApplicationStage.recommended.value
+        assert opp_app.is_active == True
+
 def test_opportunity_app_recommend(app):
     mimetype = 'application/json'
     headers = {

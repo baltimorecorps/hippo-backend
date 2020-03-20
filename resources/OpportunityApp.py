@@ -186,14 +186,12 @@ class OpportunityAppRecommend(Resource):
             return {'message': 'Application is already recommended'}, 400
 
         opportunity_app.stage = ApplicationStage.recommended.value
+        opportunity_app.is_active = True
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200
 
 class OpportunityAppReject(Resource):
-    method_decorators = {
-        'post': [login_required, refresh_session],
-    }
 
     def post(self, contact_id, opportunity_id):
 

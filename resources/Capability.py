@@ -1,14 +1,14 @@
-from collections import defaultdict 
+from collections import defaultdict
 
 from flask_restful import Resource, request
 from models.base_model import db
 from models.contact_model import Contact
 from models.skill_model import (
-    Capability, 
-    CapabilitySchema, 
+    Capability,
+    CapabilitySchema,
     CapabilitySkillSuggestion,
     Skill,
-    SkillSchema, 
+    SkillSchema,
     SkillRecommendationSchema
 )
 from models.skill_item_model import ContactSkill
@@ -18,9 +18,9 @@ from sqlalchemy.sql.expression import and_
 
 from flask_login import login_required
 from auth import (
-    refresh_session, 
-    is_authorized_view, 
-    is_authorized_write, 
+    refresh_session,
+    is_authorized_view,
+    is_authorized_write,
     unauthorized
 )
 from marshmallow import ValidationError
@@ -46,7 +46,7 @@ class ContactCapabilitySuggestions(Resource):
     }
 
     def post(self, contact_id, capability_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         json_data = request.get_json(force=True)
@@ -85,13 +85,13 @@ class ContactCapabilitySuggestionOne(Resource):
     }
 
     def delete(self, contact_id, capability_id, skill_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         (result, status_code) = delete_skill(contact_id, skill_id)
         if status_code != 200:
             return result, status_code
-        
+
         suggestion = CapabilitySkillSuggestion.query.get(
             (contact_id, capability_id, skill_id))
         if suggestion is not None:
@@ -129,7 +129,7 @@ def score_capability(skill_items, capability_id):
     for achievement in achievements.values():
         score += score_description(achievement.description)
     return score
-        
+
 def get_capability_skill_items(contact_id, capability_id):
     return (ContactSkill.query
             .join(Skill)
@@ -153,12 +153,13 @@ def get_suggested_skill_items(contact_id, capability_id):
 
 class ContactCapabilities(Resource):
     method_decorators = {
-        'get': [login_required, refresh_session],
+        'get': [], # [login_required, refresh_session],
     }
 
     def get(self, contact_id):
-        if not is_authorized_view(contact_id): 
-            return unauthorized()
+        # TODO: Fix this once employer permissions are created
+        #if not is_authorized_view(contact_id):
+        #    return unauthorized()
 
         contact = Contact.query.get(contact_id)
         if not contact:
@@ -170,7 +171,7 @@ class ContactCapabilities(Resource):
         capabilities = Capability.query.all()
         for capability in capabilities:
             cap = capability_name_schema.dump(capability)
-        
+
             skills = get_capability_skill_items(contact_id, capability.id)
             suggested_skills = get_suggested_skill_items(contact_id, capability.id)
 
@@ -190,7 +191,7 @@ class ContactCapabilities(Resource):
             cap['suggested_skills'] = skill_names_schema.dump(
                 map(lambda x: x.skill, suggested_skills))
             cap['score'] = score_capability(
-                list(skills) + list(suggested_skills), 
+                list(skills) + list(suggested_skills),
                 capability.id
             )
             cap_results.append(cap)
@@ -201,4 +202,3 @@ class ContactCapabilities(Resource):
             'other_skills': skill_names_schema.dump(other_skill_map.values())
         }
         return {'status': 'success', 'data': result}, 200
-
