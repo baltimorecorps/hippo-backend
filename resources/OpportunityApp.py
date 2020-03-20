@@ -39,14 +39,16 @@ class OpportunityAppAll(Resource):
 
 class OpportunityAppOne(Resource):
     method_decorators = {
-        'get': [login_required, refresh_session],
+        'get': [], #this used to be [login_required, refresh_session]
         'post': [login_required, refresh_session],
         'put': [login_required, refresh_session],
     }
 
     def get(self, contact_id, opportunity_id):
-        if not is_authorized_view(contact_id):
-            return unauthorized()
+
+        # TODO: Create permission for employers so we can restore AuthZ
+        #if not is_authorized_view(contact_id):
+        #    return unauthorized()
 
         opportunity_app = (OpportunityApp.query
             .filter_by(contact_id=contact_id, opportunity_id=opportunity_id)
@@ -183,14 +185,12 @@ class OpportunityAppRecommend(Resource):
             return {'message': 'Application is already recommended'}, 400
 
         opportunity_app.stage = ApplicationStage.recommended.value
+        opportunity_app.is_active = True
         db.session.commit()
         result = opportunity_app_schema.dump(opportunity_app)
         return {'status': 'success', 'data': result}, 200
 
 class OpportunityAppReject(Resource):
-    method_decorators = {
-        'post': [login_required, refresh_session],
-    }
 
     def post(self, contact_id, opportunity_id):
 
