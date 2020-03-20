@@ -71,8 +71,8 @@ class TalentProgramApp(Resource):
 
     def post(self):
         form_data = request.form
-        contact_id = int(form_data['contact_id'])
-        program_id = int(form_data['program_id'])
+        contact_id = int(form_data.get('contact_id'))
+        program_id = int(form_data.get('program_id'))
         if not (contact_id or program_id):
             return {'message': 'No contact_id or program_id provided'}, 400
         program_contact = query_one_program_contact(contact_id, program_id)
@@ -86,12 +86,26 @@ class TalentProgramApp(Resource):
         if not card:
             return {'message': 'No intake card found'}, 400
 
-        # sets the data to create or update the card
+        # parses form data to fill the card description
         capabilities = ['- '+v for k,v in form_data.items()
                         if 'capabilities' in k]
         capabilities_str = '\n'.join(capabilities)
+        programs = [v for k,v in form_data.items() if 'programs' in k]
+        programs_str = '\n'.join(['- ' + p for p in programs ])
+        if form_data.get('mayoral_eligible'):
+            mayoral_eligible = form_data.get('mayoral_eligible')
+        else:
+            mayoral_eligible = "N/A"
+        if form_data.get('carey_eligible'):
+            carey_eligible = form_data.get('carey_eligible')
+        else:
+            carey_eligible = "N/A"
+
+        #formats the string for the description
         card_data = {
-            'name': f"{form_data['first_name']} {form_data['last_name']}",
+            'name': (
+                f"{form_data.get('first_name')} {form_data.get('last_name')}"
+                ),
             'desc': (
                 "**Racial Equity & Baltimore: "
                 "Why is racial equity work in Baltimore "
@@ -103,9 +117,16 @@ class TalentProgramApp(Resource):
                 f"{form_data['effectiveness']}\n\n---\n\n"
                 f"**Level of Experience:** {form_data['experience']}\n\n"
                 f"**Types of roles they're interested in:**\n\n"
-                f"{capabilities_str}\n\n"
+                f"{capabilities_str}\n\n---\n\n"
+                f"**Programs/Services they are interested in:**\n\n"
+                f"{programs_str}\n\n---\n\n"
+                f"**Eligibility:**\n\n"
+                f"- **Mayoral Fellowship:** {mayoral_eligible}\n"
+                f"- **JHU - Carey:** {carey_eligible}\n"
             )
         }
+
+        #updates the card with the information parsed from the form
         card.update(**card_data)
         card.add_attachment(
             url=f'https://app.baltimorecorps.org/profile/{contact_id}',
@@ -115,7 +136,6 @@ class TalentProgramApp(Resource):
             url=f"https://app.formassembly.com/responses/view/{form_data['response_id']}",
             name='Full Response'
         )
-        programs = [v for k,v in form_data.items() if 'programs' in k]
         card.set_labels(programs)
 
         # moves card and updates program_contact to stage 2
@@ -123,4 +143,5 @@ class TalentProgramApp(Resource):
         submitted_list = board.lists['stage'][2]
         card.move_card(submitted_list)
         result = program_contact_schema.dump(program_contact)
+        print(form_data.get('programs'))
         return {'status': 'success', 'data': result}, 201

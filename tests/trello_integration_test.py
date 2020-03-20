@@ -33,6 +33,7 @@ REVIEW_BOARDS = {
 LOCAL_OPP_BOARD = '5e4acd35a35ee523c71f9e25'
 TALENT_INTAKE_BOARDS = {
     'local': '5e37744114d9d01a03ddbcfe',
+    'dev': '5e25dae2e640be7e5248a3e6'
     'production': '5ddd741f5cc43e2b21346dbb'
 }
 
@@ -54,8 +55,10 @@ def test_talent_intake_board_labels(app):
     check_labels(local_board_id, TALENT_INTAKE_LABELS)
     prod_board_id = TALENT_INTAKE_BOARDS['production']
     check_labels(prod_board_id, TALENT_INTAKE_LABELS)
+    dev_board_id = TALENT_INTAKE_BOARDS['dev']
+    check_labels(dev_board_id, TALENT_INTAKE_LABELS)
 
-def test_talent_intake_board(app):
+def test_talent_intake(app):
     mimetype = 'application/x-www-form-urlencoded'
     headers = {
         'Content-Type': mimetype,
@@ -83,7 +86,7 @@ def test_talent_intake_board(app):
 
     url = '/api/form-assembly/talent-app/'
     data = (
-        'contact_id=123&program_id=1&first_name=Billy&last_name=Daly&email=billy%40example.com&phone=9085784622&street1=2401+Liberty+Heights+Ave&street2=Suite+2730&city=Baltimore&state=MD&postal_code=21215&equity=Race&effectiveness=Effectiveness&programs%5B0%5D=Fellowship&programs%5B1%5D=JHU+-+Carey&programs%5B2%5D=Mayoral+Fellowship&programs%5B3%5D=PFP&programs%5B4%5D=PA&programs%5B5%5D=tfa_16315&mayoral_eligible=Yes&experience=0-2+years&capabilities%5B0%5D=Advocacy+and+Public+Policy&capabilities%5B1%5D=Community+Engagement+and+Outreach&capabilities%5B2%5D=Data+Analysis&capabilities%5B3%5D=Fundraising+and+Development&capabilities%5B4%5D=Marketing+and+Public+Relations&alum_radio=No&race_all=American+Indian+or+Alaskan+Native&race_other=&gender=Male&gender_other=&pronouns=He%2FHim&pronouns_other=&response_id=160140910'
+        'contact_id=123&program_id=1&first_name=Billy&last_name=Daly&email=billy%40example.com&phone=9085784622&street1=2401+Liberty+Heights+Ave&street2=Suite+2730&city=Baltimore&state=MD&postal_code=21215&equity=Race&effectiveness=Effectiveness&programs%5B0%5D=Fellowship&programs%5B1%5D=JHU+-+Carey&programs%5B2%5D=Mayoral+Fellowship&programs%5B3%5D=PFP&programs%5B4%5D=PA&programs%5B5%5D=I%27d+like+some+help+figuring+this+out&mayoral_eligible=Yes&experience=0-2+years&capabilities%5B0%5D=Advocacy+and+Public+Policy&capabilities%5B1%5D=Community+Engagement+and+Outreach&capabilities%5B2%5D=Data+Analysis&capabilities%5B3%5D=Fundraising+and+Development&capabilities%5B4%5D=Marketing+and+Public+Relations&alum_radio=No&race_all=American+Indian+or+Alaskan+Native&gender=Male&pronouns=He%2FHim&response_id=160140910'
     )
     with app.test_client() as client:
         response = client.post(url, data=data, headers=headers)
@@ -107,7 +110,6 @@ def test_talent_intake_board(app):
             'https://app.formassembly.com/responses/view/160140910'
         )
         data = json.loads(response.data)['data']
-        assert False == True
 
 # TODO: Add trello specific checks
 def test_create_program_contact_with_contact(app):
