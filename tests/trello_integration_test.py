@@ -83,7 +83,7 @@ def test_talent_intake_board(app):
 
     url = '/api/form-assembly/talent-app/'
     data = (
-        'contact_id=123&program_id=1&first_name=Billy&last_name=Daly&email=billy%40example.com&phone=908-578-4622&street1=2401+Liberty+Heights+Ave&street2=Suite+2730&city=Baltimore&state=MD&postal_code=21215&equity=Race+and+equity&effectiveness=Sector+effectiveness&programs%5B0%5D=Fellowship&programs%5B1%5D=JHU+-+Carey&programs%5B2%5D=Mayoral+Fellowship&programs%5B3%5D=PFP&programs%5B4%5D=PA&experience=0-2+years&capabilities%5B0%5D=Community+Engagement+and+Outreach&capabilities%5B1%5D=Data+Analysis&capabilities%5B2%5D=Fundraising+and+Development&alum_radio=No&race_all%5B0%5D=American+Indian+or+Alaskan+Native&race_all%5B1%5D=White&gender=Male&pronouns=He%2FHim&response_id=159679585'
+        'contact_id=123&program_id=1&first_name=Billy&last_name=Daly&email=billy%40example.com&phone=9085784622&street1=2401+Liberty+Heights+Ave&street2=Suite+2730&city=Baltimore&state=MD&postal_code=21215&equity=Race&effectiveness=Effectiveness&programs%5B0%5D=Fellowship&programs%5B1%5D=JHU+-+Carey&programs%5B2%5D=Mayoral+Fellowship&programs%5B3%5D=PFP&programs%5B4%5D=PA&programs%5B5%5D=tfa_16315&mayoral_eligible=Yes&experience=0-2+years&capabilities%5B0%5D=Advocacy+and+Public+Policy&capabilities%5B1%5D=Community+Engagement+and+Outreach&capabilities%5B2%5D=Data+Analysis&capabilities%5B3%5D=Fundraising+and+Development&capabilities%5B4%5D=Marketing+and+Public+Relations&alum_radio=No&race_all=American+Indian+or+Alaskan+Native&race_other=&gender=Male&gender_other=&pronouns=He%2FHim&pronouns_other=&response_id=160140910'
     )
     with app.test_client() as client:
         response = client.post(url, data=data, headers=headers)
@@ -95,14 +95,16 @@ def test_talent_intake_board(app):
         for label in TALENT_INTAKE_LABELS[1:]:
             assert label in card.label_names
         assert 'Race' in card.desc
-        assert 'Data Analysis' in card.desc
+        assert '- Data Analysis\n' in card.desc
         assert '0-2 years' in card.desc
+        assert '**Mayoral Fellowship:** Yes' in card.desc
+        assert '**JHU - Carey:** N/A' in card.desc
         pprint(card.attachments)
         assert card.attachments['Profile']['url'] == (
             'https://app.baltimorecorps.org/profile/123'
         )
         assert card.attachments['Full Response']['url'] == (
-            'https://app.formassembly.com/responses/view/159679585'
+            'https://app.formassembly.com/responses/view/160140910'
         )
         data = json.loads(response.data)['data']
         assert False == True
