@@ -92,6 +92,7 @@ class TalentProgramApp(Resource):
         capabilities_str = '\n'.join(capabilities)
         programs = [v for k,v in form_data.items() if 'programs' in k]
         programs_str = '\n'.join(['- ' + p for p in programs ])
+        new_labels = set(card.label_names + programs)
         if form_data.get('mayoral_eligible'):
             mayoral_eligible = form_data.get('mayoral_eligible')
         else:
@@ -136,7 +137,7 @@ class TalentProgramApp(Resource):
             url=f"https://app.formassembly.com/responses/view/{form_data['response_id']}",
             name='Full Response'
         )
-        card.set_labels(programs)
+        card.set_labels(new_labels)
 
         # moves card and updates program_contact to stage 2
         program_contact.update(**{'stage': 2})

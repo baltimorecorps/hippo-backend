@@ -74,14 +74,14 @@ def test_talent_intake(app):
 
     for attachment in TALENT_INTAKE_ATTACHMENTS:
         response = card.remove_attachment(attachment)
-    card.set_labels(remove_all=True)
+    card.set_labels(label_names=['New'])
     card.move_card(started_list)
 
     board = Board(query_board_data(board_id))
     card = board.cards.get(card_id)
 
     assert card.attachments == {}
-    assert card.label_names == []
+    assert card.label_names == ['New']
     assert card.stage == 1
 
     url = '/api/form-assembly/talent-app/'
@@ -95,6 +95,7 @@ def test_talent_intake(app):
         board = Board(query_board_data(board_id))
         card = board.cards.get(card_id)
         assert card.stage == 2
+        assert 'New' in card.label_names
         for label in TALENT_INTAKE_LABELS[1:]:
             assert label in card.label_names
         assert 'Race' in card.desc
