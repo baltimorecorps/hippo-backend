@@ -29,6 +29,7 @@ class Opportunity(db.Model):
     card_id = db.Column(db.String)
     stage = db.Column(db.Integer, default=1)
     org_name = db.Column(db.String(255), nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
 
     #relationships
     applications = db.relationship('OpportunityApp', back_populates='opportunity',
@@ -65,6 +66,7 @@ class OpportunitySchema(Schema):
     org_name = fields.String(required=True)
     cycle_id = fields.Integer(required=True)
     program_id = fields.Integer(attribute='cycle.program_id', dump_only=True)
+    is_active = fields.Boolean(dump_only=True)
     applications = fields.Nested(OpportunityAppSchema(exclude=('opportunity','resume'), many=True))
 
     class Meta:
