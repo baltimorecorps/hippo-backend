@@ -112,6 +112,37 @@ def test_talent_intake(app):
         )
         data = json.loads(response.data)['data']
 
+def test_resubmit_approved_app(app):
+    mimetype = 'application/x-www-form-urlencoded'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+    }
+
+    card_id = '5e4af2d6fc3c0954ff187ddc'
+
+    board_id = TALENT_INTAKE_BOARDS['local']
+    board = Board(query_board_data(board_id))
+    card = board.cards.get(card_id)
+    approved_list = board.lists['stage'][3]
+    card.move_card(approved_list)
+
+    board = Board(query_board_data(board_id))
+    card = board.cards.get(card_id)
+    assert card.stage == 3
+
+    url = '/api/form-assembly/talent-app/'
+    data = (
+        'contact_id=123&program_id=1&first_name=Billy&last_name=Daly&email=billy%40example.com&phone=9085784622&street1=2401+Liberty+Heights+Ave&street2=Suite+2730&city=Baltimore&state=MD&postal_code=21215&equity=Race&effectiveness=Effectiveness&programs%5B0%5D=Fellowship&programs%5B1%5D=JHU+-+Carey&programs%5B2%5D=Mayoral+Fellowship&programs%5B3%5D=PFP&programs%5B4%5D=PA&programs%5B5%5D=I%27d+like+some+help+figuring+this+out&mayoral_eligible=Yes&experience=0-2+years&capabilities%5B0%5D=Advocacy+and+Public+Policy&capabilities%5B1%5D=Community+Engagement+and+Outreach&capabilities%5B2%5D=Data+Analysis&capabilities%5B3%5D=Fundraising+and+Development&capabilities%5B4%5D=Marketing+and+Public+Relations&alum_radio=No&race_all=American+Indian+or+Alaskan+Native&gender=Male&pronouns=He%2FHim&response_id=160140910'
+    )
+
+    with app.test_client() as client:
+        response = client.post(url, data=data, headers=headers)
+        pprint(response.json)
+        assert response.status_code == 400
+        message = json.loads(response.data)['message']
+        assert message == 'Application has already been submitted'
+
 # TODO: Add trello specific checks
 def test_create_program_contact_with_contact(app):
     mimetype = 'application/json'
