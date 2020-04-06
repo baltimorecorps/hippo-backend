@@ -85,6 +85,8 @@ class TalentProgramApp(Resource):
         card = board.cards.get(card_id)
         if not card:
             return {'message': 'No intake card found'}, 400
+        elif card.stage >= 2:
+            return {'message': 'Application has already been submitted'}, 400
 
         # parses form data to fill the card description
         capabilities = ['- '+v for k,v in form_data.items()
