@@ -237,7 +237,8 @@ OPPORTUNITIES = {
         'status': 'submitted',
         'org_name': 'Test Org',
         'cycle_id': 2,
-        'program_id': 1
+        'program_id': 1,
+        'is_active': True,
     },
     'test_opp2': {
         'id': '222abc',
@@ -247,7 +248,8 @@ OPPORTUNITIES = {
         'status': 'submitted',
         'org_name': 'Test Org',
         'cycle_id': 3,
-        'program_id': 2
+        'program_id': 2,
+        'is_active': True,
     },
     'test_opp3': {
         'id': '333abc',
@@ -257,7 +259,8 @@ OPPORTUNITIES = {
         'status': 'submitted',
         'org_name': 'Test Org',
         'cycle_id': 2,
-        'program_id': 1
+        'program_id': 1,
+        'is_active': True,
     },
 
 }
@@ -411,6 +414,7 @@ OPPORTUNITIES_INTERNAL = {
         'org_name': 'Test Org',
         'cycle_id': 2,
         'program_id': 1,
+        'is_active': True,
         'applications': [{'id': 'a1',
                           'contact': CONTACTS_SHORT['billy'],
                           'interest_statement': "I'm interested in this test opportunity",
@@ -437,6 +441,7 @@ OPPORTUNITIES_INTERNAL = {
         'org_name': 'Test Org',
         'cycle_id': 3,
         'program_id': 2,
+        'is_active': True,
         'applications': [{'id': 'a2',
                           'contact': CONTACTS_SHORT['billy'],
                           'interest_statement': "I'm also interested in this test opportunity",
@@ -455,6 +460,7 @@ OPPORTUNITIES_INTERNAL = {
         'org_name': 'Test Org',
         'cycle_id': 2,
         'program_id': 1,
+        'is_active': True,
         'applications': []
     },
 }
@@ -763,7 +769,8 @@ POSTS = {
         "gdoc_id": "TESTABC11==",
         "cycle_id": 2,
         "org_name": 'Test Org',
-        "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit"
+        "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+        "is_active": True,
     },
 }
 
