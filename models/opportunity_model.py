@@ -29,7 +29,7 @@ class Opportunity(db.Model):
     card_id = db.Column(db.String)
     stage = db.Column(db.Integer, default=1)
     org_name = db.Column(db.String(255), nullable=False)
-    is_active = db.Column(db.Boolean, default=True)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     #relationships
     applications = db.relationship('OpportunityApp', back_populates='opportunity',
