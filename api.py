@@ -29,7 +29,8 @@ from resources.Opportunity import (
     OpportunityAll,
     OpportunityAllInternal,
     OpportunityOne,
-    OpportunityOneOrg
+    OpportunityOneOrg,
+    OpportunityDeactivate,
 )
 from resources.OpportunityApp import (
     OpportunityAppReject,
@@ -185,3 +186,6 @@ api.add_resource(OpportunityOne,
 api.add_resource(OpportunityOneOrg,
                  '/org/opportunities/<string:opportunity_id>',
                  '/org/opportunities/<string:opportunity_id>/')
+api.add_resource(OpportunityDeactivate,
+                 '/opportunity/<string:opportunity_id>/deactivate',
+                 '/opportunity/<string:opportunity_id>/deactivate/')
