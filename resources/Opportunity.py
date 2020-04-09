@@ -126,3 +126,22 @@ class OpportunityOne(Resource):
         db.session.commit()
         result = opportunity_schema.dump(opportunity)
         return {'status': 'success', 'data': result}, 200
+
+class OpportunityDeactivate(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session],
+    }
+
+    def post(self, opportunity_id):
+        opportunity = Opportunity.query.get(opportunity_id)
+        if not opportunity:
+            return {'message': 'Opportunity does not exist'}, 404
+
+        if not is_authorized_with_permission('write:opportunity'):
+            return unauthorized()
+
+        opportunity.is_active = False
+        db.session.commit()
+
+        result = opportunity_schema.dump(opportunity)
+        return {'status': 'success', 'data': result}, 200
