@@ -1507,6 +1507,24 @@ def test_opportunity_deactivate(app):
         assert response.status_code == 200
         assert Opportunity.query.get('123abc').is_active == False
 
+def test_opportunity_activate(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {}
+    with app.test_client() as client:
+        opp = Opportunity.query.get('123abc')
+        opp.is_active = False
+        db.session.commit()
+        assert Opportunity.query.get('123abc').is_active == False
+        response = client.post('/api/opportunity/123abc/activate/',
+                              data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert Opportunity.query.get('123abc').is_active == True
+
 def test_approve_many_program_contacts_new(app, ):
     mimetype = 'application/json'
     headers = {
