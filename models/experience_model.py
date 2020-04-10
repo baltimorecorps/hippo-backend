@@ -46,12 +46,12 @@ class Experience(db.Model):
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(2000))
-    host = db.Column(db.String(100), nullable=False)
-    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.String)
+    host = db.Column(db.String, nullable=False)
+    title = db.Column(db.String, nullable=False)
     degree_other = db.Column(db.String(100))
     degree = db.Column(db.String(100))
-    link = db.Column(db.String(255))
+    link = db.Column(db.String)
     start_month = db.Column(db.Enum(Month, name='MonthType'), nullable=False)
     start_year = db.Column(db.Integer, nullable=False)
     end_month = db.Column(db.Enum(Month, name='MonthType'), nullable=False)
