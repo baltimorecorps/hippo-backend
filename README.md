@@ -28,7 +28,6 @@ keybase --version
 
 scripts/setup.sh
 source env/bin/activate
-pip install -r requirements.txt 
 pytest
 export TRELLO_API_KEY=<api key>
 export TRELLO_API_TOKEN=<token>

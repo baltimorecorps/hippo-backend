@@ -20,7 +20,7 @@ from models.experience_model import (
 )
 from models.achievement_model import Achievement
 
-# imports models related to skills
+#imports models related to skills
 from models.tag_model import (
     Tag,
     TagType,
@@ -36,7 +36,7 @@ from models.skill_model import (
 from models.skill_item_model import ContactSkill
 from resources.skill_utils import get_skill_id, make_skill
 
-# imports models related to the resume
+#imports models related to the resume
 #from models.resume_model import Resume
 #from models.resume_section_model import ResumeSection
 #from models.resume_item_model import ResumeItem
@@ -98,7 +98,6 @@ exp_columbia = Experience(
     title='Political Science',
     description='Test description',
     link='www.google.com',
-    link_name="Google",
     start_month=Month('September'),
     start_year=1979,
     end_month=Month('May'),
@@ -164,40 +163,40 @@ a_goucher1 = Achievement(
 )
 
 
-# tag_python = Tag(
+#tag_python = Tag(
 #    id=123,
 #    name='Python',
 #    type=TagType('Skill'),
 #    status=TagStatusType('Active'),
-# )
+#)
 #
-# tag_webdev = Tag(
+#tag_webdev = Tag(
 #    id=124,
 #    name='Web Development',
 #    type=TagType('Function'),
 #    status=TagStatusType('Active'),
-# )
-# tag_health = Tag(
+#)
+#tag_health = Tag(
 #    id=125,
 #    name='Public Health',
 #    type=TagType('Topic'),
 #    status=TagStatusType('Active'),
-# )
+#)
 #
-# item_webdev = TagItem(
+#item_webdev = TagItem(
 #    id=21,
 #    contact_id=123,
 #    tag_id=124,
 #    score=2
-# )
+#)
 #
-# resume_billy = Resume(
+#resume_billy = Resume(
 #    id=51,
 #    contact_id=123,
 #    name="Billy's Resume",
 #    date_created=date(2019,5,4),
 #    gdoc_id="abcdefghijklmnopqrstuvwxyz1234567890-_",
-# )
+#)
 
 skills = [
     Skill(
@@ -433,15 +432,12 @@ app_obama = OpportunityApp(
     stage=2,
 )
 
-
 def get_skill(name):
     return Skill.query.get(get_skill_id(name))
-
 
 def get_contact_skill(contact_id, skill_name):
     return ContactSkill.query.filter_by(
         contact_id=contact_id, skill_id=get_skill_id(skill_name)).first()
-
 
 def populate(db):
     for skill in skills:
@@ -457,15 +453,15 @@ def populate(db):
     db.session.add(a_baltimore1)
     db.session.add(a_baltimore2)
     db.session.add(a_baltimore3)
-    # db.session.add(tag_python)
-    # db.session.add(tag_webdev)
-    # db.session.add(tag_health)
-    # db.session.add(item_webdev)
-    # db.session.add(resume_billy)
-    # db.session.add(skill_python)
-    # db.session.add(skill_webdev)
-    # db.session.add(skill_health)
-    # db.session.add(skill_obama_health)
+    #db.session.add(tag_python)
+    #db.session.add(tag_webdev)
+    #db.session.add(tag_health)
+    #db.session.add(item_webdev)
+    #db.session.add(resume_billy)
+    #db.session.add(skill_python)
+    #db.session.add(skill_webdev)
+    #db.session.add(skill_health)
+    #db.session.add(skill_obama_health)
     db.session.add(program_pfp)
     db.session.add(program_mayoral)
     db.session.add(cycle_pfp)
@@ -492,11 +488,11 @@ def populate(db):
     billy.add_skill(get_skill('Community Organizing'))
     obama.add_skill(get_skill('Public Health'))
 
+
     exp_baltimore.add_skill(get_skill('Python'))
     exp_baltimore.add_skill(get_skill('Web Development'))
     a_baltimore1.add_skill(get_skill('Flask'), it_capability)
-    a_baltimore2.add_skill(
-        get_skill('Community Organizing'), advocacy_capability)
+    a_baltimore2.add_skill(get_skill('Community Organizing'), advocacy_capability)
     a_baltimore3.add_skill(get_skill('Web Development'), it_capability)
     a_goucher1.add_skill(get_skill('Python'), it_capability)
 
@@ -510,10 +506,8 @@ def populate(db):
     billy_eventplan = get_contact_skill(123, 'Event Planning')
     billy_eventplan.deleted = True
 
-    advocacy_capability.related_skills.append(
-        get_skill('Community Organizing'))
-    outreach_capability.related_skills.append(
-        get_skill('Community Organizing'))
+    advocacy_capability.related_skills.append(get_skill('Community Organizing'))
+    outreach_capability.related_skills.append(get_skill('Community Organizing'))
     it_capability.related_skills.append(get_skill('Python'))
     it_capability.related_skills.append(get_skill('C++'))
     it_capability.related_skills.append(get_skill('Web Development'))
