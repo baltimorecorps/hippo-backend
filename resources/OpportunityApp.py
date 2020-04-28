@@ -210,7 +210,14 @@ class OpportunityAppRejectExternal(Resource):
 
 class OpportunityAppRejectInternal(Resource):
 
+    method_decorators = {
+        'post': [login_required, refresh_session],
+    }
+
     def post(self, contact_id, opportunity_id):
+
+        if not is_authorized_with_permission('write:app'):
+            return unauthorized()
 
         opportunity_app = (OpportunityApp.query
             .filter_by(contact_id=contact_id, opportunity_id=opportunity_id)
