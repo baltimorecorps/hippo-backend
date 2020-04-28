@@ -32,7 +32,8 @@ from resources.Opportunity import (
     OpportunityOneOrg
 )
 from resources.OpportunityApp import (
-    OpportunityAppReject,
+    OpportunityAppRejectExternal,
+    OpportunityAppRejectInternal,
     OpportunityAppAll,
     OpportunityAppOne,
     OpportunityAppSubmit,
@@ -137,9 +138,15 @@ api.add_resource(OpportunityAppOne,
 api.add_resource(OpportunityAppSubmit,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/submit',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/submit/')
-api.add_resource(OpportunityAppReject,
+api.add_resource(OpportunityAppRejectExternal,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit',
-                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit/')
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit/',
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit/external',
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit/external/')
+api.add_resource(OpportunityAppRejectInternal,
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit/internal',
+                 '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit/internal/')
+
 api.add_resource(OpportunityAppInterview,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/interview',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/interview/')
