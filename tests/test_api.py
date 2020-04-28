@@ -1386,13 +1386,14 @@ def test_opportunity_app_internal_not_a_fit(app):
     }
     update = {}
     with app.test_client() as client:
-        assert OpportunityApp.query.get('a1').is_active == True
-        response = client.post('/api/contacts/123/app/123abc/internal-not-a-fit/',
+        assert OpportunityApp.query.get('a3').is_active == True
+        assert OpportunityApp.query.get('a3').stage == ApplicationStage.recommended.value
+        response = client.post('/api/contacts/124/app/123abc/not-a-fit/internal',
                               data=json.dumps(update),
                               headers=headers)
         assert response.status_code == 200
-        assert OpportunityApp.query.get('a1').is_active == False
-        assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
+        assert OpportunityApp.query.get('a3').is_active == False
+        assert OpportunityApp.query.get('a3').stage == ApplicationStage.submitted.value
 
 
 def test_opportunity_app_external_not_a_fit(app):
@@ -1403,12 +1404,14 @@ def test_opportunity_app_external_not_a_fit(app):
     }
     update = {}
     with app.test_client() as client:
-        assert OpportunityApp.query.get('a1').is_active == True
-        response = client.post('/api/contacts/123/app/123abc/external-not-a-fit/',
+        assert OpportunityApp.query.get('a3').is_active == True
+        assert OpportunityApp.query.get('a3').stage == ApplicationStage.recommended.value
+        response = client.post('/api/contacts/124/app/123abc/not-a-fit/external',
                               data=json.dumps(update),
                               headers=headers)
         assert response.status_code == 200
-        assert OpportunityApp.query.get('a1').is_active == False
+        assert OpportunityApp.query.get('a3').stage == ApplicationStage.recommended.value
+        assert OpportunityApp.query.get('a3').is_active == False
 
 def test_opportunity_app_submit(app):
     mimetype = 'application/json'
