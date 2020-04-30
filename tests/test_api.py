@@ -542,6 +542,7 @@ EXPERIENCES = {
         'degree': None,
         'degree_other': None,
         'link': 'www.google.com',
+        'link_name': 'Google',
         'is_current': False,
         'start_month': 'September',
         'start_year': 1979,
@@ -564,6 +565,7 @@ EXPERIENCES = {
         'degree': 'Undergraduate',
         'degree_other': 'Study Abroad',
         'link': None,
+        'link_name': None,
         'is_current': False,
         'start_month': 'September',
         'start_year': 2012,
@@ -589,6 +591,7 @@ EXPERIENCES = {
         'degree': None,
         'degree_other': None,
         'link': None,
+        'link_name': None,
         'is_current': True,
         'start_month': 'January',
         'start_year': 2000,
@@ -715,7 +718,30 @@ POSTS = {
         'start_year': 2000,
         'end_month': 'May',
         'end_year': 2019,
+        'link': None,
+        'link_name': None,
         'type': 'Work',
+        'contact_id': 123,
+        'location': 'Test City, MD, USA',
+        'achievements': [
+            {'description': 'Test achievement 1'},
+            {'description': 'Test achievement 2', 'skills': [
+                { 'name': 'Community Organizing', 'capability_id': 'cap:advocacy' },
+                { 'name': 'Test Skill 1' }
+            ]},
+        ],
+    },
+    'portfolio': {
+        'description': 'Test description',
+        'host': 'Test Org',
+        'title': 'Test title',
+        'start_month': 'September',
+        'start_year': 2000,
+        'end_month': 'none',
+        'end_year': 0,
+        'link': None,
+        'link_name': None,
+        'type': 'Accomplishment',
         'contact_id': 123,
         'location': 'Test City, MD, USA',
         'achievements': [
@@ -1508,6 +1534,24 @@ def test_opportunity_deactivate(app):
                               headers=headers)
         assert response.status_code == 200
         assert Opportunity.query.get('123abc').is_active == False
+
+def test_opportunity_activate(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {}
+    with app.test_client() as client:
+        opp = Opportunity.query.get('123abc')
+        opp.is_active = False
+        db.session.commit()
+        assert Opportunity.query.get('123abc').is_active == False
+        response = client.post('/api/opportunity/123abc/activate/',
+                              data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert Opportunity.query.get('123abc').is_active == True
 
 def test_approve_many_program_contacts_new(app, ):
     mimetype = 'application/json'

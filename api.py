@@ -31,6 +31,7 @@ from resources.Opportunity import (
     OpportunityOne,
     OpportunityOneOrg,
     OpportunityDeactivate,
+    OpportunityActivate,
 )
 from resources.OpportunityApp import (
     OpportunityAppReject,
@@ -47,7 +48,7 @@ from resources.FormAssembly import (
     OpportunityIntakeApp,
 )
 
-api_bp = Blueprint('api',__name__)
+api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
 # Route
@@ -86,8 +87,8 @@ api.add_resource(AutocompleteSkill,
                  '/skills/autocomplete',
                  '/skills/autocomplete/')
 api.add_resource(ExperienceAll,
-                '/contacts/<int:contact_id>/experiences/',
-                '/contacts/<int:contact_id>/experiences')
+                 '/contacts/<int:contact_id>/experiences/',
+                 '/contacts/<int:contact_id>/experiences')
 api.add_resource(ExperienceOne,
                  '/experiences/<int:experience_id>',
                  '/experiences/<int:experience_id>/')
@@ -189,3 +190,6 @@ api.add_resource(OpportunityOneOrg,
 api.add_resource(OpportunityDeactivate,
                  '/opportunity/<string:opportunity_id>/deactivate',
                  '/opportunity/<string:opportunity_id>/deactivate/')
+api.add_resource(OpportunityActivate,
+                 '/opportunity/<string:opportunity_id>/activate',
+                 '/opportunity/<string:opportunity_id>/activate/')

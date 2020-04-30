@@ -13,6 +13,7 @@ from marshmallow import ValidationError
 
 from auth import is_authorized_with_permission, unauthorized
 
+
 def create_new_opportunity(opportunity_data):
     # Make a new random id
     opportunity_data['id'] = str(uuid.uuid4())
@@ -26,14 +27,16 @@ def create_new_opportunity(opportunity_data):
 opportunity_schema = OpportunitySchema(exclude=['applications'])
 opportunities_internal_schema = OpportunitySchema(many=True)
 opportunity_org_schema = OpportunitySchema()
-opportunities_schema = OpportunitySchema(exclude=['applications'],many=True)
+opportunities_schema = OpportunitySchema(exclude=['applications'], many=True)
+
+
 class OpportunityAll(Resource):
     method_decorators = {
         'post': [login_required, refresh_session],
     }
 
     def get(self):
-        opportunities = Opportunity.query.all();
+        opportunities = Opportunity.query.all()
         opp_list = opportunities_schema.dump(opportunities)
         return {'status': 'success', 'data': opp_list}, 200
 
@@ -53,13 +56,14 @@ class OpportunityAll(Resource):
         result = opportunity_schema.dump(opportunity)
         return {"status": 'success', 'data': result}, 201
 
+
 class OpportunityAllInternal(Resource):
     method_decorators = {
         'get': [login_required, refresh_session]
     }
 
     def get(self):
-        opportunities = Opportunity.query.all();
+        opportunities = Opportunity.query.all()
         if not is_authorized_with_permission('view:opportunity-internal'):
             return unauthorized()
         opp_list = opportunities_internal_schema.dump(opportunities)
@@ -120,7 +124,7 @@ class OpportunityOne(Resource):
         if not data:
             return {'message': 'No data provided to update'}, 400
 
-        for k,v in data.items():
+        for k, v in data.items():
             setattr(opportunity, k, v)
 
         db.session.commit()
@@ -141,6 +145,25 @@ class OpportunityDeactivate(Resource):
             return unauthorized()
 
         opportunity.is_active = False
+        db.session.commit()
+
+        result = opportunity_schema.dump(opportunity)
+        return {'status': 'success', 'data': result}, 200
+
+class OpportunityActivate(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session],
+    }
+
+    def post(self, opportunity_id):
+        opportunity = Opportunity.query.get(opportunity_id)
+        if not opportunity:
+            return {'message': 'Opportunity does not exist'}, 404
+
+        if not is_authorized_with_permission('write:opportunity'):
+            return unauthorized()
+
+        opportunity.is_active = True
         db.session.commit()
 
         result = opportunity_schema.dump(opportunity)
