@@ -379,6 +379,7 @@ test_opp1 = Opportunity(
     gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
     org_name="Test Org",
     cycle_id=2,
+    program_name="Place for Purpose"
 )
 
 test_opp2 = Opportunity(
@@ -390,6 +391,7 @@ test_opp2 = Opportunity(
     gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
     org_name="Test Org",
     cycle_id=3,
+    program_name="Mayoral Fellowship"
 )
 
 test_opp3 = Opportunity(
@@ -401,6 +403,7 @@ test_opp3 = Opportunity(
     gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
     org_name="Test Org",
     cycle_id=2,
+    program_name="Place for Purpose"
 )
 
 snapshot1 = ResumeSnapshot(
