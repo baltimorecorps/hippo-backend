@@ -239,6 +239,7 @@ OPPORTUNITIES = {
         'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
+        'program_name': "Place for Purpose"
     },
     'test_opp2': {
         'id': '222abc',
@@ -250,6 +251,7 @@ OPPORTUNITIES = {
         'cycle_id': 3,
         'program_id': 2,
         'is_active': True,
+        'program_name': "Mayoral Fellowship"
     },
     'test_opp3': {
         'id': '333abc',
@@ -261,6 +263,7 @@ OPPORTUNITIES = {
         'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
+        'program_name': "Place for Purpose"
     },
 
 }
@@ -415,6 +418,7 @@ OPPORTUNITIES_INTERNAL = {
         'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
+        'program_name': "Place for Purpose",
         'applications': [{'id': 'a1',
                           'contact': CONTACTS_SHORT['billy'],
                           'interest_statement': "I'm interested in this test opportunity",
@@ -442,6 +446,7 @@ OPPORTUNITIES_INTERNAL = {
         'cycle_id': 3,
         'program_id': 2,
         'is_active': True,
+        'program_name': "Mayoral Fellowship",
         'applications': [{'id': 'a2',
                           'contact': CONTACTS_SHORT['billy'],
                           'interest_statement': "I'm also interested in this test opportunity",
@@ -461,6 +466,7 @@ OPPORTUNITIES_INTERNAL = {
         'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
+        'program_name': "Place for Purpose",
         'applications': []
     },
 }
@@ -543,6 +549,7 @@ EXPERIENCES = {
         'degree': None,
         'degree_other': None,
         'link': 'www.google.com',
+        'link_name': 'Google',
         'is_current': False,
         'start_month': 'September',
         'start_year': 1979,
@@ -565,6 +572,7 @@ EXPERIENCES = {
         'degree': 'Undergraduate',
         'degree_other': 'Study Abroad',
         'link': None,
+        'link_name': None,
         'is_current': False,
         'start_month': 'September',
         'start_year': 2012,
@@ -590,6 +598,7 @@ EXPERIENCES = {
         'degree': None,
         'degree_other': None,
         'link': None,
+        'link_name': None,
         'is_current': True,
         'start_month': 'January',
         'start_year': 2000,
@@ -716,7 +725,30 @@ POSTS = {
         'start_year': 2000,
         'end_month': 'May',
         'end_year': 2019,
+        'link': None,
+        'link_name': None,
         'type': 'Work',
+        'contact_id': 123,
+        'location': 'Test City, MD, USA',
+        'achievements': [
+            {'description': 'Test achievement 1'},
+            {'description': 'Test achievement 2', 'skills': [
+                { 'name': 'Community Organizing', 'capability_id': 'cap:advocacy' },
+                { 'name': 'Test Skill 1' }
+            ]},
+        ],
+    },
+    'portfolio': {
+        'description': 'Test description',
+        'host': 'Test Org',
+        'title': 'Test title',
+        'start_month': 'September',
+        'start_year': 2000,
+        'end_month': 'none',
+        'end_year': 0,
+        'link': None,
+        'link_name': None,
+        'type': 'Accomplishment',
         'contact_id': 123,
         'location': 'Test City, MD, USA',
         'achievements': [
@@ -771,6 +803,7 @@ POSTS = {
         "org_name": 'Test Org',
         "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         "is_active": True,
+        'program_name': "Place for Purpose"
     },
 }
 

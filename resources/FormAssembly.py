@@ -85,6 +85,8 @@ class TalentProgramApp(Resource):
         card = board.cards.get(card_id)
         if not card:
             return {'message': 'No intake card found'}, 400
+        elif card.stage >= 2:
+            return {'message': 'Application has already been submitted'}, 400
 
         # parses form data to fill the card description
         capabilities = ['- '+v for k,v in form_data.items()
@@ -92,6 +94,7 @@ class TalentProgramApp(Resource):
         capabilities_str = '\n'.join(capabilities)
         programs = [v for k,v in form_data.items() if 'programs' in k]
         programs_str = '\n'.join(['- ' + p for p in programs ])
+        new_labels = set(card.label_names + programs)
         if form_data.get('mayoral_eligible'):
             mayoral_eligible = form_data.get('mayoral_eligible')
         else:
@@ -136,7 +139,7 @@ class TalentProgramApp(Resource):
             url=f"https://app.formassembly.com/responses/view/{form_data['response_id']}",
             name='Full Response'
         )
-        card.set_labels(programs)
+        card.set_labels(new_labels)
 
         # moves card and updates program_contact to stage 2
         program_contact.update(**{'stage': 2})
