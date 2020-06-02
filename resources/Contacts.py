@@ -70,6 +70,14 @@ class ContactAll(Resource):
         if data['account_id'] != request.jwt['sub']:
             return {'message': 'Account id does not match post!'}, 400
 
+        existing_contact = (
+            Contact.query
+                   .filter_by(account_id=data['account_id'])
+                   .first()
+        )
+        if existing_contact:
+            return {'message': 'A contact with this account already exists'}, 400
+
         email = data.pop('email_primary', None)
         contact = Contact(**data)
         if email:
