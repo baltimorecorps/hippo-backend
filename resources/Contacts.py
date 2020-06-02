@@ -122,6 +122,7 @@ class ContactOne(Resource):
     method_decorators = {
         'get': [], #used to be [login_required, refresh_session]
         'put': [login_required, refresh_session],
+        'delete': [login_required, refresh_session]
     }
 
     def get(self, contact_id):
@@ -132,7 +133,7 @@ class ContactOne(Resource):
         # TODO: Create employer permission to restore AuthZ
         #if not is_authorized_view(contact.id):
         #    return unauthorized()
-        
+
         contact = contact_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
 
@@ -168,13 +169,8 @@ class ContactOne(Resource):
         return {"status": 'success', 'data': result}, 200
 
     def delete(self, contact_id):
-        config = current_app.config
-        secret_token = config['CONTACT_DELETE_TOKEN']
-        request_token = request.args.get('token')
-        if not request_token:
-            return {'message': 'No token supplied with request'}, 400
-        if request_token != secret_token:
-            return {'message': "This token isn't authorized "}, 403
+        if not is_authorized_with_permission('delete:all-users'):
+            return unauthorized()
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404

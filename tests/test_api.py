@@ -1660,7 +1660,7 @@ def test_approve_program_contact_fake_contact(app):
 
 @pytest.mark.parametrize(
     "delete_url,query",
-    [('/api/contacts/123?token=testing_token',
+    [('/api/contacts/123',
       lambda: Contact.query.get(123))
     ,('/api/experiences/512/', lambda: Experience.query.get(512))
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
