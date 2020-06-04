@@ -79,6 +79,7 @@ class Contact(db.Model):
                                cascade='all, delete, delete-orphan')
     applications = db.relationship('OpportunityApp', back_populates='contact',
                                cascade='all, delete, delete-orphan')
+    sessions = db.relationship('UserSession', cascade='all, delete, delete-orphan')
 
     def add_skill(self, skill):
         contact_skill = (ContactSkill.query

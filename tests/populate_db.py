@@ -1,4 +1,4 @@
-from datetime import date
+import datetime as dt
 # imports models related to the contact
 from models.contact_model import (
     Contact,
@@ -52,6 +52,7 @@ from models.response_model import Response
 from models.review_model import Review
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp
+from models.session_model import UserSession
 
 billy = Contact(
     id=123,
@@ -64,7 +65,7 @@ billy = Contact(
         type=EmailType.personal,
     ),
     gender='Male',
-    birthdate=date(1991, 1, 2),
+    birthdate=dt.date(1991, 1, 2),
     phone_primary='555-245-2351',
     race_all='White',
     pronouns='He/Him/His',
@@ -82,7 +83,7 @@ obama = Contact(
         type=EmailType('Work'),
     ),
     gender='Male',
-    birthdate=date(1961, 8, 4),
+    birthdate=dt.date(1961, 8, 4),
     phone_primary='555-444-4444',
     race_all='Black or African-American;White',
     race_other='Test',
@@ -90,6 +91,14 @@ obama = Contact(
     pronouns_other='They/Them/Their',
     terms_agreement=True
 
+)
+
+billy_session = UserSession(
+    id=123,
+    auth_id='test-valid|0123456789abcdefabcdefff',
+    contact_id=123,
+    jwt='test_jwt',
+    expiration=dt.datetime.utcnow(),
 )
 
 exp_columbia = Experience(
@@ -285,8 +294,8 @@ program_mayoral = Program(
 cycle_pfp = Cycle(
     id=2,
     program_id=1,
-    date_start=date(2020, 1, 6),
-    date_end=date(2025, 1, 6),
+    date_start=dt.date(2020, 1, 6),
+    date_end=dt.date(2025, 1, 6),
     intake_talent_board_id='5e37744114d9d01a03ddbcfe',
     intake_org_board_id='intake_org',
     match_talent_board_id='match_talent',
@@ -297,8 +306,8 @@ cycle_pfp = Cycle(
 cycle_mayoral = Cycle(
     id=3,
     program_id=2,
-    date_start=date(2020, 1, 6),
-    date_end=date(2025, 1, 6),
+    date_start=dt.date(2020, 1, 6),
+    date_end=dt.date(2025, 1, 6),
     intake_talent_board_id='5e37744114d9d01a03ddbcfe',
     intake_org_board_id='intake_org',
     match_talent_board_id='match_talent',
@@ -453,6 +462,7 @@ def populate(db):
 
     db.session.add(billy)
     db.session.add(obama)
+    db.session.add(billy_session)
     db.session.add(exp_columbia)
     db.session.add(exp_goucher)
     db.session.add(exp_baltimore)
