@@ -2,7 +2,12 @@ from flask import request as reqobj #ask David why this is here
 from flask import current_app
 from flask_restful import Resource, request
 from flask_login import login_user, current_user, login_required
-from models.contact_model import Contact, ContactSchema, ContactShortSchema
+from models.contact_model import (
+    Contact,
+    ContactSchema,
+    ContactShortSchema,
+    ContactProgramSchema,
+)
 from models.email_model import Email
 from models.address_model import Address
 from models.base_model import db
@@ -28,6 +33,7 @@ from .skill_utils import get_skill_id, get_or_make_skill
 contact_schema = ContactSchema()
 contacts_schema = ContactSchema(many=True)
 contacts_short_schema = ContactShortSchema(many=True)
+contact_program_schema = ContactProgramSchema(many=True)
 
 def add_skills(skills, contact):
     for skill_data in skills:
@@ -102,6 +108,20 @@ class ContactShort(Resource):
         contacts = Contact.query.all()
 
         contacts = contacts_short_schema.dump(contacts)
+        return {'status': 'success', 'data': contacts}, 200
+
+class ContactPrograms(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+    }
+
+    def get(self):
+        if not is_authorized_with_permission('view:all-users'):
+            return unauthorized()
+
+        contacts = Contact.query.all()
+
+        contacts = contact_program_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 
 class ContactAccount(Resource):
