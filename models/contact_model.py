@@ -139,3 +139,13 @@ class ContactShortSchema(Schema):
 
     class Meta:
         unknown = EXCLUDE
+
+class ContactProgramSchema(Schema):
+    id = fields.Integer()
+    first_name = fields.String()
+    last_name = fields.String()
+    email = fields.String(dump_only=True)
+    programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
+
+    class Meta:
+        unknown = EXCLUDE
