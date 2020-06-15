@@ -146,12 +146,10 @@ PROGRAMS = {
     'pfp': {
         'id': 1,
         'name': 'Place for Purpose',
-        'current_cycle': CYCLES['pfp']
     },
     'mayoral': {
         'id': 2,
         'name': 'Mayoral Fellowship',
-        'current_cycle': CYCLES['mayoral']
     }
 }
 
@@ -189,9 +187,6 @@ PROGRAM_CONTACTS = {
         'stage': 1,
         'is_active': True,
         'is_approved': True,
-        'reviews': [
-            REVIEWS['review_billy']
-        ]
     },
     'obama_pfp': {
         'id': 6,
@@ -201,7 +196,6 @@ PROGRAM_CONTACTS = {
         'stage': 1,
         'is_active': True,
         'is_approved': False,
-        'reviews': []
     },
     'billy_mayoral': {
         'id': 7,
@@ -211,7 +205,6 @@ PROGRAM_CONTACTS = {
         'stage': 1,
         'is_active': True,
         'is_approved': True,
-        'reviews': []
     }
 }
 
@@ -404,6 +397,26 @@ APPLICATIONS_INTERNAL = {
             'interview_completed': False
         }]
     },
+}
+
+CONTACT_PROGRAMS = {
+    'billy': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+        'programs': [
+            PROGRAM_CONTACTS['billy_pfp'],
+            PROGRAM_CONTACTS['billy_mayoral']
+        ]
+    },
+    'obama': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'programs': [PROGRAM_CONTACTS['obama_pfp']]
+    }
 }
 
 OPPORTUNITIES_INTERNAL = {
@@ -1808,6 +1821,7 @@ def test_get_capability_recommendations(app):
       [APPLICATIONS_INTERNAL['billy_pfp']])
     ,('/api/internal/applications/?program_id=2',
       [APPLICATIONS_INTERNAL['billy_mayoral']])
+    ,('/api/contacts/programs/', CONTACT_PROGRAMS.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):
