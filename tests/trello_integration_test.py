@@ -192,6 +192,26 @@ def test_post_contact(app):
 
         assert UserSession.query.filter_by(contact_id=contact.id).first()
 
+# TODO: Add trello specific checks
+def test_post_duplicate_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
+    }
+
+    contact_data = POSTS['contact'].copy()
+    contact_data['account_id'] = 'test-valid|0123456789abcdefabcdefff'
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/',
+                               data=json.dumps(contact_data),
+                               headers=headers)
+        assert response.status_code == 400
+        message = json.loads(response.data)['message']
+        assert message == 'A contact with this account already exists'
+
 @pytest.mark.skip
 def test_post_formassembly_opportunity_intake(app):
     headers = {
