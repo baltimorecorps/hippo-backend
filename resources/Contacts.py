@@ -127,8 +127,23 @@ class ContactPrograms(Resource):
         if not is_authorized_with_permission('view:all-users'):
             return unauthorized()
 
-        contacts = Contact.query.all()
-
+        approved_arg = request.args.get('is_approved')
+        if not approved_arg:
+            contacts = Contact.query.all()
+        else:
+            if approved_arg == 'true':
+                contacts = (
+                    Contact.query
+                    .join(Contact.programs, aliased=True)
+                    .filter(ProgramContact.is_approved==True)
+                )
+            elif approved_arg == 'false':
+                contacts = (
+                    Contact.query
+                    .join(Contact.programs, aliased=True)
+                    .filter(~Contact.programs
+                            .any(ProgramContact.is_approved==True))
+                )
         contacts = contact_program_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 

@@ -346,7 +346,7 @@ billy_mayoral = ProgramContact(
     contact_id=123,
     card_id='card',
     stage=1,
-    is_approved=True
+    is_approved=False
 )
 
 obama_pfp = ProgramContact(
