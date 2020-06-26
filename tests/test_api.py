@@ -205,7 +205,7 @@ PROGRAM_CONTACTS = {
         'card_id': 'card',
         'stage': 1,
         'is_active': True,
-        'is_approved': True,
+        'is_approved': False,
     }
 }
 
@@ -1812,13 +1812,12 @@ def test_get_capability_recommendations(app):
     ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
     ,('/api/contacts/short/', CONTACTS_SHORT.values())
     ,('/api/internal/applications/',
-      [APPLICATIONS_INTERNAL['billy_pfp'],
-       APPLICATIONS_INTERNAL['billy_mayoral']])
+      [APPLICATIONS_INTERNAL['billy_pfp']])
     ,('/api/internal/applications/?program_id=1',
       [APPLICATIONS_INTERNAL['billy_pfp']])
-    ,('/api/internal/applications/?program_id=2',
-      [APPLICATIONS_INTERNAL['billy_mayoral']])
     ,('/api/contacts/programs/', CONTACT_PROGRAMS.values())
+    ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
+    ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])
     ]
 )
 def test_get_many_unordered(app, url, expected):
