@@ -190,10 +190,8 @@ def test_post_contact(app):
         contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
         assert contact.first_name == 'Tester'
         assert contact.email == 'testerb@example.com'
-        print(contact.email)
 
         assert UserSession.query.filter_by(contact_id=contact.id).first()
-        assert False == True
 
 # TODO: Add trello specific checks
 def test_post_duplicate_contact(app):
