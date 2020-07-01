@@ -22,6 +22,7 @@ class Contact(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String)
     phone_primary = db.Column(db.String(25))
     account_id = db.Column(db.String(255), nullable=True)
     terms_agreement =db.Column(db.Boolean, default=False)
@@ -75,7 +76,7 @@ class Contact(db.Model):
         return sorted(skills, key=lambda skill: skill.name)
 
     @hybrid_property
-    def email(self):
+    def email_main(self):
         return self.email_primary.email
 
     def query_program_contact(self, program_id):
@@ -100,7 +101,7 @@ class ContactShortSchema(Schema):
     id = fields.Integer()
     first_name = fields.String()
     last_name = fields.String()
-    email = fields.String(dump_only=True)
+    email_main = fields.String(dump_only=True, data_key='email')
 
     class Meta:
         unknown = EXCLUDE
@@ -109,7 +110,7 @@ class ContactProgramSchema(Schema):
     id = fields.Integer()
     first_name = fields.String()
     last_name = fields.String()
-    email = fields.String(dump_only=True)
+    email_main = fields.String(dump_only=True, data_key='email')
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
 
     class Meta:
