@@ -26,6 +26,7 @@ class Contact(db.Model):
     phone_primary = db.Column(db.String(25))
     account_id = db.Column(db.String(255), nullable=True)
     terms_agreement =db.Column(db.Boolean, default=False)
+    stage = db.Column(db.Integer, default=1)
 
     #relationships
     emails = db.relationship('Email', back_populates='contact',

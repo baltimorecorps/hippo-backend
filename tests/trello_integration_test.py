@@ -67,6 +67,7 @@ def test_talent_intake(app):
 
     card_id = '5e4af2d6fc3c0954ff187ddc'
 
+    contact = Contact.query.get(123)
     board_id = TALENT_INTAKE_BOARDS['local']
     board = Board(query_board_data(board_id))
     card = board.cards.get(card_id)
@@ -83,6 +84,7 @@ def test_talent_intake(app):
     assert card.attachments == {}
     assert card.label_names == ['New', 'Fellowship']
     assert card.stage == 1
+    assert contact.stage == 1
 
     url = '/api/form-assembly/talent-app/'
     data = (
@@ -94,7 +96,9 @@ def test_talent_intake(app):
         assert response.status_code == 201
         board = Board(query_board_data(board_id))
         card = board.cards.get(card_id)
+        contact = Contact.query.get(123)
         assert card.stage == 2
+        assert contact.stage == 2
         assert 'New' in card.label_names
         for label in TALENT_INTAKE_LABELS[1:]:
             assert label in card.label_names
