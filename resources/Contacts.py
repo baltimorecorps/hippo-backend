@@ -88,6 +88,7 @@ class ContactAll(Resource):
         contact = Contact(**data)
         if email:
             contact.email_primary = Email(**email)
+        contact.email = email['email']
         db.session.add(contact)
         db.session.commit()
         program_contact_data = {

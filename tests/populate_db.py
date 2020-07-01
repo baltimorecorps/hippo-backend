@@ -2,9 +2,6 @@ import datetime as dt
 # imports models related to the contact
 from models.contact_model import (
     Contact,
-    Gender,
-    Race,
-    Salutation,
 )
 from models.email_model import (
     Email,
@@ -64,11 +61,7 @@ billy = Contact(
         email='billy@example.com',
         type=EmailType.personal,
     ),
-    gender='Male',
-    birthdate=dt.date(1991, 1, 2),
     phone_primary='555-245-2351',
-    race_all='White',
-    pronouns='He/Him/His',
     account_id='test-valid|0123456789abcdefabcdefff',
     terms_agreement=True
 )
@@ -82,13 +75,7 @@ obama = Contact(
         email='obama@whitehouse.gov',
         type=EmailType('Work'),
     ),
-    gender='Male',
-    birthdate=dt.date(1961, 8, 4),
     phone_primary='555-444-4444',
-    race_all='Black or African-American;White',
-    race_other='Test',
-    pronouns='Not Listed',
-    pronouns_other='They/Them/Their',
     terms_agreement=True
 
 )
