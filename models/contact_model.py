@@ -11,25 +11,6 @@ from models.skill_item_model import ContactSkill
 from models.program_contact_model import ProgramContactSchema
 from sqlalchemy.ext.hybrid import hybrid_property
 
-class Gender(enum.Enum):
-    female = 'Female'
-    male = 'Male'
-    non_binary = 'Non Binary'
-
-
-class Race(enum.Enum):
-    asian = 'Asian'
-    white = 'White'
-    black = 'Black'
-    hispanic = 'Hispanic/Latino'
-
-
-class Salutation(enum.Enum):
-    miss = 'Miss'
-    mrs = 'Mrs.'
-    mr = 'Mr.'
-    ms = 'Ms.'
-    dr = 'Dr.'
 
 def add_skill_error(_):
     assert False, "use contact.add_skill instead of contact.skills.append"
@@ -39,17 +20,9 @@ class Contact(db.Model):
 
     #table columns
     id = db.Column(db.Integer, primary_key=True)
-    salutation = db.Column(db.Enum(Salutation, name='Salutation'))
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
     phone_primary = db.Column(db.String(25))
-    gender = db.Column(db.String(100))
-    gender_other = db.Column(db.String(255))
-    race_all = db.Column(db.String(255))
-    race_other = db.Column(db.String(255))
-    pronouns = db.Column(db.String(100))
-    pronouns_other = db.Column(db.String(255))
-    birthdate = db.Column(db.Date)
     account_id = db.Column(db.String(255), nullable=True)
     terms_agreement =db.Column(db.Boolean, default=False)
 
@@ -114,15 +87,7 @@ class ContactSchema(Schema):
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
     email_primary = fields.Nested(EmailSchema)
-    emails = fields.Nested(EmailSchema, many=True)
     phone_primary = fields.String()
-    gender = fields.String(allow_none=True)
-    gender_other = fields.String()
-    race_all = fields.String()
-    race_other = fields.String()
-    pronouns = fields.String()
-    pronouns_other = fields.String()
-    birthdate = fields.Date(allow_none=True)
     account_id = fields.String()
     skills = fields.Nested(SkillSchema, many=True)
     terms_agreement = fields.Boolean()
