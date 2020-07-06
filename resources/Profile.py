@@ -3,6 +3,7 @@ from flask_login import login_required
 
 from models.base_model import db
 from models.contact_model import Contact, ContactSchema
+from models.profile_model import Profile, Race, ContactAddress, RoleChoice
 from marshmallow import ValidationError
 
 from auth import (
@@ -34,13 +35,11 @@ class Profile(Resource):
         result = profile_schema.dump(contact)
         return {'status': 'success', 'data': result}, 200
 
-    def put(self):
-        pass
-        '''
+    def put(self, contact_id):
         json_data = request.get_json(force=True)
 
         contact = Contact.query.get(contact_id)
-        if not exp:
+        if not contact:
             return {'message': 'Experience does not exist'}, 404
 
         if not is_authorized_write(contact_id):
@@ -51,5 +50,10 @@ class Profile(Resource):
             return e.messages, 422
 
         profile_data = data.pop('profile', None)
-        race_data = profile_data.pop('race', None)
-        '''
+        contact.update(**data)
+        contact.profile.update(**profile_data)
+        db.session.commit()
+
+        result = profile_schema.dump(contact)
+
+        return {'status': 'success', 'data': result}, 200

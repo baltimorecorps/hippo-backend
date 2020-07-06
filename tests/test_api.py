@@ -13,6 +13,7 @@ from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
+from models.profile_model import Profile
 
 from models.skill_model import (
     CapabilitySkillSuggestion
@@ -731,6 +732,52 @@ CONTACT_PROFILE = {
                 'marketing_public_relations': False
             }
         }
+    },
+    'billy_update': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy_new@email.com", # updated
+        'phone_primary': "555-245-2351",
+        'profile': {
+            'id': 1,
+            'gender': 'Male',
+            'gender_other': None,
+            'pronoun': 'He/Him/His',
+            'pronoun_other': None,
+            'years_exp': '3-5',
+            'job_search_status': 'Actively looking',
+            'current_job_status': 'Employed',
+            'current_edu_status': 'Full-time Student',
+            'previous_bcorps_program': 'Yes',
+            'address_primary': {
+                'street1': '124 Main St', # updated
+                'street2': 'Apt 3',
+                'city': 'Baltimore',
+                'state': 'Maryland',
+                'zip_code': '21218',
+                'country': 'United States',
+             },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': True, # updated
+                'hawaiin': False,
+                'south_asian': False,
+                'white': True,
+                'not_listed': False,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': True,
+                'community_engagement_outreach': True,
+                'data_analysis': False,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
+            }
+        }
     }
 }
 
@@ -1199,6 +1246,14 @@ def skill_name(skill):
        APP_PUT_FULL,
        lambda: OpportunityApp.query.get('a1'),
        lambda r: r.interest_statement == 'dfdddsdfff',
+       )
+     ,('/api/contacts/123/profile',
+       CONTACT_PROFILE['billy_update'],
+       lambda: Profile.query.get(1),
+       lambda r: (r.contact.email == 'billy_new@email.com'
+                  and r.address_primary.street1 == '124 Main St'
+                  and r.race.hispanic == True
+                  and r.roles.data_analysis == False),
        )
     ]
 )

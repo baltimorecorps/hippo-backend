@@ -11,6 +11,7 @@ from models.program_contact_model import ProgramContactSchema
 from models.profile_model import ProfileSchema, ContactAddress
 from sqlalchemy.ext.hybrid import hybrid_property
 
+UPDATE_FIELDS = ['first_name', 'last_name', 'email', 'phone_primary', 'stage']
 
 def add_skill_error(_):
     assert False, "use contact.add_skill instead of contact.skills.append"
@@ -91,6 +92,11 @@ class Contact(db.Model):
     def query_program_contact(self, program_id):
         return next((p for p in self.programs
                      if p.program_id == program_id), None)
+
+    def update(self, **update_dict):
+        for field, value in update_dict.items():
+            if field in UPDATE_FIELDS:
+                setattr(self, field, value)
 
 class ContactSchema(Schema):
     id = fields.Integer(dump_only=True)
