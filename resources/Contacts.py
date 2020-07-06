@@ -9,7 +9,6 @@ from models.contact_model import (
     ContactProgramSchema,
 )
 from models.email_model import Email
-from models.address_model import Address
 from models.base_model import db
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
@@ -30,8 +29,8 @@ from models.skill_model import Skill
 from .skill_utils import get_skill_id, get_or_make_skill
 
 
-contact_schema = ContactSchema()
-contacts_schema = ContactSchema(many=True)
+contact_schema = ContactSchema(exclude=['profile', 'email'])
+contacts_schema = ContactSchema(exclude=['profile', 'email'], many=True)
 contacts_short_schema = ContactShortSchema(many=True)
 contact_program_schema = ContactProgramSchema(many=True)
 

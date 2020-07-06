@@ -4,11 +4,11 @@ from marshmallow import Schema, fields, EXCLUDE, pre_dump, post_dump
 from marshmallow_enum import EnumField
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
-from models.address_model import Address
 from models.achievement_model import Achievement
 from models.skill_model import Skill, SkillSchema
 from models.skill_item_model import ContactSkill
 from models.program_contact_model import ProgramContactSchema
+from models.profile_model import ProfileSchema, ContactAddress
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
@@ -35,9 +35,11 @@ class Contact(db.Model):
                                     primaryjoin=db.and_(id == Email.contact_id,
                                                         Email.is_primary == True),
                                     uselist=False)
-    addresses = db.relationship('Address', back_populates='contact')
-    address_primary = db.relationship('Address',
-                                      primaryjoin=db.and_(id == Address.contact_id, Address.is_primary == True),
+    addresses = db.relationship('ContactAddress', back_populates='contact')
+    address_primary = db.relationship('ContactAddress',
+                                      primaryjoin=db.and_(
+                                      id == ContactAddress.contact_id,
+                                      ContactAddress.is_primary == True),
                                       back_populates='contact',
                                       uselist=False)
     achievements = db.relationship('Achievement', back_populates='contact',
@@ -55,6 +57,12 @@ class Contact(db.Model):
     applications = db.relationship('OpportunityApp', back_populates='contact',
                                cascade='all, delete, delete-orphan')
     sessions = db.relationship('UserSession', cascade='all, delete, delete-orphan')
+    profile = db.relationship('Profile',
+                              back_populates='contact',
+                              uselist=False,
+                              cascade='all, delete, delete-orphan')
+    race = db.relationship('Race', back_populates='contact',
+                           cascade='all, delete, delete-orphan')
 
     def add_skill(self, skill):
         contact_skill = (ContactSkill.query
@@ -89,11 +97,13 @@ class ContactSchema(Schema):
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
     email_primary = fields.Nested(EmailSchema)
+    email = fields.String()
     phone_primary = fields.String()
     account_id = fields.String()
     skills = fields.Nested(SkillSchema, many=True)
     terms_agreement = fields.Boolean()
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
+    profile = fields.Nested(ProfileSchema)
 
     class Meta:
         unknown = EXCLUDE

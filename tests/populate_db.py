@@ -50,6 +50,12 @@ from models.review_model import Review
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp
 from models.session_model import UserSession
+from models.profile_model import (
+    Profile,
+    Race,
+    ContactAddress,
+    RoleChoice
+)
 
 billy = Contact(
     id=123,
@@ -61,6 +67,7 @@ billy = Contact(
         email='billy@example.com',
         type=EmailType.personal,
     ),
+    email='billy@example.com',
     phone_primary='555-245-2351',
     account_id='test-valid|0123456789abcdefabcdefff',
     terms_agreement=True
@@ -78,6 +85,58 @@ obama = Contact(
     phone_primary='555-444-4444',
     terms_agreement=True
 
+)
+
+billy_profile = Profile(
+    id=1,
+    contact_id=123,
+    gender='Male',
+    gender_other=None,
+    pronoun='He/Him/His',
+    pronoun_other=None,
+    years_exp='3-5',
+    job_search_status='Actively looking',
+    current_job_status='Employed',
+    current_edu_status='Full-time Student',
+    previous_bcorps_program='Yes'
+)
+
+billy_address = ContactAddress(
+    id=1,
+    contact_id=123,
+    profile_id=1,
+    street1='123 Main St',
+    street2='Apt 3',
+    city='Baltimore',
+    state='Maryland',
+    zip_code='21218',
+    country='United States',
+)
+
+billy_race = Race(
+    id=1,
+    contact_id=123,
+    profile_id=1,
+    american_indian=False,
+    asian=False,
+    black=False,
+    hispanic=False,
+    hawaiin=False,
+    south_asian=False,
+    white=True,
+    not_listed=False,
+    race_other=None,
+)
+
+billy_roles = RoleChoice(
+    id=1,
+    profile_id=1,
+    advocacy_public_policy=True,
+    community_engagement_outreach=True,
+    data_analysis=True,
+    fundraising_development=False,
+    program_management=False,
+    marketing_public_relations=False
 )
 
 billy_session = UserSession(
@@ -449,6 +508,10 @@ def populate(db):
 
     db.session.add(billy)
     db.session.add(obama)
+    db.session.add(billy_profile)
+    db.session.add(billy_race)
+    db.session.add(billy_address)
+    db.session.add(billy_roles)
     db.session.add(billy_session)
     db.session.add(exp_columbia)
     db.session.add(exp_goucher)
