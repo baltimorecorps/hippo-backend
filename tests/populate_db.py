@@ -2,9 +2,6 @@ import datetime as dt
 # imports models related to the contact
 from models.contact_model import (
     Contact,
-    Gender,
-    Race,
-    Salutation,
 )
 from models.email_model import (
     Email,
@@ -53,6 +50,12 @@ from models.review_model import Review
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp
 from models.session_model import UserSession
+from models.profile_model import (
+    Profile,
+    Race,
+    ContactAddress,
+    RoleChoice
+)
 
 billy = Contact(
     id=123,
@@ -64,11 +67,8 @@ billy = Contact(
         email='billy@example.com',
         type=EmailType.personal,
     ),
-    gender='Male',
-    birthdate=dt.date(1991, 1, 2),
+    email='billy@example.com',
     phone_primary='555-245-2351',
-    race_all='White',
-    pronouns='He/Him/His',
     account_id='test-valid|0123456789abcdefabcdefff',
     terms_agreement=True
 )
@@ -76,21 +76,68 @@ obama = Contact(
     id=124,
     first_name='Barack',
     last_name='Obama',
+    email='obama@whitehouse.gov',
     email_primary=Email(
         id=90,
         is_primary=True,
         email='obama@whitehouse.gov',
         type=EmailType('Work'),
     ),
-    gender='Male',
-    birthdate=dt.date(1961, 8, 4),
     phone_primary='555-444-4444',
-    race_all='Black or African-American;White',
-    race_other='Test',
-    pronouns='Not Listed',
-    pronouns_other='They/Them/Their',
     terms_agreement=True
 
+)
+
+billy_profile = Profile(
+    id=123,
+    contact_id=123,
+    gender='Male',
+    gender_other=None,
+    pronoun='He/Him/His',
+    pronoun_other=None,
+    years_exp='3-5',
+    job_search_status='Actively looking',
+    current_job_status='Employed',
+    current_edu_status='Full-time Student',
+    previous_bcorps_program='Yes'
+)
+
+billy_address = ContactAddress(
+    id=123,
+    contact_id=123,
+    profile_id=123,
+    street1='123 Main St',
+    street2='Apt 3',
+    city='Baltimore',
+    state='Maryland',
+    zip_code='21218',
+    country='United States',
+)
+
+billy_race = Race(
+    id=123,
+    contact_id=123,
+    profile_id=123,
+    american_indian=False,
+    asian=False,
+    black=False,
+    hispanic=False,
+    hawaiin=False,
+    south_asian=False,
+    white=True,
+    not_listed=False,
+    race_other=None,
+)
+
+billy_roles = RoleChoice(
+    id=123,
+    profile_id=123,
+    advocacy_public_policy=True,
+    community_engagement_outreach=True,
+    data_analysis=True,
+    fundraising_development=False,
+    program_management=False,
+    marketing_public_relations=False
 )
 
 billy_session = UserSession(
@@ -462,6 +509,10 @@ def populate(db):
 
     db.session.add(billy)
     db.session.add(obama)
+    db.session.add(billy_profile)
+    db.session.add(billy_race)
+    db.session.add(billy_address)
+    db.session.add(billy_roles)
     db.session.add(billy_session)
     db.session.add(exp_columbia)
     db.session.add(exp_goucher)

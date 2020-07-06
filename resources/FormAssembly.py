@@ -1,5 +1,6 @@
 from flask_restful import Resource, request
 from models.base_model import db
+from models.contact_model import Contact
 from models.program_contact_model import ProgramContact, ProgramContactSchema
 from models.opportunity_model import OpportunitySchema, OpportunityStage
 from models.program_model import Program
@@ -76,6 +77,7 @@ class TalentProgramApp(Resource):
         if not (contact_id or program_id):
             return {'message': 'No contact_id or program_id provided'}, 400
         program_contact = query_one_program_contact(contact_id, program_id)
+        contact = Contact.query.get(contact_id)
         if not program_contact:
             return {'message': 'No program_contact record found'}, 400
 
@@ -143,6 +145,8 @@ class TalentProgramApp(Resource):
 
         # moves card and updates program_contact to stage 2
         program_contact.update(**{'stage': 2})
+        contact.stage = 2
+        db.session.commit()
         submitted_list = board.lists['stage'][2]
         card.move_card(submitted_list)
         result = program_contact_schema.dump(program_contact)
