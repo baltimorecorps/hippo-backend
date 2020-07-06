@@ -13,6 +13,7 @@ from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
+from models.profile_model import Profile
 
 from models.skill_model import (
     CapabilitySkillSuggestion
@@ -97,24 +98,6 @@ CAPABILITIES = {
     }
 }
 
-
-
-QUESTIONS = {
-    'q_pfp1': {
-        'id': 3,
-        'program_id': 1,
-        'question_text': 'Race and equity',
-        'limit_word': 200,
-        'limit_character': 2000
-    },
-    'q_pfp2': {
-        'id': 4,
-        'program_id': 1,
-        'question_text': 'Sector effectiveness',
-        'limit_word': 300,
-        'limit_character': 3000
-    }
-}
 
 CYCLES = {
     'pfp': {
@@ -703,6 +686,147 @@ RESUME_OUTPUT = {
     'other_skills_dump': [TAG_ITEMS['billy_webdev']]
 }
 
+CONTACT_PROFILE = {
+    'billy_profile': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+        'phone_primary': "555-245-2351",
+        'profile': {
+            'id': 123,
+            'gender': 'Male',
+            'gender_other': None,
+            'pronoun': 'He/Him/His',
+            'pronoun_other': None,
+            'years_exp': '3-5',
+            'job_search_status': 'Actively looking',
+            'current_job_status': 'Employed',
+            'current_edu_status': 'Full-time Student',
+            'previous_bcorps_program': 'Yes',
+            'address_primary': {
+                'street1': '123 Main St',
+                'street2': 'Apt 3',
+                'city': 'Baltimore',
+                'state': 'Maryland',
+                'zip_code': '21218',
+                'country': 'United States',
+             },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': False,
+                'hawaiin': False,
+                'south_asian': False,
+                'white': True,
+                'not_listed': False,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': True,
+                'community_engagement_outreach': True,
+                'data_analysis': True,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
+            }
+        }
+    },
+    'billy_update': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy_new@email.com", # updated
+        'phone_primary': "555-245-2351",
+        'profile': {
+            'id': 1,
+            'gender': 'Male',
+            'gender_other': None,
+            'pronoun': 'He/Him/His',
+            'pronoun_other': None,
+            'years_exp': '3-5',
+            'job_search_status': 'Actively looking',
+            'current_job_status': 'Employed',
+            'current_edu_status': 'Full-time Student',
+            'previous_bcorps_program': 'Yes',
+            'address_primary': {
+                'street1': '124 Main St', # updated
+                'street2': 'Apt 3',
+                'city': 'Baltimore',
+                'state': 'Maryland',
+                'zip_code': '21218',
+                'country': 'United States',
+             },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': True, # updated
+                'hawaiin': False,
+                'south_asian': False,
+                'white': True,
+                'not_listed': False,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': True,
+                'community_engagement_outreach': True,
+                'data_analysis': False,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
+            }
+        }
+    },
+    'obama_blank': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'phone_primary': "555-444-4444",
+        'profile': {
+            'id': 1,
+            'gender': None,
+            'gender_other': None,
+            'pronoun': None,
+            'pronoun_other': None,
+            'years_exp': None,
+            'job_search_status': None,
+            'current_job_status': None,
+            'current_edu_status': None,
+            'previous_bcorps_program': None,
+            'address_primary': {
+                'street1': None,
+                'street2': None,
+                'city': None,
+                'state': None,
+                'zip_code': None,
+                'country': None,
+             },
+            'race': {
+                'american_indian': None,
+                'asian': None,
+                'black': None,
+                'hispanic': None,
+                'hawaiin': None,
+                'south_asian': None,
+                'white': None,
+                'not_listed': None,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': None,
+                'community_engagement_outreach': None,
+                'data_analysis': None,
+                'fundraising_development': None,
+                'program_management': None,
+                'marketing_public_relations': None
+            }
+        }
+    },
+}
+
 POSTS = {
     'experience': {
         'description': 'Test description',
@@ -860,7 +984,6 @@ def post_request(app, url, data):
       lambda id: (OpportunityApp.query
                   .filter_by(contact_id=124, opportunity_id='123abc').first()),
       )
-
     ]
 )
 def test_post(app, url, data, query):
@@ -896,6 +1019,15 @@ def test_post_experience_date(app):
 def test_post_opportunity_app_status(app):
     id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
     assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
+
+def test_post_about_me(app):
+    id_, data = post_request(app, '/api/contacts/124/about-me/', {})
+    contact = Contact.query.get(124)
+    assert contact.profile != {}
+    pprint(data)
+    pprint(CONTACT_PROFILE['obama_blank'])
+    assert data == CONTACT_PROFILE['obama_blank']
+
 
 def test_post_experience_null_start_date(app):
     exp = POSTS['experience'].copy()
@@ -1169,6 +1301,14 @@ def skill_name(skill):
        APP_PUT_FULL,
        lambda: OpportunityApp.query.get('a1'),
        lambda r: r.interest_statement == 'dfdddsdfff',
+       )
+     ,('/api/contacts/123/about-me',
+       CONTACT_PROFILE['billy_update'],
+       lambda: Profile.query.get(123),
+       lambda r: (r.contact.email == 'billy_new@email.com'
+                  and r.address_primary.street1 == '124 Main St'
+                  and r.race.hispanic == True
+                  and r.roles.data_analysis == False),
        )
     ]
 )
@@ -1695,6 +1835,7 @@ def test_delete_contact_skill_saved(app):
     ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
     ,('/api/contacts/123/app/123abc', APPLICATIONS['app_billy'])
     ,('/api/org/opportunities/123abc', OPPORTUNITIES_INTERNAL['test_opp1'])
+    ,('/api/contacts/123/about-me', CONTACT_PROFILE['billy_profile'])
     ]
 )
 def test_get(app, url, expected):
@@ -1710,6 +1851,8 @@ def test_get(app, url, expected):
         response = client.get(url, headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
+        pprint(data)
+        pprint(expected)
         assert len(data) > 0
         assert data == expected
 
