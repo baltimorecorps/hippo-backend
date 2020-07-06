@@ -76,6 +76,7 @@ obama = Contact(
     id=124,
     first_name='Barack',
     last_name='Obama',
+    email='obama@whitehouse.gov',
     email_primary=Email(
         id=90,
         is_primary=True,
@@ -88,7 +89,7 @@ obama = Contact(
 )
 
 billy_profile = Profile(
-    id=1,
+    id=123,
     contact_id=123,
     gender='Male',
     gender_other=None,
@@ -102,9 +103,9 @@ billy_profile = Profile(
 )
 
 billy_address = ContactAddress(
-    id=1,
+    id=123,
     contact_id=123,
-    profile_id=1,
+    profile_id=123,
     street1='123 Main St',
     street2='Apt 3',
     city='Baltimore',
@@ -114,9 +115,9 @@ billy_address = ContactAddress(
 )
 
 billy_race = Race(
-    id=1,
+    id=123,
     contact_id=123,
-    profile_id=1,
+    profile_id=123,
     american_indian=False,
     asian=False,
     black=False,
@@ -129,8 +130,8 @@ billy_race = Race(
 )
 
 billy_roles = RoleChoice(
-    id=1,
-    profile_id=1,
+    id=123,
+    profile_id=123,
     advocacy_public_policy=True,
     community_engagement_outreach=True,
     data_analysis=True,

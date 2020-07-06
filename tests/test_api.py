@@ -694,7 +694,7 @@ CONTACT_PROFILE = {
         'email': "billy@example.com",
         'phone_primary': "555-245-2351",
         'profile': {
-            'id': 1,
+            'id': 123,
             'gender': 'Male',
             'gender_other': None,
             'pronoun': 'He/Him/His',
@@ -778,7 +778,53 @@ CONTACT_PROFILE = {
                 'marketing_public_relations': False
             }
         }
-    }
+    },
+    'obama_blank': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'phone_primary': "555-444-4444",
+        'profile': {
+            'id': 1,
+            'gender': None,
+            'gender_other': None,
+            'pronoun': None,
+            'pronoun_other': None,
+            'years_exp': None,
+            'job_search_status': None,
+            'current_job_status': None,
+            'current_edu_status': None,
+            'previous_bcorps_program': None,
+            'address_primary': {
+                'street1': None,
+                'street2': None,
+                'city': None,
+                'state': None,
+                'zip_code': None,
+                'country': None,
+             },
+            'race': {
+                'american_indian': None,
+                'asian': None,
+                'black': None,
+                'hispanic': None,
+                'hawaiin': None,
+                'south_asian': None,
+                'white': None,
+                'not_listed': None,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': None,
+                'community_engagement_outreach': None,
+                'data_analysis': None,
+                'fundraising_development': None,
+                'program_management': None,
+                'marketing_public_relations': None
+            }
+        }
+    },
 }
 
 POSTS = {
@@ -973,6 +1019,15 @@ def test_post_experience_date(app):
 def test_post_opportunity_app_status(app):
     id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
     assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
+
+def test_post_about_me(app):
+    id_, data = post_request(app, '/api/contacts/124/about-me/', {})
+    contact = Contact.query.get(124)
+    assert contact.profile != {}
+    pprint(data)
+    pprint(CONTACT_PROFILE['obama_blank'])
+    assert data == CONTACT_PROFILE['obama_blank']
+
 
 def test_post_experience_null_start_date(app):
     exp = POSTS['experience'].copy()
@@ -1247,9 +1302,9 @@ def skill_name(skill):
        lambda: OpportunityApp.query.get('a1'),
        lambda r: r.interest_statement == 'dfdddsdfff',
        )
-     ,('/api/contacts/123/profile',
+     ,('/api/contacts/123/about-me',
        CONTACT_PROFILE['billy_update'],
-       lambda: Profile.query.get(1),
+       lambda: Profile.query.get(123),
        lambda r: (r.contact.email == 'billy_new@email.com'
                   and r.address_primary.street1 == '124 Main St'
                   and r.race.hispanic == True
@@ -1780,7 +1835,7 @@ def test_delete_contact_skill_saved(app):
     ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
     ,('/api/contacts/123/app/123abc', APPLICATIONS['app_billy'])
     ,('/api/org/opportunities/123abc', OPPORTUNITIES_INTERNAL['test_opp1'])
-    ,('/api/contacts/123/profile', CONTACT_PROFILE['billy_profile'])
+    ,('/api/contacts/123/about-me', CONTACT_PROFILE['billy_profile'])
     ]
 )
 def test_get(app, url, expected):

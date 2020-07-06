@@ -21,7 +21,7 @@ profile_schema = ContactSchema(exclude=['skills',
                                         'email_primary'])
 
 
-class Profile(Resource):
+class ProfileOne(Resource):
     method_decorators = {
         'get': [login_required, refresh_session],
         'put': [login_required, refresh_session],
@@ -35,15 +35,39 @@ class Profile(Resource):
         result = profile_schema.dump(contact)
         return {'status': 'success', 'data': result}, 200
 
+    def post(self, contact_id):
+        if not is_authorized_view(contact_id):
+            return unauthorized()
+
+        contact = Contact.query.get(contact_id)
+
+        if not contact:
+            return {'message': 'Contact does not exist'}, 404
+
+        if contact.profile:
+            return {'message': 'Profile already exists'}, 400
+
+        profile = Profile(contact_id=contact_id)
+        profile.addresses.append(ContactAddress(contact_id=contact_id))
+        profile.race = Race(contact_id=contact_id)
+        profile.roles = RoleChoice()
+        db.session.add(profile)
+        db.session.commit()
+
+        result = profile_schema.dump(contact)
+
+        return {'status': 'success', 'data': result}, 201
+
     def put(self, contact_id):
+        if not is_authorized_write(contact_id):
+            return unauthorized()
+
         json_data = request.get_json(force=True)
 
         contact = Contact.query.get(contact_id)
         if not contact:
-            return {'message': 'Experience does not exist'}, 404
+            return {'message': 'Contact does not exist'}, 404
 
-        if not is_authorized_write(contact_id):
-            return unauthorized()
         try:
             data = profile_schema.load(json_data)
         except ValidationError as e:
