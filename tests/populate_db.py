@@ -34,19 +34,11 @@ from models.skill_item_model import ContactSkill
 from resources.skill_utils import get_skill_id, make_skill
 
 # imports models related to the resume
-#from models.resume_model import Resume
-#from models.resume_section_model import ResumeSection
-#from models.resume_item_model import ResumeItem
-
 from models.resume_model import ResumeSnapshot
 
 # imports models related to the program and cycle
 from models.program_model import Program
 from models.program_contact_model import ProgramContact
-from models.cycle_model import Cycle
-from models.question_model import Question
-from models.response_model import Response
-from models.review_model import Review
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp
 from models.session_model import UserSession
@@ -220,41 +212,6 @@ a_goucher1 = Achievement(
 )
 
 
-# tag_python = Tag(
-#    id=123,
-#    name='Python',
-#    type=TagType('Skill'),
-#    status=TagStatusType('Active'),
-# )
-#
-# tag_webdev = Tag(
-#    id=124,
-#    name='Web Development',
-#    type=TagType('Function'),
-#    status=TagStatusType('Active'),
-# )
-# tag_health = Tag(
-#    id=125,
-#    name='Public Health',
-#    type=TagType('Topic'),
-#    status=TagStatusType('Active'),
-# )
-#
-# item_webdev = TagItem(
-#    id=21,
-#    contact_id=123,
-#    tag_id=124,
-#    score=2
-# )
-#
-# resume_billy = Resume(
-#    id=51,
-#    contact_id=123,
-#    name="Billy's Resume",
-#    date_created=date(2019,5,4),
-#    gdoc_id="abcdefghijklmnopqrstuvwxyz1234567890-_",
-# )
-
 skills = [
     Skill(
         id=get_skill_id(name),
@@ -331,52 +288,15 @@ billy_flask_suggestion = CapabilitySkillSuggestion(
 program_pfp = Program(
     id=1,
     name='Place for Purpose',
+    trello_board_id='5e37744114d9d01a03ddbcfe',
 )
 
 program_mayoral = Program(
     id=2,
     name='Mayoral Fellowship',
+    trello_board_id='5e37744114d9d01a03ddbcfe',
 )
 
-cycle_pfp = Cycle(
-    id=2,
-    program_id=1,
-    date_start=dt.date(2020, 1, 6),
-    date_end=dt.date(2025, 1, 6),
-    intake_talent_board_id='5e37744114d9d01a03ddbcfe',
-    intake_org_board_id='intake_org',
-    match_talent_board_id='match_talent',
-    match_opp_board_id='5e4acd35a35ee523c71f9e25',
-    review_talent_board_id='5e3753cdaea77d37fce3496a',
-)
-
-cycle_mayoral = Cycle(
-    id=3,
-    program_id=2,
-    date_start=dt.date(2020, 1, 6),
-    date_end=dt.date(2025, 1, 6),
-    intake_talent_board_id='5e37744114d9d01a03ddbcfe',
-    intake_org_board_id='intake_org',
-    match_talent_board_id='match_talent',
-    match_opp_board_id='5e4acd35a35ee523c71f9e25',
-    review_talent_board_id='5e3753cdaea77d37fce3496a',
-)
-
-q_pfp1 = Question(
-    id=3,
-    program_id=1,
-    question_text='Race and equity',
-    limit_word=200,
-    limit_character=2000,
-)
-
-q_pfp2 = Question(
-    id=4,
-    program_id=1,
-    question_text='Sector effectiveness',
-    limit_word=300,
-    limit_character=3000,
-)
 
 billy_pfp = ProgramContact(
     id=5,
@@ -404,28 +324,6 @@ obama_pfp = ProgramContact(
     stage=1,
 )
 
-r_billy1 = Response(
-    id=6,
-    program_contact_id=5,
-    question_id=3,
-    response_text='Race and equity answer',
-)
-
-r_billy2 = Response(
-    id=7,
-    program_contact_id=5,
-    question_id=4,
-    response_text='Sector effectiveness answer',
-)
-
-review_billy = Review(
-    id=1,
-    program_contact_id=5,
-    card_id='card_id',
-    score=1,
-    stage=1,
-)
-
 test_opp1 = Opportunity(
     id='123abc',
     title="Test Opportunity",
@@ -434,7 +332,7 @@ test_opp1 = Opportunity(
     card_id="card",
     gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
     org_name="Test Org",
-    cycle_id=2,
+    program_id=1,
     program_name="Place for Purpose"
 )
 
@@ -445,7 +343,7 @@ test_opp2 = Opportunity(
     gdoc_id="BBB222xx==",
     card_id="card",
     org_name="Test Org",
-    cycle_id=3,
+    program_id=2,
     gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
     program_name="Mayoral Fellowship"
 )
@@ -458,7 +356,7 @@ test_opp3 = Opportunity(
     card_id="card",
     gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
     org_name="Test Org",
-    cycle_id=2,
+    program_id=1,
     program_name="Place for Purpose"
 )
 
@@ -521,27 +419,11 @@ def populate(db):
     db.session.add(a_baltimore1)
     db.session.add(a_baltimore2)
     db.session.add(a_baltimore3)
-    # db.session.add(tag_python)
-    # db.session.add(tag_webdev)
-    # db.session.add(tag_health)
-    # db.session.add(item_webdev)
-    # db.session.add(resume_billy)
-    # db.session.add(skill_python)
-    # db.session.add(skill_webdev)
-    # db.session.add(skill_health)
-    # db.session.add(skill_obama_health)
     db.session.add(program_pfp)
     db.session.add(program_mayoral)
-    db.session.add(cycle_pfp)
-    db.session.add(cycle_mayoral)
-    db.session.add(q_pfp1)
-    db.session.add(q_pfp2)
     db.session.add(billy_pfp)
     db.session.add(billy_mayoral)
     db.session.add(obama_pfp)
-    db.session.add(r_billy1)
-    db.session.add(r_billy2)
-    db.session.add(review_billy)
     db.session.add(test_opp1)
     db.session.add(test_opp2)
     db.session.add(test_opp3)

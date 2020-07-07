@@ -99,66 +99,16 @@ CAPABILITIES = {
 }
 
 
-CYCLES = {
-    'pfp': {
-        'id': 2,
-        'program_id': 1,
-        'date_start': '2020-01-06',
-        'date_end': '2025-01-06',
-        'intake_talent_board_id': '5e37744114d9d01a03ddbcfe',
-        'intake_org_board_id': 'intake_org',
-        'match_talent_board_id': 'match_talent',
-        'match_opp_board_id': '5e4acd35a35ee523c71f9e25',
-        'is_active': True,
-        'review_talent_board_id': '5e3753cdaea77d37fce3496a'
-    },
-    'mayoral': {
-        'id': 3,
-        'program_id': 2,
-        'date_start': '2020-01-06',
-        'date_end': '2025-01-06',
-        'intake_talent_board_id': '5e37744114d9d01a03ddbcfe',
-        'intake_org_board_id': 'intake_org',
-        'match_talent_board_id': 'match_talent',
-        'match_opp_board_id': '5e4acd35a35ee523c71f9e25',
-        'is_active': True,
-        'review_talent_board_id': '5e3753cdaea77d37fce3496a'
-    }
-}
-
 PROGRAMS = {
     'pfp': {
         'id': 1,
         'name': 'Place for Purpose',
+        'trello_board_id': '5e37744114d9d01a03ddbcfe'
     },
     'mayoral': {
         'id': 2,
         'name': 'Mayoral Fellowship',
-    }
-}
-
-RESPONSES = {
-    'r_billy1': {
-        'id': 6,
-        'program_contact_id': 5,
-        'question_id': 3,
-        'response_text': 'Race and equity answer'
-    },
-    'r_billy2': {
-        'id': 7,
-        'program_contact_id': 5,
-        'question_id': 4,
-        'response_text': 'Sector effectiveness answer'
-    }
-}
-
-REVIEWS = {
-    'review_billy': {
-        'id': 1,
-        'score': 1,
-        'stage': 1,
-        'is_active': True,
-        'card_id': 'card_id'
+        'trello_board_id': '5e37744114d9d01a03ddbcfe'
     }
 }
 
@@ -192,18 +142,6 @@ PROGRAM_CONTACTS = {
     }
 }
 
-ELIGIBILITY = {
-    'billy_pfp': {
-        'id': 5,
-        'contact_id': 123,
-        'program_id': 1,
-        'cycles': [2],
-        'stage': 1,
-        'is_active': True,
-        'is_approved': True,
-    }
-}
-
 OPPORTUNITIES = {
     'test_opp1': {
         'id': '123abc',
@@ -212,7 +150,6 @@ OPPORTUNITIES = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
         'program_name': "Place for Purpose"
@@ -224,7 +161,6 @@ OPPORTUNITIES = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 3,
         'program_id': 2,
         'is_active': True,
         'program_name': "Mayoral Fellowship"
@@ -236,7 +172,6 @@ OPPORTUNITIES = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
         'program_name': "Place for Purpose"
@@ -385,7 +320,6 @@ OPPORTUNITIES_INTERNAL = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
         'program_name': "Place for Purpose",
@@ -413,7 +347,6 @@ OPPORTUNITIES_INTERNAL = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 3,
         'program_id': 2,
         'is_active': True,
         'program_name': "Mayoral Fellowship",
@@ -433,7 +366,6 @@ OPPORTUNITIES_INTERNAL = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
         'program_name': "Place for Purpose",
@@ -907,11 +839,29 @@ POSTS = {
         'org_name': 'Test Org',
         "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
         "gdoc_id": "TESTABC11==",
-        "cycle_id": 2,
+        "cycle_id": 1,
         "org_name": 'Test Org',
         "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         "is_active": True,
         'program_name': "Place for Purpose"
+    },
+    'mayoral_opportunity': {
+        "title": "Mayoral Test 1",
+        "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
+        "gdoc_id": "TESTABC11==",
+        "org_name": 'Test Org',
+        "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+        "is_active": True,
+        'program_name': "Mayoral Fellowship"
+    },
+    'blank_opportunity': {
+        "title": "Blank Test 1",
+        "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
+        "gdoc_id": "TESTABC11==",
+        "org_name": 'Test Org',
+        "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+        "is_active": True,
+        'program_name': None,
     },
 }
 
@@ -998,6 +948,17 @@ def test_post(app, url, data, query):
     id_, _ = post_request(app, url, data)
     assert query(id_) is not None
 
+@pytest.mark.parametrize(
+    "data,program_id",
+    [(POSTS['opportunity'], 1),
+    (POSTS['mayoral_opportunity'], 2),
+    (POSTS['blank_opportunity'], 1)]
+)
+def test_post_opp_program(app, data, program_id):
+    id_, data = post_request(app, '/api/opportunity/', data)
+    opp = Opportunity.query.filter_by(title=data['title']).first()
+    assert opp is not None
+    assert opp.program_id == program_id
 
 @pytest.mark.skip
 def test_create_program_contact_with_contact(app):
@@ -1281,12 +1242,6 @@ def skill_name(skill):
       {'stage': 2},
       lambda: ProgramContact.query.get(5),
       lambda r: r.stage == 2,
-      )
-    ,pytest.param('/api/contacts/123/programs/1/',
-      {'responses': [RESPONSES['r_billy1']]},
-      lambda: ProgramContact.query.get(5),
-      lambda r: len(r.responses) == 1 and r.responses[0].response_text == 'Race and equity answer',
-      marks=pytest.mark.skip
       )
     ,pytest.param('/api/opportunity/123abc/',
       {'title': "New title"},

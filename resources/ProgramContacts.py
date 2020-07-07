@@ -2,8 +2,7 @@ from flask_restful import Resource, request
 from models.program_model import Program, ProgramSchema
 from models.contact_model import Contact, ContactShortSchema
 from models.opportunity_model import ProgramContactShortSchema
-from models.program_contact_model import ProgramContact, ProgramContactSchema, UPDATE_FIELDS
-from models.response_model import Response, ResponseSchema
+from models.program_contact_model import ProgramContact, ProgramContactSchema
 from models.base_model import db
 from marshmallow import ValidationError
 
@@ -20,11 +19,6 @@ program_contact_schema = ProgramContactSchema()
 program_contacts_schema = ProgramContactSchema(many=True)
 contacts_short_schema = ContactShortSchema(many=True)
 program_contacts_short_schema = ProgramContactShortSchema(many=True)
-
-def add_responses(responses, program_contact):
-    for response in responses:
-        r = Response(**response)
-        program_contact.responses.append(r)
 
 def query_one_program_contact(c_id, p_id):
     return (ProgramContact.query

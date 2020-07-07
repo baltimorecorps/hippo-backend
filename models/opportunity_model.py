@@ -1,5 +1,4 @@
 from models.base_model import db
-from models.cycle_model import Cycle, CycleSchema
 from models.contact_model import ContactSchema, ContactShortSchema
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
 from models.resume_model import ResumeSnapshotSchema
@@ -23,7 +22,7 @@ class Opportunity(db.Model):
 
     # table columns
     id = db.Column(db.String, primary_key=True)
-    cycle_id = db.Column(db.Integer, db.ForeignKey('cycle.id'), nullable=False)
+    program_id = db.Column(db.Integer, db.ForeignKey('program.id'), nullable=False)
     title = db.Column(db.String(200), nullable=False)
     short_description = db.Column(db.String(2000), nullable=False)
     gdoc_id = db.Column(db.String(200))
@@ -37,7 +36,7 @@ class Opportunity(db.Model):
     # relationships
     applications = db.relationship('OpportunityApp', back_populates='opportunity',
                                    cascade='all, delete, delete-orphan')
-    cycle = db.relationship('Cycle', back_populates='opportunities')
+    program = db.relationship('Program', back_populates='opportunities')
 
     @hybrid_property
     def status(self):
@@ -71,8 +70,7 @@ class OpportunitySchema(Schema):
     status = EnumField(OpportunityStage, dump_only=True)
     org_name = fields.String(required=True)
     program_name = fields.String(allow_none=True)
-    cycle_id = fields.Integer(required=True)
-    program_id = fields.Integer(attribute='cycle.program_id', dump_only=True)
+    program_id = fields.Integer(allow_none=True)
     is_active = fields.Boolean(dump_only=True)
     applications = fields.Nested(OpportunityAppSchema(
         exclude=('opportunity', 'resume'), many=True))
