@@ -31,7 +31,11 @@ class ProfileOne(Resource):
     def get(self, contact_id):
         if not is_authorized_view(contact_id):
             return unauthorized()
+            
         contact = Contact.query.get(contact_id)
+        if not contact.profile:
+            return {'message': 'Profile does not exist'}, 404
+
         result = profile_schema.dump(contact)
         return {'status': 'success', 'data': result}, 200
 
