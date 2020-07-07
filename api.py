@@ -29,7 +29,6 @@ from resources.ProgramContacts import (
 from resources.Trello_Intake_Talent import (
     IntakeTalentBoard,
     IntakeTalentCard,
-    ReviewTalentCard
 )
 from resources.Opportunity import (
     OpportunityAll,
@@ -49,10 +48,7 @@ from resources.OpportunityApp import (
     OpportunityAppInterview,
     OpportunityAppConsider,
 )
-from resources.FormAssembly import (
-    TalentProgramApp,
-    OpportunityIntakeApp,
-)
+from resources.FormAssembly import TalentProgramApp
 from resources.Profile import ProfileOne
 
 api_bp = Blueprint('api', __name__)
@@ -172,15 +168,9 @@ api.add_resource(IntakeTalentBoard,
 api.add_resource(IntakeTalentCard,
                  '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent',
                  '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent/')
-api.add_resource(ReviewTalentCard,
-                 '/reviews/<int:review_id>/trello/review-talent',
-                 '/reviews/<int:review_id>/trello/review-talent/')
 api.add_resource(TalentProgramApp,
                  '/form-assembly/talent-app',
                  '/form-assembly/talent-app/')
-api.add_resource(OpportunityIntakeApp,
-                 '/form-assembly/opportunity-app',
-                 '/form-assembly/opportunity-app/')
 api.add_resource(Session,
                  '/session/',
                  '/session')

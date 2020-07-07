@@ -1,8 +1,6 @@
 from models.base_model import db
 from marshmallow import Schema, fields, EXCLUDE
 from models.program_model import Program, ProgramSchema
-from models.response_model import Response, ResponseSchema
-from models.review_model import Review, ReviewSchema
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
@@ -21,12 +19,6 @@ class ProgramContact(db.Model):
     #relationship fields
     program = db.relationship('Program', back_populates='contacts')
     contact = db.relationship('Contact', back_populates='programs')
-    responses = db.relationship('Response',
-                                back_populates='program_contact',
-                                cascade='all, delete, delete-orphan')
-    reviews = db.relationship('Review',
-                              back_populates='program_contact',
-                              cascade='all, delete, delete-orphan')
 
     # for more info on why to use setattr() read this:
     # https://medium.com/@s.azad4/modifying-python-objects-within-the-sqlalchemy-framework-7b6c8dd71ab3
