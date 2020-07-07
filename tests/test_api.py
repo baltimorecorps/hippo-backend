@@ -1128,6 +1128,16 @@ def test_post_contact_skill_undelete(app):
     print(achievement_skills)
     assert 'Event Planning' in achievement_skills
 
+def test_get_no_profile(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+    }
+    with app.test_client() as client:
+        response = client.get('/api/contacts/124/about-me', headers=headers)
+        assert response.status_code == 404
+        assert response.json['message'] == 'Profile does not exist'
 
 # TODO: unskip when trello stuff is mocked out
 @pytest.mark.skip
