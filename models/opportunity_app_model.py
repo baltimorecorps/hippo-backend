@@ -49,7 +49,7 @@ class OpportunityApp(db.Model):
 
     @hybrid_property
     def program_id(self):
-        return self.opportunity.cycle.program_id
+        return self.opportunity.program_id
 
     @hybrid_property
     def interview_completed(self):

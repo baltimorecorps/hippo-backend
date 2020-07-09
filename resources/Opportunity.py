@@ -9,6 +9,7 @@ from auth import refresh_session
 
 from models.base_model import db
 from models.opportunity_model import Opportunity, OpportunitySchema, OpportunityAppSchema
+from models.program_model import Program
 from marshmallow import ValidationError
 
 from auth import is_authorized_with_permission, unauthorized
@@ -18,6 +19,13 @@ def create_new_opportunity(opportunity_data):
     # Make a new random id
     opportunity_data['id'] = str(uuid.uuid4())
     opportunity = Opportunity(**opportunity_data)
+    program_name = opportunity_data.get('program_name', None)
+
+    program = Program.query.filter_by(name=program_name).first()
+    if program:
+        opportunity.program_id = program.id
+    else:
+        opportunity.program_id = 1
 
     db.session.add(opportunity)
     db.session.commit()
