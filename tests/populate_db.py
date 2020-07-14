@@ -39,6 +39,7 @@ from models.resume_model import ResumeSnapshot
 # imports models related to the program and cycle
 from models.program_model import Program
 from models.program_contact_model import ProgramContact
+from models.program_app_model import ProgramApp
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp
 from models.session_model import UserSession
@@ -114,7 +115,7 @@ billy_race = Race(
     asian=False,
     black=False,
     hispanic=False,
-    hawaiin=False,
+    hawaiian=False,
     south_asian=False,
     white=True,
     not_listed=False,
@@ -316,6 +317,21 @@ billy_mayoral = ProgramContact(
     is_approved=False
 )
 
+billy_pfp_app = ProgramApp(
+    id=7,
+    contact_id=123,
+    program_id=1,
+    is_interested=True,
+    is_approved=True,
+    date_approved='2020-01-01'
+)
+
+billy_mayoral_app = ProgramApp(
+    id=8,
+    contact_id=123,
+    program_id=2,
+)
+
 obama_pfp = ProgramContact(
     id=6,
     program_id=1,
@@ -423,6 +439,8 @@ def populate(db):
     db.session.add(program_mayoral)
     db.session.add(billy_pfp)
     db.session.add(billy_mayoral)
+    db.session.add(billy_pfp_app)
+    db.session.add(billy_mayoral_app)
     db.session.add(obama_pfp)
     db.session.add(test_opp1)
     db.session.add(test_opp2)

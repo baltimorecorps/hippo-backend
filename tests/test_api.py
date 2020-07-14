@@ -102,13 +102,11 @@ CAPABILITIES = {
 PROGRAMS = {
     'pfp': {
         'id': 1,
-        'name': 'Place for Purpose',
-        'trello_board_id': '5e37744114d9d01a03ddbcfe'
+        'name': 'Place for Purpose'
     },
     'mayoral': {
         'id': 2,
-        'name': 'Mayoral Fellowship',
-        'trello_board_id': '5e37744114d9d01a03ddbcfe'
+        'name': 'Mayoral Fellowship'
     }
 }
 
@@ -140,6 +138,47 @@ PROGRAM_CONTACTS = {
         'is_active': True,
         'is_approved': False,
     }
+}
+
+PROGRAM_APPS = {
+    'billy': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+        'program_apps': [
+            {'id': 7,
+             'program': {'id': 1, 'name': 'Place for Purpose'},
+             'is_interested': True,
+             'is_approved': True,
+             'date_approved': '2020-01-01',
+             'status': 'Eligible'},
+            {'id': 8,
+             'program': {'id': 2, 'name': 'Mayoral Fellowship'},
+             'is_interested': False,
+             'is_approved': False,
+             'status': 'Not interested',
+             'date_approved': None},
+        ]},
+    'obama': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'program_apps': [
+            {'id': 1,
+             'program': {'id': 1, 'name': 'Place for Purpose'},
+             'is_interested': True,
+             'is_approved': False,
+             'date_approved': None,
+             'status': 'Waiting for approval'},
+            {'id': 2,
+             'program': {'id': 2, 'name': 'Mayoral Fellowship'},
+             'is_interested': False,
+             'is_approved': False,
+             'status': 'Not interested',
+             'date_approved': None},
+    ]}
 }
 
 OPPORTUNITIES = {
@@ -196,6 +235,7 @@ CONTACTS = {
         'skills': SKILLS['billy'],
         'programs': [PROGRAM_CONTACTS['billy_pfp'],
                      PROGRAM_CONTACTS['billy_mayoral']],
+        'program_apps': PROGRAM_APPS['billy']['program_apps'],
         'terms_agreement': True
     },
 
@@ -213,6 +253,7 @@ CONTACTS = {
         'account_id': None,
         'skills': SKILLS['obama'],
         'programs': [PROGRAM_CONTACTS['obama_pfp']],
+        'program_apps': [],
         'terms_agreement': True
     },
 }
@@ -649,7 +690,7 @@ CONTACT_PROFILE = {
                 'asian': False,
                 'black': False,
                 'hispanic': False,
-                'hawaiin': False,
+                'hawaiian': False,
                 'south_asian': False,
                 'white': True,
                 'not_listed': False,
@@ -695,7 +736,7 @@ CONTACT_PROFILE = {
                 'asian': False,
                 'black': False,
                 'hispanic': True, # updated
-                'hawaiin': False,
+                'hawaiian': False,
                 'south_asian': False,
                 'white': True,
                 'not_listed': False,
@@ -741,7 +782,7 @@ CONTACT_PROFILE = {
                 'asian': None,
                 'black': None,
                 'hispanic': None,
-                'hawaiin': None,
+                'hawaiian': None,
                 'south_asian': None,
                 'white': None,
                 'not_listed': None,
@@ -1304,6 +1345,26 @@ def test_put_contact_saves_deleted_skills(app):
         assert public_health is not None
         assert public_health.deleted
 
+def test_put_program_apps(app):
+    url = '/api/contacts/124/program-apps/interested'
+    update = PROGRAM_APPS['obama']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    obama = Contact.query.get(124)
+    assert obama.program_apps == []
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        data = response.json['data']
+        assert data == PROGRAM_APPS['obama']
 
 @pytest.mark.parametrize(
     "url,update,query,test",
@@ -1791,6 +1852,7 @@ def test_delete_contact_skill_saved(app):
     ,('/api/contacts/123/app/123abc', APPLICATIONS['app_billy'])
     ,('/api/org/opportunities/123abc', OPPORTUNITIES_INTERNAL['test_opp1'])
     ,('/api/contacts/123/about-me', CONTACT_PROFILE['billy_profile'])
+    ,('/api/contacts/123/program-apps', PROGRAM_APPS['billy'])
     ]
 )
 def test_get(app, url, expected):

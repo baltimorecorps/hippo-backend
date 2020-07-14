@@ -8,6 +8,7 @@ from models.achievement_model import Achievement
 from models.skill_model import Skill, SkillSchema
 from models.skill_item_model import ContactSkill
 from models.program_contact_model import ProgramContactSchema
+from models.program_app_model import ProgramAppSchema
 from models.profile_model import ProfileSchema, ContactAddress
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -30,34 +31,45 @@ class Contact(db.Model):
     stage = db.Column(db.Integer, default=1)
 
     #relationships
-    emails = db.relationship('Email', back_populates='contact',
+    emails = db.relationship('Email',
+                             back_populates='contact',
                              cascade='all, delete, delete-orphan')
     email_primary = db.relationship("Email",
-                                    primaryjoin=db.and_(id == Email.contact_id,
-                                                        Email.is_primary == True),
+                                    primaryjoin=db.and_(
+                                    id == Email.contact_id,
+                                    Email.is_primary == True),
                                     uselist=False)
-    addresses = db.relationship('ContactAddress', back_populates='contact')
+    addresses = db.relationship('ContactAddress',
+                                back_populates='contact')
     address_primary = db.relationship('ContactAddress',
                                       primaryjoin=db.and_(
                                       id == ContactAddress.contact_id,
                                       ContactAddress.is_primary == True),
                                       back_populates='contact',
                                       uselist=False)
-    achievements = db.relationship('Achievement', back_populates='contact',
+    achievements = db.relationship('Achievement',
+                                   back_populates='contact',
                                    cascade='all, delete, delete-orphan')
-
     skill_items = db.relationship('ContactSkill',
-                           cascade='all, delete, delete-orphan')
-    capability_skill_suggestions = db.relationship('CapabilitySkillSuggestion',
-                           cascade='all, delete, delete-orphan')
-
-    experiences = db.relationship('Experience', back_populates='contact',
                                   cascade='all, delete, delete-orphan')
-    programs = db.relationship('ProgramContact', back_populates='contact',
+    capability_skill_suggestions = db.relationship(
+        'CapabilitySkillSuggestion',
+        cascade='all, delete, delete-orphan'
+    )
+    experiences = db.relationship('Experience',
+                                  back_populates='contact',
+                                  cascade='all, delete, delete-orphan')
+    programs = db.relationship('ProgramContact',
+                               back_populates='contact',
                                cascade='all, delete, delete-orphan')
-    applications = db.relationship('OpportunityApp', back_populates='contact',
+    program_apps = db.relationship('ProgramApp',
+                                   back_populates='contact',
+                                   cascade='all, delete, delete-orphan')
+    applications = db.relationship('OpportunityApp',
+                                   back_populates='contact',
+                                   cascade='all, delete, delete-orphan')
+    sessions = db.relationship('UserSession',
                                cascade='all, delete, delete-orphan')
-    sessions = db.relationship('UserSession', cascade='all, delete, delete-orphan')
     profile = db.relationship('Profile',
                               back_populates='contact',
                               uselist=False,
@@ -109,6 +121,7 @@ class ContactSchema(Schema):
     skills = fields.Nested(SkillSchema, many=True)
     terms_agreement = fields.Boolean()
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
+    program_apps = fields.Nested(ProgramAppSchema, many=True)
     profile = fields.Nested(ProfileSchema)
 
     class Meta:
