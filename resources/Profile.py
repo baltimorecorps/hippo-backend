@@ -16,6 +16,7 @@ from auth import (
 
 profile_schema = ContactSchema(exclude=['skills',
                                         'programs',
+                                        'program_apps',
                                         'terms_agreement',
                                         'account_id',
                                         'email_primary'])
