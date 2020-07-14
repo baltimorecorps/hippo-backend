@@ -201,7 +201,7 @@ api.add_resource(ProfileOne,
                  '/contacts/<int:contact_id>/about-me/')
 api.add_resource(ContactProgramApps,
                  '/contacts/<int:contact_id>/program-apps',
-                 '/contacts/<int:contact_id>/program_apps/')
+                 '/contacts/<int:contact_id>/program-apps/')
 api.add_resource(ContactProgramAppsInterested,
                  '/contacts/<int:contact_id>/program-apps/interested',
                  '/contacts/<int:contact_id>/program_apps/interested/')
