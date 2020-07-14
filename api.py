@@ -204,4 +204,4 @@ api.add_resource(ContactProgramApps,
                  '/contacts/<int:contact_id>/program-apps/')
 api.add_resource(ContactProgramAppsInterested,
                  '/contacts/<int:contact_id>/program-apps/interested',
-                 '/contacts/<int:contact_id>/program_apps/interested/')
+                 '/contacts/<int:contact_id>/program-apps/interested/')
