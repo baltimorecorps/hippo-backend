@@ -13,14 +13,16 @@ class Program(db.Model):
     contacts = db.relationship('ProgramContact',
                                back_populates='program',
                                cascade='all, delete, delete-orphan')
+    program_apps = db.relationship('ProgramApp',
+                                   back_populates='program',
+                                   cascade='all, delete, delete-orphan')
     opportunities = db.relationship('Opportunity',
                                back_populates='program',
                                cascade='all, delete, delete-orphan')
 
 class ProgramSchema(Schema):
-    id = fields.Integer(dump_only=True)
+    id = fields.Integer()
     name = fields.String(required=True)
-    trello_board_id = fields.String(dump_only=True)
 
     class Meta:
         unknown = EXCLUDE

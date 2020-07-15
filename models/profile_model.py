@@ -18,7 +18,7 @@ class Race(db.Model):
     american_indian = db.Column(db.Boolean)
     asian = db.Column(db.Boolean)
     black = db.Column(db.Boolean)
-    hawaiin = db.Column(db.Boolean)
+    hawaiian = db.Column(db.Boolean)
     hispanic = db.Column(db.Boolean)
     south_asian = db.Column(db.Boolean)
     white = db.Column(db.Boolean)
@@ -35,7 +35,7 @@ class Race(db.Model):
             'american_indian',
             'asian',
             'black',
-            'hawaiin',
+            'hawaiian',
             'hispanic',
             'south_asian',
             'white',
@@ -184,7 +184,7 @@ class RaceSchema(Schema):
     american_indian = fields.Boolean(allow_none=True)
     asian = fields.Boolean(allow_none=True)
     black = fields.Boolean(allow_none=True)
-    hawaiin = fields.Boolean(allow_none=True)
+    hawaiian = fields.Boolean(allow_none=True)
     hispanic = fields.Boolean(allow_none=True)
     south_asian = fields.Boolean(allow_none=True)
     white = fields.Boolean(allow_none=True)
