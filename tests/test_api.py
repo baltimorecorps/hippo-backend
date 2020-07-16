@@ -1946,6 +1946,7 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/programs/', CONTACT_PROGRAMS.values())
     ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
     ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])
+    ,('/api/programs', PROGRAMS.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):
@@ -1962,6 +1963,7 @@ def test_get_many_unordered(app, url, expected):
         # Test that the data and expected contain the same items, but not
         # necessarily in the same order
         pprint(list(expected))
+        pprint(data)
         assert len(data) == len(expected)
         for item in data:
             pprint(item)
