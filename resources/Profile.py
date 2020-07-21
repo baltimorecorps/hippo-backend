@@ -3,7 +3,13 @@ from flask_login import login_required
 
 from models.base_model import db
 from models.contact_model import Contact, ContactSchema
-from models.profile_model import Profile, Race, ContactAddress, RoleChoice
+from models.profile_model import (
+    Profile,
+    Race,
+    ContactAddress,
+    RoleChoice,
+    ProgramsCompleted
+)
 from marshmallow import ValidationError
 
 from auth import (
@@ -21,6 +27,13 @@ profile_schema = ContactSchema(exclude=['skills',
                                         'account_id',
                                         'email_primary'])
 
+def create_profile(contact):
+    profile = Profile(contact=contact)
+    profile.addresses.append(ContactAddress(contact=contact))
+    profile.race = Race(contact=contact)
+    profile.roles = RoleChoice()
+    profile.programs_completed = ProgramsCompleted()
+    return profile
 
 class ProfileOne(Resource):
     method_decorators = {
@@ -48,10 +61,7 @@ class ProfileOne(Resource):
         if contact.profile:
             return {'message': 'Profile already exists'}, 400
 
-        profile = Profile(contact_id=contact_id)
-        profile.addresses.append(ContactAddress(contact_id=contact_id))
-        profile.race = Race(contact_id=contact_id)
-        profile.roles = RoleChoice()
+        profile = create_profile(contact)
         db.session.add(profile)
         db.session.commit()
 

@@ -185,6 +185,7 @@ def test_post_contact(app):
         contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
         assert contact.first_name == 'Tester'
         assert contact.email == 'testerb@example.com'
+        assert contact.profile.years_exp is None
 
         assert UserSession.query.filter_by(contact_id=contact.id).first()
 

@@ -71,9 +71,13 @@ class ContactProgramAppsInterested(Resource):
             return {'message': 'No program data provided'}, 404
 
         for item in data:
-            print(item['program'])
-            app = ProgramApp.query.get(item['id'])
+            app = (ProgramApp.query
+                             .filter_by(contact_id=contact_id,
+                                        program_id=item['program']['id'])
+                             .first())
+
             if app:
+                item.pop('is_approved', None)
                 app.update(**item)
             else:
                 new_app = ProgramApp(
