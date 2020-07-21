@@ -151,16 +151,27 @@ PROGRAM_APPS = {
              'program': {'id': 1, 'name': 'Place for Purpose'},
              'is_interested': True,
              'is_approved': True,
-             'date_approved': '2020-01-01',
+             'decision_date': '2020-01-01',
              'status': 'Eligible'},
             {'id': 8,
              'program': {'id': 2, 'name': 'Mayoral Fellowship'},
              'is_interested': False,
              'is_approved': False,
              'status': 'Not interested',
-             'date_approved': None},
+             'decision_date': None},
         ]},
-    'obama': {
+    'obama_put': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'program_apps': [
+            {'program': {'id': 1, 'name': 'Place for Purpose'},
+             'is_interested': True},
+            {'program': {'id': 2, 'name': 'Mayoral Fellowship'},
+             'is_interested': False},
+        ]},
+    'obama_get': {
         'id': 124,
         'first_name': "Barack",
         'last_name': "Obama",
@@ -170,14 +181,14 @@ PROGRAM_APPS = {
              'program': {'id': 1, 'name': 'Place for Purpose'},
              'is_interested': True,
              'is_approved': False,
-             'date_approved': None,
+             'decision_date': None,
              'status': 'Waiting for approval'},
             {'id': 2,
              'program': {'id': 2, 'name': 'Mayoral Fellowship'},
              'is_interested': False,
              'is_approved': False,
              'status': 'Not interested',
-             'date_approved': None},
+             'decision_date': None},
     ]}
 }
 
@@ -677,6 +688,19 @@ CONTACT_PROFILE = {
             'current_job_status': 'Employed',
             'current_edu_status': 'Full-time Student',
             'previous_bcorps_program': 'Yes',
+            'value_question1': 'Test response',
+            'value_question2': 'Test response',
+            'needs_help_programs': 'Yes',
+            'hear_about_us': 'Facebook',
+            'hear_about_us_other': 'Other',
+            'programs_completed': {
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': True,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False
+            },
             'address_primary': {
                 'street1': '123 Main St',
                 'street2': 'Apt 3',
@@ -723,6 +747,19 @@ CONTACT_PROFILE = {
             'current_job_status': 'Employed',
             'current_edu_status': 'Full-time Student',
             'previous_bcorps_program': 'Yes',
+            'value_question1': 'Test response',
+            'value_question2': 'Test response',
+            'needs_help_programs': 'Yes',
+            'hear_about_us': 'Facebook',
+            'hear_about_us_other': 'Other New',
+            'programs_completed': {
+                'fellowship': None,
+                'public_allies': None,
+                'mayoral_fellowship': None,
+                'kiva': None,
+                'elevation_awards': None,
+                'civic_innovators': None
+            },
             'address_primary': {
                 'street1': '124 Main St', # updated
                 'street2': 'Apt 3',
@@ -769,6 +806,19 @@ CONTACT_PROFILE = {
             'current_job_status': None,
             'current_edu_status': None,
             'previous_bcorps_program': None,
+            'value_question1': None,
+            'value_question2': None,
+            'hear_about_us': None,
+            'hear_about_us_other': None,
+            'needs_help_programs': None,
+            'programs_completed': {
+                'fellowship': None,
+                'public_allies': None,
+                'mayoral_fellowship': None,
+                'kiva': None,
+                'elevation_awards': None,
+                'civic_innovators': None,
+            },
             'address_primary': {
                 'street1': None,
                 'street2': None,
@@ -1357,9 +1407,9 @@ def test_put_contact_saves_deleted_skills(app):
         assert public_health is not None
         assert public_health.deleted
 
-def test_put_program_apps(app):
+def test_put_program_apps_interested(app):
     url = '/api/contacts/124/program-apps/interested'
-    update = PROGRAM_APPS['obama']
+    update = PROGRAM_APPS['obama_put']
 
     mimetype = 'application/json'
     headers = {
@@ -1376,7 +1426,7 @@ def test_put_program_apps(app):
         pprint(response.json)
         assert response.status_code == 200
         data = response.json['data']
-        assert data == PROGRAM_APPS['obama']
+        assert data == PROGRAM_APPS['obama_get']
 
 @pytest.mark.parametrize(
     "url,update,query,test",

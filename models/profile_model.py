@@ -115,6 +115,38 @@ class RoleChoice(db.Model):
             if field in UPDATE_FIELDS:
                 setattr(self, field, value)
 
+class ProgramsCompleted(db.Model):
+    __tablename__ = 'programs_completed'
+
+    # table columns
+    id = db.Column(db.Integer, primary_key=True)
+    profile_id = db.Column(db.Integer,
+                           db.ForeignKey('profile.id'),
+                           nullable=False)
+    fellowship = db.Column(db.Boolean)
+    mayoral_fellowship = db.Column(db.Boolean)
+    public_allies = db.Column(db.Boolean)
+    kiva = db.Column(db.Boolean)
+    civic_innovators = db.Column(db.Boolean)
+    elevation_awards = db.Column(db.Boolean)
+
+    #relationships
+    profile = db.relationship('Profile', back_populates='programs_completed')
+
+    #methods
+    def update(self, **update_dict):
+        UPDATE_FIELDS = [
+            'fellowship',
+            'mayoral_fellowship',
+            'public_allies',
+            'kiva',
+            'civic_innovators',
+            'elevation_awards',
+        ]
+        for field, value in update_dict.items():
+            if field in UPDATE_FIELDS:
+                setattr(self, field, value)
+
 class Profile(db.Model):
     __tablename__ = 'profile'
 
@@ -132,6 +164,11 @@ class Profile(db.Model):
     current_job_status = db.Column(db.String)
     current_edu_status = db.Column(db.String)
     previous_bcorps_program = db.Column(db.String)
+    needs_help_programs = db.Column(db.String)
+    hear_about_us = db.Column(db.String)
+    hear_about_us_other = db.Column(db.String)
+    value_question1 = db.Column(db.String)
+    value_question2 = db.Column(db.String)
 
     #relationships
     race = db.relationship('Race',
@@ -151,6 +188,10 @@ class Profile(db.Model):
                             back_populates='profile',
                             cascade='all, delete, delete-orphan',
                             uselist=False)
+    programs_completed = db.relationship('ProgramsCompleted',
+                                         back_populates='profile',
+                                         cascade='all, delete, delete-orphan',
+                                         uselist=False)
     contact = db.relationship('Contact', back_populates='profile')
 
     #methods
@@ -164,12 +205,18 @@ class Profile(db.Model):
             'job_search_status',
             'current_job_status',
             'current_edu_status',
-            'previous_bcorps_program'
+            'previous_bcorps_program',
+            'needs_help_programs',
+            'hear_about_us',
+            'hear_about_us_other',
+            'value_question1',
+            'value_question2',
         ]
 
         address_data = update_dict.pop('address_primary', None)
         race_data = update_dict.pop('race', None)
         role_data = update_dict.pop('roles', None)
+        programs_data = update_dict.pop('programs_completed', None)
 
         for field, value in update_dict.items():
             if field in UPDATE_FIELDS:
@@ -178,6 +225,7 @@ class Profile(db.Model):
         self.address_primary.update(**address_data)
         self.race.update(**race_data)
         self.roles.update(**role_data)
+        self.roles.update(**programs_data)
 
 class RaceSchema(Schema):
 
@@ -218,6 +266,18 @@ class RoleChoiceSchema(Schema):
     class Meta:
         unknown = EXCLUDE
 
+class ProgramsCompletedSchema(Schema):
+
+    fellowship = fields.Boolean(allow_none=True)
+    mayoral_fellowship = fields.Boolean(allow_none=True)
+    public_allies = fields.Boolean(allow_none=True)
+    kiva = fields.Boolean(allow_none=True)
+    civic_innovators = fields.Boolean(allow_none=True)
+    elevation_awards = fields.Boolean(allow_none=True)
+
+    class Meta:
+        unknown = EXCLUDE
+
 class ProfileSchema(Schema):
 
     id = fields.Integer(dump_only=True)
@@ -229,10 +289,16 @@ class ProfileSchema(Schema):
     job_search_status = fields.String(allow_none=True)
     current_job_status = fields.String(allow_none=True)
     current_edu_status = fields.String(allow_none=True)
+    value_question1 = fields.String(allow_none=True)
+    value_question2 = fields.String(allow_none=True)
+    hear_about_us = fields.String(allow_none=True)
+    hear_about_us_other = fields.String(allow_none=True)
     previous_bcorps_program = fields.String(allow_none=True)
+    needs_help_programs = fields.String(allow_none=True)
     address_primary = fields.Nested(ContactAddressSchema)
     race = fields.Nested(RaceSchema)
     roles = fields.Nested(RoleChoiceSchema)
+    programs_completed = fields.Nested(ProgramsCompletedSchema)
 
     class Meta:
         unknown = EXCLUDE

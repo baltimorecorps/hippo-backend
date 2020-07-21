@@ -47,7 +47,8 @@ from models.profile_model import (
     Profile,
     Race,
     ContactAddress,
-    RoleChoice
+    RoleChoice,
+    ProgramsCompleted
 )
 
 billy = Contact(
@@ -92,7 +93,12 @@ billy_profile = Profile(
     job_search_status='Actively looking',
     current_job_status='Employed',
     current_edu_status='Full-time Student',
-    previous_bcorps_program='Yes'
+    previous_bcorps_program='Yes',
+    needs_help_programs='Yes',
+    hear_about_us='Facebook',
+    hear_about_us_other='Other',
+    value_question1='Test response',
+    value_question2='Test response',
 )
 
 billy_address = ContactAddress(
@@ -131,6 +137,17 @@ billy_roles = RoleChoice(
     fundraising_development=False,
     program_management=False,
     marketing_public_relations=False
+)
+
+billy_programs_completed = ProgramsCompleted(
+    id=123,
+    profile_id=123,
+    mayoral_fellowship=True,
+    fellowship=False,
+    kiva=False,
+    public_allies=False,
+    civic_innovators=False,
+    elevation_awards=False
 )
 
 billy_session = UserSession(
@@ -323,7 +340,7 @@ billy_pfp_app = ProgramApp(
     program_id=1,
     is_interested=True,
     is_approved=True,
-    date_approved='2020-01-01'
+    decision_date='2020-01-01'
 )
 
 billy_mayoral_app = ProgramApp(
@@ -427,6 +444,7 @@ def populate(db):
     db.session.add(billy_race)
     db.session.add(billy_address)
     db.session.add(billy_roles)
+    db.session.add(billy_programs_completed)
     db.session.add(billy_session)
     db.session.add(exp_columbia)
     db.session.add(exp_goucher)
