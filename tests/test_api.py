@@ -1428,6 +1428,29 @@ def test_put_program_apps_interested(app):
         data = response.json['data']
         assert data == PROGRAM_APPS['obama_get']
 
+def test_put_programs_completed_nullable(app):
+    url = '/api/contacts/123/about-me'
+    update = CONTACT_PROFILE['billy_update'].copy()
+    update['programs_completed'] = None
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+    assert billy.profile.programs_completed is not None
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        billy = Contact.query.get(123)
+        assert billy.profile.programs_completed is not None
+
+
 @pytest.mark.parametrize(
     "url,update,query,test",
     [('/api/contacts/123/',
