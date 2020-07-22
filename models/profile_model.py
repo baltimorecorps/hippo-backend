@@ -295,10 +295,11 @@ class ProfileSchema(Schema):
     hear_about_us_other = fields.String(allow_none=True)
     previous_bcorps_program = fields.String(allow_none=True)
     needs_help_programs = fields.String(allow_none=True)
-    address_primary = fields.Nested(ContactAddressSchema)
-    race = fields.Nested(RaceSchema)
-    roles = fields.Nested(RoleChoiceSchema)
-    programs_completed = fields.Nested(ProgramsCompletedSchema)
+    address_primary = fields.Nested(ContactAddressSchema, allow_none=True)
+    race = fields.Nested(RaceSchema, allow_none=True)
+    roles = fields.Nested(RoleChoiceSchema, allow_none=True)
+    programs_completed = fields.Nested(ProgramsCompletedSchema,
+                                       allow_none=True)
 
     class Meta:
         unknown = EXCLUDE
