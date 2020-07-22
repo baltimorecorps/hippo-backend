@@ -27,6 +27,7 @@ from auth import (
 
 from models.skill_model import Skill
 from .skill_utils import get_skill_id, get_or_make_skill
+from .Profile import create_profile
 
 
 contact_schema = ContactSchema(exclude=['profile', 'email'])
@@ -88,6 +89,7 @@ class ContactAll(Resource):
         if email:
             contact.email_primary = Email(**email)
         contact.email = email['email']
+        create_profile(contact)
         db.session.add(contact)
         db.session.commit()
         program_contact_data = {

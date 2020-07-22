@@ -74,8 +74,10 @@ class Contact(db.Model):
                               back_populates='contact',
                               uselist=False,
                               cascade='all, delete, delete-orphan')
-    race = db.relationship('Race', back_populates='contact',
-                           cascade='all, delete, delete-orphan')
+    race = db.relationship('Race',
+                           back_populates='contact',
+                           cascade='all, delete, delete-orphan',
+                           uselist=False)
 
     def add_skill(self, skill):
         contact_skill = (ContactSkill.query
