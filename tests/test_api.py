@@ -3,6 +3,7 @@ import datetime as dt
 from pprint import pprint
 import pytest
 import math
+import copy
 
 from models.base_model import db
 from models.contact_model import Contact
@@ -1446,7 +1447,7 @@ def test_put_contact_saves_deleted_skills(app):
         assert public_health is not None
         assert public_health.deleted
 
-def test_put_program_apps_interested(app):
+def test_put_program_apps_new(app):
     url = '/api/contacts/124/program-apps/interested'
     update = PROGRAM_APPS['obama_put']
 
@@ -1466,6 +1467,33 @@ def test_put_program_apps_interested(app):
         assert response.status_code == 200
         data = response.json['data']
         assert data == PROGRAM_APPS['obama_get']
+
+def test_put_program_apps_update(app):
+    url = '/api/contacts/123/program-apps/interested'
+    update = copy.deepcopy(PROGRAM_APPS['billy'])
+    update['program_apps'][0]['is_interested'] = False
+    update['program_apps'][1]['is_interested'] = True
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+    assert billy.program_apps[0].is_interested == True
+    assert billy.program_apps[1].is_interested == False
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        data = response.json['data']
+        billy = Contact.query.get(123)
+        assert billy.program_apps[0].is_interested == False
+        assert billy.program_apps[1].is_interested == True
+
 
 def test_put_programs_completed_nullable(app):
     url = '/api/contacts/123/about-me'
