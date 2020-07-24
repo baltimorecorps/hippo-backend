@@ -222,10 +222,14 @@ class Profile(db.Model):
             if field in UPDATE_FIELDS:
                 setattr(self, field, value)
 
-        self.address_primary.update(**address_data)
-        self.race.update(**race_data)
-        self.roles.update(**role_data)
-        self.roles.update(**programs_data)
+        if address_data:
+            self.address_primary.update(**address_data)
+        if race_data:
+            self.race.update(**race_data)
+        if role_data:
+            self.roles.update(**role_data)
+        if programs_data:
+            self.programs_completed.update(**programs_data)
 
 class RaceSchema(Schema):
 

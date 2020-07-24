@@ -848,6 +848,57 @@ CONTACT_PROFILE = {
             }
         }
     },
+    'billy_null': {
+        'email': 'billy@example.com',
+        'first_name': 'Billy',
+        'last_name': 'Daly',
+        'id': 123,
+        'profile': {
+            'address_primary': {
+                'city': 'Baltimore',
+                'country': 'United States',
+                'state': 'Maryland',
+                'street1': '123 Main St.',
+                'street2': 'Apt 3',
+                'zip_code': '21111',
+            },
+            'current_edu_status': 'Full-time student',
+            'current_job_status': 'Unemployed',
+            'gender': 'Not Listed',
+            'gender_other': 'sads',
+            'hear_about_us': None,
+            'hear_about_us_other': None,
+            'id': 1,
+            'job_search_status': 'Looking for a job in the next 2-6 months',
+            'needs_help_programs': None,
+            'previous_bcorps_program': 'No',
+            'programs_completed': None,
+            'pronoun': 'They/Them/Their',
+            'pronoun_other': None,
+            'value_question1': 'sasdsad',
+            'value_question2': 'asdsdasd',
+            'years_exp': '5+ years',
+            'race': {
+                'american_indian': None,
+                'asian': True,
+                'black': None,
+                'hawaiian': None,
+                'hispanic': None,
+                'not_listed': None,
+                'race_other': None,
+                'south_asian': None,
+                'white': True,
+            },
+            'roles': {
+                'advocacy_public_policy': False,
+                'community_engagement_outreach': None,
+                'data_analysis': True,
+                'fundraising_development': False,
+                'marketing_public_relations': False,
+                'program_management': True,
+            },
+        },
+    }
 }
 
 POSTS = {
@@ -1418,8 +1469,7 @@ def test_put_program_apps_interested(app):
 
 def test_put_programs_completed_nullable(app):
     url = '/api/contacts/123/about-me'
-    update = CONTACT_PROFILE['billy_update'].copy()
-    update['programs_completed'] = None
+    update = CONTACT_PROFILE['billy_null']
 
     mimetype = 'application/json'
     headers = {
@@ -1436,7 +1486,7 @@ def test_put_programs_completed_nullable(app):
         pprint(response.json)
         assert response.status_code == 200
         billy = Contact.query.get(123)
-        assert billy.profile.programs_completed is not None
+        assert billy.profile.programs_completed.kiva == False
 
 
 @pytest.mark.parametrize(
