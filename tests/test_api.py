@@ -691,7 +691,7 @@ CONTACT_PROFILE = {
             'previous_bcorps_program': 'Yes',
             'value_question1': 'Test response',
             'value_question2': 'Test response',
-            'needs_help_programs': 'Yes',
+            'needs_help_programs': True,
             'hear_about_us': 'Facebook',
             'hear_about_us_other': 'Other',
             'programs_completed': {
@@ -750,7 +750,7 @@ CONTACT_PROFILE = {
             'previous_bcorps_program': 'Yes',
             'value_question1': 'Test response',
             'value_question2': 'Test response',
-            'needs_help_programs': 'Yes',
+            'needs_help_programs': True,
             'hear_about_us': 'Facebook',
             'hear_about_us_other': 'Other New',
             'programs_completed': {
