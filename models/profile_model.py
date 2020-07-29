@@ -15,14 +15,14 @@ class Race(db.Model):
     profile_id = db.Column(db.Integer,
                            db.ForeignKey('profile.id'),
                            nullable=False)
-    american_indian = db.Column(db.Boolean)
-    asian = db.Column(db.Boolean)
-    black = db.Column(db.Boolean)
-    hawaiian = db.Column(db.Boolean)
-    hispanic = db.Column(db.Boolean)
-    south_asian = db.Column(db.Boolean)
-    white = db.Column(db.Boolean)
-    not_listed = db.Column(db.Boolean)
+    american_indian = db.Column(db.Boolean, default=False)
+    asian = db.Column(db.Boolean, default=False)
+    black = db.Column(db.Boolean, default=False)
+    hawaiian = db.Column(db.Boolean, default=False)
+    hispanic = db.Column(db.Boolean, default=False)
+    south_asian = db.Column(db.Boolean, default=False)
+    white = db.Column(db.Boolean, default=False)
+    not_listed = db.Column(db.Boolean, default=False)
     race_other = db.Column(db.String)
 
     #relationships
@@ -91,12 +91,12 @@ class RoleChoice(db.Model):
     profile_id = db.Column(db.Integer,
                            db.ForeignKey('profile.id'),
                            nullable=False)
-    advocacy_public_policy = db.Column(db.Boolean)
-    community_engagement_outreach = db.Column(db.Boolean)
-    data_analysis = db.Column(db.Boolean)
-    fundraising_development = db.Column(db.Boolean)
-    marketing_public_relations = db.Column(db.Boolean)
-    program_management = db.Column(db.Boolean)
+    advocacy_public_policy = db.Column(db.Boolean, default=False)
+    community_engagement_outreach = db.Column(db.Boolean, default=False)
+    data_analysis = db.Column(db.Boolean, default=False)
+    fundraising_development = db.Column(db.Boolean, default=False)
+    marketing_public_relations = db.Column(db.Boolean, default=False)
+    program_management = db.Column(db.Boolean, default=False)
 
     #relationships
     profile = db.relationship('Profile', back_populates='roles')
@@ -123,12 +123,12 @@ class ProgramsCompleted(db.Model):
     profile_id = db.Column(db.Integer,
                            db.ForeignKey('profile.id'),
                            nullable=False)
-    fellowship = db.Column(db.Boolean)
-    mayoral_fellowship = db.Column(db.Boolean)
-    public_allies = db.Column(db.Boolean)
-    kiva = db.Column(db.Boolean)
-    civic_innovators = db.Column(db.Boolean)
-    elevation_awards = db.Column(db.Boolean)
+    fellowship = db.Column(db.Boolean, default=False)
+    mayoral_fellowship = db.Column(db.Boolean, default=False)
+    public_allies = db.Column(db.Boolean, default=False)
+    kiva = db.Column(db.Boolean, default=False)
+    civic_innovators = db.Column(db.Boolean, default=False)
+    elevation_awards = db.Column(db.Boolean, default=False)
 
     #relationships
     profile = db.relationship('Profile', back_populates='programs_completed')
@@ -164,7 +164,7 @@ class Profile(db.Model):
     current_job_status = db.Column(db.String)
     current_edu_status = db.Column(db.String)
     previous_bcorps_program = db.Column(db.String)
-    needs_help_programs = db.Column(db.String)
+    needs_help_programs = db.Column(db.Boolean)
     hear_about_us = db.Column(db.String)
     hear_about_us_other = db.Column(db.String)
     value_question1 = db.Column(db.String)
@@ -222,10 +222,14 @@ class Profile(db.Model):
             if field in UPDATE_FIELDS:
                 setattr(self, field, value)
 
-        self.address_primary.update(**address_data)
-        self.race.update(**race_data)
-        self.roles.update(**role_data)
-        self.roles.update(**programs_data)
+        if address_data:
+            self.address_primary.update(**address_data)
+        if race_data:
+            self.race.update(**race_data)
+        if role_data:
+            self.roles.update(**role_data)
+        if programs_data:
+            self.programs_completed.update(**programs_data)
 
 class RaceSchema(Schema):
 
@@ -294,7 +298,7 @@ class ProfileSchema(Schema):
     hear_about_us = fields.String(allow_none=True)
     hear_about_us_other = fields.String(allow_none=True)
     previous_bcorps_program = fields.String(allow_none=True)
-    needs_help_programs = fields.String(allow_none=True)
+    needs_help_programs = fields.Boolean(allow_none=True)
     address_primary = fields.Nested(ContactAddressSchema, allow_none=True)
     race = fields.Nested(RaceSchema, allow_none=True)
     roles = fields.Nested(RoleChoiceSchema, allow_none=True)
