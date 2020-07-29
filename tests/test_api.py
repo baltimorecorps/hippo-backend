@@ -754,12 +754,12 @@ CONTACT_PROFILE = {
             'hear_about_us': 'Facebook',
             'hear_about_us_other': 'Other New',
             'programs_completed': {
-                'fellowship': None,
-                'public_allies': None,
-                'mayoral_fellowship': None,
-                'kiva': None,
-                'elevation_awards': None,
-                'civic_innovators': None
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': False,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False
             },
             'address_primary': {
                 'street1': '124 Main St', # updated
@@ -813,12 +813,12 @@ CONTACT_PROFILE = {
             'hear_about_us_other': None,
             'needs_help_programs': None,
             'programs_completed': {
-                'fellowship': None,
-                'public_allies': None,
-                'mayoral_fellowship': None,
-                'kiva': None,
-                'elevation_awards': None,
-                'civic_innovators': None,
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': False,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False,
             },
             'address_primary': {
                 'street1': None,
@@ -829,23 +829,23 @@ CONTACT_PROFILE = {
                 'country': None,
              },
             'race': {
-                'american_indian': None,
-                'asian': None,
-                'black': None,
-                'hispanic': None,
-                'hawaiian': None,
-                'south_asian': None,
-                'white': None,
-                'not_listed': None,
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': False,
+                'hawaiian': False,
+                'south_asian': False,
+                'white': False,
+                'not_listed': False,
                 'race_other': None,
             },
             'roles': {
-                'advocacy_public_policy': None,
-                'community_engagement_outreach': None,
-                'data_analysis': None,
-                'fundraising_development': None,
-                'program_management': None,
-                'marketing_public_relations': None
+                'advocacy_public_policy': False,
+                'community_engagement_outreach': False,
+                'data_analysis': False,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
             }
         }
     },
@@ -880,14 +880,14 @@ CONTACT_PROFILE = {
             'value_question2': 'asdsdasd',
             'years_exp': '5+ years',
             'race': {
-                'american_indian': None,
+                'american_indian': False,
                 'asian': True,
-                'black': None,
-                'hawaiian': None,
-                'hispanic': None,
-                'not_listed': None,
+                'black': False,
+                'hawaiian': False,
+                'hispanic': False,
+                'not_listed': False,
                 'race_other': None,
-                'south_asian': None,
+                'south_asian': False,
                 'white': True,
             },
             'roles': {
