@@ -47,4 +47,4 @@ class ProgramAppSchema(Schema):
         unknown = EXCLUDE
 
 # isolates the fields that can be updated in a PUT request
-UPDATE_FIELDS = ('is_approved', 'is_active')
+UPDATE_FIELDS = ('is_approved', 'is_interested')

@@ -3,6 +3,7 @@ import datetime as dt
 from pprint import pprint
 import pytest
 import math
+import copy
 
 from models.base_model import db
 from models.contact_model import Contact
@@ -690,7 +691,7 @@ CONTACT_PROFILE = {
             'previous_bcorps_program': 'Yes',
             'value_question1': 'Test response',
             'value_question2': 'Test response',
-            'needs_help_programs': 'Yes',
+            'needs_help_programs': True,
             'hear_about_us': 'Facebook',
             'hear_about_us_other': 'Other',
             'programs_completed': {
@@ -749,16 +750,16 @@ CONTACT_PROFILE = {
             'previous_bcorps_program': 'Yes',
             'value_question1': 'Test response',
             'value_question2': 'Test response',
-            'needs_help_programs': 'Yes',
+            'needs_help_programs': True,
             'hear_about_us': 'Facebook',
             'hear_about_us_other': 'Other New',
             'programs_completed': {
-                'fellowship': None,
-                'public_allies': None,
-                'mayoral_fellowship': None,
-                'kiva': None,
-                'elevation_awards': None,
-                'civic_innovators': None
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': False,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False
             },
             'address_primary': {
                 'street1': '124 Main St', # updated
@@ -812,12 +813,12 @@ CONTACT_PROFILE = {
             'hear_about_us_other': None,
             'needs_help_programs': None,
             'programs_completed': {
-                'fellowship': None,
-                'public_allies': None,
-                'mayoral_fellowship': None,
-                'kiva': None,
-                'elevation_awards': None,
-                'civic_innovators': None,
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': False,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False,
             },
             'address_primary': {
                 'street1': None,
@@ -828,26 +829,77 @@ CONTACT_PROFILE = {
                 'country': None,
              },
             'race': {
-                'american_indian': None,
-                'asian': None,
-                'black': None,
-                'hispanic': None,
-                'hawaiian': None,
-                'south_asian': None,
-                'white': None,
-                'not_listed': None,
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': False,
+                'hawaiian': False,
+                'south_asian': False,
+                'white': False,
+                'not_listed': False,
                 'race_other': None,
             },
             'roles': {
-                'advocacy_public_policy': None,
-                'community_engagement_outreach': None,
-                'data_analysis': None,
-                'fundraising_development': None,
-                'program_management': None,
-                'marketing_public_relations': None
+                'advocacy_public_policy': False,
+                'community_engagement_outreach': False,
+                'data_analysis': False,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
             }
         }
     },
+    'billy_null': {
+        'email': 'billy@example.com',
+        'first_name': 'Billy',
+        'last_name': 'Daly',
+        'id': 123,
+        'profile': {
+            'address_primary': {
+                'city': 'Baltimore',
+                'country': 'United States',
+                'state': 'Maryland',
+                'street1': '123 Main St.',
+                'street2': 'Apt 3',
+                'zip_code': '21111',
+            },
+            'current_edu_status': 'Full-time student',
+            'current_job_status': 'Unemployed',
+            'gender': 'Not Listed',
+            'gender_other': 'sads',
+            'hear_about_us': None,
+            'hear_about_us_other': None,
+            'id': 1,
+            'job_search_status': 'Looking for a job in the next 2-6 months',
+            'needs_help_programs': None,
+            'previous_bcorps_program': 'No',
+            'programs_completed': None,
+            'pronoun': 'They/Them/Their',
+            'pronoun_other': None,
+            'value_question1': 'sasdsad',
+            'value_question2': 'asdsdasd',
+            'years_exp': '5+ years',
+            'race': {
+                'american_indian': False,
+                'asian': True,
+                'black': False,
+                'hawaiian': False,
+                'hispanic': False,
+                'not_listed': False,
+                'race_other': None,
+                'south_asian': False,
+                'white': True,
+            },
+            'roles': {
+                'advocacy_public_policy': False,
+                'community_engagement_outreach': None,
+                'data_analysis': True,
+                'fundraising_development': False,
+                'marketing_public_relations': False,
+                'program_management': True,
+            },
+        },
+    }
 }
 
 POSTS = {
@@ -1395,7 +1447,7 @@ def test_put_contact_saves_deleted_skills(app):
         assert public_health is not None
         assert public_health.deleted
 
-def test_put_program_apps_interested(app):
+def test_put_program_apps_new(app):
     url = '/api/contacts/124/program-apps/interested'
     update = PROGRAM_APPS['obama_put']
 
@@ -1415,6 +1467,55 @@ def test_put_program_apps_interested(app):
         assert response.status_code == 200
         data = response.json['data']
         assert data == PROGRAM_APPS['obama_get']
+
+def test_put_program_apps_update(app):
+    url = '/api/contacts/123/program-apps/interested'
+    update = copy.deepcopy(PROGRAM_APPS['billy'])
+    update['program_apps'][0]['is_interested'] = False
+    update['program_apps'][1]['is_interested'] = True
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+    assert billy.program_apps[0].is_interested == True
+    assert billy.program_apps[1].is_interested == False
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        data = response.json['data']
+        billy = Contact.query.get(123)
+        assert billy.program_apps[0].is_interested == False
+        assert billy.program_apps[1].is_interested == True
+
+
+def test_put_programs_completed_nullable(app):
+    url = '/api/contacts/123/about-me'
+    update = CONTACT_PROFILE['billy_null']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+    assert billy.profile.programs_completed is not None
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        billy = Contact.query.get(123)
+        assert billy.profile.programs_completed.kiva == False
+
 
 @pytest.mark.parametrize(
     "url,update,query,test",
