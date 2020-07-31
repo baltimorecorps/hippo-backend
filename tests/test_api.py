@@ -2104,6 +2104,28 @@ def test_get(app, url, expected):
         assert len(data) > 0
         assert data == expected
 
+def test_get_instructions_null_question(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        # sets value question to None
+        billy = Contact.query.get(123)
+        billy.profile.value_question1 = None
+        db.session.commit()
+        billy = Contact.query.get(123)
+        assert billy.profile.value_question1 is None
+
+        response = client.get('/api/contacts/123/instructions',
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        pprint(data)
+        assert data['instructions']['about_me']['is_complete'] == False
+
 
 def test_get_autocomplete(app):
     mimetype = 'application/json'
