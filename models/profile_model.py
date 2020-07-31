@@ -222,10 +222,11 @@ class Profile(db.Model):
 
     @hybrid_property
     def value_alignment_complete(self):
-        return (
-            len(self.value_question1) > 1
-            and len(self.value_question2) > 1
-        )
+        if self.value_question1 and self.value_question2:
+            return (len(self.value_question1) > 1
+                    and len(self.value_question2) > 1)
+        else:
+            return False
 
     @hybrid_property
     def interests_and_goals_complete(self):
