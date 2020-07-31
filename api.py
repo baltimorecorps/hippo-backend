@@ -53,7 +53,7 @@ from resources.OpportunityApp import (
     OpportunityAppConsider,
 )
 from resources.FormAssembly import TalentProgramApp
-from resources.Profile import ProfileOne
+from resources.Profile import ProfileOne, ContactInstructions
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
@@ -205,3 +205,6 @@ api.add_resource(ContactProgramApps,
 api.add_resource(ContactProgramAppsInterested,
                  '/contacts/<int:contact_id>/program-apps/interested',
                  '/contacts/<int:contact_id>/program-apps/interested/')
+api.add_resource(ContactInstructions,
+                 '/contacts/<int:contact_id>/instructions',
+                 '/contacts/<int:contact_id>/instructions/')

@@ -25,7 +25,16 @@ profile_schema = ContactSchema(exclude=['skills',
                                         'program_apps',
                                         'terms_agreement',
                                         'account_id',
-                                        'email_primary'])
+                                        'email_primary',
+                                        'instructions'])
+instructions_schema = ContactSchema(exclude=['skills',
+                                             'programs',
+                                             'program_apps',
+                                             'phone_primary',
+                                             'terms_agreement',
+                                             'account_id',
+                                             'email_primary',
+                                             'profile'])
 
 def create_profile(contact):
     profile = Profile(contact=contact)
@@ -91,4 +100,17 @@ class ProfileOne(Resource):
 
         result = profile_schema.dump(contact)
 
+        return {'status': 'success', 'data': result}, 200
+
+class ContactInstructions(Resource):
+
+    method_decorators = {
+        'get': [login_required, refresh_session],
+    }
+
+    def get(self, contact_id):
+        if not is_authorized_view(contact_id):
+            return unauthorized()
+        contact = Contact.query.get(contact_id)
+        result = instructions_schema.dump(contact)
         return {'status': 'success', 'data': result}, 200

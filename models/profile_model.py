@@ -101,6 +101,18 @@ class RoleChoice(db.Model):
     #relationships
     profile = db.relationship('Profile', back_populates='roles')
 
+    # calculated fields
+    @hybrid_property
+    def role_choice_complete(self):
+        return (
+            self.advocacy_public_policy
+            or self.community_engagement_outreach
+            or self.data_analysis
+            or self.fundraising_development
+            or self.marketing_public_relation
+            or self.program_management
+        )
+
     #methods
     def update(self, **update_dict):
         UPDATE_FIELDS = [
@@ -193,6 +205,48 @@ class Profile(db.Model):
                                          cascade='all, delete, delete-orphan',
                                          uselist=False)
     contact = db.relationship('Contact', back_populates='profile')
+
+    # calculated fields
+    @hybrid_property
+    def candidate_info_complete(self):
+        if self.address_primary:
+            return (
+                self.address_primary.street1 is not None
+                and self.address_primary.city is not None
+                and self.address_primary.state is not None
+                and self.address_primary.country is not None
+                and self.address_primary.zip_code is not None
+            )
+        else:
+            return False
+
+    @hybrid_property
+    def value_alignment_complete(self):
+        return (
+            len(self.value_question1) > 1
+            and len(self.value_question2) > 1
+        )
+
+    @hybrid_property
+    def interests_and_goals_complete(self):
+        return (
+            self.years_exp is not None
+            and self.job_search_status is not None
+            and self.current_job_status is not None
+            and self.current_edu_status is not None
+            and self.previous_bcorps_program is not None
+            and self.hear_about_us is not None
+        )
+
+    @hybrid_property
+    def programs_and_eligibility_complete(self):
+        if self.contact.program_apps:
+            programs = [p for p in self.contact.program_apps
+                        if p.is_interested]
+        else:
+            programs = []
+
+        return self.needs_help_programs or (len(programs) > 0)
 
     #methods
     def update(self, **update_dict):

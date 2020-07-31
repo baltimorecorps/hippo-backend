@@ -1,5 +1,5 @@
 from models.base_model import db
-from models.contact_model import ContactSchema, ContactShortSchema
+from models.contact_model import ContactShortSchema
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
 from models.resume_model import ResumeSnapshotSchema
 from marshmallow import Schema, fields, EXCLUDE
