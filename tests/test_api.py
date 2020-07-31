@@ -147,6 +147,7 @@ PROGRAM_APPS = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
+        'status': 'created',
         'program_apps': [
             {'id': 7,
              'program': {'id': 1, 'name': 'Place for Purpose'},
@@ -177,6 +178,7 @@ PROGRAM_APPS = {
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
+        'status': 'created',
         'program_apps': [
             {'id': 1,
              'program': {'id': 1, 'name': 'Place for Purpose'},
@@ -191,6 +193,77 @@ PROGRAM_APPS = {
              'status': 'Not interested',
              'decision_date': None},
     ]}
+}
+
+INSTRUCTIONS = {
+    'billy': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+        'status': 'created',
+        'instructions': {
+            'about_me': {
+                'is_complete': True,
+                'components': {
+                    'candidate_information': True,
+                    'value_alignment': True,
+                    'programs': True,
+                    'interests': True,
+                },
+            },
+            'profile': {
+                'is_complete': True,
+                'components': {
+                    'tag_skills': True,
+                    'add_experience': {
+                        'is_complete': True,
+                        'components': {
+                            'add_achievements': True,
+                            'tag_skills': True,
+                        }
+                    },
+                    'add_education': True,
+                    'add_portfolio': False,
+                },
+            },
+            'submit': {'is_complete': False}
+        }
+    },
+    'obama': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'instructions': {
+            'about_me': {
+                'is_complete': False,
+                'components': {
+                    'candidate_information': False,
+                    'value_alignment': False,
+                    'programs': False,
+                    'interests': False,
+                },
+            },
+            'profile': {
+                'is_complete': False,
+                'components': {
+                    'tag_skills': False,
+                    'add_experience': {
+                        'is_complete': False,
+                        'components': {
+                            'add_achievements': False,
+                            'tag_skills': False,
+                        }
+                    },
+                    'add_education': False,
+                    'add_portfolio': True,
+                },
+            },
+            'submit': {'is_complete': False}
+        }
+    }
 }
 
 OPPORTUNITIES = {
@@ -248,7 +321,8 @@ CONTACTS = {
         'programs': [PROGRAM_CONTACTS['billy_pfp'],
                      PROGRAM_CONTACTS['billy_mayoral']],
         'program_apps': PROGRAM_APPS['billy']['program_apps'],
-        'terms_agreement': True
+        'terms_agreement': True,
+        'status': 'created'
     },
 
     'obama': {
@@ -266,7 +340,8 @@ CONTACTS = {
         'skills': SKILLS['obama'],
         'programs': [PROGRAM_CONTACTS['obama_pfp']],
         'program_apps': [],
-        'terms_agreement': True
+        'terms_agreement': True,
+        'status': 'created'
     },
 }
 
@@ -678,6 +753,7 @@ CONTACT_PROFILE = {
         'last_name': "Daly",
         'email': "billy@example.com",
         'phone_primary': "555-245-2351",
+        'status': 'created',
         'profile': {
             'id': 123,
             'gender': 'Male',
@@ -737,6 +813,7 @@ CONTACT_PROFILE = {
         'last_name': "Daly",
         'email': "billy_new@email.com", # updated
         'phone_primary': "555-245-2351",
+        'status': 'created',
         'profile': {
             'id': 1,
             'gender': 'Male',
@@ -796,6 +873,7 @@ CONTACT_PROFILE = {
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
         'phone_primary': "555-444-4444",
+        'status': 'created',
         'profile': {
             'id': 1,
             'gender': None,
@@ -2018,6 +2096,8 @@ def test_delete_contact_skill_saved(app):
     ,('/api/org/opportunities/123abc', OPPORTUNITIES_INTERNAL['test_opp1'])
     ,('/api/contacts/123/about-me', CONTACT_PROFILE['billy_profile'])
     ,('/api/contacts/123/program-apps', PROGRAM_APPS['billy'])
+    ,('/api/contacts/123/instructions', INSTRUCTIONS['billy'])
+    ,('/api/contacts/124/instructions', INSTRUCTIONS['obama'])
     ]
 )
 def test_get(app, url, expected):

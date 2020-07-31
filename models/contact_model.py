@@ -17,6 +17,11 @@ UPDATE_FIELDS = ['first_name', 'last_name', 'email', 'phone_primary', 'stage']
 def add_skill_error(_):
     assert False, "use contact.add_skill instead of contact.skills.append"
 
+class ContactStage(enum.Enum):
+    created = 1
+    submitted = 2
+    approved = 3
+
 class Contact(db.Model):
     __tablename__ = 'contact'
 
@@ -103,6 +108,100 @@ class Contact(db.Model):
     def email_main(self):
         return self.email_primary.email
 
+    @hybrid_property
+    def tag_skills_complete(self):
+        return (len(self.skill_items) >= 3)
+
+    @hybrid_property
+    def add_experience_complete(self):
+        complete_experience = [exp for exp in self.experiences
+                               if exp.type == Type('Work')
+                               and exp.tag_skills_complete
+                               and exp.add_achievements_complete]
+        status = (len(complete_experience) >= 1)
+        exp_dict = {
+            'is_complete': status,
+            'components': {
+                'tag_skills': status,
+                'add_achievements': status
+            }
+        }
+        return exp_dict
+
+    @hybrid_property
+    def add_education_complete(self):
+        complete_education = [exp for exp in self.experiences
+                              if exp.type == Type('Education')]
+        return (len(complete_education) >= 1)
+
+    @hybrid_property
+    def add_portfolio_complete(self):
+        complete_portfolio = [exp for exp in self.experiences
+                             if exp.type == Type('Accomplishment')]
+        return (len(complete_portfolio) >= 1)
+
+    @hybrid_property
+    def profile_complete(self):
+        profile_status = (self.add_experience_complete
+                          and self.add_education_complete)
+        profile_dict = {
+            'is_complete': profile_status,
+            'components': {
+                'tag_skills': self.tag_skills_complete,
+                'add_experience': self.add_experience_complete,
+                'add_education': self.add_education_complete,
+                'add_portfolio': self.add_portfolio_complete,
+            }
+        }
+        return profile_dict
+
+    @hybrid_property
+    def about_me_complete(self):
+        if self.profile:
+            about_me_status = (
+                self.profile.candidate_info_complete
+                and self.profile.value_alignment_complete
+                and self.profile.interests_and_goals_complete
+                and self.profile.programs_and_eligibility_complete
+            )
+            about_me_dict = {
+                'is_complete': about_me_status,
+                'components': {
+                    'candidate_information': self.profile.candidate_info_complete,
+                    'value_alignment': self.profile.value_alignment_complete,
+                    'programs': self.profile.programs_and_eligibility_complete,
+                    'interests': self.profile.interests_and_goals_complete,
+                }
+            }
+        else:
+            about_me_dict = {
+                'is_complete': False,
+                'components': {
+                    'candidate_information': False,
+                    'value_alignment': False,
+                    'programs': False,
+                    'interests': False,
+                }
+            }
+        return about_me_dict
+
+    @hybrid_property
+    def submit_complete(self):
+        return {'is_complete': self.stage >= 2}
+
+    @hybrid_property
+    def status(self):
+        return ContactStage(self.stage)
+
+    @hybrid_property
+    def instructions(self):
+        instructions_dict = {
+            'profile': self.profile_complete,
+            'about_me': self.about_me_complete,
+            'submit': self.submit_complete
+        }
+        return instructions_dict
+
     def query_program_contact(self, program_id):
         return next((p for p in self.programs
                      if p.program_id == program_id), None)
@@ -120,11 +219,13 @@ class ContactSchema(Schema):
     email = fields.String()
     phone_primary = fields.String()
     account_id = fields.String()
+    status = EnumField(ContactStage, dump_only=True)
     skills = fields.Nested(SkillSchema, many=True)
     terms_agreement = fields.Boolean()
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
     program_apps = fields.Nested(ProgramAppSchema, many=True)
     profile = fields.Nested(ProfileSchema)
+    instructions = fields.Dict()
 
     class Meta:
         unknown = EXCLUDE

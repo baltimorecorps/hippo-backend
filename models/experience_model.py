@@ -88,10 +88,8 @@ class Experience(db.Model):
     # calculated fields
     @hybrid_property
     def skills(self):
-        skills = []
-        for skill_item in self.skill_items:
-            if not skill_item.deleted:
-                skills.append(skill_item.skill)
+        skills = [skill_item.skill for skill_item in self.skill_items
+                  if not skill_item.deleted]
         return sorted(skills, key=lambda skill: skill.name)
 
     @hybrid_property
@@ -131,6 +129,13 @@ class Experience(db.Model):
         else:
             return False
 
+    @hybrid_property
+    def tag_skills_complete(self):
+        return len(self.skills) >= 1
+
+    @hybrid_property
+    def add_achievements_complete(self):
+        return len(self.achievements) >= 2
 
 class ExperienceSchema(Schema):
     id = fields.Integer(dump_only=True)
