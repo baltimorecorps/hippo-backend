@@ -1526,6 +1526,34 @@ def test_put_programs_completed_nullable(app):
         billy = Contact.query.get(123)
         assert billy.profile.programs_completed.kiva == False
 
+def test_put_about_me_email(app):
+    url = '/api/contacts/123/about-me'
+    update = CONTACT_PROFILE['billy_update']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+    assert billy.email == 'billy@example.com'
+    assert billy.email_primary.email == 'billy@example.com'
+    assert billy.email_main == 'billy@example.com'
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+
+        billy = Contact.query.get(123)
+        data = response.json['data']
+        assert data['email'] == 'billy_new@email.com'
+
+        assert billy.email == 'billy_new@email.com'
+        assert billy.email_main == 'billy_new@email.com'
+        assert billy.email_primary.email == 'billy_new@email.com'
 
 @pytest.mark.parametrize(
     "url,update,query,test",

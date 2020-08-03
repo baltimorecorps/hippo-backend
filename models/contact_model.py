@@ -101,7 +101,10 @@ class Contact(db.Model):
 
     @hybrid_property
     def email_main(self):
-        return self.email_primary.email
+        if not self.email:
+            return self.email_primary.email
+        else:
+            return self.email
 
     def query_program_contact(self, program_id):
         return next((p for p in self.programs
