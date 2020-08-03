@@ -106,7 +106,10 @@ class Contact(db.Model):
 
     @hybrid_property
     def email_main(self):
-        return self.email_primary.email
+        if not self.email:
+            return self.email_primary.email
+        else:
+            return self.email
 
     @hybrid_property
     def tag_skills_complete(self):

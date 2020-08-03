@@ -54,7 +54,7 @@ class ProfileOne(Resource):
     def get(self, contact_id):
         if not is_authorized_view(contact_id):
             return unauthorized()
-            
+
         contact = Contact.query.get(contact_id)
         if not contact.profile:
             return {'message': 'Profile does not exist'}, 404
@@ -100,6 +100,9 @@ class ProfileOne(Resource):
         profile_data = data.pop('profile', None)
         contact.update(**data)
         contact.profile.update(**profile_data)
+        email = data.get('email', None)
+        if email:
+            contact.email_primary.email = email
         db.session.commit()
 
         result = profile_schema.dump(contact)
