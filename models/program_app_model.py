@@ -4,21 +4,20 @@ from models.program_model import Program, ProgramSchema
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
-class ProgramContact(db.Model):
-    __tablename__ = 'program_contact'
+class ProgramApp(db.Model):
+    __tablename__ = 'program_app'
 
     #table columns
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     contact_id = db.Column(db.Integer, db.ForeignKey('contact.id'), nullable=False)
     program_id = db.Column(db.Integer, db.ForeignKey('program.id'), nullable=False)
-    card_id = db.Column(db.String(25))
-    stage = db.Column(db.Integer)
     is_approved = db.Column(db.Boolean, default=False)
-    is_active = db.Column(db.Boolean, default=True)
+    is_interested = db.Column(db.Boolean, default=False)
+    decision_date = db.Column(db.Date)
 
     #relationship fields
-    program = db.relationship('Program', back_populates='contacts')
-    contact = db.relationship('Contact', back_populates='programs')
+    program = db.relationship('Program', back_populates='program_apps')
+    contact = db.relationship('Contact', back_populates='program_apps')
 
     # for more info on why to use setattr() read this:
     # https://medium.com/@s.azad4/modifying-python-objects-within-the-sqlalchemy-framework-7b6c8dd71ab3
@@ -26,25 +25,26 @@ class ProgramContact(db.Model):
         for field, value in update_dict.items():
             if field in UPDATE_FIELDS:
                 setattr(self, field, value)
-        db.session.commit()
 
     @hybrid_property
-    def applications(self):
-        return [app for app in self.contact.applications
-                if app.program_id == self.program_id]
+    def status(self):
+        if not self.is_interested:
+            return 'Not interested'
+        elif self.is_interested and self.is_approved:
+            return 'Eligible'
+        else:
+            return 'Waiting for approval'
 
-class ProgramContactSchema(Schema):
-    id = fields.Integer(dump_only=True)
-    contact_id = fields.Integer()
-    program_id = fields.Integer(load_only=True)
-    program = fields.Nested(ProgramSchema, dump_only=True)
-    card_id = fields.String()
-    stage = fields.Integer()
-    is_approved = fields.Boolean()
-    is_active = fields.Boolean()
+class ProgramAppSchema(Schema):
+    id = fields.Integer()
+    program = fields.Nested(ProgramSchema)
+    status = fields.String(dump_only=True)
+    is_approved = fields.Boolean(allow_none=True)
+    is_interested = fields.Boolean(allow_none=True)
+    decision_date = fields.Date(dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
 
 # isolates the fields that can be updated in a PUT request
-UPDATE_FIELDS = ('card_id', 'is_approved', 'is_active', 'stage')
+UPDATE_FIELDS = ('is_approved', 'is_interested')

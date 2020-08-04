@@ -20,6 +20,10 @@ from resources.Capability import (
     ContactCapabilitySuggestionOne,
 )
 from resources.Session import Session
+from resources.ProgramApp import (
+    ContactProgramApps,
+    ContactProgramAppsInterested
+)
 from resources.ProgramContacts import (
     ProgramContactOne,
     ProgramContactAll,
@@ -29,7 +33,6 @@ from resources.ProgramContacts import (
 from resources.Trello_Intake_Talent import (
     IntakeTalentBoard,
     IntakeTalentCard,
-    ReviewTalentCard
 )
 from resources.Opportunity import (
     OpportunityAll,
@@ -49,10 +52,9 @@ from resources.OpportunityApp import (
     OpportunityAppInterview,
     OpportunityAppConsider,
 )
-from resources.FormAssembly import (
-    TalentProgramApp,
-    OpportunityIntakeApp,
-)
+from resources.FormAssembly import TalentProgramApp
+from resources.Profile import ProfileOne
+from resources.Program import ProgramAll
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
@@ -171,15 +173,9 @@ api.add_resource(IntakeTalentBoard,
 api.add_resource(IntakeTalentCard,
                  '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent',
                  '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent/')
-api.add_resource(ReviewTalentCard,
-                 '/reviews/<int:review_id>/trello/review-talent',
-                 '/reviews/<int:review_id>/trello/review-talent/')
 api.add_resource(TalentProgramApp,
                  '/form-assembly/talent-app',
                  '/form-assembly/talent-app/')
-api.add_resource(OpportunityIntakeApp,
-                 '/form-assembly/opportunity-app',
-                 '/form-assembly/opportunity-app/')
 api.add_resource(Session,
                  '/session/',
                  '/session')
@@ -201,3 +197,15 @@ api.add_resource(OpportunityDeactivate,
 api.add_resource(OpportunityActivate,
                  '/opportunity/<string:opportunity_id>/activate',
                  '/opportunity/<string:opportunity_id>/activate/')
+api.add_resource(ProfileOne,
+                 '/contacts/<int:contact_id>/about-me',
+                 '/contacts/<int:contact_id>/about-me/')
+api.add_resource(ContactProgramApps,
+                 '/contacts/<int:contact_id>/program-apps',
+                 '/contacts/<int:contact_id>/program-apps/')
+api.add_resource(ContactProgramAppsInterested,
+                 '/contacts/<int:contact_id>/program-apps/interested',
+                 '/contacts/<int:contact_id>/program-apps/interested/')
+api.add_resource(ProgramAll,
+                 '/programs',
+                 '/programs/')

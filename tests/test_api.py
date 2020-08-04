@@ -3,6 +3,7 @@ import datetime as dt
 from pprint import pprint
 import pytest
 import math
+import copy
 
 from models.base_model import db
 from models.contact_model import Contact
@@ -13,6 +14,7 @@ from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
+from models.profile_model import Profile
 
 from models.skill_model import (
     CapabilitySkillSuggestion
@@ -98,84 +100,14 @@ CAPABILITIES = {
 }
 
 
-
-QUESTIONS = {
-    'q_pfp1': {
-        'id': 3,
-        'program_id': 1,
-        'question_text': 'Race and equity',
-        'limit_word': 200,
-        'limit_character': 2000
-    },
-    'q_pfp2': {
-        'id': 4,
-        'program_id': 1,
-        'question_text': 'Sector effectiveness',
-        'limit_word': 300,
-        'limit_character': 3000
-    }
-}
-
-CYCLES = {
-    'pfp': {
-        'id': 2,
-        'program_id': 1,
-        'date_start': '2020-01-06',
-        'date_end': '2025-01-06',
-        'intake_talent_board_id': '5e37744114d9d01a03ddbcfe',
-        'intake_org_board_id': 'intake_org',
-        'match_talent_board_id': 'match_talent',
-        'match_opp_board_id': '5e4acd35a35ee523c71f9e25',
-        'is_active': True,
-        'review_talent_board_id': '5e3753cdaea77d37fce3496a'
-    },
-    'mayoral': {
-        'id': 3,
-        'program_id': 2,
-        'date_start': '2020-01-06',
-        'date_end': '2025-01-06',
-        'intake_talent_board_id': '5e37744114d9d01a03ddbcfe',
-        'intake_org_board_id': 'intake_org',
-        'match_talent_board_id': 'match_talent',
-        'match_opp_board_id': '5e4acd35a35ee523c71f9e25',
-        'is_active': True,
-        'review_talent_board_id': '5e3753cdaea77d37fce3496a'
-    }
-}
-
 PROGRAMS = {
     'pfp': {
         'id': 1,
-        'name': 'Place for Purpose',
+        'name': 'Place for Purpose'
     },
     'mayoral': {
         'id': 2,
-        'name': 'Mayoral Fellowship',
-    }
-}
-
-RESPONSES = {
-    'r_billy1': {
-        'id': 6,
-        'program_contact_id': 5,
-        'question_id': 3,
-        'response_text': 'Race and equity answer'
-    },
-    'r_billy2': {
-        'id': 7,
-        'program_contact_id': 5,
-        'question_id': 4,
-        'response_text': 'Sector effectiveness answer'
-    }
-}
-
-REVIEWS = {
-    'review_billy': {
-        'id': 1,
-        'score': 1,
-        'stage': 1,
-        'is_active': True,
-        'card_id': 'card_id'
+        'name': 'Mayoral Fellowship'
     }
 }
 
@@ -209,15 +141,286 @@ PROGRAM_CONTACTS = {
     }
 }
 
-ELIGIBILITY = {
-    'billy_pfp': {
-        'id': 5,
-        'contact_id': 123,
-        'program_id': 1,
-        'cycles': [2],
-        'stage': 1,
-        'is_active': True,
-        'is_approved': True,
+PROGRAM_APPS = {
+    'billy': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+        'program_apps': [
+            {'id': 7,
+             'program': {'id': 1, 'name': 'Place for Purpose'},
+             'is_interested': True,
+             'is_approved': True,
+             'decision_date': '2020-01-01',
+             'status': 'Eligible'},
+            {'id': 8,
+             'program': {'id': 2, 'name': 'Mayoral Fellowship'},
+             'is_interested': False,
+             'is_approved': False,
+             'status': 'Not interested',
+             'decision_date': None},
+        ]},
+    'obama_put': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'program_apps': [
+            {'program': {'id': 1, 'name': 'Place for Purpose'},
+             'is_interested': True},
+            {'program': {'id': 2, 'name': 'Mayoral Fellowship'},
+             'is_interested': False},
+        ]},
+    'obama_get': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'program_apps': [
+            {'id': 1,
+             'program': {'id': 1, 'name': 'Place for Purpose'},
+             'is_interested': True,
+             'is_approved': False,
+             'decision_date': None,
+             'status': 'Waiting for approval'},
+            {'id': 2,
+             'program': {'id': 2, 'name': 'Mayoral Fellowship'},
+             'is_interested': False,
+             'is_approved': False,
+             'status': 'Not interested',
+             'decision_date': None},
+    ]}
+}
+
+CONTACT_PROFILE = {
+    'billy_profile': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+        'phone_primary': "555-245-2351",
+        'profile': {
+            'id': 123,
+            'gender': 'Male',
+            'gender_other': None,
+            'pronoun': 'He/Him/His',
+            'pronoun_other': None,
+            'years_exp': '3-5',
+            'job_search_status': 'Actively looking',
+            'current_job_status': 'Employed',
+            'current_edu_status': 'Full-time Student',
+            'previous_bcorps_program': 'Yes',
+            'value_question1': 'Test response',
+            'value_question2': 'Test response',
+            'needs_help_programs': True,
+            'hear_about_us': 'Facebook',
+            'hear_about_us_other': 'Other',
+            'programs_completed': {
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': True,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False
+            },
+            'address_primary': {
+                'street1': '123 Main St',
+                'street2': 'Apt 3',
+                'city': 'Baltimore',
+                'state': 'Maryland',
+                'zip_code': '21218',
+                'country': 'United States',
+             },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': False,
+                'hawaiian': False,
+                'south_asian': False,
+                'white': True,
+                'not_listed': False,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': True,
+                'community_engagement_outreach': True,
+                'data_analysis': True,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
+            }
+        }
+    },
+    'billy_update': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy_new@email.com", # updated
+        'phone_primary': "555-245-2351",
+        'profile': {
+            'id': 1,
+            'gender': 'Male',
+            'gender_other': None,
+            'pronoun': 'He/Him/His',
+            'pronoun_other': None,
+            'years_exp': '3-5',
+            'job_search_status': 'Actively looking',
+            'current_job_status': 'Employed',
+            'current_edu_status': 'Full-time Student',
+            'previous_bcorps_program': 'Yes',
+            'value_question1': 'Test response',
+            'value_question2': 'Test response',
+            'needs_help_programs': True,
+            'hear_about_us': 'Facebook',
+            'hear_about_us_other': 'Other New',
+            'programs_completed': {
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': False,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False
+            },
+            'address_primary': {
+                'street1': '124 Main St', # updated
+                'street2': 'Apt 3',
+                'city': 'Baltimore',
+                'state': 'Maryland',
+                'zip_code': '21218',
+                'country': 'United States',
+             },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': True, # updated
+                'hawaiian': False,
+                'south_asian': False,
+                'white': True,
+                'not_listed': False,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': True,
+                'community_engagement_outreach': True,
+                'data_analysis': False,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
+            }
+        }
+    },
+    'obama_blank': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'phone_primary': "555-444-4444",
+        'profile': {
+            'id': 1,
+            'gender': None,
+            'gender_other': None,
+            'pronoun': None,
+            'pronoun_other': None,
+            'years_exp': None,
+            'job_search_status': None,
+            'current_job_status': None,
+            'current_edu_status': None,
+            'previous_bcorps_program': None,
+            'value_question1': None,
+            'value_question2': None,
+            'hear_about_us': None,
+            'hear_about_us_other': None,
+            'needs_help_programs': None,
+            'programs_completed': {
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': False,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False,
+            },
+            'address_primary': {
+                'street1': None,
+                'street2': None,
+                'city': None,
+                'state': None,
+                'zip_code': None,
+                'country': None,
+             },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': False,
+                'hawaiian': False,
+                'south_asian': False,
+                'white': False,
+                'not_listed': False,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': False,
+                'community_engagement_outreach': False,
+                'data_analysis': False,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
+            }
+        }
+    },
+    'billy_null': {
+        'email': 'billy@example.com',
+        'first_name': 'Billy',
+        'last_name': 'Daly',
+        'id': 123,
+        'profile': {
+            'address_primary': {
+                'city': 'Baltimore',
+                'country': 'United States',
+                'state': 'Maryland',
+                'street1': '123 Main St.',
+                'street2': 'Apt 3',
+                'zip_code': '21111',
+            },
+            'current_edu_status': 'Full-time student',
+            'current_job_status': 'Unemployed',
+            'gender': 'Not Listed',
+            'gender_other': 'sads',
+            'hear_about_us': None,
+            'hear_about_us_other': None,
+            'id': 1,
+            'job_search_status': 'Looking for a job in the next 2-6 months',
+            'needs_help_programs': None,
+            'previous_bcorps_program': 'No',
+            'programs_completed': None,
+            'pronoun': 'They/Them/Their',
+            'pronoun_other': None,
+            'value_question1': 'sasdsad',
+            'value_question2': 'asdsdasd',
+            'years_exp': '5+ years',
+            'race': {
+                'american_indian': False,
+                'asian': True,
+                'black': False,
+                'hawaiian': False,
+                'hispanic': False,
+                'not_listed': False,
+                'race_other': None,
+                'south_asian': False,
+                'white': True,
+            },
+            'roles': {
+                'advocacy_public_policy': False,
+                'community_engagement_outreach': None,
+                'data_analysis': True,
+                'fundraising_development': False,
+                'marketing_public_relations': False,
+                'program_management': True,
+            },
+        },
     }
 }
 
@@ -229,7 +432,6 @@ OPPORTUNITIES = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
         'program_name': "Place for Purpose"
@@ -241,7 +443,6 @@ OPPORTUNITIES = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 3,
         'program_id': 2,
         'is_active': True,
         'program_name': "Mayoral Fellowship"
@@ -253,7 +454,6 @@ OPPORTUNITIES = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
         'program_name': "Place for Purpose"
@@ -273,25 +473,14 @@ CONTACTS = {
             'email': "billy@example.com",
             'type': "Personal",
         },
-        'emails': [{
-            'id': 45,
-            'is_primary': True,
-            'email': "billy@example.com",
-            'type': "Personal",
-        }],
-        'gender': 'Male',
-        'gender_other': None,
-        'birthdate': '1991-01-02',
         'phone_primary': "555-245-2351",
-        'race_all': "White",
-        'race_other': None,
-        'pronouns': 'He/Him/His',
-        'pronouns_other': None,
         'account_id': 'test-valid|0123456789abcdefabcdefff',
         'skills': SKILLS['billy'],
         'programs': [PROGRAM_CONTACTS['billy_pfp'],
                      PROGRAM_CONTACTS['billy_mayoral']],
-        'terms_agreement': True
+        'program_apps': PROGRAM_APPS['billy']['program_apps'],
+        'terms_agreement': True,
+        'profile': CONTACT_PROFILE['billy_profile']['profile']
     },
 
     'obama': {
@@ -304,24 +493,13 @@ CONTACTS = {
             'email': "obama@whitehouse.gov",
             'type': "Work",
         },
-        'emails': [{
-            'id': 90,
-            'is_primary': True,
-            'email': "obama@whitehouse.gov",
-            'type': "Work",
-        }],
-        'gender': 'Male',
-        'gender_other': None,
-        'birthdate': '1961-08-04',
         'phone_primary': "555-444-4444",
-        'race_all': "Black or African-American;White",
-        'race_other': 'Test',
-        'pronouns': 'Not Listed',
-        'pronouns_other': 'They/Them/Their',
         'account_id': None,
         'skills': SKILLS['obama'],
         'programs': [PROGRAM_CONTACTS['obama_pfp']],
-        'terms_agreement': True
+        'program_apps': [],
+        'terms_agreement': True,
+        'profile': None
     },
 }
 
@@ -428,7 +606,6 @@ OPPORTUNITIES_INTERNAL = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
         'program_name': "Place for Purpose",
@@ -456,7 +633,6 @@ OPPORTUNITIES_INTERNAL = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 3,
         'program_id': 2,
         'is_active': True,
         'program_name': "Mayoral Fellowship",
@@ -476,7 +652,6 @@ OPPORTUNITIES_INTERNAL = {
         'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         'status': 'submitted',
         'org_name': 'Test Org',
-        'cycle_id': 2,
         'program_id': 1,
         'is_active': True,
         'program_name': "Place for Purpose",
@@ -729,6 +904,7 @@ RESUME_OUTPUT = {
     'other_skills_dump': [TAG_ITEMS['billy_webdev']]
 }
 
+
 POSTS = {
     'experience': {
         'description': 'Test description',
@@ -800,11 +976,6 @@ POSTS = {
             "is_primary": True,
         },
         "phone_primary": "111-111-1111",
-        "gender": "Female",
-        "race_all": "Hispanic/Latino;Other",
-        "race_other": "Cuban",
-        "pronouns": "She/Her/Hers",
-        "birthdate": "1973-04-23",
         "account_id": 'test-valid|0123456789',
         "terms_agreement": True
     },
@@ -812,11 +983,29 @@ POSTS = {
         "title": "Test Opportunity",
         "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
         "gdoc_id": "TESTABC11==",
-        "cycle_id": 2,
+        "cycle_id": 1,
         "org_name": 'Test Org',
         "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
         "is_active": True,
         'program_name': "Place for Purpose"
+    },
+    'mayoral_opportunity': {
+        "title": "Mayoral Test 1",
+        "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
+        "gdoc_id": "TESTABC11==",
+        "org_name": 'Test Org',
+        "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+        "is_active": True,
+        'program_name': "Mayoral Fellowship"
+    },
+    'blank_opportunity': {
+        "title": "Blank Test 1",
+        "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
+        "gdoc_id": "TESTABC11==",
+        "org_name": 'Test Org',
+        "gdoc_link": "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
+        "is_active": True,
+        'program_name': None,
     },
 }
 
@@ -891,7 +1080,6 @@ def post_request(app, url, data):
       lambda id: (OpportunityApp.query
                   .filter_by(contact_id=124, opportunity_id='123abc').first()),
       )
-
     ]
 )
 def test_post(app, url, data, query):
@@ -904,6 +1092,17 @@ def test_post(app, url, data, query):
     id_, _ = post_request(app, url, data)
     assert query(id_) is not None
 
+@pytest.mark.parametrize(
+    "data,program_id",
+    [(POSTS['opportunity'], 1),
+    (POSTS['mayoral_opportunity'], 2),
+    (POSTS['blank_opportunity'], 1)]
+)
+def test_post_opp_program(app, data, program_id):
+    id_, data = post_request(app, '/api/opportunity/', data)
+    opp = Opportunity.query.filter_by(title=data['title']).first()
+    assert opp is not None
+    assert opp.program_id == program_id
 
 @pytest.mark.skip
 def test_create_program_contact_with_contact(app):
@@ -927,6 +1126,15 @@ def test_post_experience_date(app):
 def test_post_opportunity_app_status(app):
     id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
     assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
+
+def test_post_about_me(app):
+    id_, data = post_request(app, '/api/contacts/124/about-me/', {})
+    contact = Contact.query.get(124)
+    assert contact.profile != {}
+    pprint(data)
+    pprint(CONTACT_PROFILE['obama_blank'])
+    assert data == CONTACT_PROFILE['obama_blank']
+
 
 def test_post_experience_null_start_date(app):
     exp = POSTS['experience'].copy()
@@ -1027,6 +1235,16 @@ def test_post_contact_skill_undelete(app):
     print(achievement_skills)
     assert 'Event Planning' in achievement_skills
 
+def test_get_no_profile(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+    }
+    with app.test_client() as client:
+        response = client.get('/api/contacts/124/about-me', headers=headers)
+        assert response.status_code == 404
+        assert response.json['message'] == 'Profile does not exist'
 
 # TODO: unskip when trello stuff is mocked out
 @pytest.mark.skip
@@ -1102,10 +1320,9 @@ def skill_name(skill):
 @pytest.mark.parametrize(
     "url,update,query,test",
     [('/api/contacts/123/',
-      {'first_name': 'William', 'last_name':'Daly',
-       'gender': None, 'birthdate': None},
+      {'first_name': 'William', 'last_name':'Daly'},
       lambda: Contact.query.get(123),
-      lambda e: e.first_name == 'William' and e.gender == None,
+      lambda e: e.first_name == 'William',
       ),
      ('/api/contacts/123/',
       {'first_name': 'William', 'programs': 'This should be excluded from load'},
@@ -1170,12 +1387,6 @@ def skill_name(skill):
       lambda: ProgramContact.query.get(5),
       lambda r: r.stage == 2,
       )
-    ,pytest.param('/api/contacts/123/programs/1/',
-      {'responses': [RESPONSES['r_billy1']]},
-      lambda: ProgramContact.query.get(5),
-      lambda r: len(r.responses) == 1 and r.responses[0].response_text == 'Race and equity answer',
-      marks=pytest.mark.skip
-      )
     ,pytest.param('/api/opportunity/123abc/',
       {'title': "New title"},
       lambda: Opportunity.query.get('123abc'),
@@ -1201,6 +1412,14 @@ def skill_name(skill):
        APP_PUT_FULL,
        lambda: OpportunityApp.query.get('a1'),
        lambda r: r.interest_statement == 'dfdddsdfff',
+       )
+     ,('/api/contacts/123/about-me',
+       CONTACT_PROFILE['billy_update'],
+       lambda: Profile.query.get(123),
+       lambda r: (r.contact.email == 'billy_new@email.com'
+                  and r.address_primary.street1 == '124 Main St'
+                  and r.race.hispanic == True
+                  and r.roles.data_analysis == False),
        )
     ]
 )
@@ -1241,6 +1460,103 @@ def test_put_contact_saves_deleted_skills(app):
         assert public_health is not None
         assert public_health.deleted
 
+def test_put_program_apps_new(app):
+    url = '/api/contacts/124/program-apps/interested'
+    update = PROGRAM_APPS['obama_put']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    obama = Contact.query.get(124)
+    assert obama.program_apps == []
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        data = response.json['data']
+        assert data == PROGRAM_APPS['obama_get']
+
+def test_put_program_apps_update(app):
+    url = '/api/contacts/123/program-apps/interested'
+    update = copy.deepcopy(PROGRAM_APPS['billy'])
+    update['program_apps'][0]['is_interested'] = False
+    update['program_apps'][1]['is_interested'] = True
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+    assert billy.program_apps[0].is_interested == True
+    assert billy.program_apps[1].is_interested == False
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        data = response.json['data']
+        billy = Contact.query.get(123)
+        assert billy.program_apps[0].is_interested == False
+        assert billy.program_apps[1].is_interested == True
+
+
+def test_put_programs_completed_nullable(app):
+    url = '/api/contacts/123/about-me'
+    update = CONTACT_PROFILE['billy_null']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+    assert billy.profile.programs_completed is not None
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        billy = Contact.query.get(123)
+        assert billy.profile.programs_completed.kiva == False
+
+def test_put_about_me_email(app):
+    url = '/api/contacts/123/about-me'
+    update = CONTACT_PROFILE['billy_update']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+    assert billy.email == 'billy@example.com'
+    assert billy.email_primary.email == 'billy@example.com'
+    assert billy.email_main == 'billy@example.com'
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+
+        billy = Contact.query.get(123)
+        data = response.json['data']
+        assert data['email'] == 'billy_new@email.com'
+
+        assert billy.email == 'billy_new@email.com'
+        assert billy.email_main == 'billy_new@email.com'
+        assert billy.email_primary.email == 'billy_new@email.com'
 
 @pytest.mark.parametrize(
     "url,update,query,test",
@@ -1727,6 +2043,8 @@ def test_delete_contact_skill_saved(app):
     ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
     ,('/api/contacts/123/app/123abc', APPLICATIONS['app_billy'])
     ,('/api/org/opportunities/123abc', OPPORTUNITIES_INTERNAL['test_opp1'])
+    ,('/api/contacts/123/about-me', CONTACT_PROFILE['billy_profile'])
+    ,('/api/contacts/123/program-apps', PROGRAM_APPS['billy'])
     ]
 )
 def test_get(app, url, expected):
@@ -1742,6 +2060,8 @@ def test_get(app, url, expected):
         response = client.get(url, headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
+        pprint(data)
+        pprint(expected)
         assert len(data) > 0
         assert data == expected
 
@@ -1818,6 +2138,7 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/programs/', CONTACT_PROGRAMS.values())
     ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
     ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])
+    ,('/api/programs', PROGRAMS.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):
@@ -1834,6 +2155,7 @@ def test_get_many_unordered(app, url, expected):
         # Test that the data and expected contain the same items, but not
         # necessarily in the same order
         pprint(list(expected))
+        pprint(data)
         assert len(data) == len(expected)
         for item in data:
             pprint(item)
