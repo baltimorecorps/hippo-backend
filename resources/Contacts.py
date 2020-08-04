@@ -200,8 +200,7 @@ class ContactOne(Resource):
         email_list = data.pop('emails', None)
         skills = data.pop('skills', None)
 
-        for k,v in data.items():
-            setattr(contact, k, v)
+        contact.update(**data)
 
         if email:
             del contact.emails[:]

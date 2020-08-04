@@ -579,6 +579,123 @@ CONTACTS = {
         'status': 'created',
         'profile': None
     },
+    'billy_bug': {
+        "program_apps":[],
+        "account_id":"google-oauth2|107132552139022184223",
+        "email_primary":{
+            "email":"billy@baltimorecorps.org",
+            "id":123,
+            "type":"Personal",
+            "is_primary":True},
+        "first_name":"Billy",
+        "profile":{
+            "pronoun_other":None,
+            "needs_help_programs":None,
+            "pronoun":None,
+            "previous_bcorps_program":"No",
+            "job_search_status":"Looking for a job in the next 2-6 months",
+            "hear_about_us":None,
+            "years_exp":"0-2 years",
+            "current_job_status":"Unemployed",
+            "gender":None,
+            "gender_other":None,
+            "roles":{
+                "community_engagement_outreach":None,
+                "advocacy_public_policy":None,
+                "data_analysis":True,
+                "marketing_public_relations":True,
+                "fundraising_development":None,
+                "program_management":None},
+                "address_primary":{
+                    "zip_code":None,
+                    "country":None,
+                    "city":None,
+                    "state":None,
+                    "street1":None,
+                    "street2":None
+                },
+                "current_edu_status":"Full-time student",
+                "value_question2":None,
+                "id":6,
+                "value_question1":None,
+                "race":{
+                    "asian":None,
+                    "american_indian":None,
+                    "white":None,
+                    "black":None,
+                    "race_other":None,
+                    "hawaiian":None,
+                    "hispanic":None,
+                    "south_asian":None,
+                    "not_listed":None
+                },
+                "programs_completed":{
+                    "public_allies":False,
+                    "civic_innovators":False,
+                    "kiva":False,
+                    "elevation_awards":False,
+                    "mayoral_fellowship":False,
+                    "fellowship":False
+                },
+                "hear_about_us_other":None
+            },
+            "phone_primary":"+1 (908) 578-4622",
+            "programs":[
+                {"is_approved":True,
+                "contact_id":74,
+                "is_active":True,
+                "program":{"id":1,"name":"Place for Purpose"},
+                "stage":None,
+                "card_id":None,
+                "id":74}
+            ],
+            "id":74,
+            "last_name":"Daly1",
+            "skills":[
+                {"id":"FsleYWdpSaCA_qO3nkdMVw==","name":"Budgeting"},
+                {"id":"YtCEwpoJ8IcV5KPCU7BURg==","name":"Data Visualization"},
+                {"id":"qXGYjA77UThj7WPKlvxBtg==","name":"Documentation"},
+                {"id":"RMjj5QJ3seZnbRPDmDg8pQ==","name":"Grant Reporting"},
+                {"id":"oVUnhdEA5BJ_DLg0G4d1bw==","name":"Graphic Design"},
+                {"id":"opfNJLiUftLHJH0cjBMMNg==","name":"Project Planning"},
+                {"id":"8Z8qGXdVMDR2Q7OH3lkueA==","name":"Public Relations"},
+                {"id":"ZFXHeJ5WsDwZSsQl_ge0MQ==","name":"Python Script"},
+                {"id":"BPxYULhlGt-9tzxHsJNLSA==","name":"Report Writing"},
+                {"id":"BU7_v3jWFFgHpmHcw50xqg==","name":"Social Media Management"},
+                {"id":"8t48rV-NkxP0h0Y0E8h-vQ==","name":"Technical Requirements"}
+            ],
+            "terms_agreement":True,
+            "capabilities":{
+                "cap:analysis":{
+                    "id":"cap:analysis",
+                    "name":"Data Analysis",
+                    "skills":[{"id":"YtCEwpoJ8IcV5KPCU7BURg==","name":"Data Visualization"}],
+                    "suggested_skills":[],
+                    "score":1
+                },
+                "cap:fundraising":{
+                    "id":"cap:fundraising",
+                    "name":"Fundraising and Development",
+                    "skills":[],
+                    "suggested_skills":[{"id":"RMjj5QJ3seZnbRPDmDg8pQ==","name":"Grant Reporting"}],
+                    "score":0
+                },
+                "cap:marketing":{
+                    "id":"cap:marketing",
+                    "name":"Marketing and Public Relations",
+                    "skills":[
+                        {"id":"8Z8qGXdVMDR2Q7OH3lkueA==","name":"Public Relations"},
+                        {"id":"BU7_v3jWFFgHpmHcw50xqg==","name":"Social Media Management"}],
+                    "suggested_skills":[{"id":"oVUnhdEA5BJ_DLg0G4d1bw==","name":"Graphic Design"}],"score":2},
+                    "cap:prog_mgmt":{
+                        "id":"cap:prog_mgmt",
+                        "name":"Program Management",
+                        "skills":[{"id":"FsleYWdpSaCA_qO3nkdMVw==","name":"Budgeting"}],
+                    "suggested_skills":[],
+                    "score":2
+                    }
+                },
+                "other_skills":[{"id":"qXGYjA77UThj7WPKlvxBtg==","name":"Documentation"},{"id":"opfNJLiUftLHJH0cjBMMNg==","name":"Project Planning"},{"id":"ZFXHeJ5WsDwZSsQl_ge0MQ==","name":"Python Script"},{"id":"BPxYULhlGt-9tzxHsJNLSA==","name":"Report Writing"},{"id":"8t48rV-NkxP0h0Y0E8h-vQ==","name":"Technical Requirements"}],"email":"billy@baltimorecorps.org"}
 }
 
 CONTACTS_SHORT = {
@@ -1587,6 +1704,23 @@ def test_put_program_apps_update(app):
         assert billy.program_apps[0].is_interested == False
         assert billy.program_apps[1].is_interested == True
 
+def test_put_contact_dict_error(app):
+    url = '/api/contacts/123/'
+    update = CONTACTS['billy_bug']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
 
 def test_put_programs_completed_nullable(app):
     url = '/api/contacts/123/about-me'
@@ -2227,7 +2361,7 @@ def test_get_capability_recommendations(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/contacts/', CONTACTS.values())
+    [('/api/contacts/', [CONTACTS['billy'], CONTACTS['obama']])
     ,('/api/contacts/123/experiences/', [EXPERIENCES['goucher'],
                                          EXPERIENCES['baltimore']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES['columbia']])
