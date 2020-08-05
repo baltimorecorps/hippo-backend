@@ -195,6 +195,240 @@ PROGRAM_APPS = {
     ]}
 }
 
+CONTACT_PROFILE = {
+    'billy_profile': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+        'phone_primary': "555-245-2351",
+        'status': 'created',
+        'profile': {
+            'id': 123,
+            'gender': 'Male',
+            'gender_other': None,
+            'pronoun': 'He/Him/His',
+            'pronoun_other': None,
+            'years_exp': '3-5',
+            'job_search_status': 'Actively looking',
+            'current_job_status': 'Employed',
+            'current_edu_status': 'Full-time Student',
+            'previous_bcorps_program': 'Yes',
+            'value_question1': 'Test response',
+            'value_question2': 'Test response',
+            'needs_help_programs': True,
+            'hear_about_us': 'Facebook',
+            'hear_about_us_other': 'Other',
+            'programs_completed': {
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': True,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False
+            },
+            'address_primary': {
+                'street1': '123 Main St',
+                'street2': 'Apt 3',
+                'city': 'Baltimore',
+                'state': 'Maryland',
+                'zip_code': '21218',
+                'country': 'United States',
+             },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': False,
+                'hawaiian': False,
+                'south_asian': False,
+                'white': True,
+                'not_listed': False,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': True,
+                'community_engagement_outreach': True,
+                'data_analysis': True,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
+            }
+        }
+    },
+    'billy_update': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy_new@email.com", # updated
+        'phone_primary': "555-245-2351",
+        'status': 'created',
+        'profile': {
+            'id': 1,
+            'gender': 'Male',
+            'gender_other': None,
+            'pronoun': 'He/Him/His',
+            'pronoun_other': None,
+            'years_exp': '3-5',
+            'job_search_status': 'Actively looking',
+            'current_job_status': 'Employed',
+            'current_edu_status': 'Full-time Student',
+            'previous_bcorps_program': 'Yes',
+            'value_question1': 'Test response',
+            'value_question2': 'Test response',
+            'needs_help_programs': True,
+            'hear_about_us': 'Facebook',
+            'hear_about_us_other': 'Other New',
+            'programs_completed': {
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': False,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False
+            },
+            'address_primary': {
+                'street1': '124 Main St', # updated
+                'street2': 'Apt 3',
+                'city': 'Baltimore',
+                'state': 'Maryland',
+                'zip_code': '21218',
+                'country': 'United States',
+             },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': True, # updated
+                'hawaiian': False,
+                'south_asian': False,
+                'white': True,
+                'not_listed': False,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': True,
+                'community_engagement_outreach': True,
+                'data_analysis': False,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
+            }
+        }
+    },
+    'obama_blank': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'phone_primary': "555-444-4444",
+        'status': 'created',
+        'profile': {
+            'id': 1,
+            'gender': None,
+            'gender_other': None,
+            'pronoun': None,
+            'pronoun_other': None,
+            'years_exp': None,
+            'job_search_status': None,
+            'current_job_status': None,
+            'current_edu_status': None,
+            'previous_bcorps_program': None,
+            'value_question1': None,
+            'value_question2': None,
+            'hear_about_us': None,
+            'hear_about_us_other': None,
+            'needs_help_programs': None,
+            'programs_completed': {
+                'fellowship': False,
+                'public_allies': False,
+                'mayoral_fellowship': False,
+                'kiva': False,
+                'elevation_awards': False,
+                'civic_innovators': False,
+            },
+            'address_primary': {
+                'street1': None,
+                'street2': None,
+                'city': None,
+                'state': None,
+                'zip_code': None,
+                'country': None,
+             },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': False,
+                'hawaiian': False,
+                'south_asian': False,
+                'white': False,
+                'not_listed': False,
+                'race_other': None,
+            },
+            'roles': {
+                'advocacy_public_policy': False,
+                'community_engagement_outreach': False,
+                'data_analysis': False,
+                'fundraising_development': False,
+                'program_management': False,
+                'marketing_public_relations': False
+            }
+        }
+    },
+    'billy_null': {
+        'email': 'billy@example.com',
+        'first_name': 'Billy',
+        'last_name': 'Daly',
+        'id': 123,
+        'profile': {
+            'address_primary': {
+                'city': 'Baltimore',
+                'country': 'United States',
+                'state': 'Maryland',
+                'street1': '123 Main St.',
+                'street2': 'Apt 3',
+                'zip_code': '21111',
+            },
+            'current_edu_status': 'Full-time student',
+            'current_job_status': 'Unemployed',
+            'gender': 'Not Listed',
+            'gender_other': 'sads',
+            'hear_about_us': None,
+            'hear_about_us_other': None,
+            'id': 1,
+            'job_search_status': 'Looking for a job in the next 2-6 months',
+            'needs_help_programs': None,
+            'previous_bcorps_program': 'No',
+            'programs_completed': None,
+            'pronoun': 'They/Them/Their',
+            'pronoun_other': None,
+            'value_question1': 'sasdsad',
+            'value_question2': 'asdsdasd',
+            'years_exp': '5+ years',
+            'race': {
+                'american_indian': False,
+                'asian': True,
+                'black': False,
+                'hawaiian': False,
+                'hispanic': False,
+                'not_listed': False,
+                'race_other': None,
+                'south_asian': False,
+                'white': True,
+            },
+            'roles': {
+                'advocacy_public_policy': False,
+                'community_engagement_outreach': None,
+                'data_analysis': True,
+                'fundraising_development': False,
+                'marketing_public_relations': False,
+                'program_management': True,
+            },
+        },
+    }
+}
+
 INSTRUCTIONS = {
     'billy': {
         'id': 123,
@@ -322,7 +556,8 @@ CONTACTS = {
                      PROGRAM_CONTACTS['billy_mayoral']],
         'program_apps': PROGRAM_APPS['billy']['program_apps'],
         'terms_agreement': True,
-        'status': 'created'
+        'status': 'created',
+        'profile': CONTACT_PROFILE['billy_profile']['profile']
     },
 
     'obama': {
@@ -341,8 +576,126 @@ CONTACTS = {
         'programs': [PROGRAM_CONTACTS['obama_pfp']],
         'program_apps': [],
         'terms_agreement': True,
-        'status': 'created'
+        'status': 'created',
+        'profile': None
     },
+    'billy_bug': {
+        "program_apps":[],
+        "account_id":"google-oauth2|107132552139022184223",
+        "email_primary":{
+            "email":"billy@baltimorecorps.org",
+            "id":123,
+            "type":"Personal",
+            "is_primary":True},
+        "first_name":"Billy",
+        "profile":{
+            "pronoun_other":None,
+            "needs_help_programs":None,
+            "pronoun":None,
+            "previous_bcorps_program":"No",
+            "job_search_status":"Looking for a job in the next 2-6 months",
+            "hear_about_us":None,
+            "years_exp":"0-2 years",
+            "current_job_status":"Unemployed",
+            "gender":None,
+            "gender_other":None,
+            "roles":{
+                "community_engagement_outreach":None,
+                "advocacy_public_policy":None,
+                "data_analysis":True,
+                "marketing_public_relations":True,
+                "fundraising_development":None,
+                "program_management":None},
+                "address_primary":{
+                    "zip_code":None,
+                    "country":None,
+                    "city":None,
+                    "state":None,
+                    "street1":None,
+                    "street2":None
+                },
+                "current_edu_status":"Full-time student",
+                "value_question2":None,
+                "id":6,
+                "value_question1":None,
+                "race":{
+                    "asian":None,
+                    "american_indian":None,
+                    "white":None,
+                    "black":None,
+                    "race_other":None,
+                    "hawaiian":None,
+                    "hispanic":None,
+                    "south_asian":None,
+                    "not_listed":None
+                },
+                "programs_completed":{
+                    "public_allies":False,
+                    "civic_innovators":False,
+                    "kiva":False,
+                    "elevation_awards":False,
+                    "mayoral_fellowship":False,
+                    "fellowship":False
+                },
+                "hear_about_us_other":None
+            },
+            "phone_primary":"+1 (908) 578-4622",
+            "programs":[
+                {"is_approved":True,
+                "contact_id":74,
+                "is_active":True,
+                "program":{"id":1,"name":"Place for Purpose"},
+                "stage":None,
+                "card_id":None,
+                "id":74}
+            ],
+            "id":74,
+            "last_name":"Daly1",
+            "skills":[
+                {"id":"FsleYWdpSaCA_qO3nkdMVw==","name":"Budgeting"},
+                {"id":"YtCEwpoJ8IcV5KPCU7BURg==","name":"Data Visualization"},
+                {"id":"qXGYjA77UThj7WPKlvxBtg==","name":"Documentation"},
+                {"id":"RMjj5QJ3seZnbRPDmDg8pQ==","name":"Grant Reporting"},
+                {"id":"oVUnhdEA5BJ_DLg0G4d1bw==","name":"Graphic Design"},
+                {"id":"opfNJLiUftLHJH0cjBMMNg==","name":"Project Planning"},
+                {"id":"8Z8qGXdVMDR2Q7OH3lkueA==","name":"Public Relations"},
+                {"id":"ZFXHeJ5WsDwZSsQl_ge0MQ==","name":"Python Script"},
+                {"id":"BPxYULhlGt-9tzxHsJNLSA==","name":"Report Writing"},
+                {"id":"BU7_v3jWFFgHpmHcw50xqg==","name":"Social Media Management"},
+                {"id":"8t48rV-NkxP0h0Y0E8h-vQ==","name":"Technical Requirements"}
+            ],
+            "terms_agreement":True,
+            "capabilities":{
+                "cap:analysis":{
+                    "id":"cap:analysis",
+                    "name":"Data Analysis",
+                    "skills":[{"id":"YtCEwpoJ8IcV5KPCU7BURg==","name":"Data Visualization"}],
+                    "suggested_skills":[],
+                    "score":1
+                },
+                "cap:fundraising":{
+                    "id":"cap:fundraising",
+                    "name":"Fundraising and Development",
+                    "skills":[],
+                    "suggested_skills":[{"id":"RMjj5QJ3seZnbRPDmDg8pQ==","name":"Grant Reporting"}],
+                    "score":0
+                },
+                "cap:marketing":{
+                    "id":"cap:marketing",
+                    "name":"Marketing and Public Relations",
+                    "skills":[
+                        {"id":"8Z8qGXdVMDR2Q7OH3lkueA==","name":"Public Relations"},
+                        {"id":"BU7_v3jWFFgHpmHcw50xqg==","name":"Social Media Management"}],
+                    "suggested_skills":[{"id":"oVUnhdEA5BJ_DLg0G4d1bw==","name":"Graphic Design"}],"score":2},
+                    "cap:prog_mgmt":{
+                        "id":"cap:prog_mgmt",
+                        "name":"Program Management",
+                        "skills":[{"id":"FsleYWdpSaCA_qO3nkdMVw==","name":"Budgeting"}],
+                    "suggested_skills":[],
+                    "score":2
+                    }
+                },
+                "other_skills":[{"id":"qXGYjA77UThj7WPKlvxBtg==","name":"Documentation"},{"id":"opfNJLiUftLHJH0cjBMMNg==","name":"Project Planning"},{"id":"ZFXHeJ5WsDwZSsQl_ge0MQ==","name":"Python Script"},{"id":"BPxYULhlGt-9tzxHsJNLSA==","name":"Report Writing"},{"id":"8t48rV-NkxP0h0Y0E8h-vQ==","name":"Technical Requirements"}],"email":"billy@baltimorecorps.org"}
 }
 
 CONTACTS_SHORT = {
@@ -746,239 +1099,6 @@ RESUME_OUTPUT = {
     'other_skills_dump': [TAG_ITEMS['billy_webdev']]
 }
 
-CONTACT_PROFILE = {
-    'billy_profile': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy@example.com",
-        'phone_primary': "555-245-2351",
-        'status': 'created',
-        'profile': {
-            'id': 123,
-            'gender': 'Male',
-            'gender_other': None,
-            'pronoun': 'He/Him/His',
-            'pronoun_other': None,
-            'years_exp': '3-5',
-            'job_search_status': 'Actively looking',
-            'current_job_status': 'Employed',
-            'current_edu_status': 'Full-time Student',
-            'previous_bcorps_program': 'Yes',
-            'value_question1': 'Test response',
-            'value_question2': 'Test response',
-            'needs_help_programs': True,
-            'hear_about_us': 'Facebook',
-            'hear_about_us_other': 'Other',
-            'programs_completed': {
-                'fellowship': False,
-                'public_allies': False,
-                'mayoral_fellowship': True,
-                'kiva': False,
-                'elevation_awards': False,
-                'civic_innovators': False
-            },
-            'address_primary': {
-                'street1': '123 Main St',
-                'street2': 'Apt 3',
-                'city': 'Baltimore',
-                'state': 'Maryland',
-                'zip_code': '21218',
-                'country': 'United States',
-             },
-            'race': {
-                'american_indian': False,
-                'asian': False,
-                'black': False,
-                'hispanic': False,
-                'hawaiian': False,
-                'south_asian': False,
-                'white': True,
-                'not_listed': False,
-                'race_other': None,
-            },
-            'roles': {
-                'advocacy_public_policy': True,
-                'community_engagement_outreach': True,
-                'data_analysis': True,
-                'fundraising_development': False,
-                'program_management': False,
-                'marketing_public_relations': False
-            }
-        }
-    },
-    'billy_update': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy_new@email.com", # updated
-        'phone_primary': "555-245-2351",
-        'status': 'created',
-        'profile': {
-            'id': 1,
-            'gender': 'Male',
-            'gender_other': None,
-            'pronoun': 'He/Him/His',
-            'pronoun_other': None,
-            'years_exp': '3-5',
-            'job_search_status': 'Actively looking',
-            'current_job_status': 'Employed',
-            'current_edu_status': 'Full-time Student',
-            'previous_bcorps_program': 'Yes',
-            'value_question1': 'Test response',
-            'value_question2': 'Test response',
-            'needs_help_programs': True,
-            'hear_about_us': 'Facebook',
-            'hear_about_us_other': 'Other New',
-            'programs_completed': {
-                'fellowship': False,
-                'public_allies': False,
-                'mayoral_fellowship': False,
-                'kiva': False,
-                'elevation_awards': False,
-                'civic_innovators': False
-            },
-            'address_primary': {
-                'street1': '124 Main St', # updated
-                'street2': 'Apt 3',
-                'city': 'Baltimore',
-                'state': 'Maryland',
-                'zip_code': '21218',
-                'country': 'United States',
-             },
-            'race': {
-                'american_indian': False,
-                'asian': False,
-                'black': False,
-                'hispanic': True, # updated
-                'hawaiian': False,
-                'south_asian': False,
-                'white': True,
-                'not_listed': False,
-                'race_other': None,
-            },
-            'roles': {
-                'advocacy_public_policy': True,
-                'community_engagement_outreach': True,
-                'data_analysis': False,
-                'fundraising_development': False,
-                'program_management': False,
-                'marketing_public_relations': False
-            }
-        }
-    },
-    'obama_blank': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'phone_primary': "555-444-4444",
-        'status': 'created',
-        'profile': {
-            'id': 1,
-            'gender': None,
-            'gender_other': None,
-            'pronoun': None,
-            'pronoun_other': None,
-            'years_exp': None,
-            'job_search_status': None,
-            'current_job_status': None,
-            'current_edu_status': None,
-            'previous_bcorps_program': None,
-            'value_question1': None,
-            'value_question2': None,
-            'hear_about_us': None,
-            'hear_about_us_other': None,
-            'needs_help_programs': None,
-            'programs_completed': {
-                'fellowship': False,
-                'public_allies': False,
-                'mayoral_fellowship': False,
-                'kiva': False,
-                'elevation_awards': False,
-                'civic_innovators': False,
-            },
-            'address_primary': {
-                'street1': None,
-                'street2': None,
-                'city': None,
-                'state': None,
-                'zip_code': None,
-                'country': None,
-             },
-            'race': {
-                'american_indian': False,
-                'asian': False,
-                'black': False,
-                'hispanic': False,
-                'hawaiian': False,
-                'south_asian': False,
-                'white': False,
-                'not_listed': False,
-                'race_other': None,
-            },
-            'roles': {
-                'advocacy_public_policy': False,
-                'community_engagement_outreach': False,
-                'data_analysis': False,
-                'fundraising_development': False,
-                'program_management': False,
-                'marketing_public_relations': False
-            }
-        }
-    },
-    'billy_null': {
-        'email': 'billy@example.com',
-        'first_name': 'Billy',
-        'last_name': 'Daly',
-        'id': 123,
-        'profile': {
-            'address_primary': {
-                'city': 'Baltimore',
-                'country': 'United States',
-                'state': 'Maryland',
-                'street1': '123 Main St.',
-                'street2': 'Apt 3',
-                'zip_code': '21111',
-            },
-            'current_edu_status': 'Full-time student',
-            'current_job_status': 'Unemployed',
-            'gender': 'Not Listed',
-            'gender_other': 'sads',
-            'hear_about_us': None,
-            'hear_about_us_other': None,
-            'id': 1,
-            'job_search_status': 'Looking for a job in the next 2-6 months',
-            'needs_help_programs': None,
-            'previous_bcorps_program': 'No',
-            'programs_completed': None,
-            'pronoun': 'They/Them/Their',
-            'pronoun_other': None,
-            'value_question1': 'sasdsad',
-            'value_question2': 'asdsdasd',
-            'years_exp': '5+ years',
-            'race': {
-                'american_indian': False,
-                'asian': True,
-                'black': False,
-                'hawaiian': False,
-                'hispanic': False,
-                'not_listed': False,
-                'race_other': None,
-                'south_asian': False,
-                'white': True,
-            },
-            'roles': {
-                'advocacy_public_policy': False,
-                'community_engagement_outreach': None,
-                'data_analysis': True,
-                'fundraising_development': False,
-                'marketing_public_relations': False,
-                'program_management': True,
-            },
-        },
-    }
-}
 
 POSTS = {
     'experience': {
@@ -1310,6 +1430,16 @@ def test_post_contact_skill_undelete(app):
     print(achievement_skills)
     assert 'Event Planning' in achievement_skills
 
+def test_get_no_profile(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+    }
+    with app.test_client() as client:
+        response = client.get('/api/contacts/124/about-me', headers=headers)
+        assert response.status_code == 404
+        assert response.json['message'] == 'Profile does not exist'
 
 # TODO: unskip when trello stuff is mocked out
 @pytest.mark.skip
@@ -1572,6 +1702,23 @@ def test_put_program_apps_update(app):
         assert billy.program_apps[0].is_interested == False
         assert billy.program_apps[1].is_interested == True
 
+def test_put_contact_dict_error(app):
+    url = '/api/contacts/123/'
+    update = CONTACTS['billy_bug']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
 
 def test_put_programs_completed_nullable(app):
     url = '/api/contacts/123/about-me'
@@ -1594,6 +1741,34 @@ def test_put_programs_completed_nullable(app):
         billy = Contact.query.get(123)
         assert billy.profile.programs_completed.kiva == False
 
+def test_put_about_me_email(app):
+    url = '/api/contacts/123/about-me'
+    update = CONTACT_PROFILE['billy_update']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    billy = Contact.query.get(123)
+    assert billy.email == 'billy@example.com'
+    assert billy.email_primary.email == 'billy@example.com'
+    assert billy.email_main == 'billy@example.com'
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+
+        billy = Contact.query.get(123)
+        data = response.json['data']
+        assert data['email'] == 'billy_new@email.com'
+
+        assert billy.email == 'billy_new@email.com'
+        assert billy.email_main == 'billy_new@email.com'
+        assert billy.email_primary.email == 'billy_new@email.com'
 
 @pytest.mark.parametrize(
     "url,update,query,test",
@@ -2182,7 +2357,7 @@ def test_get_capability_recommendations(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/contacts/', CONTACTS.values())
+    [('/api/contacts/', [CONTACTS['billy'], CONTACTS['obama']])
     ,('/api/contacts/123/experiences/', [EXPERIENCES['goucher'],
                                          EXPERIENCES['baltimore']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES['columbia']])
@@ -2199,6 +2374,7 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/programs/', CONTACT_PROGRAMS.values())
     ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
     ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])
+    ,('/api/programs', PROGRAMS.values())
     ]
 )
 def test_get_many_unordered(app, url, expected):
@@ -2215,6 +2391,7 @@ def test_get_many_unordered(app, url, expected):
         # Test that the data and expected contain the same items, but not
         # necessarily in the same order
         pprint(list(expected))
+        pprint(data)
         assert len(data) == len(expected)
         for item in data:
             pprint(item)
