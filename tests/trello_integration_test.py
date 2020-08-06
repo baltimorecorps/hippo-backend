@@ -263,3 +263,6 @@ def test_submit_profile(app):
         assert card.attachments['Profile']['url'] == (
             'https://app.baltimorecorps.org/profile/123'
         )
+
+        data = response.json['data']
+        assert data['instructions']['submit']

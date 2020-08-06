@@ -230,6 +230,6 @@ class ProfileSubmit(Resource):
         contact.stage = 2
         db.session.commit()
 
-        result = profile_schema.dump(contact)
+        result = instructions_schema.dump(contact)
 
         return {'status': 'success', 'data': result}, 201
