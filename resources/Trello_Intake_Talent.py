@@ -39,13 +39,16 @@ def add_new_talent_card(contact_id, program_id=1):
         existing_card.set_custom_field_values(**fields_data)
         result = existing_card.move_card(started_list)
         program_contact.update(**{'card_id': existing_card.id})
+        contact.update(**{'card_id': existing_card.id})
     else:
         card_data = {
             'name': f'{contact.first_name} {contact.last_name}'
         }
         new_card = started_list.add_card_from_template(**card_data)
         program_contact.update(**{'card_id': new_card.id})
+        contact.update(**{'card_id': new_card.id})
         result = new_card.set_custom_field_values(**fields_data)
+    db.session.commit()
     result['program_contact'] = program_contact_schema.dump(program_contact)
     return result
 

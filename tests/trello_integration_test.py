@@ -34,6 +34,8 @@ TALENT_INTAKE_LABELS = [
 
 TALENT_INTAKE_ATTACHMENTS = ['Profile', 'Full Response']
 
+LABELS = ['New', 'PFP']
+
 def check_labels(board_id, expected_labels):
     board = Board(query_board_data(board_id))
     labels = board.labels['name'].keys()
@@ -186,6 +188,7 @@ def test_post_contact(app):
         assert contact.first_name == 'Tester'
         assert contact.email == 'testerb@example.com'
         assert contact.profile.years_exp is None
+        assert contact.card_id == '5e6fc5ebab29b671c997828c'
 
         assert UserSession.query.filter_by(contact_id=contact.id).first()
 
@@ -208,3 +211,55 @@ def test_post_duplicate_contact(app):
         assert response.status_code == 400
         message = json.loads(response.data)['message']
         assert message == 'A contact with this account already exists'
+
+def test_submit_profile(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+    }
+
+    card_id = '5e4af2d6fc3c0954ff187ddc'
+
+    contact = Contact.query.get(123)
+    board_id = TALENT_INTAKE_BOARDS['local']
+    board = Board(query_board_data(board_id))
+    card = board.cards.get(card_id)
+    started_list = board.lists['stage'][1]
+
+    for attachment in TALENT_INTAKE_ATTACHMENTS:
+        response = card.remove_attachment(attachment)
+    card.set_labels(label_names=['New', 'Fellowship'])
+    card.move_card(started_list)
+
+    board = Board(query_board_data(board_id))
+    card = board.cards.get(card_id)
+
+    assert card.attachments == {}
+    assert card.label_names == ['New', 'Fellowship']
+    assert card.stage == 1
+    assert contact.stage == 1
+
+
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/123/submit',
+                               data={},
+                               headers=headers)
+        pprint(response.json)
+        assert response.status_code == 201
+
+        board = Board(query_board_data(board_id))
+        card = board.cards.get(card_id)
+        contact = Contact.query.get(123)
+
+        assert contact.stage == 2
+        assert 'New' in card.label_names
+        for label in LABELS:
+            assert label in card.label_names
+        assert 'Test response' in card.desc
+        assert '- Data Analysis\n' in card.desc
+        assert '3-5' in card.desc
+        assert card.attachments['Profile']['url'] == (
+            'https://app.baltimorecorps.org/profile/123'
+        )

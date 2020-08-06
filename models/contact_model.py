@@ -12,7 +12,9 @@ from models.program_app_model import ProgramAppSchema
 from models.profile_model import ProfileSchema, ContactAddress
 from sqlalchemy.ext.hybrid import hybrid_property
 
-UPDATE_FIELDS = ['first_name', 'last_name', 'email', 'phone_primary', 'stage']
+UPDATE_FIELDS = [
+    'first_name', 'last_name', 'email', 'phone_primary', 'stage', 'card_id'
+]
 
 def add_skill_error(_):
     assert False, "use contact.add_skill instead of contact.skills.append"
@@ -34,6 +36,7 @@ class Contact(db.Model):
     account_id = db.Column(db.String(255), nullable=True)
     terms_agreement =db.Column(db.Boolean, default=False)
     stage = db.Column(db.Integer, default=1)
+    card_id = db.Column(db.String)
 
     #relationships
     emails = db.relationship('Email',
