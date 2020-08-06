@@ -195,76 +195,6 @@ PROGRAM_APPS = {
     ]}
 }
 
-INSTRUCTIONS = {
-    'billy': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy@example.com",
-        'status': 'created',
-        'instructions': {
-            'about_me': {
-                'is_complete': True,
-                'components': {
-                    'candidate_information': True,
-                    'value_alignment': True,
-                    'programs': True,
-                    'interests': True,
-                },
-            },
-            'profile': {
-                'is_complete': True,
-                'components': {
-                    'tag_skills': True,
-                    'add_experience': {
-                        'is_complete': True,
-                        'components': {
-                            'add_achievements': True,
-                            'tag_skills': True,
-                        }
-                    },
-                    'add_education': True,
-                    'add_portfolio': False,
-                },
-            },
-            'submit': {'is_complete': False}
-        }
-    },
-    'obama': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'status': 'created',
-        'instructions': {
-            'about_me': {
-                'is_complete': False,
-                'components': {
-                    'candidate_information': False,
-                    'value_alignment': False,
-                    'programs': False,
-                    'interests': False,
-                },
-            },
-            'profile': {
-                'is_complete': False,
-                'components': {
-                    'tag_skills': False,
-                    'add_experience': {
-                        'is_complete': False,
-                        'components': {
-                            'add_achievements': False,
-                            'tag_skills': False,
-                        }
-                    },
-                    'add_education': False,
-                    'add_portfolio': True,
-                },
-            },
-            'submit': {'is_complete': False}
-        }
-    }
-}
 
 CONTACT_PROFILE = {
     'billy_profile': {
@@ -497,6 +427,77 @@ CONTACT_PROFILE = {
                 'program_management': True,
             },
         },
+    }
+}
+
+INSTRUCTIONS = {
+    'billy': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+        'status': 'created',
+        'instructions': {
+            'about_me': {
+                'is_complete': True,
+                'components': {
+                    'candidate_information': True,
+                    'value_alignment': True,
+                    'programs': True,
+                    'interests': True,
+                },
+            },
+            'profile': {
+                'is_complete': True,
+                'components': {
+                    'tag_skills': True,
+                    'add_experience': {
+                        'is_complete': True,
+                        'components': {
+                            'add_achievements': True,
+                            'tag_skills': True,
+                        }
+                    },
+                    'add_education': True,
+                    'add_portfolio': False,
+                },
+            },
+            'submit': {'is_complete': False}
+        }
+    },
+    'obama': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'instructions': {
+            'about_me': {
+                'is_complete': False,
+                'components': {
+                    'candidate_information': False,
+                    'value_alignment': False,
+                    'programs': False,
+                    'interests': False,
+                },
+            },
+            'profile': {
+                'is_complete': False,
+                'components': {
+                    'tag_skills': False,
+                    'add_experience': {
+                        'is_complete': False,
+                        'components': {
+                            'add_achievements': False,
+                            'tag_skills': False,
+                        }
+                    },
+                    'add_education': False,
+                    'add_portfolio': True,
+                },
+            },
+            'submit': {'is_complete': False}
+        }
     }
 }
 
