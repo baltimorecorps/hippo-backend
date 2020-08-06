@@ -1481,6 +1481,33 @@ def test_post_session(app):
 
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
+def test_get_session(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
+    }
+
+    with app.test_client() as client:
+
+        # set email to null
+        contact = Contact.query.get(123)
+        contact.email = None
+        db.session.commit()
+
+        # confirm it was set to null
+        contact = Contact.query.get(123)
+        assert contact.email is None
+
+        # create session then query it
+        client.post('/api/session/', headers=headers)
+        response = client.get('/api/session/', headers=headers)
+        assert response.status_code == 200
+        data = response.json['data']
+        pprint(data)
+        assert data['contact']['email'] == 'billy@example.com'
+        assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
 @pytest.mark.skip
 def test_post_formassembly_opportunity_intake(app):
