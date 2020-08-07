@@ -236,11 +236,8 @@ class Profile(db.Model):
 
     @hybrid_property
     def value_alignment_complete(self):
-        if self.value_question1 and self.value_question2:
-            return (len(self.value_question1) > 1
-                    and len(self.value_question2) > 1)
-        else:
-            return False
+        return (self.value_question1 is not None
+                and self.value_question2 is not None)
 
     @hybrid_property
     def interests_and_goals_complete(self):
@@ -249,8 +246,6 @@ class Profile(db.Model):
             and self.job_search_status is not None
             and self.current_job_status is not None
             and self.current_edu_status is not None
-            and self.previous_bcorps_program is not None
-            and self.hear_about_us is not None
         )
 
     @hybrid_property
