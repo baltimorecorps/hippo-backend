@@ -3,7 +3,13 @@ from flask_login import login_required
 
 from models.base_model import db
 from models.contact_model import Contact, ContactSchema
-from models.profile_model import Profile, Race, ContactAddress, RoleChoice
+from models.profile_model import (
+    Profile,
+    Race,
+    ContactAddress,
+    RoleChoice,
+    ProgramsCompleted
+)
 from marshmallow import ValidationError
 
 from auth import (
@@ -21,6 +27,13 @@ profile_schema = ContactSchema(exclude=['skills',
                                         'account_id',
                                         'email_primary'])
 
+def create_profile(contact):
+    profile = Profile(contact=contact)
+    profile.addresses.append(ContactAddress(contact=contact))
+    profile.race = Race(contact=contact)
+    profile.roles = RoleChoice()
+    profile.programs_completed = ProgramsCompleted()
+    return profile
 
 class ProfileOne(Resource):
     method_decorators = {
@@ -32,7 +45,11 @@ class ProfileOne(Resource):
     def get(self, contact_id):
         if not is_authorized_view(contact_id):
             return unauthorized()
+
         contact = Contact.query.get(contact_id)
+        if not contact.profile:
+            return {'message': 'Profile does not exist'}, 404
+
         result = profile_schema.dump(contact)
         return {'status': 'success', 'data': result}, 200
 
@@ -48,10 +65,7 @@ class ProfileOne(Resource):
         if contact.profile:
             return {'message': 'Profile already exists'}, 400
 
-        profile = Profile(contact_id=contact_id)
-        profile.addresses.append(ContactAddress(contact_id=contact_id))
-        profile.race = Race(contact_id=contact_id)
-        profile.roles = RoleChoice()
+        profile = create_profile(contact)
         db.session.add(profile)
         db.session.commit()
 
@@ -77,6 +91,9 @@ class ProfileOne(Resource):
         profile_data = data.pop('profile', None)
         contact.update(**data)
         contact.profile.update(**profile_data)
+        email = data.get('email', None)
+        if email:
+            contact.email_primary.email = email
         db.session.commit()
 
         result = profile_schema.dump(contact)

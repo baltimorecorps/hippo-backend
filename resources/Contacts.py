@@ -27,10 +27,11 @@ from auth import (
 
 from models.skill_model import Skill
 from .skill_utils import get_skill_id, get_or_make_skill
+from .Profile import create_profile
 
 
-contact_schema = ContactSchema(exclude=['profile', 'email'])
-contacts_schema = ContactSchema(exclude=['profile', 'email'], many=True)
+contact_schema = ContactSchema(exclude=['email'])
+contacts_schema = ContactSchema(exclude=['email'], many=True)
 contacts_short_schema = ContactShortSchema(many=True)
 contact_program_schema = ContactProgramSchema(many=True)
 
@@ -88,6 +89,7 @@ class ContactAll(Resource):
         if email:
             contact.email_primary = Email(**email)
         contact.email = email['email']
+        create_profile(contact)
         db.session.add(contact)
         db.session.commit()
         program_contact_data = {
@@ -197,8 +199,7 @@ class ContactOne(Resource):
         email_list = data.pop('emails', None)
         skills = data.pop('skills', None)
 
-        for k,v in data.items():
-            setattr(contact, k, v)
+        contact.update(**data)
 
         if email:
             del contact.emails[:]

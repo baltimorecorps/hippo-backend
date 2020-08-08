@@ -74,8 +74,10 @@ class Contact(db.Model):
                               back_populates='contact',
                               uselist=False,
                               cascade='all, delete, delete-orphan')
-    race = db.relationship('Race', back_populates='contact',
-                           cascade='all, delete, delete-orphan')
+    race = db.relationship('Race',
+                           back_populates='contact',
+                           cascade='all, delete, delete-orphan',
+                           uselist=False)
 
     def add_skill(self, skill):
         contact_skill = (ContactSkill.query
@@ -99,7 +101,10 @@ class Contact(db.Model):
 
     @hybrid_property
     def email_main(self):
-        return self.email_primary.email
+        if not self.email:
+            return self.email_primary.email
+        else:
+            return self.email
 
     def query_program_contact(self, program_id):
         return next((p for p in self.programs
