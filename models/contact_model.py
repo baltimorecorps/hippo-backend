@@ -116,7 +116,7 @@ class Contact(db.Model):
 
     @hybrid_property
     def tag_skills_complete(self):
-        return (len(self.skill_items) >= 3)
+        return (len(self.skills) >= 3)
 
     @hybrid_property
     def add_experience_complete(self):

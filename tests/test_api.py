@@ -2333,6 +2333,24 @@ def test_get_instructions_null_question(app):
         pprint(data)
         assert data['instructions']['about_me']['is_complete'] == False
 
+def test_instructions_tag_skills(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        # sets value question to None
+        billy = Contact.query.get(123)
+        assert billy.tag_skills_complete == True
+        for skill in billy.skill_items:
+            setattr(skill, 'deleted', True)
+        db.session.commit()
+        billy = Contact.query.get(123)
+        print(billy.skills)
+        assert billy.tag_skills_complete == False
+
 def test_instructions_about_me(app):
     mimetype = 'application/json'
     headers = {
