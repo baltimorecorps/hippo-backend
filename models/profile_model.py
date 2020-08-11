@@ -208,6 +208,20 @@ class Profile(db.Model):
 
     # calculated fields
     @hybrid_property
+    def roles_list(self):
+        role_dict = {
+            'advocacy_public_policy': 'Advocacy and Public Policy',
+            'community_engagement_outreach': 'Community Engagement and Outreach',
+            'data_analysis': 'Data Analysis',
+            'fundraising_development': 'Fundraising and Development',
+            'marketing_public_relations':  'Marketing and Public Relations',
+            'program_management': 'Program Management',
+        }
+        roles_selected = [role_dict[k] for k,v in self.roles.__dict__.items()
+                          if k in role_dict.keys() and v==True]
+        return roles_selected
+
+    @hybrid_property
     def candidate_info_complete(self):
         if self.address_primary:
             return (
