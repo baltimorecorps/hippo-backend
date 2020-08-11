@@ -5,7 +5,8 @@ from resources.Contacts import (
     ContactOne,
     ContactAccount,
     ContactShort,
-    ContactPrograms
+    ContactPrograms,
+    ContactFull
 )
 from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne
 from resources.Experience import ExperienceAll, ExperienceOne
@@ -211,7 +212,13 @@ api.add_resource(ContactInstructions,
                  '/contacts/<int:contact_id>/instructions/')
 api.add_resource(ProfileSubmit,
                  '/contacts/<int:contact_id>/submit',
-                 '/contacts/<int:contact_id>/submit/')
+                 '/contacts/<int:contact_id>/submit/',
+                 '/contacts/<int:contact_id>/profile/submit',
+                 '/contacts/<int:contact_id>/profile/submit/')
 api.add_resource(ProgramAll,
                  '/programs',
                  '/programs/')
+api.add_resource(ContactFull,
+                 '/contacts/<int:contact_id>/profile',
+                 '/contacts/<int:contact_id>/profile/')
+                 

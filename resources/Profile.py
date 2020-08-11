@@ -35,7 +35,8 @@ profile_schema = ContactSchema(exclude=['skills',
                                         'terms_agreement',
                                         'account_id',
                                         'email_primary',
-                                        'instructions'])
+                                        'instructions',
+                                        'experiences'])
 instructions_schema = ContactSchema(exclude=['skills',
                                              'programs',
                                              'program_apps',
@@ -43,7 +44,8 @@ instructions_schema = ContactSchema(exclude=['skills',
                                              'terms_agreement',
                                              'account_id',
                                              'email_primary',
-                                             'profile'])
+                                             'profile',
+                                             'experiences'])
 
 def create_profile(contact):
     profile = Profile(contact=contact)

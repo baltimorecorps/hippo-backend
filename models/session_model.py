@@ -33,7 +33,9 @@ class UserSessionSchema(Schema):
     # TODO: test this
     id = fields.String(required=True, load_only=True)
 
-    contact = fields.Nested(ContactSchema, exclude=['instructions'], required=True)
+    contact = fields.Nested(ContactSchema,
+                            exclude=['instructions', 'experiences'],
+                            required=True)
     jwt = fields.String(required=True)
 
     class Meta:
