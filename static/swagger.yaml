@@ -312,14 +312,18 @@ securityDefinitions:
 definitions:
   Contact:
     $ref: "./models/contact.yaml#Contact"
-  Opportunity:
-    $ref: "./models/opportunity.yaml#Opportunity"
-  Program:
-    $ref: "./models/program.yaml#Program"
   Capability:
-    $ref: "./models/capability.yaml#Capability"
+    $ref: "./models/skill.yaml#Capability"
   Skill:
     $ref: "./models/skill.yaml#Skill"
+  Experience:
+    $ref: "./models/experience.yaml#Experience"
+  Program:
+    $ref: "./models/program.yaml#Program"
+  ProgramApp:
+    $ref: "./models/program.yaml#ProgramApp"
+  Opportunity:
+    $ref: "./models/opportunity.yaml#Opportunity"
   OpportunityApp:
     $ref: "./models/opportunity_app.yaml#OpportunityApp"
 externalDocs:

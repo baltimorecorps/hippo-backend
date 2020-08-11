@@ -1,4 +1,4 @@
-Capability:
+Profile:
   type: "object"
   properties:
     id:

@@ -4,24 +4,22 @@ Opportunity:
     id:
       type: "integer"
       format: "int64"
-    petId:
-      type: "integer"
-      format: "int64"
-    quantity:
-      type: "integer"
-      format: "int32"
-    shipDate:
+    org_name:
       type: "string"
-      format: "date-time"
-    status:
+      example: "Baltimore Corps"
+    title:
       type: "string"
-      description: "Order Status"
-      enum:
-      - "placed"
-      - "approved"
-      - "delivered"
-    complete:
+      example: "Data Analyst"
+    program:
+      $ref: "./program.yaml#Program"
+    gdoc_link:
+      type: "string"
+      example: "https://docs.google.com/document/d/1q9eCVq4zME7RYl"
+    short_description:
+      type: "string"
+      example: "This role will be responsible for..."
+    is_active:
       type: "boolean"
-      default: false
+      default: True
   xml:
     name: "Order"

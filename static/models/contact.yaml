@@ -21,5 +21,11 @@ Contact:
     terms_agreement:
       type: "boolean"
       default: false
+    status:
+      type: "string"
+      enum:
+      - "created"
+      - "submitted"
+      - "approved" 
   xml:
     name: "Contact"

@@ -1,0 +1,23 @@
+Skill:
+  type: "object"
+  properties:
+    id:
+      type: "integer"
+      format: "int64"
+    name:
+      type: "string"
+      example: "Python"
+  xml:
+    name: "Skill"
+
+Capability:
+  type: "object"
+  properties:
+    id:
+      type: "integer"
+      format: "int64"
+    name:
+      type: "string"
+      example: "Data Analysis"
+  xml:
+    name: "Skill"
