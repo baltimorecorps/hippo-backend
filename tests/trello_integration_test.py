@@ -243,7 +243,7 @@ def test_submit_profile(app):
 
 
     with app.test_client() as client:
-        response = client.post('/api/contacts/123/submit',
+        response = client.post('/api/contacts/123/profile/submit',
                                data={},
                                headers=headers)
         pprint(response.json)

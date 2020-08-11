@@ -24,7 +24,8 @@ program_app_schema = ContactSchema(exclude=[
     'terms_agreement',
     'programs',
     'profile',
-    'instructions'
+    'instructions',
+    'experiences'
 ])
 
 def get_program_app(c_id, p_id):
