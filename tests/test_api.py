@@ -1481,6 +1481,33 @@ def test_post_session(app):
 
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
+def test_get_session(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
+    }
+
+    with app.test_client() as client:
+
+        # set email to null
+        contact = Contact.query.get(123)
+        contact.email = None
+        db.session.commit()
+
+        # confirm it was set to null
+        contact = Contact.query.get(123)
+        assert contact.email is None
+
+        # create session then query it
+        client.post('/api/session/', headers=headers)
+        response = client.get('/api/session/', headers=headers)
+        assert response.status_code == 200
+        data = response.json['data']
+        pprint(data)
+        assert data['contact']['email'] == 'billy@example.com'
+        assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
 @pytest.mark.skip
 def test_post_formassembly_opportunity_intake(app):
@@ -2301,6 +2328,85 @@ def test_get_instructions_null_question(app):
         pprint(data)
         assert data['instructions']['about_me']['is_complete'] == False
 
+def test_instructions_tag_skills(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        # sets value question to None
+        billy = Contact.query.get(123)
+        assert billy.tag_skills_complete == True
+        for skill in billy.skill_items:
+            setattr(skill, 'deleted', True)
+        db.session.commit()
+        billy = Contact.query.get(123)
+        print(billy.skills)
+        assert billy.tag_skills_complete == False
+
+def test_instructions_about_me(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {
+        'reset': {
+            'gender': None,
+            'gender_other': None,
+            'pronoun': None,
+            'pronoun_other': None,
+            'years_exp': None,
+            'job_search_status': None,
+            'current_job_status': None,
+            'current_edu_status': None,
+            'previous_bcorps_program': None,
+            'value_question1': None,
+            'value_question2': None,
+            'needs_help_programs': False,
+            'hear_about_us': None,
+            'hear_about_us_other': None,
+        },
+        'set': {
+            'years_exp': '3-5',
+            'job_search_status': 'Test',
+            'current_job_status': 'Test',
+            'current_edu_status': 'Test',
+            'needs_help_programs': True,
+            'value_question1': 'Test',
+            'value_question2': 'Test'
+        }
+    }
+    with app.test_client() as client:
+        # sets value question to None
+        profile = Contact.query.get(123).profile
+        profile.update(**update['reset'])
+        db.session.commit()
+
+        profile = Contact.query.get(123).profile
+        assert profile.job_search_status is None
+        assert profile.years_exp is None
+        assert profile.current_job_status is None
+        assert profile.current_edu_status is None
+
+        assert profile.value_alignment_complete == False
+        assert profile.interests_and_goals_complete == False
+        assert profile.contact.about_me_complete['is_complete'] == False
+        profile.update(**update['set'])
+        db.session.commit()
+
+        profile = Contact.query.get(123).profile
+        assert profile.job_search_status == 'Test'
+        assert profile.years_exp == '3-5'
+        assert profile.current_job_status == 'Test'
+        assert profile.current_edu_status == 'Test'
+        assert profile.needs_help_programs == True
+
+        assert profile.value_alignment_complete == True
+        assert profile.interests_and_goals_complete == True
+        assert profile.contact.about_me_complete['is_complete'] == True
 
 def test_get_autocomplete(app):
     mimetype = 'application/json'

@@ -116,7 +116,7 @@ class Contact(db.Model):
 
     @hybrid_property
     def tag_skills_complete(self):
-        return (len(self.skill_items) >= 3)
+        return (len(self.skills) >= 3)
 
     @hybrid_property
     def add_experience_complete(self):
@@ -222,7 +222,8 @@ class ContactSchema(Schema):
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
     email_primary = fields.Nested(EmailSchema)
-    email = fields.String()
+    email = fields.String(load_only=True)
+    email_main = fields.String(dump_only=True, data_key='email')
     phone_primary = fields.String()
     account_id = fields.String()
     status = EnumField(ContactStage, dump_only=True)

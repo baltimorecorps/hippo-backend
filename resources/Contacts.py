@@ -30,8 +30,8 @@ from .skill_utils import get_skill_id, get_or_make_skill
 from .Profile import create_profile
 
 
-contact_schema = ContactSchema(exclude=['email', 'instructions'])
-contacts_schema = ContactSchema(exclude=['email', 'instructions'],
+contact_schema = ContactSchema(exclude=['email', 'instructions', 'email_main'])
+contacts_schema = ContactSchema(exclude=['email', 'instructions', 'email_main'],
                                 many=True)
 contacts_short_schema = ContactShortSchema(many=True)
 contact_program_schema = ContactProgramSchema(many=True)
