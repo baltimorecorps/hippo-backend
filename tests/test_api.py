@@ -2306,6 +2306,34 @@ def test_get(app, url, expected):
         assert len(data) > 0
         assert data == expected
 
+def test_get_profile_full(app):
+    #the expected data comes from the EXPERIENCES constant above
+    #the actual data come from the populate_db.py script
+    #in the common directory
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    expected = CONTACTS['billy'].copy()
+    expected['experiences'] = [EXPERIENCES['goucher'],
+                               EXPERIENCES['baltimore']]
+    expected['instructions'] = INSTRUCTIONS['billy']['instructions']
+    expected['email'] = expected['email_primary']['email']
+
+    with app.test_client() as client:
+        response = client.get('/api/contacts/123/profile',
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        print('DATA')
+        pprint(data)
+        print('EXPECTED')
+        pprint(expected)
+        assert len(data) > 0
+        assert data == expected
+
 def test_get_instructions_null_question(app):
     mimetype = 'application/json'
     headers = {

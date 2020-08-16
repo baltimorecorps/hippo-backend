@@ -233,6 +233,7 @@ class ContactSchema(Schema):
     program_apps = fields.Nested(ProgramAppSchema, many=True)
     profile = fields.Nested(ProfileSchema)
     instructions = fields.Dict()
+    experiences = fields.Nested(ExperienceSchema, many=True, dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
