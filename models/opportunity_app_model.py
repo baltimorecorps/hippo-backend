@@ -3,7 +3,6 @@ from models.base_model import db
 from sqlalchemy.ext.hybrid import hybrid_property
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
-from models.contact_model import ContactSchema
 import datetime as dt
 
 class ApplicationStage(enum.Enum):

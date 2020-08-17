@@ -13,7 +13,6 @@ from models.base_model import db
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
 from .ProgramContacts import create_program_contact
-from .Trello_Intake_Talent import add_new_talent_card
 from marshmallow import ValidationError
 from auth import (
     validate_jwt,
@@ -30,10 +29,18 @@ from .skill_utils import get_skill_id, get_or_make_skill
 from .Profile import create_profile
 
 
-contact_schema = ContactSchema(exclude=['email'])
-contacts_schema = ContactSchema(exclude=['email'], many=True)
+contact_schema = ContactSchema(exclude=['email',
+                                        'instructions',
+                                        'email_main',
+                                        'experiences'])
+contacts_schema = ContactSchema(exclude=['email',
+                                         'instructions',
+                                         'email_main',
+                                         'experiences'],
+                                many=True)
 contacts_short_schema = ContactShortSchema(many=True)
 contact_program_schema = ContactProgramSchema(many=True)
+contact_full_schema = ContactSchema()
 
 def add_skills(skills, contact):
     for skill_data in skills:
@@ -98,7 +105,6 @@ class ContactAll(Resource):
         }
         create_program_contact(contact.id, **program_contact_data)
         db.session.commit()
-        add_new_talent_card(contact.id)
 
         user_session = create_session(contact.id, request.jwt)
         login_user(user_session)
@@ -221,3 +227,19 @@ class ContactOne(Resource):
         db.session.delete(contact)
         db.session.commit()
         return {"status": 'success'}, 200
+
+class ContactFull(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+    }
+
+    def get(self, contact_id):
+        contact = Contact.query.get(contact_id)
+        if not contact:
+            return {'message': 'Contact does not exist'}, 404
+
+        if not is_authorized_view(contact.id):
+            return unauthorized()
+
+        contact = contact_full_schema.dump(contact)
+        return {'status': 'success', 'data': contact}, 200

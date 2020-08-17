@@ -5,7 +5,8 @@ from resources.Contacts import (
     ContactOne,
     ContactAccount,
     ContactShort,
-    ContactPrograms
+    ContactPrograms,
+    ContactFull
 )
 from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne
 from resources.Experience import ExperienceAll, ExperienceOne
@@ -30,10 +31,6 @@ from resources.ProgramContacts import (
     ProgramContactApproveMany,
     ApplicationsInternal
 )
-from resources.Trello_Intake_Talent import (
-    IntakeTalentBoard,
-    IntakeTalentCard,
-)
 from resources.Opportunity import (
     OpportunityAll,
     OpportunityAllInternal,
@@ -53,7 +50,7 @@ from resources.OpportunityApp import (
     OpportunityAppConsider,
 )
 from resources.FormAssembly import TalentProgramApp
-from resources.Profile import ProfileOne
+from resources.Profile import ProfileOne, ContactInstructions, ProfileSubmit
 from resources.Program import ProgramAll
 
 api_bp = Blueprint('api', __name__)
@@ -167,12 +164,6 @@ api.add_resource(OpportunityAppRecommend,
 api.add_resource(OpportunityAppReopen,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen/')
-api.add_resource(IntakeTalentBoard,
-                 '/programs/<int:program_id>/trello/intake-talent',
-                 '/programs/<int:program_id>/trello/intake-talent/')
-api.add_resource(IntakeTalentCard,
-                 '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent',
-                 '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent/')
 api.add_resource(TalentProgramApp,
                  '/form-assembly/talent-app',
                  '/form-assembly/talent-app/')
@@ -206,6 +197,17 @@ api.add_resource(ContactProgramApps,
 api.add_resource(ContactProgramAppsInterested,
                  '/contacts/<int:contact_id>/program-apps/interested',
                  '/contacts/<int:contact_id>/program-apps/interested/')
+api.add_resource(ContactInstructions,
+                 '/contacts/<int:contact_id>/instructions',
+                 '/contacts/<int:contact_id>/instructions/')
+api.add_resource(ProfileSubmit,
+                 '/contacts/<int:contact_id>/submit',
+                 '/contacts/<int:contact_id>/submit/',
+                 '/contacts/<int:contact_id>/profile/submit',
+                 '/contacts/<int:contact_id>/profile/submit/')
 api.add_resource(ProgramAll,
                  '/programs',
                  '/programs/')
+api.add_resource(ContactFull,
+                 '/contacts/<int:contact_id>/profile',
+                 '/contacts/<int:contact_id>/profile/')

@@ -116,7 +116,7 @@ PROGRAM_CONTACTS = {
         'id': 5,
         'contact_id': 123,
         'program': PROGRAMS['pfp'],
-        'card_id': '5e4af2d6fc3c0954ff187ddc',
+        'card_id': None,
         'stage': 1,
         'is_active': True,
         'is_approved': True,
@@ -147,6 +147,7 @@ PROGRAM_APPS = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
+        'status': 'created',
         'program_apps': [
             {'id': 7,
              'program': {'id': 1, 'name': 'Place for Purpose'},
@@ -177,6 +178,7 @@ PROGRAM_APPS = {
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
+        'status': 'created',
         'program_apps': [
             {'id': 1,
              'program': {'id': 1, 'name': 'Place for Purpose'},
@@ -200,6 +202,7 @@ CONTACT_PROFILE = {
         'last_name': "Daly",
         'email': "billy@example.com",
         'phone_primary': "555-245-2351",
+        'status': 'created',
         'profile': {
             'id': 123,
             'gender': 'Male',
@@ -259,6 +262,7 @@ CONTACT_PROFILE = {
         'last_name': "Daly",
         'email': "billy_new@email.com", # updated
         'phone_primary': "555-245-2351",
+        'status': 'created',
         'profile': {
             'id': 1,
             'gender': 'Male',
@@ -318,6 +322,7 @@ CONTACT_PROFILE = {
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
         'phone_primary': "555-444-4444",
+        'status': 'created',
         'profile': {
             'id': 1,
             'gender': None,
@@ -424,6 +429,77 @@ CONTACT_PROFILE = {
     }
 }
 
+INSTRUCTIONS = {
+    'billy': {
+        'id': 123,
+        'first_name': "Billy",
+        'last_name': "Daly",
+        'email': "billy@example.com",
+        'status': 'created',
+        'instructions': {
+            'about_me': {
+                'is_complete': True,
+                'components': {
+                    'candidate_information': True,
+                    'value_alignment': True,
+                    'programs': True,
+                    'interests': True,
+                },
+            },
+            'profile': {
+                'is_complete': True,
+                'components': {
+                    'tag_skills': True,
+                    'add_experience': {
+                        'is_complete': True,
+                        'components': {
+                            'add_achievements': True,
+                            'tag_skills': True,
+                        }
+                    },
+                    'add_education': True,
+                    'add_portfolio': False,
+                },
+            },
+            'submit': {'is_complete': False}
+        }
+    },
+    'obama': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'instructions': {
+            'about_me': {
+                'is_complete': False,
+                'components': {
+                    'candidate_information': False,
+                    'value_alignment': False,
+                    'programs': False,
+                    'interests': False,
+                },
+            },
+            'profile': {
+                'is_complete': False,
+                'components': {
+                    'tag_skills': False,
+                    'add_experience': {
+                        'is_complete': False,
+                        'components': {
+                            'add_achievements': False,
+                            'tag_skills': False,
+                        }
+                    },
+                    'add_education': False,
+                    'add_portfolio': True,
+                },
+            },
+            'submit': {'is_complete': False}
+        }
+    }
+}
+
 OPPORTUNITIES = {
     'test_opp1': {
         'id': '123abc',
@@ -480,6 +556,7 @@ CONTACTS = {
                      PROGRAM_CONTACTS['billy_mayoral']],
         'program_apps': PROGRAM_APPS['billy']['program_apps'],
         'terms_agreement': True,
+        'status': 'created',
         'profile': CONTACT_PROFILE['billy_profile']['profile']
     },
 
@@ -499,6 +576,7 @@ CONTACTS = {
         'programs': [PROGRAM_CONTACTS['obama_pfp']],
         'program_apps': [],
         'terms_agreement': True,
+        'status': 'created',
         'profile': None
     },
     'billy_bug': {
@@ -1403,6 +1481,33 @@ def test_post_session(app):
 
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
+def test_get_session(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
+    }
+
+    with app.test_client() as client:
+
+        # set email to null
+        contact = Contact.query.get(123)
+        contact.email = None
+        db.session.commit()
+
+        # confirm it was set to null
+        contact = Contact.query.get(123)
+        assert contact.email is None
+
+        # create session then query it
+        client.post('/api/session/', headers=headers)
+        response = client.get('/api/session/', headers=headers)
+        assert response.status_code == 200
+        data = response.json['data']
+        pprint(data)
+        assert data['contact']['email'] == 'billy@example.com'
+        assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
 @pytest.mark.skip
 def test_post_formassembly_opportunity_intake(app):
@@ -2051,6 +2156,8 @@ def test_approve_many_program_contacts_new(app, ):
         obama_mayoral['is_approved'] = True
         obama_mayoral['applications'] = []
         expected = [obama_mayoral]
+        contact = Contact.query.get(124)
+        assert contact.stage == 3
         print(expected)
         for item in data:
             print(item)
@@ -2179,6 +2286,8 @@ def test_delete_contact_skill_saved(app):
     ,('/api/org/opportunities/123abc', OPPORTUNITIES_INTERNAL['test_opp1'])
     ,('/api/contacts/123/about-me', CONTACT_PROFILE['billy_profile'])
     ,('/api/contacts/123/program-apps', PROGRAM_APPS['billy'])
+    ,('/api/contacts/123/instructions', INSTRUCTIONS['billy'])
+    ,('/api/contacts/124/instructions', INSTRUCTIONS['obama'])
     ]
 )
 def test_get(app, url, expected):
@@ -2199,6 +2308,135 @@ def test_get(app, url, expected):
         assert len(data) > 0
         assert data == expected
 
+def test_get_profile_full(app):
+    #the expected data comes from the EXPERIENCES constant above
+    #the actual data come from the populate_db.py script
+    #in the common directory
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    expected = CONTACTS['billy'].copy()
+    expected['experiences'] = [EXPERIENCES['goucher'],
+                               EXPERIENCES['baltimore']]
+    expected['instructions'] = INSTRUCTIONS['billy']['instructions']
+    expected['email'] = expected['email_primary']['email']
+
+    with app.test_client() as client:
+        response = client.get('/api/contacts/123/profile',
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        print('DATA')
+        pprint(data)
+        print('EXPECTED')
+        pprint(expected)
+        assert len(data) > 0
+        assert data == expected
+
+def test_get_instructions_null_question(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        # sets value question to None
+        billy = Contact.query.get(123)
+        billy.profile.value_question1 = None
+        db.session.commit()
+        billy = Contact.query.get(123)
+        assert billy.profile.value_question1 is None
+
+        response = client.get('/api/contacts/123/instructions',
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        pprint(data)
+        assert data['instructions']['about_me']['is_complete'] == False
+
+def test_instructions_tag_skills(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        # sets value question to None
+        billy = Contact.query.get(123)
+        assert billy.tag_skills_complete == True
+        for skill in billy.skill_items:
+            setattr(skill, 'deleted', True)
+        db.session.commit()
+        billy = Contact.query.get(123)
+        print(billy.skills)
+        assert billy.tag_skills_complete == False
+
+def test_instructions_about_me(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    update = {
+        'reset': {
+            'gender': None,
+            'gender_other': None,
+            'pronoun': None,
+            'pronoun_other': None,
+            'years_exp': None,
+            'job_search_status': None,
+            'current_job_status': None,
+            'current_edu_status': None,
+            'previous_bcorps_program': None,
+            'value_question1': None,
+            'value_question2': None,
+            'needs_help_programs': False,
+            'hear_about_us': None,
+            'hear_about_us_other': None,
+        },
+        'set': {
+            'years_exp': '3-5',
+            'job_search_status': 'Test',
+            'current_job_status': 'Test',
+            'current_edu_status': 'Test',
+            'needs_help_programs': True,
+            'value_question1': 'Test',
+            'value_question2': 'Test'
+        }
+    }
+    with app.test_client() as client:
+        # sets value question to None
+        profile = Contact.query.get(123).profile
+        profile.update(**update['reset'])
+        db.session.commit()
+
+        profile = Contact.query.get(123).profile
+        assert profile.job_search_status is None
+        assert profile.years_exp is None
+        assert profile.current_job_status is None
+        assert profile.current_edu_status is None
+
+        assert profile.value_alignment_complete == False
+        assert profile.interests_and_goals_complete == False
+        assert profile.contact.about_me_complete['is_complete'] == False
+        profile.update(**update['set'])
+        db.session.commit()
+
+        profile = Contact.query.get(123).profile
+        assert profile.job_search_status == 'Test'
+        assert profile.years_exp == '3-5'
+        assert profile.current_job_status == 'Test'
+        assert profile.current_edu_status == 'Test'
+        assert profile.needs_help_programs == True
+
+        assert profile.value_alignment_complete == True
+        assert profile.interests_and_goals_complete == True
+        assert profile.contact.about_me_complete['is_complete'] == True
 
 def test_get_autocomplete(app):
     mimetype = 'application/json'
