@@ -60,6 +60,7 @@ class ProgramContactApproveMany(Resource):
         program_contacts = []
         for contact in contacts:
             program_contact = contact.query_program_contact(program_id)
+            contact.stage = 3
             if not program_contact:
                 insert_data = {
                     'contact_id': contact.id,

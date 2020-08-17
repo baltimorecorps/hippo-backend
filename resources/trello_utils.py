@@ -76,6 +76,14 @@ def update_card(key, token, card_id, **new_values):
     return response.json()
 
 @get_creds
+def delete_card(key, token, card_id):
+    url = f'https://api.trello.com/1/card/{card_id}'
+    query_string = {'key': key,
+                    'token': token}
+    response = requests.delete(url, params=query_string)
+    return response
+
+@get_creds
 def query_checklists(key, token, card_id):
     '''
     api-doc: https://developers.trello.com/reference#cardsidchecklists
@@ -478,4 +486,8 @@ class Card(object):
         else:
             return {'message': 'No label names or ids provided'}, 400
         response = self.update(**{'idLabels': ids})
+        return response
+
+    def delete(self):
+        response = delete_card(self.id)
         return response
