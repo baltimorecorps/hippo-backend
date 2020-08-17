@@ -2,6 +2,7 @@ from flask_restful import Resource, request
 from flask_login import login_required
 
 from models.base_model import db
+from models.program_model import Program
 from models.contact_model import Contact, ContactSchema
 from models.profile_model import (
     Profile,
@@ -10,7 +11,6 @@ from models.profile_model import (
     RoleChoice,
     ProgramsCompleted
 )
-from .Trello_Intake_Talent import get_intake_talent_board_id
 from .trello_utils import (
     query_board_data,
     update_card,
@@ -54,6 +54,10 @@ def create_profile(contact):
     profile.roles = RoleChoice()
     profile.programs_completed = ProgramsCompleted()
     return profile
+
+def get_intake_talent_board_id(program_id):
+    program = Program.query.get(program_id)
+    return program.trello_board_id
 
 class ProfileOne(Resource):
     method_decorators = {

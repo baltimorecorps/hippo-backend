@@ -2156,6 +2156,8 @@ def test_approve_many_program_contacts_new(app, ):
         obama_mayoral['is_approved'] = True
         obama_mayoral['applications'] = []
         expected = [obama_mayoral]
+        contact = Contact.query.get(124)
+        assert contact.stage == 3
         print(expected)
         for item in data:
             print(item)

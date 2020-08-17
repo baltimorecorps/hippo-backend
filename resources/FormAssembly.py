@@ -4,7 +4,7 @@ from models.contact_model import Contact
 from models.program_contact_model import ProgramContact, ProgramContactSchema
 from models.opportunity_model import OpportunitySchema, OpportunityStage
 from models.program_model import Program
-from .Trello_Intake_Talent import get_intake_talent_board_id
+from .Profile import get_intake_talent_board_id
 from .ProgramContacts import query_one_program_contact
 from .Opportunity import create_new_opportunity
 from .trello_utils import (

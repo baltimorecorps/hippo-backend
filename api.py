@@ -31,10 +31,6 @@ from resources.ProgramContacts import (
     ProgramContactApproveMany,
     ApplicationsInternal
 )
-from resources.Trello_Intake_Talent import (
-    IntakeTalentBoard,
-    IntakeTalentCard,
-)
 from resources.Opportunity import (
     OpportunityAll,
     OpportunityAllInternal,
@@ -168,12 +164,6 @@ api.add_resource(OpportunityAppRecommend,
 api.add_resource(OpportunityAppReopen,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen/')
-api.add_resource(IntakeTalentBoard,
-                 '/programs/<int:program_id>/trello/intake-talent',
-                 '/programs/<int:program_id>/trello/intake-talent/')
-api.add_resource(IntakeTalentCard,
-                 '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent',
-                 '/contacts/<int:contact_id>/programs/<int:program_id>/trello/intake-talent/')
 api.add_resource(TalentProgramApp,
                  '/form-assembly/talent-app',
                  '/form-assembly/talent-app/')
@@ -221,4 +211,3 @@ api.add_resource(ProgramAll,
 api.add_resource(ContactFull,
                  '/contacts/<int:contact_id>/profile',
                  '/contacts/<int:contact_id>/profile/')
-                 
