@@ -43,6 +43,7 @@ Improves performance of API by removing the creation of a Trello card from `POST
 
 - Removes creation of trello card from `POST api/contacts`
 - Updates `POST api/contacts/<contact_id>/profile/submit` to create a Trello card when it is called.
+- Sets `contact.stage=3` on `POST api/programs/1/contacts/approve-many`
 
 
 ### Deployment Considerations
