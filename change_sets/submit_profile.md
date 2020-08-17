@@ -36,6 +36,15 @@ Adds a new endpoint to return all of the data needed to populate the profile
 - Creates `GET api/contacts/<contact_id>/profile` which returns all of the data needed to populate the profile
 - Updates `GET api/contacts/<contact_id>/submit` to `GET api/contacts/<contact_id>/profile/submit` to standardize naming conventions
 
+### Branch `bug-trello-performance`
+Improves performance of API by removing the creation of a Trello card from `POST api/contacts` and instead creates a card when profile is submitted
+
+#### Changes
+
+- Removes creation of trello card from `POST api/contacts`
+- Updates `POST api/contacts/<contact_id>/profile/submit` to create a Trello card when it is called.
+
+
 ### Deployment Considerations
 
 - **Heroku Variables:** No

@@ -320,7 +320,6 @@ billy_pfp = ProgramContact(
     id=5,
     program_id=1,
     contact_id=123,
-    card_id='5e4af2d6fc3c0954ff187ddc',
     stage=1,
     is_approved=True
 )

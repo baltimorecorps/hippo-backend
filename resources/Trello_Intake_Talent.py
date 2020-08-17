@@ -33,7 +33,7 @@ def add_new_talent_card(contact_id, program_id=1):
     fields_data = {
         'Phone': contact.phone_primary,
         'Email': email,
-        'External ID': str(program_contact.id)
+        'External ID': str(contact.id)
     }
     if existing_card:
         existing_card.set_custom_field_values(**fields_data)
@@ -45,7 +45,6 @@ def add_new_talent_card(contact_id, program_id=1):
             'name': f'{contact.first_name} {contact.last_name}'
         }
         new_card = started_list.add_card_from_template(**card_data)
-        program_contact.update(**{'card_id': new_card.id})
         contact.update(**{'card_id': new_card.id})
         result = new_card.set_custom_field_values(**fields_data)
     db.session.commit()

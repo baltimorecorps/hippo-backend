@@ -116,7 +116,7 @@ PROGRAM_CONTACTS = {
         'id': 5,
         'contact_id': 123,
         'program': PROGRAMS['pfp'],
-        'card_id': '5e4af2d6fc3c0954ff187ddc',
+        'card_id': None,
         'stage': 1,
         'is_active': True,
         'is_approved': True,
