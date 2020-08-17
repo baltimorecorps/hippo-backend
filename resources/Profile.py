@@ -2,6 +2,7 @@ from flask_restful import Resource, request
 from flask_login import login_required
 
 from models.base_model import db
+from models.program_model import Program
 from models.contact_model import Contact, ContactSchema
 from models.profile_model import (
     Profile,
@@ -10,7 +11,6 @@ from models.profile_model import (
     RoleChoice,
     ProgramsCompleted
 )
-from .Trello_Intake_Talent import get_intake_talent_board_id
 from .trello_utils import (
     query_board_data,
     update_card,
@@ -54,6 +54,10 @@ def create_profile(contact):
     profile.roles = RoleChoice()
     profile.programs_completed = ProgramsCompleted()
     return profile
+
+def get_intake_talent_board_id(program_id):
+    program = Program.query.get(program_id)
+    return program.trello_board_id
 
 class ProfileOne(Resource):
     method_decorators = {
@@ -149,6 +153,7 @@ class ProfileSubmit(Resource):
 
         # query contact and check that all submission criteria is met
         contact = Contact.query.get(contact_id)
+        email = contact.email_main
         if not contact:
             return {'message': 'Contact does not exist'}, 404
         if not (contact.about_me_complete['is_complete']
@@ -156,6 +161,7 @@ class ProfileSubmit(Resource):
             return {'message': 'Not all profile sections are complete'}, 400
         if contact.stage >= 2:
             return {'message': 'Profile already submitted'}, 400
+
 
         # Start of Trello specific code
         PROGRAMS_DICT = {
@@ -166,33 +172,21 @@ class ProfileSubmit(Resource):
             'JHU Carey Humanities Fellowship': 'JHU - Carey'
         }
 
-        # get board_id and card_id
+        #query board and check that a card doesn't already exist
         board_id = get_intake_talent_board_id(program_id=1)
-        if not contact.card_id:
-            card_id = contact.programs[0].card_id
-            contact.card_id = card_id
-        else:
-            card_id = contact.card_id
-
-        #query board and card
         board = Board(query_board_data(board_id))
-        card = board.cards.get(card_id)
-        profile = contact.profile
-
-        # check that the card exists and that it's not already in stage 2
-        if not card:
-            return {'message': 'No intake card found'}, 400
-        elif card.stage >= 2:
+        existing_card = board.find_card_by_custom_field('Email', email)
+        if existing_card:
             return {'message': 'Application has already been submitted'}, 400
 
         # parses form data to fill the card description
+        profile = contact.profile
         roles = ['- '+role for role in profile.roles_list]
         roles_str = '\n'.join(roles)
         programs = [PROGRAMS_DICT[app.program.name]
                     for app in contact.program_apps
                     if app.is_interested]
         programs_str = '\n'.join(['- ' + p for p in programs])
-        new_labels = set(card.label_names + programs)
 
         #formats the string for the description
         card_data = {
@@ -215,21 +209,26 @@ class ProfileSubmit(Resource):
                 f"{programs_str}\n\n---\n\n"
             )
         }
+        fields_data = {
+            'Phone': contact.phone_primary,
+            'Email': email,
+            'External ID': str(contact.id)
+        }
 
-        #updates the card with the information parsed from the form
-        card.update(**card_data)
+        #creates the card with the information parsed from the form
+        submitted_list = board.lists['stage'][2]
+        card = submitted_list.add_card_from_template(**card_data)
         card.add_attachment(
             url=f'https://app.baltimorecorps.org/profile/{contact_id}',
             name='Profile'
         )
-        card.set_labels(new_labels)
-
-        # moves card to submitted list
-        submitted_list = board.lists['stage'][2]
-        card.move_card(submitted_list)
+        labels = set(card.label_names + programs)
+        card.set_labels(labels)
+        card.set_custom_field_values(**fields_data)
 
         # updates the contact to stage 2
         contact.stage = 2
+        contact.card_id = card.id
         db.session.commit()
 
         result = instructions_schema.dump(contact)
