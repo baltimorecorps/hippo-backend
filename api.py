@@ -22,7 +22,8 @@ from resources.Capability import (
 )
 from resources.Session import Session
 from resources.ProgramApp import (
-    ContactProgramApps,
+    ContactProgramAppsOne,
+    ContactProgramAppsAll,
     ContactProgramAppsInterested
 )
 from resources.ProgramContacts import (
@@ -191,9 +192,12 @@ api.add_resource(OpportunityActivate,
 api.add_resource(ProfileOne,
                  '/contacts/<int:contact_id>/about-me',
                  '/contacts/<int:contact_id>/about-me/')
-api.add_resource(ContactProgramApps,
+api.add_resource(ContactProgramAppsOne,
                  '/contacts/<int:contact_id>/program-apps',
                  '/contacts/<int:contact_id>/program-apps/')
+api.add_resource(ContactProgramAppsAll,
+                 '/contacts/program-apps',
+                 '/contacts/program-apps/')
 api.add_resource(ContactProgramAppsInterested,
                  '/contacts/<int:contact_id>/program-apps/interested',
                  '/contacts/<int:contact_id>/program-apps/interested/')
