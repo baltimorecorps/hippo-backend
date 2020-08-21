@@ -11,6 +11,7 @@ from models.tag_model import Tag
 from models.tag_item_model import TagItem
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
+from models.base_model import db
 
 from .test_api import post_request, POSTS
 
@@ -62,6 +63,8 @@ def test_talent_intake(app):
 
     contact = Contact.query.get(123)
     email = contact.email_main
+    contact.stage = 1
+    db.session.commit()
     board_id = TALENT_INTAKE_BOARDS['local']
     board = Board(query_board_data(board_id))
     card = board.find_card_by_custom_field('Email', email)
@@ -216,6 +219,8 @@ def test_submit_profile(app):
 
     contact = Contact.query.get(123)
     email = contact.email_main
+    contact.stage = 1
+    db.session.commit()
     board_id = TALENT_INTAKE_BOARDS['local']
     board = Board(query_board_data(board_id))
     card = board.find_card_by_custom_field('Email', email)
@@ -223,6 +228,7 @@ def test_submit_profile(app):
         response = card.delete()
         assert response.status_code == 200
 
+    contact = Contact.query.get(123)
     assert contact.stage == 1
 
 

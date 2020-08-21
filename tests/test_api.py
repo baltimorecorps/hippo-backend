@@ -147,7 +147,7 @@ PROGRAM_APPS = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
-        'status': 'created',
+        'status': 'approved',
         'program_apps': [
             {'id': 7,
              'program': {'id': 1, 'name': 'Place for Purpose'},
@@ -192,7 +192,14 @@ PROGRAM_APPS = {
              'is_approved': False,
              'status': 'Not interested',
              'decision_date': None},
-    ]}
+    ]},
+    'obama_none': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'program_apps': []}
 }
 
 
@@ -203,7 +210,7 @@ CONTACT_PROFILE = {
         'last_name': "Daly",
         'email': "billy@example.com",
         'phone_primary': "555-245-2351",
-        'status': 'created',
+        'status': 'approved',
         'profile': {
             'id': 123,
             'gender': 'Male',
@@ -263,7 +270,7 @@ CONTACT_PROFILE = {
         'last_name': "Daly",
         'email': "billy_new@email.com", # updated
         'phone_primary': "555-245-2351",
-        'status': 'created',
+        'status': 'approved',
         'profile': {
             'id': 1,
             'gender': 'Male',
@@ -436,7 +443,7 @@ INSTRUCTIONS = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
-        'status': 'created',
+        'status': 'approved',
         'instructions': {
             'about_me': {
                 'is_complete': True,
@@ -462,7 +469,7 @@ INSTRUCTIONS = {
                     'add_portfolio': False,
                 },
             },
-            'submit': {'is_complete': False}
+            'submit': {'is_complete': True}
         }
     },
     'obama': {
@@ -557,7 +564,7 @@ CONTACTS = {
                      PROGRAM_CONTACTS['billy_mayoral']],
         'program_apps': PROGRAM_APPS['billy']['program_apps'],
         'terms_agreement': True,
-        'status': 'created',
+        'status': 'approved',
         'profile': CONTACT_PROFILE['billy_profile']['profile']
     },
 
@@ -2516,6 +2523,8 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
     ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])
     ,('/api/programs', PROGRAMS.values())
+    ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS['billy']])
+    ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS['obama_none']])
     ]
 )
 def test_get_many_unordered(app, url, expected):

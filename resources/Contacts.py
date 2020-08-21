@@ -140,18 +140,9 @@ class ContactPrograms(Resource):
             contacts = Contact.query.all()
         else:
             if approved_arg == 'true':
-                contacts = (
-                    Contact.query
-                    .join(Contact.programs, aliased=True)
-                    .filter(ProgramContact.is_approved==True)
-                )
+                contacts = Contact.query.filter(Contact.stage>=3)
             elif approved_arg == 'false':
-                contacts = (
-                    Contact.query
-                    .join(Contact.programs, aliased=True)
-                    .filter(~Contact.programs
-                            .any(ProgramContact.is_approved==True))
-                )
+                contacts = Contact.query.filter(Contact.stage<3)
         contacts = contact_program_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 
