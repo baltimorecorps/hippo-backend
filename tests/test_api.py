@@ -192,7 +192,14 @@ PROGRAM_APPS = {
              'is_approved': False,
              'status': 'Not interested',
              'decision_date': None},
-    ]}
+    ]},
+    'obama_none': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'program_apps': []}
 }
 
 CONTACT_PROFILE = {
@@ -2511,6 +2518,8 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
     ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])
     ,('/api/programs', PROGRAMS.values())
+    ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS['billy']])
+    ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS['obama_none']])
     ]
 )
 def test_get_many_unordered(app, url, expected):
