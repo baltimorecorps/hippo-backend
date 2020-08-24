@@ -28,6 +28,13 @@ Writes a test to see if `POST api/contacts` will break if it doesn't receive `em
 - Moves `test_post_contact` and other related tests from `trello_integration_test.py` to `test_api.py`
 - Tests that passing `email` instead of `email_primary` doesn't break the `POST api/contacts` endpoint
 
+### Branch `feature-new-approve-endpoint`
+Creates endpoint `POST api/contact/approve` to replace the endpoint `POST api/programs/<program_id>/approve-many`
+
+#### Changes
+
+-  Creates endpoint `POST api/contact/approve`
+
 ### Deployment Considerations
 
 - **Heroku Variables:** {{Yes/No}}

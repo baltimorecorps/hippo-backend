@@ -6,7 +6,8 @@ from resources.Contacts import (
     ContactAccount,
     ContactShort,
     ContactPrograms,
-    ContactFull
+    ContactFull,
+    ContactApproveMany
 )
 from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne
 from resources.Experience import ExperienceAll, ExperienceOne
@@ -72,6 +73,9 @@ api.add_resource(ContactPrograms,
 api.add_resource(ContactShort,
                  '/contacts/short',
                  '/contacts/short/')
+api.add_resource(ContactApproveMany,
+                 '/contacts/approve',
+                 '/contacts/approve/')
 api.add_resource(ContactSkills,
                  '/contacts/<int:contact_id>/skills',
                  '/contacts/<int:contact_id>/skills/')
