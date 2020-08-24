@@ -343,7 +343,7 @@ CONTACT_PROFILE = {
         'phone_primary': "555-444-4444",
         'account_id': 'test-valid|alsghldwgsg120393020293',
         'profile': {
-            'id': 1,
+            'id': 3,
             'gender': None,
             'gender_other': None,
             'pronoun': None,
@@ -566,6 +566,7 @@ CONTACTS = {
         'id': 123,
         'first_name': "Billy",
         'last_name': "Daly",
+        'email': "billy@example.com",
         'email_primary': {
             'id': 45,
             'is_primary': True,
@@ -586,6 +587,7 @@ CONTACTS = {
         'id': 124,
         'first_name': "Barack",
         'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
         'email_primary': {
             'id': 90,
             'is_primary': True,
@@ -1267,13 +1269,7 @@ def post_request(app, url, data):
 
 @pytest.mark.parametrize(
     "url,data,query",
-    [pytest.param('/api/contacts/',
-      POSTS['contact'],
-      lambda id: Contact.query.get(id),
-      marks=pytest.mark.skip
-      # TODO: unskip when trello stuff is mocked out
-      )
-    ,('/api/contacts/123/experiences/',
+    [('/api/contacts/123/experiences/',
       POSTS['experience'],
       lambda id: Experience.query.get(id)
       )
@@ -1331,16 +1327,103 @@ def test_post_opp_program(app, data, program_id):
     assert opp is not None
     assert opp.program_id == program_id
 
-@pytest.mark.skip
+def test_post_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+    with app.test_client() as client:
+        response = client.post('/api/contacts/',
+                               data=json.dumps(POSTS['contact']),
+                               headers=headers)
+        assert response.status_code == 201
+        set_cookie = response.headers.get('set-cookie')
+        assert set_cookie is not None
+        assert set_cookie.find('HttpOnly;') is not -1
+        # Note: Can't test "secure" due to non-https connection
+        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
+        assert contact.first_name == 'Tester'
+        assert contact.email == 'testerb@example.com'
+        assert contact.profile.years_exp is None
+        assert contact.card_id is None
+
+        assert UserSession.query.filter_by(contact_id=contact.id).first()
+
+def test_post_contact_without_email_primary(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+
+    payload = POSTS['contact'].copy()
+    payload['email'] = 'testerb@example.com'
+    del payload['email_primary']
+    assert payload.get('email_primary', None) is None
+    assert payload.get('email') == 'testerb@example.com'
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/',
+                               data=json.dumps(payload),
+                               headers=headers)
+        print(response.json)
+        assert response.status_code == 201
+        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
+        assert contact.first_name == 'Tester'
+        assert contact.email == 'testerb@example.com'
+        assert contact.email_primary.email == 'testerb@example.com'
+
+        assert UserSession.query.filter_by(contact_id=contact.id).first()
+
+def test_post_duplicate_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
+    }
+
+    contact_data = POSTS['contact'].copy()
+    contact_data['account_id'] = 'test-valid|0123456789abcdefabcdefff'
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/',
+                               data=json.dumps(contact_data),
+                               headers=headers)
+        assert response.status_code == 400
+        message = json.loads(response.data)['message']
+        assert message == 'A contact with this account already exists'
+
+# TODO: Add trello specific checks
 def test_create_program_contact_with_contact(app):
-    id_, _ = post_request(app, '/api/contacts/', POSTS['contact'])
-    program_contacts = Contact.query.get(id_).programs
-    assert len(program_contacts) == 1
-    assert program_contacts[0].program_id == 1
-    assert program_contacts[0].stage == 1
-    assert program_contacts[0].program.name == 'Place for Purpose'
-    assert program_contacts[0].is_active == True
-    assert program_contacts[0].is_approved == False
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+    with app.test_client() as client:
+        response = client.post('/api/contacts/',
+                               data=json.dumps(POSTS['contact']),
+                               headers=headers)
+
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        assert data['id'] is not None
+        id_ = data['id']
+
+        program_contacts = Contact.query.get(id_).programs
+        assert len(program_contacts) == 1
+        assert program_contacts[0].program_id == 1
+        assert program_contacts[0].stage == 1
+        assert program_contacts[0].program.name == 'Place for Purpose'
+        assert program_contacts[0].is_active == True
+        assert program_contacts[0].is_approved == False
+        assert program_contacts[0].card_id is None
 
 def test_post_experience_date(app):
     id_, _ = post_request(app, '/api/contacts/123/experiences/',

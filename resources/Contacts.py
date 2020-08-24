@@ -7,7 +7,7 @@ from models.contact_model import (
     ContactSchema,
     ContactShortSchema,
 )
-from models.email_model import Email
+from models.email_model import Email, Type as EmailType
 from models.base_model import db
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
@@ -26,15 +26,12 @@ from auth import (
 from models.skill_model import Skill
 from .skill_utils import get_skill_id, get_or_make_skill
 from .Profile import create_profile
+from pprint import pprint
 
 
-contact_schema = ContactSchema(exclude=['email',
-                                        'instructions',
-                                        'email_main',
+contact_schema = ContactSchema(exclude=['instructions',
                                         'experiences'])
-contacts_schema = ContactSchema(exclude=['email',
-                                         'instructions',
-                                         'email_main',
+contacts_schema = ContactSchema(exclude=['instructions',
                                          'experiences'],
                                 many=True)
 contacts_short_schema = ContactShortSchema(many=True)
@@ -99,11 +96,24 @@ class ContactAll(Resource):
         if existing_contact:
             return {'message': 'A contact with this account already exists'}, 400
 
-        email = data.pop('email_primary', None)
+        pprint(data)
+        email_primary = data.pop('email_primary', None)
+        email = data.get('email', None)
+
         contact = Contact(**data)
-        if email:
-            contact.email_primary = Email(**email)
-        contact.email = email['email']
+        if email_primary:
+            contact.email_primary = Email(**email_primary)
+            contact.email = email_primary['email']
+        elif email:
+            email_primary = {
+                'email': email,
+                'is_primary': True,
+                'type': EmailType('Work')
+            }
+            contact.email_primary = Email(**email_primary)
+        else:
+            return {'message': 'No email provided'}, 400
+
         create_profile(contact)
         db.session.add(contact)
         db.session.commit()
