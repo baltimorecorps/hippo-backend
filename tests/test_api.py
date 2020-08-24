@@ -343,7 +343,7 @@ CONTACT_PROFILE = {
         'phone_primary': "555-444-4444",
         'account_id': 'test-valid|alsghldwgsg120393020293',
         'profile': {
-            'id': 3,
+            'id': 1,
             'gender': None,
             'gender_other': None,
             'pronoun': None,
@@ -1327,6 +1327,14 @@ def test_post_opp_program(app, data, program_id):
     assert opp is not None
     assert opp.program_id == program_id
 
+def test_post_about_me(app):
+    id_, data = post_request(app, '/api/contacts/124/about-me/', {})
+    contact = Contact.query.get(124)
+    assert contact.profile != {}
+    pprint(data)
+    pprint(CONTACT_PROFILE['obama_blank'])
+    assert data == CONTACT_PROFILE['obama_blank']
+
 def test_post_contact(app):
     mimetype = 'application/json'
     headers = {
@@ -1425,6 +1433,29 @@ def test_create_program_contact_with_contact(app):
         assert program_contacts[0].is_approved == False
         assert program_contacts[0].card_id is None
 
+def test_post_approve_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+
+    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected[0]['status'] == 'approved'
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/approve',
+                               data=json.dumps([CONTACTS_SHORT['obama']]),
+                               headers=headers)
+
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        for contact in data:
+            assert contact['status'] == 'approved'
+
+
 def test_post_experience_date(app):
     id_, _ = post_request(app, '/api/contacts/123/experiences/',
                           POSTS['experience'])
@@ -1436,15 +1467,6 @@ def test_post_experience_date(app):
 def test_post_opportunity_app_status(app):
     id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
     assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
-
-def test_post_about_me(app):
-    id_, data = post_request(app, '/api/contacts/124/about-me/', {})
-    contact = Contact.query.get(124)
-    assert contact.profile != {}
-    pprint(data)
-    pprint(CONTACT_PROFILE['obama_blank'])
-    assert data == CONTACT_PROFILE['obama_blank']
-
 
 def test_post_experience_null_start_date(app):
     exp = POSTS['experience'].copy()
@@ -1556,28 +1578,6 @@ def test_get_no_profile(app):
         assert response.status_code == 404
         assert response.json['message'] == 'Profile does not exist'
 
-# TODO: unskip when trello stuff is mocked out
-@pytest.mark.skip
-def test_post_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
-        assert response.status_code == 201
-        set_cookie = response.headers.get('set-cookie')
-        assert set_cookie is not None
-        assert set_cookie.find('HttpOnly;') is not -1
-        # Note: Can't test "secure" due to non-https connection
-        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
-        assert contact.first_name == 'Tester'
-
-        assert UserSession.query.filter_by(contact_id=contact.id).first()
 
 def test_post_session(app):
     mimetype = 'application/json'
@@ -1626,33 +1626,6 @@ def test_get_session(app):
         pprint(data)
         assert data['contact']['email'] == 'billy@example.com'
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
-
-@pytest.mark.skip
-def test_post_formassembly_opportunity_intake(app):
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
-    }
-
-    gdoc_id ='1b5erb67lgwvxj-g8u2iitvihhti6_nv-7dehdh8ldfw'
-
-    url = '/api/form-assembly/opportunity-app/'
-    data = f'google_doc_id={gdoc_id}&org=Balti&title=QA+Tester&salary_lower=50000&salary_upper=60000&google_doc_link=&capabilities%5B0%5D=tfa_16677&capabilities%5B1%5D=tfa_16678&supervisor_first_name=Billy&supervisor_last_name=Daly&supervisor_title=Director+of+Data&supervisor_email=billy%40baltimorecorps.org&supervisor_phone=4436408904&is_supervisor=tfa_16674&race=tfa_16656&gender=tfa_16662&pronouns=tfa_16668&response_id=157007055'
-
-    with app.test_client() as client:
-        response = client.post(url, data=data, headers=headers)
-        pprint(response.json)
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-
-        assert 'gdoc_id' in data
-        assert data['gdoc_id'] == gdoc_id
-        assert 'title' in data
-        assert data['title'] == 'QA Tester'
-
-        opp = Opportunity.query.filter_by(gdoc_id=gdoc_id).first()
-        assert opp is not None
-        assert opp.title == 'QA Tester'
 
 def skill_name(skill):
     return skill.name

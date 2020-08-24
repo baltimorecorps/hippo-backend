@@ -1,6 +1,6 @@
 from flask_restful import Resource, request
 from models.program_model import Program, ProgramSchema
-from models.contact_model import Contact, ContactShortSchema
+from models.contact_model import Contact, ContactShortSchema, ContactStage
 from models.program_contact_model import ProgramContact, ProgramContactSchema
 from models.base_model import db
 from marshmallow import ValidationError
@@ -58,7 +58,7 @@ class ProgramContactApproveMany(Resource):
 
         for contact in contacts:
             program_contact = contact.query_program_contact(program_id)
-            contact.stage = 3
+            contact.stage = ContactStage.approved.value
             if not program_contact:
                 insert_data = {
                     'contact_id': contact.id,

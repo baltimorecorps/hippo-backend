@@ -6,6 +6,7 @@ from models.contact_model import (
     Contact,
     ContactSchema,
     ContactShortSchema,
+    ContactStage
 )
 from models.email_model import Email, Type as EmailType
 from models.base_model import db
@@ -252,3 +253,36 @@ class ContactFull(Resource):
 
         contact = contact_full_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
+
+class ContactApproveMany(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session]
+    }
+
+    def post(self):
+        if not is_authorized_with_permission('write:all-users'):
+            return unauthorized()
+
+        json_data = request.get_json(force=True)
+        try:
+            data = contacts_short_schema.load(json_data)
+        except ValidationError as e:
+            return e.messages, 422
+        if not data:
+            return {'message': 'No data provided to update'}, 400
+
+        # Check that all of the contacts are in the db
+        contact_ids = [c['id'] for c in data]
+        contacts = Contact.query.filter(Contact.id.in_(contact_ids)).all()
+        if len(data) != len(contacts):
+            return {'message': ("Payload contained contacts "
+                                "that couldn't be found")}, 404
+
+        # Update the stage of each contact
+        for contact in contacts:
+            contact.stage = ContactStage.approved.value
+        db.session.commit()
+
+        # Format and return the contacts
+        result = contacts_short_schema.dump(contacts)
+        return {'status': 'success', 'data': result}, 201
