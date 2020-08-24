@@ -20,6 +20,14 @@ Cleans up the `GET api/session` endpoint and simplifies contact schemas
 - Removes `ContactProgramSchema`
 - Removes `GET api/internal/applications` endpoint
 
+### Branch `feature-email-test`
+Writes a test to see if `POST api/contacts` will break if it doesn't receive `email_primary` in the payload
+
+#### Changes
+
+- Moves `test_post_contact` and other related tests from `trello_integration_test.py` to `test_api.py`
+- Tests that passing `email` instead of `email_primary` doesn't break the `POST api/contacts` endpoint
+
 ### Deployment Considerations
 
 - **Heroku Variables:** {{Yes/No}}
