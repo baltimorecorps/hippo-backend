@@ -218,17 +218,22 @@ class Contact(db.Model):
                 setattr(self, field, value)
 
 class ContactSchema(Schema):
+    # Short contact
     id = fields.Integer(dump_only=True)
     first_name = fields.String(required=True)
     last_name = fields.String(required=True)
-    email_primary = fields.Nested(EmailSchema)
     email = fields.String(load_only=True)
     email_main = fields.String(dump_only=True, data_key='email')
     phone_primary = fields.String()
     account_id = fields.String()
     status = EnumField(ContactStage, dump_only=True)
+    terms_agreement = fields.Boolean(load_only=True)
+
+    # TODO: Remove this when Frontend switches
+    email_primary = fields.Nested(EmailSchema)
+
+    # Full contact
     skills = fields.Nested(SkillSchema, many=True)
-    terms_agreement = fields.Boolean()
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
     program_apps = fields.Nested(ProgramAppSchema, many=True)
     profile = fields.Nested(ProfileSchema)
@@ -243,16 +248,9 @@ class ContactShortSchema(Schema):
     first_name = fields.String()
     last_name = fields.String()
     email_main = fields.String(dump_only=True, data_key='email')
-
-    class Meta:
-        unknown = EXCLUDE
-
-class ContactProgramSchema(Schema):
-    id = fields.Integer()
-    first_name = fields.String()
-    last_name = fields.String()
-    email_main = fields.String(dump_only=True, data_key='email')
-    programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
+    phone_primary = fields.String()
+    account_id = fields.String()
+    status = EnumField(ContactStage, dump_only=True)
 
     class Meta:
         unknown = EXCLUDE

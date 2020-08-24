@@ -32,17 +32,12 @@ from auth import (
 profile_schema = ContactSchema(exclude=['skills',
                                         'programs',
                                         'program_apps',
-                                        'terms_agreement',
-                                        'account_id',
                                         'email_primary',
                                         'instructions',
                                         'experiences'])
 instructions_schema = ContactSchema(exclude=['skills',
                                              'programs',
                                              'program_apps',
-                                             'phone_primary',
-                                             'terms_agreement',
-                                             'account_id',
                                              'email_primary',
                                              'profile',
                                              'experiences'])
