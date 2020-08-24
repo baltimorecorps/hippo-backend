@@ -10,13 +10,15 @@ Addresses some performance issues within the web app and some minor refactoring 
 - Changes the filtering mechanism for `GET api/contacts/programs` to improve response times
 - Creates endpoint `GET api/contacts/program-apps` which returns the new format for program applications and will eventually replace `GET api/contacts/programs`
 
-### Branch `feature-branch-two`
-{{overview of functionality added in this feature branch}}
+### Branch `feature-session-cleanup`
+Cleans up the `GET api/session` endpoint and simplifies contact schemas
 
 #### Changes
 
-- {{change 1}}
-- {{change 2}}
+- Replaces `ContactSchema` with `ContactShortSchema` in the `UserSessionSchema`
+- Add `status`, `account_id`, `phone_primary` to `ContactShortSchema`
+- Removes `ContactProgramSchema`
+- Removes `GET api/internal/applications` endpoint
 
 ### Deployment Considerations
 

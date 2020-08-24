@@ -30,7 +30,6 @@ from resources.ProgramContacts import (
     ProgramContactOne,
     ProgramContactAll,
     ProgramContactApproveMany,
-    ApplicationsInternal
 )
 from resources.Opportunity import (
     OpportunityAll,
@@ -138,9 +137,6 @@ api.add_resource(ProgramContactOne,
 api.add_resource(ProgramContactApproveMany,
                  '/programs/<int:program_id>/contacts/approve-many',
                  '/programs/<int:program_id>/contacts/approve-many/')
-api.add_resource(ApplicationsInternal,
-                 '/internal/applications',
-                 '/internal/applications/')
 api.add_resource(OpportunityAppOne,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/')

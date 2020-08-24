@@ -148,6 +148,9 @@ PROGRAM_APPS = {
         'last_name': "Daly",
         'email': "billy@example.com",
         'status': 'approved',
+        'status': 'approved',
+        'phone_primary': "555-245-2351",
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'program_apps': [
             {'id': 7,
              'program': {'id': 1, 'name': 'Place for Purpose'},
@@ -167,6 +170,9 @@ PROGRAM_APPS = {
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'program_apps': [
             {'program': {'id': 1, 'name': 'Place for Purpose'},
              'is_interested': True},
@@ -179,6 +185,8 @@ PROGRAM_APPS = {
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
         'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'program_apps': [
             {'id': 1,
              'program': {'id': 1, 'name': 'Place for Purpose'},
@@ -199,6 +207,8 @@ PROGRAM_APPS = {
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
         'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'program_apps': []}
 }
 
@@ -209,8 +219,9 @@ CONTACT_PROFILE = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
-        'phone_primary': "555-245-2351",
         'status': 'approved',
+        'phone_primary': "555-245-2351",
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'profile': {
             'id': 123,
             'gender': 'Male',
@@ -329,8 +340,9 @@ CONTACT_PROFILE = {
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
-        'phone_primary': "555-444-4444",
         'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'profile': {
             'id': 1,
             'gender': None,
@@ -444,6 +456,8 @@ INSTRUCTIONS = {
         'last_name': "Daly",
         'email': "billy@example.com",
         'status': 'approved',
+        'phone_primary': "555-245-2351",
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'instructions': {
             'about_me': {
                 'is_complete': True,
@@ -478,6 +492,8 @@ INSTRUCTIONS = {
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
         'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'instructions': {
             'about_me': {
                 'is_complete': False,
@@ -563,7 +579,6 @@ CONTACTS = {
         'programs': [PROGRAM_CONTACTS['billy_pfp'],
                      PROGRAM_CONTACTS['billy_mayoral']],
         'program_apps': PROGRAM_APPS['billy']['program_apps'],
-        'terms_agreement': True,
         'status': 'approved',
         'profile': CONTACT_PROFILE['billy_profile']['profile']
     },
@@ -579,11 +594,10 @@ CONTACTS = {
             'type': "Work",
         },
         'phone_primary': "555-444-4444",
-        'account_id': None,
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'skills': SKILLS['obama'],
         'programs': [PROGRAM_CONTACTS['obama_pfp']],
         'program_apps': [],
-        'terms_agreement': True,
         'status': 'created',
         'profile': None
     },
@@ -672,7 +686,6 @@ CONTACTS = {
                 {"id":"BU7_v3jWFFgHpmHcw50xqg==","name":"Social Media Management"},
                 {"id":"8t48rV-NkxP0h0Y0E8h-vQ==","name":"Technical Requirements"}
             ],
-            "terms_agreement":True,
             "capabilities":{
                 "cap:analysis":{
                     "id":"cap:analysis",
@@ -712,12 +725,18 @@ CONTACTS_SHORT = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
+        'status': 'approved',
+        'phone_primary': "555-245-2351",
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
     },
     'obama': {
         'id': 124,
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
     }
 }
 
@@ -787,6 +806,9 @@ CONTACT_PROGRAMS = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
+        'status': 'approved',
+        'phone_primary': "555-245-2351",
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'programs': [
             PROGRAM_CONTACTS['billy_pfp'],
             PROGRAM_CONTACTS['billy_mayoral']
@@ -797,6 +819,9 @@ CONTACT_PROGRAMS = {
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'programs': [PROGRAM_CONTACTS['obama_pfp']]
     }
 }
@@ -1489,6 +1514,9 @@ def test_post_session(app):
         assert set_cookie.find('HttpOnly;') is not -1
         # Note: Can't test "secure" due to non-https connection
 
+        data = response.json['data']
+        assert data['contact'].get('profile', None) is None
+
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
 def test_get_session(app):
@@ -2137,12 +2165,14 @@ def test_opportunity_activate(app):
         assert response.status_code == 200
         assert Opportunity.query.get('123abc').is_active == True
 
-def test_approve_many_program_contacts_new(app, ):
+def test_approve_many_program_contacts_new(app):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
         'Accept': mimetype
     }
+    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected[0]['status'] = 'approved'
     payload = [CONTACTS_SHORT['obama']]
     with app.test_client() as client:
         program_contact = (ProgramContact
@@ -2161,17 +2191,11 @@ def test_approve_many_program_contacts_new(app, ):
         assert program_contact is not None
         assert program_contact.is_approved == True
         data = json.loads(response.data)['data']
-        obama_mayoral = APPLICATIONS_INTERNAL['obama_pfp'].copy()
-        obama_mayoral['program_id'] = 2
-        obama_mayoral['id'] = 1
-        obama_mayoral['is_approved'] = True
-        obama_mayoral['applications'] = []
-        expected = [obama_mayoral]
         contact = Contact.query.get(124)
         assert contact.stage == 3
-        print(expected)
+        pprint(expected)
         for item in data:
-            print(item)
+            pprint(item)
             assert item in expected
 
 def test_approve_many_program_contacts_existing(app, ):
@@ -2180,6 +2204,8 @@ def test_approve_many_program_contacts_existing(app, ):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
+    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected[0]['status'] = 'approved'
     payload = [CONTACTS_SHORT['obama']]
     with app.test_client() as client:
         assert ProgramContact.query.get(6).is_approved == False
@@ -2189,11 +2215,9 @@ def test_approve_many_program_contacts_existing(app, ):
         assert response.status_code == 200
         assert ProgramContact.query.get(6).is_approved == True
         data = json.loads(response.data)['data']
-        expected = [APPLICATIONS_INTERNAL['obama_pfp']]
-        expected[0]['is_approved'] = True
-        print(expected)
+        pprint(expected)
         for item in data:
-            print(item)
+            pprint(item)
             assert item in expected
 
 def test_reapprove_many_program_contacts(app, ):
@@ -2202,6 +2226,10 @@ def test_reapprove_many_program_contacts(app, ):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
+    expected = [CONTACTS_SHORT['billy'].copy(),
+                CONTACTS_SHORT['obama'].copy()]
+    expected[0]['status'] = 'approved'
+    expected[1]['status'] = 'approved'
     payload = [CONTACTS_SHORT['billy'], CONTACTS_SHORT['obama']]
     with app.test_client() as client:
         assert ProgramContact.query.get(6).is_approved == False
@@ -2213,11 +2241,9 @@ def test_reapprove_many_program_contacts(app, ):
         assert ProgramContact.query.get(6).is_approved == True
         assert ProgramContact.query.get(5).is_approved == True
         data = json.loads(response.data)['data']
-        expected = [APPLICATIONS_INTERNAL['obama_pfp'],
-                    APPLICATIONS_INTERNAL['billy_pfp']]
-        print(expected)
+        pprint(expected)
         for item in data:
-            print(item)
+            pprint(item)
             assert item in expected
 
 def test_approve_program_contact_fake_contact(app):
@@ -2515,10 +2541,6 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/app/', [APPLICATIONS['app_billy']])
     ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
     ,('/api/contacts/short/', CONTACTS_SHORT.values())
-    ,('/api/internal/applications/',
-      [APPLICATIONS_INTERNAL['billy_pfp']])
-    ,('/api/internal/applications/?program_id=1',
-      [APPLICATIONS_INTERNAL['billy_pfp']])
     ,('/api/contacts/programs/', CONTACT_PROGRAMS.values())
     ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
     ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])

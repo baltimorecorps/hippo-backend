@@ -1,5 +1,5 @@
 from models.base_model import db
-from models.contact_model import ContactSchema
+from models.contact_model import ContactSchema, ContactShortSchema
 from marshmallow import Schema, fields, EXCLUDE
 from flask_login import UserMixin
 from datetime import datetime
@@ -33,9 +33,7 @@ class UserSessionSchema(Schema):
     # TODO: test this
     id = fields.String(required=True, load_only=True)
 
-    contact = fields.Nested(ContactSchema,
-                            exclude=['instructions', 'experiences'],
-                            required=True)
+    contact = fields.Nested(ContactShortSchema, required=True)
     jwt = fields.String(required=True)
 
     class Meta:

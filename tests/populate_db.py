@@ -79,7 +79,8 @@ obama = Contact(
         type=EmailType('Work'),
     ),
     phone_primary='555-444-4444',
-    terms_agreement=True
+    terms_agreement=True,
+    account_id='test-valid|alsghldwgsg120393020293',
 
 )
 

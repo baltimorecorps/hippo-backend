@@ -6,7 +6,6 @@ from models.contact_model import (
     Contact,
     ContactSchema,
     ContactShortSchema,
-    ContactProgramSchema,
 )
 from models.email_model import Email
 from models.base_model import db
@@ -39,7 +38,16 @@ contacts_schema = ContactSchema(exclude=['email',
                                          'experiences'],
                                 many=True)
 contacts_short_schema = ContactShortSchema(many=True)
-contact_program_schema = ContactProgramSchema(many=True)
+contact_program_schema = ContactSchema(
+    many=True,
+    exclude=['skills',
+             'program_apps',
+             'profile',
+             'instructions',
+             'experiences',
+             'email_primary',
+             'email']
+)
 contact_full_schema = ContactSchema()
 
 def add_skills(skills, contact):
