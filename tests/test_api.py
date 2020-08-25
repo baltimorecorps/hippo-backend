@@ -7,7 +7,7 @@ import copy
 
 from models.base_model import db
 from models.contact_model import Contact
-from models.experience_model import Experience, Month
+from models.experience_model import Experience, Month, Type as ExpType
 from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.program_contact_model import ProgramContact
@@ -2469,6 +2469,27 @@ def test_instructions_tag_skills(app):
         billy = Contact.query.get(123)
         print(billy.skills)
         assert billy.tag_skills_complete == False
+
+def test_instructions_profile_complete(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        # sets value question to None
+        billy = Contact.query.get(123)
+        assert billy.add_experience_complete['is_complete'] == True
+        assert billy.profile_complete['is_complete'] == True
+        for exp in billy.experiences:
+            if exp.type == ExpType('Work'):
+                db.session.delete(exp)
+        db.session.commit()
+        billy = Contact.query.get(123)
+        pprint(billy.instructions)
+        assert billy.add_experience_complete['is_complete'] == False
+        assert billy.profile_complete['is_complete'] == False
 
 def test_instructions_about_me(app):
     mimetype = 'application/json'

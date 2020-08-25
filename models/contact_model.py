@@ -148,7 +148,7 @@ class Contact(db.Model):
 
     @hybrid_property
     def profile_complete(self):
-        profile_status = (self.add_experience_complete
+        profile_status = (self.add_experience_complete['is_complete']
                           and self.add_education_complete)
         profile_dict = {
             'is_complete': profile_status,
