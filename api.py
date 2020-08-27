@@ -6,7 +6,8 @@ from resources.Contacts import (
     ContactAccount,
     ContactShort,
     ContactPrograms,
-    ContactFull
+    ContactFull,
+    ContactApproveMany
 )
 from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne
 from resources.Experience import ExperienceAll, ExperienceOne
@@ -22,14 +23,14 @@ from resources.Capability import (
 )
 from resources.Session import Session
 from resources.ProgramApp import (
-    ContactProgramApps,
+    ContactProgramAppsOne,
+    ContactProgramAppsAll,
     ContactProgramAppsInterested
 )
 from resources.ProgramContacts import (
     ProgramContactOne,
     ProgramContactAll,
     ProgramContactApproveMany,
-    ApplicationsInternal
 )
 from resources.Opportunity import (
     OpportunityAll,
@@ -72,6 +73,9 @@ api.add_resource(ContactPrograms,
 api.add_resource(ContactShort,
                  '/contacts/short',
                  '/contacts/short/')
+api.add_resource(ContactApproveMany,
+                 '/contacts/approve',
+                 '/contacts/approve/')
 api.add_resource(ContactSkills,
                  '/contacts/<int:contact_id>/skills',
                  '/contacts/<int:contact_id>/skills/')
@@ -137,9 +141,6 @@ api.add_resource(ProgramContactOne,
 api.add_resource(ProgramContactApproveMany,
                  '/programs/<int:program_id>/contacts/approve-many',
                  '/programs/<int:program_id>/contacts/approve-many/')
-api.add_resource(ApplicationsInternal,
-                 '/internal/applications',
-                 '/internal/applications/')
 api.add_resource(OpportunityAppOne,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/')
@@ -191,9 +192,12 @@ api.add_resource(OpportunityActivate,
 api.add_resource(ProfileOne,
                  '/contacts/<int:contact_id>/about-me',
                  '/contacts/<int:contact_id>/about-me/')
-api.add_resource(ContactProgramApps,
+api.add_resource(ContactProgramAppsOne,
                  '/contacts/<int:contact_id>/program-apps',
                  '/contacts/<int:contact_id>/program-apps/')
+api.add_resource(ContactProgramAppsAll,
+                 '/contacts/program-apps',
+                 '/contacts/program-apps/')
 api.add_resource(ContactProgramAppsInterested,
                  '/contacts/<int:contact_id>/program-apps/interested',
                  '/contacts/<int:contact_id>/program-apps/interested/')

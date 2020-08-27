@@ -6,9 +6,9 @@ from models.contact_model import (
     Contact,
     ContactSchema,
     ContactShortSchema,
-    ContactProgramSchema,
+    ContactStage
 )
-from models.email_model import Email
+from models.email_model import Email, Type as EmailType
 from models.base_model import db
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
@@ -27,19 +27,25 @@ from auth import (
 from models.skill_model import Skill
 from .skill_utils import get_skill_id, get_or_make_skill
 from .Profile import create_profile
+from pprint import pprint
 
 
-contact_schema = ContactSchema(exclude=['email',
-                                        'instructions',
-                                        'email_main',
+contact_schema = ContactSchema(exclude=['instructions',
                                         'experiences'])
-contacts_schema = ContactSchema(exclude=['email',
-                                         'instructions',
-                                         'email_main',
+contacts_schema = ContactSchema(exclude=['instructions',
                                          'experiences'],
                                 many=True)
 contacts_short_schema = ContactShortSchema(many=True)
-contact_program_schema = ContactProgramSchema(many=True)
+contact_program_schema = ContactSchema(
+    many=True,
+    exclude=['skills',
+             'program_apps',
+             'profile',
+             'instructions',
+             'experiences',
+             'email_primary',
+             'email']
+)
 contact_full_schema = ContactSchema()
 
 def add_skills(skills, contact):
@@ -91,11 +97,24 @@ class ContactAll(Resource):
         if existing_contact:
             return {'message': 'A contact with this account already exists'}, 400
 
-        email = data.pop('email_primary', None)
+        pprint(data)
+        email_primary = data.pop('email_primary', None)
+        email = data.get('email', None)
+
         contact = Contact(**data)
-        if email:
-            contact.email_primary = Email(**email)
-        contact.email = email['email']
+        if email_primary:
+            contact.email_primary = Email(**email_primary)
+            contact.email = email_primary['email']
+        elif email:
+            email_primary = {
+                'email': email,
+                'is_primary': True,
+                'type': EmailType('Work')
+            }
+            contact.email_primary = Email(**email_primary)
+        else:
+            return {'message': 'No email provided'}, 400
+
         create_profile(contact)
         db.session.add(contact)
         db.session.commit()
@@ -140,18 +159,9 @@ class ContactPrograms(Resource):
             contacts = Contact.query.all()
         else:
             if approved_arg == 'true':
-                contacts = (
-                    Contact.query
-                    .join(Contact.programs, aliased=True)
-                    .filter(ProgramContact.is_approved==True)
-                )
+                contacts = Contact.query.filter(Contact.stage>=3)
             elif approved_arg == 'false':
-                contacts = (
-                    Contact.query
-                    .join(Contact.programs, aliased=True)
-                    .filter(~Contact.programs
-                            .any(ProgramContact.is_approved==True))
-                )
+                contacts = Contact.query.filter(Contact.stage<3)
         contacts = contact_program_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 
@@ -243,3 +253,36 @@ class ContactFull(Resource):
 
         contact = contact_full_schema.dump(contact)
         return {'status': 'success', 'data': contact}, 200
+
+class ContactApproveMany(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session]
+    }
+
+    def post(self):
+        if not is_authorized_with_permission('write:all-users'):
+            return unauthorized()
+
+        json_data = request.get_json(force=True)
+        try:
+            data = contacts_short_schema.load(json_data)
+        except ValidationError as e:
+            return e.messages, 422
+        if not data:
+            return {'message': 'No data provided to update'}, 400
+
+        # Check that all of the contacts are in the db
+        contact_ids = [c['id'] for c in data]
+        contacts = Contact.query.filter(Contact.id.in_(contact_ids)).all()
+        if len(data) != len(contacts):
+            return {'message': ("Payload contained contacts "
+                                "that couldn't be found")}, 404
+
+        # Update the stage of each contact
+        for contact in contacts:
+            contact.stage = ContactStage.approved.value
+        db.session.commit()
+
+        # Format and return the contacts
+        result = contacts_short_schema.dump(contacts)
+        return {'status': 'success', 'data': result}, 201

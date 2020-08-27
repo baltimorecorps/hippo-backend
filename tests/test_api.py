@@ -147,7 +147,10 @@ PROGRAM_APPS = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
-        'status': 'created',
+        'status': 'approved',
+        'status': 'approved',
+        'phone_primary': "555-245-2351",
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'program_apps': [
             {'id': 7,
              'program': {'id': 1, 'name': 'Place for Purpose'},
@@ -167,6 +170,9 @@ PROGRAM_APPS = {
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'program_apps': [
             {'program': {'id': 1, 'name': 'Place for Purpose'},
              'is_interested': True},
@@ -179,6 +185,8 @@ PROGRAM_APPS = {
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
         'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'program_apps': [
             {'id': 1,
              'program': {'id': 1, 'name': 'Place for Purpose'},
@@ -192,7 +200,16 @@ PROGRAM_APPS = {
              'is_approved': False,
              'status': 'Not interested',
              'decision_date': None},
-    ]}
+    ]},
+    'obama_none': {
+        'id': 124,
+        'first_name': "Barack",
+        'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
+        'program_apps': []}
 }
 
 CONTACT_PROFILE = {
@@ -201,8 +218,9 @@ CONTACT_PROFILE = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
+        'status': 'approved',
         'phone_primary': "555-245-2351",
-        'status': 'created',
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'profile': {
             'id': 123,
             'gender': 'Male',
@@ -262,7 +280,7 @@ CONTACT_PROFILE = {
         'last_name': "Daly",
         'email': "billy_new@email.com", # updated
         'phone_primary': "555-245-2351",
-        'status': 'created',
+        'status': 'approved',
         'profile': {
             'id': 1,
             'gender': 'Male',
@@ -321,8 +339,9 @@ CONTACT_PROFILE = {
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
-        'phone_primary': "555-444-4444",
         'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'profile': {
             'id': 1,
             'gender': None,
@@ -435,7 +454,9 @@ INSTRUCTIONS = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
-        'status': 'created',
+        'status': 'approved',
+        'phone_primary': "555-245-2351",
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'instructions': {
             'about_me': {
                 'is_complete': True,
@@ -461,7 +482,7 @@ INSTRUCTIONS = {
                     'add_portfolio': False,
                 },
             },
-            'submit': {'is_complete': False}
+            'submit': {'is_complete': True}
         }
     },
     'obama': {
@@ -470,6 +491,8 @@ INSTRUCTIONS = {
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
         'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'instructions': {
             'about_me': {
                 'is_complete': False,
@@ -543,6 +566,7 @@ CONTACTS = {
         'id': 123,
         'first_name': "Billy",
         'last_name': "Daly",
+        'email': "billy@example.com",
         'email_primary': {
             'id': 45,
             'is_primary': True,
@@ -555,8 +579,7 @@ CONTACTS = {
         'programs': [PROGRAM_CONTACTS['billy_pfp'],
                      PROGRAM_CONTACTS['billy_mayoral']],
         'program_apps': PROGRAM_APPS['billy']['program_apps'],
-        'terms_agreement': True,
-        'status': 'created',
+        'status': 'approved',
         'profile': CONTACT_PROFILE['billy_profile']['profile']
     },
 
@@ -564,6 +587,7 @@ CONTACTS = {
         'id': 124,
         'first_name': "Barack",
         'last_name': "Obama",
+        'email': "obama@whitehouse.gov",
         'email_primary': {
             'id': 90,
             'is_primary': True,
@@ -571,11 +595,10 @@ CONTACTS = {
             'type': "Work",
         },
         'phone_primary': "555-444-4444",
-        'account_id': None,
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'skills': SKILLS['obama'],
         'programs': [PROGRAM_CONTACTS['obama_pfp']],
         'program_apps': [],
-        'terms_agreement': True,
         'status': 'created',
         'profile': None
     },
@@ -664,7 +687,6 @@ CONTACTS = {
                 {"id":"BU7_v3jWFFgHpmHcw50xqg==","name":"Social Media Management"},
                 {"id":"8t48rV-NkxP0h0Y0E8h-vQ==","name":"Technical Requirements"}
             ],
-            "terms_agreement":True,
             "capabilities":{
                 "cap:analysis":{
                     "id":"cap:analysis",
@@ -704,12 +726,18 @@ CONTACTS_SHORT = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
+        'status': 'approved',
+        'phone_primary': "555-245-2351",
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
     },
     'obama': {
         'id': 124,
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
     }
 }
 
@@ -779,6 +807,9 @@ CONTACT_PROGRAMS = {
         'first_name': "Billy",
         'last_name': "Daly",
         'email': "billy@example.com",
+        'status': 'approved',
+        'phone_primary': "555-245-2351",
+        'account_id': 'test-valid|0123456789abcdefabcdefff',
         'programs': [
             PROGRAM_CONTACTS['billy_pfp'],
             PROGRAM_CONTACTS['billy_mayoral']
@@ -789,6 +820,9 @@ CONTACT_PROGRAMS = {
         'first_name': "Barack",
         'last_name': "Obama",
         'email': "obama@whitehouse.gov",
+        'status': 'created',
+        'phone_primary': "555-444-4444",
+        'account_id': 'test-valid|alsghldwgsg120393020293',
         'programs': [PROGRAM_CONTACTS['obama_pfp']]
     }
 }
@@ -1235,13 +1269,7 @@ def post_request(app, url, data):
 
 @pytest.mark.parametrize(
     "url,data,query",
-    [pytest.param('/api/contacts/',
-      POSTS['contact'],
-      lambda id: Contact.query.get(id),
-      marks=pytest.mark.skip
-      # TODO: unskip when trello stuff is mocked out
-      )
-    ,('/api/contacts/123/experiences/',
+    [('/api/contacts/123/experiences/',
       POSTS['experience'],
       lambda id: Experience.query.get(id)
       )
@@ -1299,16 +1327,134 @@ def test_post_opp_program(app, data, program_id):
     assert opp is not None
     assert opp.program_id == program_id
 
-@pytest.mark.skip
+def test_post_about_me(app):
+    id_, data = post_request(app, '/api/contacts/124/about-me/', {})
+    contact = Contact.query.get(124)
+    assert contact.profile != {}
+    pprint(data)
+    pprint(CONTACT_PROFILE['obama_blank'])
+    assert data == CONTACT_PROFILE['obama_blank']
+
+def test_post_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+    with app.test_client() as client:
+        response = client.post('/api/contacts/',
+                               data=json.dumps(POSTS['contact']),
+                               headers=headers)
+        assert response.status_code == 201
+        set_cookie = response.headers.get('set-cookie')
+        assert set_cookie is not None
+        assert set_cookie.find('HttpOnly;') is not -1
+        # Note: Can't test "secure" due to non-https connection
+        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
+        assert contact.first_name == 'Tester'
+        assert contact.email == 'testerb@example.com'
+        assert contact.profile.years_exp is None
+        assert contact.card_id is None
+
+        assert UserSession.query.filter_by(contact_id=contact.id).first()
+
+def test_post_contact_without_email_primary(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+
+    payload = POSTS['contact'].copy()
+    payload['email'] = 'testerb@example.com'
+    del payload['email_primary']
+    assert payload.get('email_primary', None) is None
+    assert payload.get('email') == 'testerb@example.com'
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/',
+                               data=json.dumps(payload),
+                               headers=headers)
+        print(response.json)
+        assert response.status_code == 201
+        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
+        assert contact.first_name == 'Tester'
+        assert contact.email == 'testerb@example.com'
+        assert contact.email_primary.email == 'testerb@example.com'
+
+        assert UserSession.query.filter_by(contact_id=contact.id).first()
+
+def test_post_duplicate_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
+    }
+
+    contact_data = POSTS['contact'].copy()
+    contact_data['account_id'] = 'test-valid|0123456789abcdefabcdefff'
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/',
+                               data=json.dumps(contact_data),
+                               headers=headers)
+        assert response.status_code == 400
+        message = json.loads(response.data)['message']
+        assert message == 'A contact with this account already exists'
+
+# TODO: Add trello specific checks
 def test_create_program_contact_with_contact(app):
-    id_, _ = post_request(app, '/api/contacts/', POSTS['contact'])
-    program_contacts = Contact.query.get(id_).programs
-    assert len(program_contacts) == 1
-    assert program_contacts[0].program_id == 1
-    assert program_contacts[0].stage == 1
-    assert program_contacts[0].program.name == 'Place for Purpose'
-    assert program_contacts[0].is_active == True
-    assert program_contacts[0].is_approved == False
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+    with app.test_client() as client:
+        response = client.post('/api/contacts/',
+                               data=json.dumps(POSTS['contact']),
+                               headers=headers)
+
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        assert data['id'] is not None
+        id_ = data['id']
+
+        program_contacts = Contact.query.get(id_).programs
+        assert len(program_contacts) == 1
+        assert program_contacts[0].program_id == 1
+        assert program_contacts[0].stage == 1
+        assert program_contacts[0].program.name == 'Place for Purpose'
+        assert program_contacts[0].is_active == True
+        assert program_contacts[0].is_approved == False
+        assert program_contacts[0].card_id is None
+
+def test_post_approve_contact(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+        'Authorization': 'Bearer test-valid|0123456789',
+    }
+
+    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected[0]['status'] == 'approved'
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/approve',
+                               data=json.dumps([CONTACTS_SHORT['obama']]),
+                               headers=headers)
+
+        assert response.status_code == 201
+        data = json.loads(response.data)['data']
+        assert len(data) > 0
+        for contact in data:
+            assert contact['status'] == 'approved'
+
 
 def test_post_experience_date(app):
     id_, _ = post_request(app, '/api/contacts/123/experiences/',
@@ -1321,15 +1467,6 @@ def test_post_experience_date(app):
 def test_post_opportunity_app_status(app):
     id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
     assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
-
-def test_post_about_me(app):
-    id_, data = post_request(app, '/api/contacts/124/about-me/', {})
-    contact = Contact.query.get(124)
-    assert contact.profile != {}
-    pprint(data)
-    pprint(CONTACT_PROFILE['obama_blank'])
-    assert data == CONTACT_PROFILE['obama_blank']
-
 
 def test_post_experience_null_start_date(app):
     exp = POSTS['experience'].copy()
@@ -1441,28 +1578,6 @@ def test_get_no_profile(app):
         assert response.status_code == 404
         assert response.json['message'] == 'Profile does not exist'
 
-# TODO: unskip when trello stuff is mocked out
-@pytest.mark.skip
-def test_post_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
-        assert response.status_code == 201
-        set_cookie = response.headers.get('set-cookie')
-        assert set_cookie is not None
-        assert set_cookie.find('HttpOnly;') is not -1
-        # Note: Can't test "secure" due to non-https connection
-        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
-        assert contact.first_name == 'Tester'
-
-        assert UserSession.query.filter_by(contact_id=contact.id).first()
 
 def test_post_session(app):
     mimetype = 'application/json'
@@ -1478,6 +1593,9 @@ def test_post_session(app):
         assert set_cookie is not None
         assert set_cookie.find('HttpOnly;') is not -1
         # Note: Can't test "secure" due to non-https connection
+
+        data = response.json['data']
+        assert data['contact'].get('profile', None) is None
 
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
 
@@ -1508,33 +1626,6 @@ def test_get_session(app):
         pprint(data)
         assert data['contact']['email'] == 'billy@example.com'
         assert UserSession.query.filter_by(contact_id=123).first().contact.first_name == 'Billy'
-
-@pytest.mark.skip
-def test_post_formassembly_opportunity_intake(app):
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
-    }
-
-    gdoc_id ='1b5erb67lgwvxj-g8u2iitvihhti6_nv-7dehdh8ldfw'
-
-    url = '/api/form-assembly/opportunity-app/'
-    data = f'google_doc_id={gdoc_id}&org=Balti&title=QA+Tester&salary_lower=50000&salary_upper=60000&google_doc_link=&capabilities%5B0%5D=tfa_16677&capabilities%5B1%5D=tfa_16678&supervisor_first_name=Billy&supervisor_last_name=Daly&supervisor_title=Director+of+Data&supervisor_email=billy%40baltimorecorps.org&supervisor_phone=4436408904&is_supervisor=tfa_16674&race=tfa_16656&gender=tfa_16662&pronouns=tfa_16668&response_id=157007055'
-
-    with app.test_client() as client:
-        response = client.post(url, data=data, headers=headers)
-        pprint(response.json)
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-
-        assert 'gdoc_id' in data
-        assert data['gdoc_id'] == gdoc_id
-        assert 'title' in data
-        assert data['title'] == 'QA Tester'
-
-        opp = Opportunity.query.filter_by(gdoc_id=gdoc_id).first()
-        assert opp is not None
-        assert opp.title == 'QA Tester'
 
 def skill_name(skill):
     return skill.name
@@ -2126,12 +2217,14 @@ def test_opportunity_activate(app):
         assert response.status_code == 200
         assert Opportunity.query.get('123abc').is_active == True
 
-def test_approve_many_program_contacts_new(app, ):
+def test_approve_many_program_contacts_new(app):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
         'Accept': mimetype
     }
+    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected[0]['status'] = 'approved'
     payload = [CONTACTS_SHORT['obama']]
     with app.test_client() as client:
         program_contact = (ProgramContact
@@ -2150,17 +2243,11 @@ def test_approve_many_program_contacts_new(app, ):
         assert program_contact is not None
         assert program_contact.is_approved == True
         data = json.loads(response.data)['data']
-        obama_mayoral = APPLICATIONS_INTERNAL['obama_pfp'].copy()
-        obama_mayoral['program_id'] = 2
-        obama_mayoral['id'] = 1
-        obama_mayoral['is_approved'] = True
-        obama_mayoral['applications'] = []
-        expected = [obama_mayoral]
         contact = Contact.query.get(124)
         assert contact.stage == 3
-        print(expected)
+        pprint(expected)
         for item in data:
-            print(item)
+            pprint(item)
             assert item in expected
 
 def test_approve_many_program_contacts_existing(app, ):
@@ -2169,6 +2256,8 @@ def test_approve_many_program_contacts_existing(app, ):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
+    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected[0]['status'] = 'approved'
     payload = [CONTACTS_SHORT['obama']]
     with app.test_client() as client:
         assert ProgramContact.query.get(6).is_approved == False
@@ -2178,11 +2267,9 @@ def test_approve_many_program_contacts_existing(app, ):
         assert response.status_code == 200
         assert ProgramContact.query.get(6).is_approved == True
         data = json.loads(response.data)['data']
-        expected = [APPLICATIONS_INTERNAL['obama_pfp']]
-        expected[0]['is_approved'] = True
-        print(expected)
+        pprint(expected)
         for item in data:
-            print(item)
+            pprint(item)
             assert item in expected
 
 def test_reapprove_many_program_contacts(app, ):
@@ -2191,6 +2278,10 @@ def test_reapprove_many_program_contacts(app, ):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
+    expected = [CONTACTS_SHORT['billy'].copy(),
+                CONTACTS_SHORT['obama'].copy()]
+    expected[0]['status'] = 'approved'
+    expected[1]['status'] = 'approved'
     payload = [CONTACTS_SHORT['billy'], CONTACTS_SHORT['obama']]
     with app.test_client() as client:
         assert ProgramContact.query.get(6).is_approved == False
@@ -2202,11 +2293,9 @@ def test_reapprove_many_program_contacts(app, ):
         assert ProgramContact.query.get(6).is_approved == True
         assert ProgramContact.query.get(5).is_approved == True
         data = json.loads(response.data)['data']
-        expected = [APPLICATIONS_INTERNAL['obama_pfp'],
-                    APPLICATIONS_INTERNAL['billy_pfp']]
-        print(expected)
+        pprint(expected)
         for item in data:
-            print(item)
+            pprint(item)
             assert item in expected
 
 def test_approve_program_contact_fake_contact(app):
@@ -2524,14 +2613,12 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/app/', [APPLICATIONS['app_billy']])
     ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
     ,('/api/contacts/short/', CONTACTS_SHORT.values())
-    ,('/api/internal/applications/',
-      [APPLICATIONS_INTERNAL['billy_pfp']])
-    ,('/api/internal/applications/?program_id=1',
-      [APPLICATIONS_INTERNAL['billy_pfp']])
     ,('/api/contacts/programs/', CONTACT_PROGRAMS.values())
     ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
     ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])
     ,('/api/programs', PROGRAMS.values())
+    ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS['billy']])
+    ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS['obama_none']])
     ]
 )
 def test_get_many_unordered(app, url, expected):

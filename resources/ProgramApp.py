@@ -1,7 +1,6 @@
 from flask_restful import Resource, request
 from models.program_model import Program, ProgramSchema
 from models.contact_model import Contact, ContactSchema
-from models.opportunity_model import ProgramContactShortSchema
 from models.program_contact_model import ProgramContact, ProgramContactSchema
 from models.program_app_model import ProgramApp
 from models.base_model import db
@@ -18,14 +17,22 @@ from auth import (
 
 program_app_schema = ContactSchema(exclude=[
     'email_primary',
-    'phone_primary',
-    'account_id',
     'skills',
-    'terms_agreement',
     'programs',
     'profile',
     'instructions',
     'experiences'
+])
+
+program_app_many_schema = ContactSchema(
+    many=True,
+    exclude=[
+        'email_primary',
+        'skills',
+        'programs',
+        'profile',
+        'instructions',
+        'experiences'
 ])
 
 def get_program_app(c_id, p_id):
@@ -33,7 +40,7 @@ def get_program_app(c_id, p_id):
                           .filter_by(contact_id=c_id,program_id=p_id)
                           .first())
 
-class ContactProgramApps(Resource):
+class ContactProgramAppsOne(Resource):
     method_decorators = {
         'get': [login_required, refresh_session]
     }
@@ -46,6 +53,26 @@ class ContactProgramApps(Resource):
         contact = Contact.query.get(contact_id)
         result = program_app_schema.dump(contact)
         return {'status': 'success', 'data': result}, 200
+
+class ContactProgramAppsAll(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+    }
+
+    def get(self):
+        if not is_authorized_with_permission('view:all-users'):
+            return unauthorized()
+
+        approved_arg = request.args.get('is_approved')
+        if not approved_arg:
+            contacts = Contact.query.all()
+        else:
+            if approved_arg == 'true':
+                contacts = Contact.query.filter(Contact.stage>=3)
+            elif approved_arg == 'false':
+                contacts = Contact.query.filter(Contact.stage<3)
+        contacts = program_app_many_schema.dump(contacts)
+        return {'status': 'success', 'data': contacts}, 200
 
 class ContactProgramAppsInterested(Resource):
     method_decorators = {

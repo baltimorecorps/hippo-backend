@@ -64,7 +64,8 @@ billy = Contact(
     email='billy@example.com',
     phone_primary='555-245-2351',
     account_id='test-valid|0123456789abcdefabcdefff',
-    terms_agreement=True
+    terms_agreement=True,
+    stage=3
 )
 obama = Contact(
     id=124,
@@ -78,7 +79,8 @@ obama = Contact(
         type=EmailType('Work'),
     ),
     phone_primary='555-444-4444',
-    terms_agreement=True
+    terms_agreement=True,
+    account_id='test-valid|alsghldwgsg120393020293',
 
 )
 
