@@ -8,25 +8,12 @@ Updates `GET api/contacts` to point to the same resource as `GET api/contacts/sh
 #### Changes
 
 - Removes `get()` method from `ContactsAll` resource class in `resources/Contacts.py`
-- adds `/api/contacts` as a route which maps to `ContactShort` resource class
-
-### Branch `feature-branch-two`
-{{overview of functionality added in this feature branch}}
-
-#### Changes
-
-- {{change 1}}
-- {{change 2}}
+- Adds `/api/contacts` as a route which maps to `ContactShort` resource class
+- Adds filtering of contacts by `status`
 
 ### Deployment Considerations
 
-- **Heroku Variables:** {{Yes/No}}
-    - {{variable 1}}
-    - {{variable 2}}
-- **DB Migrations:** {{Yes/No}}
-    - {{change 1}}
-    - {{change 2}}
-- **AuthZ/N Changes:** {{Yes/No}}
-    - {{change 1}}
-    - {{change 2}}
-- **Deployment Sequence:** {{Backend/Frontend First}}
+- **Heroku Variables:** No
+- **DB Migrations:** No
+- **AuthZ/N Changes:** No
+- **Deployment Sequence:** Backend First
