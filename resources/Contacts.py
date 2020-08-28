@@ -67,15 +67,6 @@ class ContactAll(Resource):
         'post': [validate_jwt],
     }
 
-    def get(self):
-        if not is_authorized_with_permission('view:all-users'):
-            return unauthorized()
-
-        contacts = Contact.query.all()
-
-        contacts = contacts_schema.dump(contacts)
-        return {'status': 'success', 'data': contacts}, 200
-
     def post(self):
         json_data = request.get_json(force=True)
         # Validate and deserialize input
@@ -140,7 +131,18 @@ class ContactShort(Resource):
         if not is_authorized_with_permission('view:all-users'):
             return unauthorized()
 
-        contacts = Contact.query.all()
+        status = request.args.get('status')
+        status_list = ContactStage.__members__
+        print(status_list)
+        if not status:
+            contacts = Contact.query.all()
+        elif status not in status_list:
+            return {'message':
+                    f'{status} is not a valid stage '
+                    f'choose an option from this list: {status_list}'}, 400
+        else:
+            contacts = (Contact.query
+                               .filter_by(stage=ContactStage[status].value))
 
         contacts = contacts_short_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200

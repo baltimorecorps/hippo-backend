@@ -72,7 +72,9 @@ api.add_resource(ContactPrograms,
                  '/contacts/programs/')
 api.add_resource(ContactShort,
                  '/contacts/short',
-                 '/contacts/short/')
+                 '/contacts/short/',
+                 '/contacts',
+                 '/contacts/')
 api.add_resource(ContactApproveMany,
                  '/contacts/approve',
                  '/contacts/approve/')
