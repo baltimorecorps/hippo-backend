@@ -1,5 +1,5 @@
 from models.base_model import db
-from models.contact_model import ContactSchema, ContactShortSchema
+from models.contact_model import ContactShortSchema
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
 from models.resume_model import ResumeSnapshotSchema
 from marshmallow import Schema, fields, EXCLUDE
@@ -75,22 +75,6 @@ class OpportunitySchema(Schema):
     is_active = fields.Boolean(dump_only=True)
     applications = fields.Nested(OpportunityAppSchema(
         exclude=('opportunity', 'resume'), many=True))
-
-    class Meta:
-        unknown = EXCLUDE
-
-
-class ProgramContactShortSchema(Schema):
-    id = fields.Integer(dump_only=True)
-    contact = fields.Nested(ContactShortSchema, dump_only=True)
-    program_id = fields.Integer(dump_only=True)
-    is_approved = fields.Boolean(dump_only=True)
-    is_active = fields.Boolean(dump_only=True)
-    applications = fields.Nested(
-        OpportunityAppSchema,
-        exclude=['contact', 'interest_statement', 'resume'],
-        many=True
-    )
 
     class Meta:
         unknown = EXCLUDE

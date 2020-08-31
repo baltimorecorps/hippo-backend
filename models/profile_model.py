@@ -101,6 +101,18 @@ class RoleChoice(db.Model):
     #relationships
     profile = db.relationship('Profile', back_populates='roles')
 
+    # calculated fields
+    @hybrid_property
+    def role_choice_complete(self):
+        return (
+            self.advocacy_public_policy
+            or self.community_engagement_outreach
+            or self.data_analysis
+            or self.fundraising_development
+            or self.marketing_public_relation
+            or self.program_management
+        )
+
     #methods
     def update(self, **update_dict):
         UPDATE_FIELDS = [
@@ -193,6 +205,58 @@ class Profile(db.Model):
                                          cascade='all, delete, delete-orphan',
                                          uselist=False)
     contact = db.relationship('Contact', back_populates='profile')
+
+    # calculated fields
+    @hybrid_property
+    def roles_list(self):
+        role_dict = {
+            'advocacy_public_policy': 'Advocacy and Public Policy',
+            'community_engagement_outreach': 'Community Engagement and Outreach',
+            'data_analysis': 'Data Analysis',
+            'fundraising_development': 'Fundraising and Development',
+            'marketing_public_relations':  'Marketing and Public Relations',
+            'program_management': 'Program Management',
+        }
+        roles_selected = [role_dict[k] for k,v in self.roles.__dict__.items()
+                          if k in role_dict.keys() and v==True]
+        return roles_selected
+
+    @hybrid_property
+    def candidate_info_complete(self):
+        if self.address_primary:
+            return (
+                self.address_primary.street1 is not None
+                and self.address_primary.city is not None
+                and self.address_primary.state is not None
+                and self.address_primary.country is not None
+                and self.address_primary.zip_code is not None
+            )
+        else:
+            return False
+
+    @hybrid_property
+    def value_alignment_complete(self):
+        return (self.value_question1 is not None
+                and self.value_question2 is not None)
+
+    @hybrid_property
+    def interests_and_goals_complete(self):
+        return (
+            self.years_exp is not None
+            and self.job_search_status is not None
+            and self.current_job_status is not None
+            and self.current_edu_status is not None
+        )
+
+    @hybrid_property
+    def programs_and_eligibility_complete(self):
+        if self.contact.program_apps:
+            programs = [p for p in self.contact.program_apps
+                        if p.is_interested]
+        else:
+            programs = []
+
+        return self.needs_help_programs or (len(programs) > 0)
 
     #methods
     def update(self, **update_dict):

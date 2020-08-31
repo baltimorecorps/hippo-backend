@@ -1,15 +1,15 @@
 from flask_restful import Resource, request
 from models.tag_model import Tag, TagSchema, TagStatusType, TagType
 from models.tag_item_model import TagItem, TagItemSchema
-from models.contact_model import Contact, ContactSchema
+from models.contact_model import Contact
 from models.base_model import db
 from marshmallow import ValidationError
 
 from flask_login import login_required
 from auth import (
-    refresh_session, 
-    is_authorized_view, 
-    is_authorized_write, 
+    refresh_session,
+    is_authorized_view,
+    is_authorized_write,
     unauthorized
 )
 
@@ -93,7 +93,7 @@ class TagItemAll(Resource):
 
     # returns a list of tags associated with a given contact
     def get(self, contact_id):
-        if not is_authorized_view(contact_id): 
+        if not is_authorized_view(contact_id):
             return unauthorized()
 
         type_arg = request.args.get('type')
@@ -111,7 +111,7 @@ class TagItemAll(Resource):
         return {'status': 'success', 'data': tags_list}, 200
 
     def post(self, contact_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         json_data = request.get_json(force=True)
@@ -135,7 +135,7 @@ class TagItemOne(Resource):
     }
 
     def get(self, contact_id, tag_id):
-        if not is_authorized_view(contact_id): 
+        if not is_authorized_view(contact_id):
             return unauthorized()
 
         tag = (TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id)
@@ -146,7 +146,7 @@ class TagItemOne(Resource):
         return {'status': 'success', 'data': tag_data}, 200
 
     def put(self, contact_id, tag_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         tag = (TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id)
@@ -167,7 +167,7 @@ class TagItemOne(Resource):
         return {'status': 'success', 'data': result}, 200
 
     def delete(self, contact_id, tag_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         tag = TagItem.query.filter_by(contact_id=contact_id, tag_id=tag_id).first()
