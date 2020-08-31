@@ -6,8 +6,8 @@ import math
 import copy
 
 from models.base_model import db
-from models.contact_model import Contact
-from models.experience_model import Experience, Month
+from models.contact_model import Contact, ContactStage
+from models.experience_model import Experience, Month, Type as ExpType
 from models.resume_model import Resume
 from models.resume_section_model import ResumeSection
 from models.program_contact_model import ProgramContact
@@ -2465,6 +2465,27 @@ def test_instructions_tag_skills(app):
         print(billy.skills)
         assert billy.tag_skills_complete == False
 
+def test_instructions_profile_complete(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        # sets value question to None
+        billy = Contact.query.get(123)
+        assert billy.add_experience_complete['is_complete'] == True
+        assert billy.profile_complete['is_complete'] == True
+        for exp in billy.experiences:
+            if exp.type == ExpType('Work'):
+                db.session.delete(exp)
+        db.session.commit()
+        billy = Contact.query.get(123)
+        pprint(billy.instructions)
+        assert billy.add_experience_complete['is_complete'] == False
+        assert billy.profile_complete['is_complete'] == False
+
 def test_instructions_about_me(app):
     mimetype = 'application/json'
     headers = {
@@ -2582,7 +2603,7 @@ def test_get_capability_recommendations(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/contacts/', [CONTACTS['billy'], CONTACTS['obama']])
+    [('/api/contacts/', [CONTACTS_SHORT['billy'], CONTACTS_SHORT['obama']])
     ,('/api/contacts/123/experiences/', [EXPERIENCES['goucher'],
                                          EXPERIENCES['baltimore']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES['columbia']])
@@ -2634,6 +2655,44 @@ def test_get_contact_capabilities(app):
 
         pprint(expected)
         pprint(data)
+        assert data == expected
+
+def test_get_contact_status_query(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+
+        # checks approved
+        response = client.get('/api/contacts/?status=approved',
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        assert data == [CONTACTS_SHORT['billy']]
+
+        # checks created
+        response = client.get('/api/contacts/?status=created',
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
+        assert data == [CONTACTS_SHORT['obama']]
+
+        # sets obama to submitted
+        obama = Contact.query.get(124)
+        obama.stage = 2
+        db.session.commit()
+        obama = Contact.query.get(124)
+        assert obama.status == ContactStage(2)
+        expected = [CONTACTS_SHORT['obama']].copy()
+        expected[0]['status'] = 'submitted'
+
+        # checks submitted
+        response = client.get('/api/contacts/?status=submitted',
+                              headers=headers)
+        assert response.status_code == 200
+        data = json.loads(response.data)['data']
         assert data == expected
 
 @pytest.mark.skip
