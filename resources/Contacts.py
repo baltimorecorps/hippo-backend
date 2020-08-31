@@ -6,15 +6,13 @@ from models.contact_model import (
     Contact,
     ContactSchema,
     ContactShortSchema,
-    ContactProgramSchema,
+    ContactStage
 )
-from models.email_model import Email
-from models.address_model import Address
+from models.email_model import Email, Type as EmailType
 from models.base_model import db
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
 from .ProgramContacts import create_program_contact
-from .Trello_Intake_Talent import add_new_talent_card
 from marshmallow import ValidationError
 from auth import (
     validate_jwt,
@@ -28,12 +26,27 @@ from auth import (
 
 from models.skill_model import Skill
 from .skill_utils import get_skill_id, get_or_make_skill
+from .Profile import create_profile
+from pprint import pprint
 
 
-contact_schema = ContactSchema()
-contacts_schema = ContactSchema(many=True)
+contact_schema = ContactSchema(exclude=['instructions',
+                                        'experiences'])
+contacts_schema = ContactSchema(exclude=['instructions',
+                                         'experiences'],
+                                many=True)
 contacts_short_schema = ContactShortSchema(many=True)
-contact_program_schema = ContactProgramSchema(many=True)
+contact_program_schema = ContactSchema(
+    many=True,
+    exclude=['skills',
+             'program_apps',
+             'profile',
+             'instructions',
+             'experiences',
+             'email_primary',
+             'email']
+)
+contact_full_schema = ContactSchema()
 
 def add_skills(skills, contact):
     for skill_data in skills:
@@ -54,15 +67,6 @@ class ContactAll(Resource):
         'post': [validate_jwt],
     }
 
-    def get(self):
-        if not is_authorized_with_permission('view:all-users'):
-            return unauthorized()
-
-        contacts = Contact.query.all()
-
-        contacts = contacts_schema.dump(contacts)
-        return {'status': 'success', 'data': contacts}, 200
-
     def post(self):
         json_data = request.get_json(force=True)
         # Validate and deserialize input
@@ -76,10 +80,33 @@ class ContactAll(Resource):
         if data['account_id'] != request.jwt['sub']:
             return {'message': 'Account id does not match post!'}, 400
 
-        email = data.pop('email_primary', None)
+        existing_contact = (
+            Contact.query
+                   .filter_by(account_id=data['account_id'])
+                   .first()
+        )
+        if existing_contact:
+            return {'message': 'A contact with this account already exists'}, 400
+
+        pprint(data)
+        email_primary = data.pop('email_primary', None)
+        email = data.get('email', None)
+
         contact = Contact(**data)
-        if email:
-            contact.email_primary = Email(**email)
+        if email_primary:
+            contact.email_primary = Email(**email_primary)
+            contact.email = email_primary['email']
+        elif email:
+            email_primary = {
+                'email': email,
+                'is_primary': True,
+                'type': EmailType('Work')
+            }
+            contact.email_primary = Email(**email_primary)
+        else:
+            return {'message': 'No email provided'}, 400
+
+        create_profile(contact)
         db.session.add(contact)
         db.session.commit()
         program_contact_data = {
@@ -88,7 +115,6 @@ class ContactAll(Resource):
         }
         create_program_contact(contact.id, **program_contact_data)
         db.session.commit()
-        add_new_talent_card(contact.id)
 
         user_session = create_session(contact.id, request.jwt)
         login_user(user_session)
@@ -105,7 +131,18 @@ class ContactShort(Resource):
         if not is_authorized_with_permission('view:all-users'):
             return unauthorized()
 
-        contacts = Contact.query.all()
+        status = request.args.get('status')
+        status_list = ContactStage.__members__
+        print(status_list)
+        if not status:
+            contacts = Contact.query.all()
+        elif status not in status_list:
+            return {'message':
+                    f'{status} is not a valid stage '
+                    f'choose an option from this list: {status_list}'}, 400
+        else:
+            contacts = (Contact.query
+                               .filter_by(stage=ContactStage[status].value))
 
         contacts = contacts_short_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
@@ -119,8 +156,14 @@ class ContactPrograms(Resource):
         if not is_authorized_with_permission('view:all-users'):
             return unauthorized()
 
-        contacts = Contact.query.all()
-
+        approved_arg = request.args.get('is_approved')
+        if not approved_arg:
+            contacts = Contact.query.all()
+        else:
+            if approved_arg == 'true':
+                contacts = Contact.query.filter(Contact.stage>=3)
+            elif approved_arg == 'false':
+                contacts = Contact.query.filter(Contact.stage<3)
         contacts = contact_program_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 
@@ -174,8 +217,7 @@ class ContactOne(Resource):
         email_list = data.pop('emails', None)
         skills = data.pop('skills', None)
 
-        for k,v in data.items():
-            setattr(contact, k, v)
+        contact.update(**data)
 
         if email:
             del contact.emails[:]
@@ -197,3 +239,52 @@ class ContactOne(Resource):
         db.session.delete(contact)
         db.session.commit()
         return {"status": 'success'}, 200
+
+class ContactFull(Resource):
+    method_decorators = {
+        'get': [login_required, refresh_session],
+    }
+
+    def get(self, contact_id):
+        contact = Contact.query.get(contact_id)
+        if not contact:
+            return {'message': 'Contact does not exist'}, 404
+
+        if not is_authorized_view(contact.id):
+            return unauthorized()
+
+        contact = contact_full_schema.dump(contact)
+        return {'status': 'success', 'data': contact}, 200
+
+class ContactApproveMany(Resource):
+    method_decorators = {
+        'post': [login_required, refresh_session]
+    }
+
+    def post(self):
+        if not is_authorized_with_permission('write:all-users'):
+            return unauthorized()
+
+        json_data = request.get_json(force=True)
+        try:
+            data = contacts_short_schema.load(json_data)
+        except ValidationError as e:
+            return e.messages, 422
+        if not data:
+            return {'message': 'No data provided to update'}, 400
+
+        # Check that all of the contacts are in the db
+        contact_ids = [c['id'] for c in data]
+        contacts = Contact.query.filter(Contact.id.in_(contact_ids)).all()
+        if len(data) != len(contacts):
+            return {'message': ("Payload contained contacts "
+                                "that couldn't be found")}, 404
+
+        # Update the stage of each contact
+        for contact in contacts:
+            contact.stage = ContactStage.approved.value
+        db.session.commit()
+
+        # Format and return the contacts
+        result = contacts_short_schema.dump(contacts)
+        return {'status': 'success', 'data': result}, 201

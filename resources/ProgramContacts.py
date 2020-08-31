@@ -1,9 +1,7 @@
 from flask_restful import Resource, request
 from models.program_model import Program, ProgramSchema
-from models.contact_model import Contact, ContactShortSchema
-from models.opportunity_model import ProgramContactShortSchema
-from models.program_contact_model import ProgramContact, ProgramContactSchema, UPDATE_FIELDS
-from models.response_model import Response, ResponseSchema
+from models.contact_model import Contact, ContactShortSchema, ContactStage
+from models.program_contact_model import ProgramContact, ProgramContactSchema
 from models.base_model import db
 from marshmallow import ValidationError
 
@@ -19,12 +17,6 @@ from auth import (
 program_contact_schema = ProgramContactSchema()
 program_contacts_schema = ProgramContactSchema(many=True)
 contacts_short_schema = ContactShortSchema(many=True)
-program_contacts_short_schema = ProgramContactShortSchema(many=True)
-
-def add_responses(responses, program_contact):
-    for response in responses:
-        r = Response(**response)
-        program_contact.responses.append(r)
 
 def query_one_program_contact(c_id, p_id):
     return (ProgramContact.query
@@ -63,9 +55,10 @@ class ProgramContactApproveMany(Resource):
         if len(data) != len(contacts):
             return {'message': ("Payload contained contacts "
                                 "that couldn't be found")}, 404
-        program_contacts = []
+
         for contact in contacts:
             program_contact = contact.query_program_contact(program_id)
+            contact.stage = ContactStage.approved.value
             if not program_contact:
                 insert_data = {
                     'contact_id': contact.id,
@@ -76,9 +69,8 @@ class ProgramContactApproveMany(Resource):
                 program_contact.contact = contact
             else:
                 program_contact.is_approved = True
-            program_contacts.append(program_contact)
         db.session.commit()
-        result = program_contacts_short_schema.dump(program_contacts)
+        result = contacts_short_schema.dump(contacts)
         return {'status': 'success', 'data': result}, 200
 
 class ProgramContactAll(Resource):
@@ -171,23 +163,3 @@ class ProgramContactOne(Resource):
         db.session.delete(program_contact)
         db.session.commit()
         return {"status": 'success'}, 200
-
-class ApplicationsInternal(Resource):
-    method_decorators = {
-        'get': [login_required, refresh_session],
-    }
-    def get(self):
-        if not is_authorized_with_permission('view:app-internal'):
-            return unauthorized()
-
-        program_id = request.args.get('program_id')
-        if program_id:
-            program = Program.query.get(program_id)
-            if not program:
-                return {'message': 'Program does not exist'}, 404
-            program_contacts = [c for c in program.contacts if c.is_approved]
-        else:
-            program_contacts = ProgramContact.query.filter_by(is_approved=True)
-
-        result = program_contacts_short_schema.dump(program_contacts)
-        return {'status': 'success', 'data': result}, 200

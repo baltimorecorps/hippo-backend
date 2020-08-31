@@ -3,7 +3,6 @@ from models.base_model import db
 from sqlalchemy.ext.hybrid import hybrid_property
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
-from models.contact_model import ContactSchema
 import datetime as dt
 
 class ApplicationStage(enum.Enum):
@@ -49,7 +48,7 @@ class OpportunityApp(db.Model):
 
     @hybrid_property
     def program_id(self):
-        return self.opportunity.cycle.program_id
+        return self.opportunity.program_id
 
     @hybrid_property
     def interview_completed(self):

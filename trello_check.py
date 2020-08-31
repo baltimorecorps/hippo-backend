@@ -9,33 +9,11 @@ from resources.trello_utils import (
     Card,
 )
 
-REVIEW_BOARDS = {
-    'local': '5e3753cdaea77d37fce3496a',
-    'dev': '5e39bb0daf879105b1c24462',
-    'production': '',
-}
-
 OPP_BOARDS = {
     'local': '5e4acd35a35ee523c71f9e25',
     'dev': '',
     'production': '',
 }
-
-def check_review_options(env):
-    """Check that the review options are set correctly
-    (including spelling, etc.)
-    """
-    board_id = REVIEW_BOARDS[env]
-    board = Board(query_board_data(board_id))
-    options = board.custom_fields['name']['Reviewer Decision'].options
-    opt_values = sorted(options['val'].keys())
-
-    pprint(opt_values)
-    assert opt_values == [
-        'Approved',
-        'Approved with reservations',
-        'Not a Fit',
-    ]
 
 def check_opportunity_board_custom_fields(env):
     board_id = OPP_BOARDS[env]
@@ -51,7 +29,7 @@ def check_opportunity_board_custom_fields(env):
 def check_opportunity_board_lists(env):
     board_id = OPP_BOARDS[env]
     board = Board(query_board_data(board_id))
-    BOARD_NAMES = [ 
+    BOARD_NAMES = [
         'Started',
         'Submitted',
         'Approved',
@@ -67,7 +45,6 @@ def check_opportunity_board_lists(env):
 def main(env):
     app = create_app(env)
     with app.app_context():
-        check_review_options(env)
         check_opportunity_board_custom_fields(env)
         check_opportunity_board_lists(env)
 

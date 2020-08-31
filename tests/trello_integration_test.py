@@ -11,8 +11,7 @@ from models.tag_model import Tag
 from models.tag_item_model import TagItem
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
-from models.opportunity_model import Opportunity
-from models.opportunity_app_model import OpportunityApp, ApplicationStage
+from models.base_model import db
 
 from .test_api import post_request, POSTS
 
@@ -24,13 +23,6 @@ from resources.trello_utils import (
     Card,
 )
 
-REVIEW_BOARDS = {
-    'local': '5e3753cdaea77d37fce3496a',
-    'dev': '5e39bb0daf879105b1c24462',
-    'production': '',
-}
-
-LOCAL_OPP_BOARD = '5e4acd35a35ee523c71f9e25'
 TALENT_INTAKE_BOARDS = {
     'local': '5e37744114d9d01a03ddbcfe',
     'dev': '5e25dae2e640be7e5248a3e6',
@@ -42,6 +34,8 @@ TALENT_INTAKE_LABELS = [
 ]
 
 TALENT_INTAKE_ATTACHMENTS = ['Profile', 'Full Response']
+
+LABELS = ['New', 'PFP']
 
 def check_labels(board_id, expected_labels):
     board = Board(query_board_data(board_id))
@@ -67,22 +61,18 @@ def test_talent_intake(app):
 
     card_id = '5e4af2d6fc3c0954ff187ddc'
 
+    contact = Contact.query.get(123)
+    email = contact.email_main
+    contact.stage = 1
+    db.session.commit()
     board_id = TALENT_INTAKE_BOARDS['local']
     board = Board(query_board_data(board_id))
-    card = board.cards.get(card_id)
-    started_list = board.lists['stage'][1]
+    card = board.find_card_by_custom_field('Email', email)
+    if card:
+        response = card.delete()
+        assert response.status_code == 200
 
-    for attachment in TALENT_INTAKE_ATTACHMENTS:
-        response = card.remove_attachment(attachment)
-    card.set_labels(label_names=['New', 'Fellowship'])
-    card.move_card(started_list)
-
-    board = Board(query_board_data(board_id))
-    card = board.cards.get(card_id)
-
-    assert card.attachments == {}
-    assert card.label_names == ['New', 'Fellowship']
-    assert card.stage == 1
+    assert contact.stage == 1
 
     url = '/api/form-assembly/talent-app/'
     data = (
@@ -93,8 +83,10 @@ def test_talent_intake(app):
         pprint(response.json)
         assert response.status_code == 201
         board = Board(query_board_data(board_id))
-        card = board.cards.get(card_id)
+        card = board.find_card_by_custom_field('Email', email)
+        contact = Contact.query.get(123)
         assert card.stage == 2
+        assert contact.stage == 2
         assert 'New' in card.label_names
         for label in TALENT_INTAKE_LABELS[1:]:
             assert label in card.label_names
@@ -110,7 +102,14 @@ def test_talent_intake(app):
         assert card.attachments['Full Response']['url'] == (
             'https://app.formassembly.com/responses/view/160140910'
         )
+        assert card.custom_fields['Email']['value'] == email
         data = json.loads(response.data)['data']
+
+        #check that the card id was set
+        contact = Contact.query.get(123)
+        card_id = contact.card_id
+        assert card_id is not None
+
 
 def test_resubmit_approved_app(app):
     mimetype = 'application/x-www-form-urlencoded'
@@ -119,17 +118,10 @@ def test_resubmit_approved_app(app):
         'Accept': mimetype,
     }
 
-    card_id = '5e4af2d6fc3c0954ff187ddc'
-
     board_id = TALENT_INTAKE_BOARDS['local']
     board = Board(query_board_data(board_id))
-    card = board.cards.get(card_id)
-    approved_list = board.lists['stage'][3]
-    card.move_card(approved_list)
-
-    board = Board(query_board_data(board_id))
-    card = board.cards.get(card_id)
-    assert card.stage == 3
+    card = board.find_card_by_custom_field('Email', 'billy@example.com')
+    assert card is not None
 
     url = '/api/form-assembly/talent-app/'
     data = (
@@ -143,92 +135,64 @@ def test_resubmit_approved_app(app):
         message = json.loads(response.data)['message']
         assert message == 'Application has already been submitted'
 
-# TODO: Add trello specific checks
-def test_create_program_contact_with_contact(app):
+def test_submit_profile(app):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
         'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
     }
+
+    card_id = '5e4af2d6fc3c0954ff187ddc'
+
+    contact = Contact.query.get(123)
+    email = contact.email_main
+    contact.stage = 1
+    db.session.commit()
+    board_id = TALENT_INTAKE_BOARDS['local']
+    board = Board(query_board_data(board_id))
+    card = board.find_card_by_custom_field('Email', email)
+    if card:
+        response = card.delete()
+        assert response.status_code == 200
+
+    contact = Contact.query.get(123)
+    assert contact.stage == 1
+
+
+
     with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
+        response = client.post('/api/contacts/123/profile/submit',
+                               data={},
                                headers=headers)
-
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        assert data['id'] is not None
-        id_ = data['id']
-
-        program_contacts = Contact.query.get(id_).programs
-        assert len(program_contacts) == 1
-        assert program_contacts[0].program_id == 1
-        assert program_contacts[0].stage == 1
-        assert program_contacts[0].program.name == 'Place for Purpose'
-        assert program_contacts[0].is_active == True
-        assert program_contacts[0].is_approved == False
-
-# TODO: Add trello specific checks
-def test_post_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
-        assert response.status_code == 201
-        set_cookie = response.headers.get('set-cookie')
-        assert set_cookie is not None
-        assert set_cookie.find('HttpOnly;') is not -1
-        # Note: Can't test "secure" due to non-https connection
-        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
-        assert contact.first_name == 'Tester'
-
-        assert UserSession.query.filter_by(contact_id=contact.id).first()
-
-@pytest.mark.skip
-def test_post_formassembly_opportunity_intake(app):
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
-    }
-
-    card_id = '5e4acdc9ff72ae8a84b4204a'
-    board = Board(query_board_data(LOCAL_OPP_BOARD))
-    card = board.cards.get(card_id)
-    assert card is not None
-    card.set_custom_field_values(**{'Opp ID': ''})
-    card.move_card(board.lists['stage'][0])
-
-    pprint(card.data)
-
-    gdoc_id = '1B5ERb67LGwvxJ-g8u2iiTVIhHTi6_nv-7DeHdH8Ldfw'
-    url = '/api/form-assembly/opportunity-app/'
-    data = f'google_doc_id={gdoc_id}&org=Balti&title=QA+Tester&salary_lower=50000&salary_upper=60000&google_doc_link=&capabilities%5B0%5D=tfa_16677&capabilities%5B1%5D=tfa_16678&supervisor_first_name=Billy&supervisor_last_name=Daly&supervisor_title=Director+of+Data&supervisor_email=billy%40baltimorecorps.org&supervisor_phone=4436408904&is_supervisor=tfa_16674&race=tfa_16656&gender=tfa_16662&pronouns=tfa_16668&response_id=157007055&program_id=1'
-
-    with app.test_client() as client:
-        response = client.post(url, data=data, headers=headers)
         pprint(response.json)
         assert response.status_code == 201
-        data = json.loads(response.data)['data']
 
-        # assert 'gdoc_id' in data
-        # assert data['gdoc_id'] == gdoc_id
-        assert 'title' in data
-        assert data['title'] == 'QA Tester'
+        board = Board(query_board_data(board_id))
+        card = board.find_card_by_custom_field('Email', email)
+        contact = Contact.query.get(123)
 
-        opp = Opportunity.query.filter_by(gdoc_id=gdoc_id).first()
-        assert opp is not None
-        assert opp.title == 'QA Tester'
+        assert contact.stage == 2
+        assert 'New' in card.label_names
+        for label in LABELS:
+            assert label in card.label_names
+        assert 'Test response' in card.desc
+        assert '- Data Analysis\n' in card.desc
+        assert '3-5' in card.desc
+        assert card.attachments['Profile']['url'] == (
+            'https://app.baltimorecorps.org/profile/123'
+        )
+        assert card.custom_fields['Email']['value'] == email
 
-        board = Board(query_board_data(LOCAL_OPP_BOARD))
+        data = response.json['data']
+        assert data['instructions']['submit']
+
+        #check that the card id was set
+        contact = Contact.query.get(123)
+        card_id = contact.card_id
+        assert card_id is not None
+
+        # Check that the card is deleted
+        card.delete()
+        board = Board(query_board_data(board_id))
         card = board.cards.get(card_id)
-        assert card is not None
-        assert card.custom_fields['Opp ID']['value'] == opp.id
-        assert card.stage == 1
+        assert card is None
