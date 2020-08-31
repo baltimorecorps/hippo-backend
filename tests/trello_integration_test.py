@@ -11,6 +11,7 @@ from models.tag_model import Tag
 from models.tag_item_model import TagItem
 from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
+from models.base_model import db
 
 from .test_api import post_request, POSTS
 
@@ -33,6 +34,8 @@ TALENT_INTAKE_LABELS = [
 ]
 
 TALENT_INTAKE_ATTACHMENTS = ['Profile', 'Full Response']
+
+LABELS = ['New', 'PFP']
 
 def check_labels(board_id, expected_labels):
     board = Board(query_board_data(board_id))
@@ -59,22 +62,16 @@ def test_talent_intake(app):
     card_id = '5e4af2d6fc3c0954ff187ddc'
 
     contact = Contact.query.get(123)
+    email = contact.email_main
+    contact.stage = 1
+    db.session.commit()
     board_id = TALENT_INTAKE_BOARDS['local']
     board = Board(query_board_data(board_id))
-    card = board.cards.get(card_id)
-    started_list = board.lists['stage'][1]
+    card = board.find_card_by_custom_field('Email', email)
+    if card:
+        response = card.delete()
+        assert response.status_code == 200
 
-    for attachment in TALENT_INTAKE_ATTACHMENTS:
-        response = card.remove_attachment(attachment)
-    card.set_labels(label_names=['New', 'Fellowship'])
-    card.move_card(started_list)
-
-    board = Board(query_board_data(board_id))
-    card = board.cards.get(card_id)
-
-    assert card.attachments == {}
-    assert card.label_names == ['New', 'Fellowship']
-    assert card.stage == 1
     assert contact.stage == 1
 
     url = '/api/form-assembly/talent-app/'
@@ -86,7 +83,7 @@ def test_talent_intake(app):
         pprint(response.json)
         assert response.status_code == 201
         board = Board(query_board_data(board_id))
-        card = board.cards.get(card_id)
+        card = board.find_card_by_custom_field('Email', email)
         contact = Contact.query.get(123)
         assert card.stage == 2
         assert contact.stage == 2
@@ -105,7 +102,14 @@ def test_talent_intake(app):
         assert card.attachments['Full Response']['url'] == (
             'https://app.formassembly.com/responses/view/160140910'
         )
+        assert card.custom_fields['Email']['value'] == email
         data = json.loads(response.data)['data']
+
+        #check that the card id was set
+        contact = Contact.query.get(123)
+        card_id = contact.card_id
+        assert card_id is not None
+
 
 def test_resubmit_approved_app(app):
     mimetype = 'application/x-www-form-urlencoded'
@@ -114,17 +118,10 @@ def test_resubmit_approved_app(app):
         'Accept': mimetype,
     }
 
-    card_id = '5e4af2d6fc3c0954ff187ddc'
-
     board_id = TALENT_INTAKE_BOARDS['local']
     board = Board(query_board_data(board_id))
-    card = board.cards.get(card_id)
-    approved_list = board.lists['stage'][3]
-    card.move_card(approved_list)
-
-    board = Board(query_board_data(board_id))
-    card = board.cards.get(card_id)
-    assert card.stage == 3
+    card = board.find_card_by_custom_field('Email', 'billy@example.com')
+    assert card is not None
 
     url = '/api/form-assembly/talent-app/'
     data = (
@@ -138,72 +135,64 @@ def test_resubmit_approved_app(app):
         message = json.loads(response.data)['message']
         assert message == 'Application has already been submitted'
 
-# TODO: Add trello specific checks
-def test_create_program_contact_with_contact(app):
+def test_submit_profile(app):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
         'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
     }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
 
+    card_id = '5e4af2d6fc3c0954ff187ddc'
+
+    contact = Contact.query.get(123)
+    email = contact.email_main
+    contact.stage = 1
+    db.session.commit()
+    board_id = TALENT_INTAKE_BOARDS['local']
+    board = Board(query_board_data(board_id))
+    card = board.find_card_by_custom_field('Email', email)
+    if card:
+        response = card.delete()
+        assert response.status_code == 200
+
+    contact = Contact.query.get(123)
+    assert contact.stage == 1
+
+
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/123/profile/submit',
+                               data={},
+                               headers=headers)
+        pprint(response.json)
         assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        assert data['id'] is not None
-        id_ = data['id']
 
-        program_contacts = Contact.query.get(id_).programs
-        assert len(program_contacts) == 1
-        assert program_contacts[0].program_id == 1
-        assert program_contacts[0].stage == 1
-        assert program_contacts[0].program.name == 'Place for Purpose'
-        assert program_contacts[0].is_active == True
-        assert program_contacts[0].is_approved == False
+        board = Board(query_board_data(board_id))
+        card = board.find_card_by_custom_field('Email', email)
+        contact = Contact.query.get(123)
 
-# TODO: Add trello specific checks
-def test_post_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
-        assert response.status_code == 201
-        set_cookie = response.headers.get('set-cookie')
-        assert set_cookie is not None
-        assert set_cookie.find('HttpOnly;') is not -1
-        # Note: Can't test "secure" due to non-https connection
-        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
-        assert contact.first_name == 'Tester'
-        assert contact.email == 'testerb@example.com'
+        assert contact.stage == 2
+        assert 'New' in card.label_names
+        for label in LABELS:
+            assert label in card.label_names
+        assert 'Test response' in card.desc
+        assert '- Data Analysis\n' in card.desc
+        assert '3-5' in card.desc
+        assert card.attachments['Profile']['url'] == (
+            'https://app.baltimorecorps.org/profile/123'
+        )
+        assert card.custom_fields['Email']['value'] == email
 
-        assert UserSession.query.filter_by(contact_id=contact.id).first()
+        data = response.json['data']
+        assert data['instructions']['submit']
 
-# TODO: Add trello specific checks
-def test_post_duplicate_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
-    }
+        #check that the card id was set
+        contact = Contact.query.get(123)
+        card_id = contact.card_id
+        assert card_id is not None
 
-    contact_data = POSTS['contact'].copy()
-    contact_data['account_id'] = 'test-valid|0123456789abcdefabcdefff'
-
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(contact_data),
-                               headers=headers)
-        assert response.status_code == 400
-        message = json.loads(response.data)['message']
-        assert message == 'A contact with this account already exists'
+        # Check that the card is deleted
+        card.delete()
+        board = Board(query_board_data(board_id))
+        card = board.cards.get(card_id)
+        assert card is None

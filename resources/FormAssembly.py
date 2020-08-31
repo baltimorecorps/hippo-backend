@@ -4,7 +4,7 @@ from models.contact_model import Contact
 from models.program_contact_model import ProgramContact, ProgramContactSchema
 from models.opportunity_model import OpportunitySchema, OpportunityStage
 from models.program_model import Program
-from .Trello_Intake_Talent import get_intake_talent_board_id
+from .Profile import get_intake_talent_board_id
 from .ProgramContacts import query_one_program_contact
 from .Opportunity import create_new_opportunity
 from .trello_utils import (
@@ -33,12 +33,12 @@ class TalentProgramApp(Resource):
             return {'message': 'No program_contact record found'}, 400
 
         board_id = get_intake_talent_board_id(program_id)
-        card_id = program_contact.card_id
         board = Board(query_board_data(board_id))
-        card = board.cards.get(card_id)
-        if not card:
-            return {'message': 'No intake card found'}, 400
-        elif card.stage >= 2:
+        email = contact.email_main
+        existing_card = board.find_card_by_custom_field('Email', email)
+        if existing_card:
+            print(existing_card.name)
+            print(existing_card.id)
             return {'message': 'Application has already been submitted'}, 400
 
         # parses form data to fill the card description
@@ -47,7 +47,6 @@ class TalentProgramApp(Resource):
         capabilities_str = '\n'.join(capabilities)
         programs = [v for k,v in form_data.items() if 'programs' in k]
         programs_str = '\n'.join(['- ' + p for p in programs ])
-        new_labels = set(card.label_names + programs)
         if form_data.get('mayoral_eligible'):
             mayoral_eligible = form_data.get('mayoral_eligible')
         else:
@@ -82,8 +81,15 @@ class TalentProgramApp(Resource):
             )
         }
 
+        fields_data = {
+            'Phone': contact.phone_primary,
+            'Email': email,
+            'External ID': str(contact.id)
+        }
+
         #updates the card with the information parsed from the form
-        card.update(**card_data)
+        submitted_list = board.lists['stage'][2]
+        card = submitted_list.add_card_from_template(**card_data)
         card.add_attachment(
             url=f'https://app.baltimorecorps.org/profile/{contact_id}',
             name='Profile'
@@ -92,14 +98,18 @@ class TalentProgramApp(Resource):
             url=f"https://app.formassembly.com/responses/view/{form_data['response_id']}",
             name='Full Response'
         )
-        card.set_labels(new_labels)
+        labels = set(card.label_names + programs)
+        card.set_labels(labels)
+        print(fields_data)
+        result = card.set_custom_field_values(**fields_data)
+        print(result)
 
-        # moves card and updates program_contact to stage 2
+        # updates program_contact and contact to stage 2
         program_contact.update(**{'stage': 2})
         contact.stage = 2
+        contact.card_id = card.id
         db.session.commit()
-        submitted_list = board.lists['stage'][2]
-        card.move_card(submitted_list)
+
         result = program_contact_schema.dump(program_contact)
-        print(form_data.get('programs'))
+
         return {'status': 'success', 'data': result}, 201

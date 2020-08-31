@@ -13,7 +13,7 @@ class ProgramApp(db.Model):
     program_id = db.Column(db.Integer, db.ForeignKey('program.id'), nullable=False)
     is_approved = db.Column(db.Boolean, default=False)
     is_interested = db.Column(db.Boolean, default=False)
-    date_approved = db.Column(db.Date)
+    decision_date = db.Column(db.Date)
 
     #relationship fields
     program = db.relationship('Program', back_populates='program_apps')
@@ -41,10 +41,10 @@ class ProgramAppSchema(Schema):
     status = fields.String(dump_only=True)
     is_approved = fields.Boolean(allow_none=True)
     is_interested = fields.Boolean(allow_none=True)
-    date_approved = fields.Date(dump_only=True)
+    decision_date = fields.Date(dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
 
 # isolates the fields that can be updated in a PUT request
-UPDATE_FIELDS = ('is_approved', 'is_active')
+UPDATE_FIELDS = ('is_approved', 'is_interested')
