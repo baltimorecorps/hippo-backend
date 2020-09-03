@@ -46,5 +46,3 @@ def test_default_filter(app, query):
         print('EXPECTED:')
         pprint(expected)
         assert data == expected
-
-        assert True == False
