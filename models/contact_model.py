@@ -8,7 +8,7 @@ from models.achievement_model import Achievement
 from models.skill_model import Skill, SkillSchema
 from models.skill_item_model import ContactSkill
 from models.program_contact_model import ProgramContactSchema
-from models.program_app_model import ProgramAppSchema
+from models.program_app_model import ProgramAppSchema, ProgramApp
 from models.profile_model import ProfileSchema, ContactAddress
 from sqlalchemy.ext.hybrid import hybrid_property
 
@@ -73,6 +73,11 @@ class Contact(db.Model):
     program_apps = db.relationship('ProgramApp',
                                    back_populates='contact',
                                    cascade='all, delete, delete-orphan')
+    programs_interested = db.relationship('ProgramApp',
+                                          primaryjoin=db.and_(
+                                          id == ProgramApp.contact_id,
+                                          ProgramApp.is_interested),
+                                          back_populates='contact')
     applications = db.relationship('OpportunityApp',
                                    back_populates='contact',
                                    cascade='all, delete, delete-orphan')
@@ -235,7 +240,9 @@ class ContactSchema(Schema):
     # Full contact
     skills = fields.Nested(SkillSchema, many=True)
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
-    program_apps = fields.Nested(ProgramAppSchema, many=True)
+    program_apps = fields.Nested(ProgramAppSchema,
+                                 exclude=['program_name'],
+                                 many=True)
     profile = fields.Nested(ProfileSchema)
     instructions = fields.Dict()
     experiences = fields.Nested(ExperienceSchema, many=True, dump_only=True)
