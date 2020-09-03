@@ -5,7 +5,7 @@ import json
 from models.contact_model import Contact
 
 OUTPUT = {
-    'billy': {
+    'with_programs': {
         'id': 123,
         'first_name': 'Billy',
         'last_name': 'Daly',
@@ -15,16 +15,26 @@ OUTPUT = {
         'years_exp': '3-5',
         'job_search_status': 'Actively looking',
         'programs': ['Place for Purpose']
+    },
+    'without_programs': {
+        'id': 123,
+        'first_name': 'Billy',
+        'last_name': 'Daly',
+        'email': 'billy@example.com',
+        'status': 'approved',
+        'phone_primary': '555-245-2351',
+        'years_exp': '3-5',
+        'job_search_status': 'Actively looking'
     }
 }
 
 
 @pytest.mark.parametrize(
-    "query",
-    [({}),
-     ({'status': ['submitted']})]
+    "query,expected",
+    [({}, OUTPUT['with_programs']),
+     ({'status': ['submitted']}, OUTPUT['without_programs'])]
 )
-def test_default_filter(app, query):
+def test_default_filter(app, query, expected):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -32,7 +42,7 @@ def test_default_filter(app, query):
     }
 
     payload = query
-    expected = [OUTPUT['billy']]
+    expected = [expected]
 
     with app.test_client() as client:
         response = client.post('/api/contacts/filter',

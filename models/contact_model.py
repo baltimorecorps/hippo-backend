@@ -213,13 +213,6 @@ class Contact(db.Model):
         }
         return instructions_dict
 
-    @hybrid_property
-    def programs_interested_list(self):
-        if self.programs_interested:
-            return [p.program.name for p in self.programs_interested]
-        else:
-            return []
-
     def query_program_contact(self, program_id):
         return next((p for p in self.programs
                      if p.program_id == program_id), None)
