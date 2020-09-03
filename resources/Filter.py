@@ -1,17 +1,20 @@
 from flask_restful import Resource, request
 from flask_login import login_required
+import json
 
 from models.base_model import db
 from models.contact_model import Contact, ContactSchema
-from models.program_app_model import ProgramAppSchema
+from models.program_app_model import ProgramApp, ProgramAppSchema
 from models.profile_model import (
+    Profile,
+    Race,
     ProfileSchema,
     RaceSchema,
     RoleChoiceSchema,
     ProgramsCompletedSchema
 )
 
-from marshmallow import Schema, fields, EXCLUDE
+from marshmallow import Schema, fields, EXCLUDE, ValidationError
 
 from auth import (
     refresh_session,
@@ -51,9 +54,14 @@ class FilterOutputSchema(Schema):
                                        'program_name',
                                        many=True,
                                        data_key='programs')
+    programs_interested_list = fields.List(fields.String(),
+                                           data_key='programs')
 
 input_schema = FilterInputSchema()
-output_schema = FilterOutputSchema(many=True)
+output_schema = FilterOutputSchema(many=True,
+                                   exclude=['programs_interested_list'])
+output_schema2 = FilterOutputSchema(many=True,
+                                    exclude=['programs_interested'])
 
 class Filter(Resource):
 
@@ -66,12 +74,19 @@ class Filter(Resource):
         if not is_authorized_with_permission('view:all-users'):
             return unauthorized()
 
-        query = request.get_json(force=True)
+        json_data = request.get_json(force=True)
+        query = input_schema.load(json_data)
+
+        try:
+            data = input_schema.load(json_data)
+        except ValidationError as e:
+            return e.messages, 422
+
         if not query:
             contacts = Contact.query.filter(Contact.stage > 1)
+            result = output_schema2.dump(contacts)
         else:
             contacts = Contact.query.filter(Contact.stage > 1)
-
-        result = output_schema.dump(contacts)
+            result = output_schema.dump(contacts)
 
         return {'status': 'success', 'data': result}, 201
