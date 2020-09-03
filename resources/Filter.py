@@ -56,14 +56,24 @@ class FilterOutputSchema(Schema):
                                        'program_name',
                                        many=True,
                                        data_key='programs')
-    programs_interested_list = fields.List(fields.String(),
-                                           data_key='programs')
 
 input_schema = FilterInputSchema()
-output_schema = FilterOutputSchema(many=True,
-                                   exclude=['programs_interested_list'])
-output_schema2 = FilterOutputSchema(many=True,
-                                    exclude=['programs_interested'])
+output_schema = FilterOutputSchema(many=True)
+
+def format_row(row):
+    fields = [
+        'id',
+        'first_name',
+        'last_name',
+        'email',
+        'phone_primary',
+        'status',
+        'years_exp',
+        'job_search_status'
+    ]
+    _dict = dict(zip(fields, row))
+    _dict['status'] = ContactStage(_dict['status']).name
+    return _dict
 
 class Filter(Resource):
 
@@ -86,9 +96,22 @@ class Filter(Resource):
 
         if not query:
             contacts = Contact.query.filter(Contact.stage > 1)
-            result = output_schema2.dump(contacts)
-        else:
-            contacts = Contact.query.filter(Contact.stage > 1)
             result = output_schema.dump(contacts)
+        else:
+            query = (db.session
+                       .query(Contact, Profile)
+                       .join(Profile)
+                       .filter(Contact.stage > 1)
+                       .with_entities(
+                            Contact.id,
+                            Contact.first_name,
+                            Contact.last_name,
+                            Contact.email,
+                            Contact.phone_primary,
+                            Contact.stage,
+                            Profile.years_exp,
+                            Profile.job_search_status
+                      ).all())
+            result = [format_row(row) for row in query]
 
         return {'status': 'success', 'data': result}, 201
