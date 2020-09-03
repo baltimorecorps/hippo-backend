@@ -3,7 +3,6 @@ from pprint import pprint
 import json
 
 from models.contact_model import Contact
-from resources.Filter import FilterOutputSchema
 
 OUTPUT = {
     'billy': {
@@ -19,16 +18,20 @@ OUTPUT = {
 }
 
 
-def test_default_filter(app):
+@pytest.mark.parametrize(
+    "query",
+    [({}),
+     ({'status': ['submitted']})]
+)
+def test_default_filter(app, query):
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
         'Accept': mimetype,
     }
 
-    payload = {}
+    payload = query
     expected = [OUTPUT['billy']]
-    output_schema = FilterOutputSchema(many=True)
 
     with app.test_client() as client:
         response = client.post('/api/contacts/filter',
