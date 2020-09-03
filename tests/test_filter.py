@@ -10,6 +10,7 @@ OUTPUT = {
         'first_name': 'Billy',
         'last_name': 'Daly',
         'email': 'billy@example.com',
+        'status': 'approved',
         'phone_primary': '555-245-2351',
         'years_exp': '3-5',
         'job_search_status': 'Actively looking',

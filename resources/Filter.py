@@ -3,7 +3,7 @@ from flask_login import login_required
 import json
 
 from models.base_model import db
-from models.contact_model import Contact, ContactSchema
+from models.contact_model import Contact, ContactSchema, ContactStage
 from models.program_app_model import ProgramApp, ProgramAppSchema
 from models.profile_model import (
     Profile,
@@ -15,6 +15,7 @@ from models.profile_model import (
 )
 
 from marshmallow import Schema, fields, EXCLUDE, ValidationError
+from marshmallow_enum import EnumField
 
 from auth import (
     refresh_session,
@@ -41,6 +42,7 @@ class FilterOutputSchema(Schema):
     first_name = fields.String(dump_only=True)
     last_name = fields.String(dump_only=True)
     email = fields.String(dump_only=True)
+    status = EnumField(ContactStage, dump_only=True)
     phone_primary = fields.String(dump_only=True)
     years_exp = fields.Pluck(ProfileSchema,
                              'years_exp',
