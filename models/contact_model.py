@@ -205,6 +205,22 @@ class Contact(db.Model):
         return ContactStage(self.stage)
 
     @hybrid_property
+    def race_list(self):
+        race_dict = {
+            'american_indian': 'American Indian or Alaskan Native',
+            'asian':'Asian',
+            'black': 'Black or African Descent',
+            'hawaiian': 'Native Hawaiian or Other Pacific Islander',
+            'hispanic': 'Hispanic or Latinx',
+            'south_asian': 'South Asian',
+            'white': 'White',
+            'not_listed': 'Not Listed',
+        }
+        race_list = [race_dict[r] for r in race_dict.keys()
+                     if self.race.getattr(r)]
+        return race_list
+
+    @hybrid_property
     def instructions(self):
         instructions_dict = {
             'profile': self.profile_complete,
