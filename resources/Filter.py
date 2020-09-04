@@ -33,9 +33,10 @@ class FilterInputSchema(Schema):
     current_job_status = fields.List(fields.String(), allow_none=True)
     current_edu_status = fields.List(fields.String(), allow_none=True)
     previous_bcorps_program = fields.List(fields.String(), allow_none=True)
-    needs_help_programs = fields.List(fields.String(), allow_none=True)
     hear_about_us = fields.List(fields.String(), allow_none=True)
-    race = fields.Nested(RaceSchema, allow_none=True)
+
+    class Meta:
+        unknown = EXCLUDE
 
 class FilterOutputSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -69,7 +70,8 @@ def format_row(row):
         'phone_primary',
         'status',
         'years_exp',
-        'job_search_status'
+        'job_search_status',
+        'gender',
     ]
     _dict = dict(zip(fields, row))
     _dict['status'] = ContactStage(_dict['status']).name
@@ -94,24 +96,36 @@ class Filter(Resource):
         except ValidationError as e:
             return e.messages, 422
 
+        q = (db.session
+                .query(Contact, Profile)
+                .join(Profile)
+                .with_entities(
+                    Contact.id,
+                    Contact.first_name,
+                    Contact.last_name,
+                    Contact.email,
+                    Contact.phone_primary,
+                    Contact.stage,
+                    Profile.years_exp,
+                    Profile.job_search_status,
+                    Profile.gender,
+                ))
+
         if not query:
-            contacts = Contact.query.filter(Contact.stage > 1)
-            result = output_schema.dump(contacts)
+            q = q.filter(Contact.stage > 1)
         else:
-            query = (db.session
-                       .query(Contact, Profile)
-                       .join(Profile)
-                       .filter(Contact.stage > 1)
-                       .with_entities(
-                            Contact.id,
-                            Contact.first_name,
-                            Contact.last_name,
-                            Contact.email,
-                            Contact.phone_primary,
-                            Contact.stage,
-                            Profile.years_exp,
-                            Profile.job_search_status
-                      ).all())
-            result = [format_row(row) for row in query]
+            status_list = query.pop('status', None)
+            if status_list == ['submitted']:
+                q = q.filter(Contact.stage == 2)
+            elif status_list == ['approved']:
+                q = q.filter(Contact.stage == 3)
+            else:
+                q = q.filter(Contact.stage > 1)
+
+            # iteratively adds query parameters to query for Profile
+            for param in query:
+                q = q.filter(getattr(Profile, param).in_(query[param]))
+
+        result = [format_row(row) for row in q.all()]
 
         return {'status': 'success', 'data': result}, 201
