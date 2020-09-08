@@ -38,7 +38,9 @@ class FilterInputSchema(Schema):
     hear_about_us = fields.List(fields.String(), allow_none=True)
     roles = fields.Nested(RoleChoiceSchema, allow_none=True)
     programs_completed = fields.Nested(ProgramsCompletedSchema, allow_none=True)
-    program_apps = fields.Nested(ProgramAppSchema, allow_none=True)
+    program_apps = fields.Nested(ProgramAppSchema,
+                                 many=True,
+                                 allow_none=True)
 
     class Meta:
         unknown = EXCLUDE
@@ -140,12 +142,20 @@ class Filter(Resource):
                 for r in roles:
                     q = q.filter(getattr(RoleChoice, r)==roles[r])
 
-            # pops out programs_completed and updates query with
+            # pops out programs_completed and updates query with it
             p_complete = query.pop('programs_completed', None)
             if p_complete:
                 q = q.join(Profile.programs_completed)
                 for p in p_complete:
                     q = q.filter(getattr(ProgramsCompleted, p)==p_complete[p])
+
+            # pops out program_apps and updates query with it
+            apps = query.pop('program_apps', None)
+            if apps:
+                programs = [app['program']['id'] for app in apps]
+                q = (q.join(ProgramApp)
+                      .filter(ProgramApp.program_id.in_(programs))
+                      .filter(ProgramApp.is_interested==True))
 
             # iteratively adds query parameters to query for Profile
             for param in query:

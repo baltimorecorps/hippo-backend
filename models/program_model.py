@@ -22,7 +22,7 @@ class Program(db.Model):
 
 class ProgramSchema(Schema):
     id = fields.Integer()
-    name = fields.String(required=True)
+    name = fields.String()
 
     class Meta:
         unknown = EXCLUDE
