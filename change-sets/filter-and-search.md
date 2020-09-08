@@ -37,6 +37,14 @@ Adds filter for the fields stored directly in the `profile` table
     - `programs_completed`
     - `roles`
 
+### Branch `feature-add-program-apps-filter`
+Adds filter for the `program-apps` associated with a contact
+
+#### Changes
+
+- Accepts `program_apps` as a filter criteria
+- Removes the `name` as a required field for `ProgramSchema`
+
 ### Deployment Considerations
 
 - **Heroku Variables:** No
