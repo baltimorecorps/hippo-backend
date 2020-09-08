@@ -37,7 +37,7 @@ OUTPUT = {
 
 QUERIES = {
     'default': {},
-    'profile_filter1': {
+    'profile1': {
         'status': ['approved'],
         'years_exp': ['filter1'],
         'job_search_status': ['filter1'],
@@ -46,29 +46,41 @@ QUERIES = {
         'previous_bcorps_program': ['filter1'],
         'hear_about_us': ['filter1']
     },
-    'profile_filter2': {
+    'profile2': {
         'years_exp': ['filter2'],
     },
-    'program_filter1': {
+    'program1': {
         'programs_completed': {
             'mayoral_fellowship': True,
         }
     },
-    'program_filter2': {
+    'program2': {
         'programs_completed': {
             'mayoral_fellowship': False,
         }
     },
-    'role_filter1': {
+    'role1': {
         'roles': {
             'advocacy_public_policy': True
         }
     },
-    'role_filter2': {
+    'role2': {
         'roles': {
             'advocacy_public_policy': True,
             'community_engagement_outreach': False
         }
+    },
+    'program_app1': {
+        'program_apps': [
+            {'program': {'name': 'Place for Purpose', 'id': 1},
+             'is_interested': True}
+        ]
+    },
+    'program_app2': {
+        'program_apps': [
+            {'program': {'name': 'Mayoral Fellowship', 'id': 2},
+             'is_interested': True}
+        ]
     }
 }
 
@@ -112,12 +124,14 @@ UPDATES = {
 @pytest.mark.parametrize(
     "update,query,response",
     [(UPDATES['default'], QUERIES['default'], OUTPUT['default']),
-     (UPDATES['filter1'], QUERIES['profile_filter1'], OUTPUT['filter1']),
-     (UPDATES['default'], QUERIES['profile_filter2'], OUTPUT['empty']),
-     (UPDATES['default'], QUERIES['program_filter1'], OUTPUT['default']),
-     (UPDATES['default'], QUERIES['program_filter2'], OUTPUT['empty']),
-     (UPDATES['default'], QUERIES['role_filter1'], OUTPUT['default']),
-     (UPDATES['default'], QUERIES['role_filter2'], OUTPUT['empty']),]
+     (UPDATES['filter1'], QUERIES['profile1'], OUTPUT['filter1']),
+     (UPDATES['default'], QUERIES['profile2'], OUTPUT['empty']),
+     (UPDATES['default'], QUERIES['program1'], OUTPUT['default']),
+     (UPDATES['default'], QUERIES['program2'], OUTPUT['empty']),
+     (UPDATES['default'], QUERIES['role1'], OUTPUT['default']),
+     (UPDATES['default'], QUERIES['role2'], OUTPUT['empty']),
+     (UPDATES['default'], QUERIES['program_app1'], OUTPUT['default']),
+     (UPDATES['default'], QUERIES['program_app2'], OUTPUT['empty']),]
 )
 def test_basic_filter(app, update, query, response):
     mimetype = 'application/json'
