@@ -13,13 +13,29 @@ Sets up basic structure for filtering and searching
 - Adds `program_name` to ProgramAppSchema
 - Removes stray `print()` statements from the Resources
 
-### Branch `feature-branch-two`
-{{overview of functionality added in this feature branch}}
+### Branch `feature-add-profile-filters`
+Adds filter for the fields stored in tables related to the `profile` table
 
 #### Changes
 
-- {{change 1}}
-- {{change 2}}
+- Adds `gender` to the response body for `POST api/contacts/filter`
+- Accepts fields stored directly on the `profile` as filter criteria:
+    - `years_exp`
+    - `job_search_status`
+    - `current_job_status`
+    - `current_edu_status`
+    - `previous_bcorps_program`
+    - `hear_about_us`
+
+### Branch `feature-add-profile-related-criteria`
+Adds filter for the fields stored directly in the `profile` table
+
+#### Changes
+
+- Adds `city` and `state` to the response body for `POST api/contacts/filter`
+- Accepts fields stored on tables related to the `profile` as filter criteria:
+    - `programs_completed`
+    - `roles`
 
 ### Deployment Considerations
 

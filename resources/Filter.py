@@ -8,10 +8,12 @@ from models.program_app_model import ProgramApp, ProgramAppSchema
 from models.profile_model import (
     Profile,
     Race,
+    RoleChoice,
+    ProgramsCompleted,
+    ContactAddress,
     ProfileSchema,
-    RaceSchema,
     RoleChoiceSchema,
-    ProgramsCompletedSchema
+    ProgramsCompletedSchema,
 )
 
 from marshmallow import Schema, fields, EXCLUDE, ValidationError
@@ -34,6 +36,9 @@ class FilterInputSchema(Schema):
     current_edu_status = fields.List(fields.String(), allow_none=True)
     previous_bcorps_program = fields.List(fields.String(), allow_none=True)
     hear_about_us = fields.List(fields.String(), allow_none=True)
+    roles = fields.Nested(RoleChoiceSchema, allow_none=True)
+    programs_completed = fields.Nested(ProgramsCompletedSchema, allow_none=True)
+    program_apps = fields.Nested(ProgramAppSchema, allow_none=True)
 
     class Meta:
         unknown = EXCLUDE
@@ -72,6 +77,8 @@ def format_row(row):
         'years_exp',
         'job_search_status',
         'gender',
+        'city',
+        'state',
     ]
     _dict = dict(zip(fields, row))
     _dict['status'] = ContactStage(_dict['status']).name
@@ -99,6 +106,7 @@ class Filter(Resource):
         q = (db.session
                 .query(Contact, Profile)
                 .join(Profile)
+                .join(ContactAddress)
                 .with_entities(
                     Contact.id,
                     Contact.first_name,
@@ -109,11 +117,14 @@ class Filter(Resource):
                     Profile.years_exp,
                     Profile.job_search_status,
                     Profile.gender,
+                    ContactAddress.city,
+                    ContactAddress.state,
                 ))
 
         if not query:
             q = q.filter(Contact.stage > 1)
         else:
+            # pops out stage and updates query with stage
             status_list = query.pop('status', None)
             if status_list == ['submitted']:
                 q = q.filter(Contact.stage == 2)
@@ -122,10 +133,24 @@ class Filter(Resource):
             else:
                 q = q.filter(Contact.stage > 1)
 
+            # pops out roles and updates query with roles
+            roles = query.pop('roles', None)
+            if roles:
+                q = q.join(Profile.roles)
+                for r in roles:
+                    q = q.filter(getattr(RoleChoice, r)==roles[r])
+
+            # pops out programs_completed and updates query with
+            p_complete = query.pop('programs_completed', None)
+            if p_complete:
+                q = q.join(Profile.programs_completed)
+                for p in p_complete:
+                    q = q.filter(getattr(ProgramsCompleted, p)==p_complete[p])
+
             # iteratively adds query parameters to query for Profile
             for param in query:
                 q = q.filter(getattr(Profile, param).in_(query[param]))
-
+        print(q)
         result = [format_row(row) for row in q.all()]
 
         return {'status': 'success', 'data': result}, 201
