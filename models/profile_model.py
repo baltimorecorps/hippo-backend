@@ -24,6 +24,7 @@ class Race(db.Model):
     white = db.Column(db.Boolean, default=False)
     not_listed = db.Column(db.Boolean, default=False)
     race_other = db.Column(db.String)
+    race_all = db.Column(db.String, default='No Response')
 
     #relationships
     contact = db.relationship('Contact', back_populates='race')
@@ -31,20 +32,24 @@ class Race(db.Model):
 
     #methods
     def update(self, **update_dict):
-        UPDATE_FIELDS = [
-            'american_indian',
-            'asian',
-            'black',
-            'hawaiian',
-            'hispanic',
-            'south_asian',
-            'white',
-            'not_listed',
-            'race_other'
-        ]
+        UPDATE_FIELDS = {
+            'american_indian': 'American Indian or Alaskan Native',
+            'asian': 'Asian',
+            'black': 'Black or African Descent',
+            'hispanic': 'Hispanic or Latinx',
+            'hawaiian': 'Native Hawaiian or Other Pacific Islander',
+            'south_asian': 'South Asian',
+            'white': 'White',
+            'not_listed': 'Not Listed',
+            'race_other': ''
+        }
+        race_list = []
         for field, value in update_dict.items():
             if field in UPDATE_FIELDS:
                 setattr(self, field, value)
+                if value == True:
+                    race_list.append(UPDATE_FIELDS[field])
+        self.race_all = ";".join(sorted(race_list))
 
 class ContactAddress(db.Model):
     __tablename__ = 'contact_address'
