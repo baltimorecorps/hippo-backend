@@ -1860,7 +1860,7 @@ def test_put_programs_completed_nullable(app):
         billy = Contact.query.get(123)
         assert billy.profile.programs_completed.kiva == False
 
-def test_put_about_me_race_text(app):
+def test_put_about_me_race_all(app):
     url = '/api/contacts/123/about-me'
     update = CONTACT_PROFILE['billy_update']
 
@@ -1877,7 +1877,7 @@ def test_put_about_me_race_text(app):
         assert response.status_code == 200
 
         billy = Contact.query.get(123)
-        assert billy.race.race_all == 'Hispanic or Latinx;White'
+        assert billy.race.race_all == 'Not Listed;Hispanic or Latinx;White'
 
 
 def test_put_about_me_email(app):
