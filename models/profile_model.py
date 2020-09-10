@@ -24,6 +24,7 @@ class Race(db.Model):
     white = db.Column(db.Boolean, default=False)
     not_listed = db.Column(db.Boolean, default=False)
     race_other = db.Column(db.String)
+    race_all = db.Column(db.String)
 
     #relationships
     contact = db.relationship('Contact', back_populates='race')
