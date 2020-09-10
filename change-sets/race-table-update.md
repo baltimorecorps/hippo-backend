@@ -10,13 +10,13 @@ Adds `race_all` field to `race` table and sets it when the `race` table is updat
 - Creates new test `test_put_about_me_race_all()`
 - Adds `race_all` to `race`
 
-### Branch `feature-branch-two`
-{{overview of functionality added in this feature branch}}
+### Branch `feature-add-race-to-filter-endpoint`
+Adds the `race` field to the `POST api/contacts/filter` endpoint
 
 #### Changes
 
-- {{change 1}}
-- {{change 2}}
+- Adds `race` to `test_basic_filter()` in `test_filter.py`
+- Updates `POST api/contacts/filter` to include `race` in the response body
 
 ### Deployment Considerations
 

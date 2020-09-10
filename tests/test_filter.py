@@ -17,7 +17,8 @@ OUTPUT = {
         'job_search_status': 'Actively looking',
         'gender': 'Male',
         'city': 'Baltimore',
-        'state': 'Maryland'
+        'state': 'Maryland',
+        'race': ['No Response']
     }],
     'filter1': [{
         'id': 123,
@@ -30,7 +31,8 @@ OUTPUT = {
         'job_search_status': 'filter1',
         'gender': 'Male',
         'city': 'Baltimore',
-        'state': 'Maryland'
+        'state': 'Maryland',
+        'race': ['White']
     }],
     'empty': []
 }
@@ -114,6 +116,17 @@ UPDATES = {
                 'fundraising_development': False,
                 'program_management': False,
                 'marketing_public_relations': False
+            },
+            'race': {
+                'american_indian': False,
+                'asian': False,
+                'black': False,
+                'hispanic': False,
+                'hawaiian': False,
+                'south_asian': False,
+                'white': True,
+                'not_listed': False,
+                'race_other': None,
             }
         },
         'skills': {}
