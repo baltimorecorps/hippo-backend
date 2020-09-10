@@ -17,6 +17,16 @@ Adds the `race` field to the `POST api/contacts/filter` endpoint
 
 - Adds `race` to `test_basic_filter()` in `test_filter.py`
 - Updates `POST api/contacts/filter` to include `race` in the response body
+- Configures `join()` for precisely in the query
+
+### Branch `feature-bug-filter-endpoint`
+Fixes a bug that caused duplicate contacts to be returned when passing multiple programs in the filter payload
+
+#### Changes
+
+- Adds a test to recreate the duplicate bug
+- Turns the `program_app` query into a subquery to avoid duplication
+
 
 ### Deployment Considerations
 
