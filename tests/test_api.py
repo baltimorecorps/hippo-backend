@@ -321,8 +321,8 @@ CONTACT_PROFILE = {
                 'hawaiian': False,
                 'south_asian': False,
                 'white': True,
-                'not_listed': False,
-                'race_other': None,
+                'not_listed': True, # updated
+                'race_other': 'Test Text', # updated
             },
             'roles': {
                 'advocacy_public_policy': True,
@@ -1732,7 +1732,8 @@ def skill_name(skill):
        lambda r: (r.contact.email == 'billy_new@email.com'
                   and r.address_primary.street1 == '124 Main St'
                   and r.race.hispanic == True
-                  and r.roles.data_analysis == False),
+                  and r.roles.data_analysis == False
+                  and r.race.race_other == 'Test Text'),
        )
     ]
 )
@@ -1858,6 +1859,26 @@ def test_put_programs_completed_nullable(app):
         assert response.status_code == 200
         billy = Contact.query.get(123)
         assert billy.profile.programs_completed.kiva == False
+
+def test_put_about_me_race_text(app):
+    url = '/api/contacts/123/about-me'
+    update = CONTACT_PROFILE['billy_update']
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+
+        billy = Contact.query.get(123)
+        assert billy.race.race_all == 'Hispanic or Latinx;White'
+
 
 def test_put_about_me_email(app):
     url = '/api/contacts/123/about-me'
