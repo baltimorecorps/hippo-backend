@@ -83,6 +83,14 @@ QUERIES = {
             {'program': {'name': 'Mayoral Fellowship', 'id': 2},
              'is_interested': True}
         ]
+    },
+    'program_app3': {
+        'program_apps': [
+            {'program': {'name': 'Place for Purpose', 'id': 1},
+             'is_interested': True},
+            {'program': {'name': 'Mayoral Fellowship', 'id': 2},
+             'is_interested': True}
+        ]
     }
 }
 
@@ -129,7 +137,8 @@ UPDATES = {
                 'race_other': None,
             }
         },
-        'skills': {}
+        'skills': {},
+        'program_ids': [1, 2]
     },
 }
 
@@ -144,7 +153,8 @@ UPDATES = {
      (UPDATES['default'], QUERIES['role1'], OUTPUT['default']),
      (UPDATES['default'], QUERIES['role2'], OUTPUT['empty']),
      (UPDATES['default'], QUERIES['program_app1'], OUTPUT['default']),
-     (UPDATES['default'], QUERIES['program_app2'], OUTPUT['empty']),]
+     (UPDATES['default'], QUERIES['program_app2'], OUTPUT['empty']),
+     (UPDATES['filter1'], QUERIES['program_app3'], OUTPUT['filter1']),]
 )
 def test_basic_filter(app, update, query, response):
     mimetype = 'application/json'
@@ -159,11 +169,16 @@ def test_basic_filter(app, update, query, response):
         contact = Contact.query.get(update['contact']['id'])
         contact.stage = update['contact']['stage']
         contact.profile.update(**update['profile'])
+        for program_app in contact.program_apps:
+            if program_app.program_id in update['program_ids']:
+                program_app.is_interested = True
         db.session.commit()
 
         contact = Contact.query.get(update['contact']['id'])
         assert contact.stage == update['contact']['stage']
         assert contact.profile.years_exp == update['profile']['years_exp']
+        for program_app in contact.program_apps:
+            assert program_app.is_interested == True
 
     with app.test_client() as client:
         response = client.post('/api/contacts/filter',
