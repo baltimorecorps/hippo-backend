@@ -193,3 +193,34 @@ def test_basic_filter(app, update, query, response):
         print('EXPECTED:')
         pprint(expected)
         assert data == expected
+
+def test_filter_race_all_null(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+    }
+
+    contact = Contact.query.get(123)
+    contact.race.race_all = None
+    db.session.commit()
+
+    contact = Contact.query.get(123)
+    assert contact.race.race_all is None
+
+    payload = {}
+    expected = OUTPUT['default']
+
+    with app.test_client() as client:
+        response = client.post('/api/contacts/filter',
+                               data=json.dumps(payload),
+                               headers=headers)
+
+        assert response.status_code == 201
+
+        data = response.json['data']
+        print('DATA:')
+        pprint(data)
+        print('EXPECTED:')
+        pprint(expected)
+        assert data == expected
