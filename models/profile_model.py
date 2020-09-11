@@ -49,7 +49,11 @@ class Race(db.Model):
                 setattr(self, field, value)
                 if value == True:
                     race_list.append(UPDATE_FIELDS[field])
-        self.race_all = ";".join(sorted(race_list))
+        if not race_list:
+            race_all = 'No Response'
+        else:
+            race_all = ";".join(sorted(race_list))
+        self.race_all = race_all
 
 class ContactAddress(db.Model):
     __tablename__ = 'contact_address'

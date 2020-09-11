@@ -84,7 +84,10 @@ def format_row(row):
         'race'
     ]
     _dict = dict(zip(fields, row))
-    _dict['race'] = _dict['race'].split(';')
+    if _dict['race']:
+        _dict['race'] = _dict['race'].split(';')
+    else:
+        _dict['race'] = ['No Response']
     _dict['status'] = ContactStage(_dict['status']).name
     return _dict
 
@@ -157,9 +160,12 @@ class Filter(Resource):
             apps = query.pop('program_apps', None)
             if apps:
                 programs = [app['program']['id'] for app in apps]
-                q = (q.join(ProgramApp)
-                      .filter(ProgramApp.program_id.in_(programs))
-                      .filter(ProgramApp.is_interested==True))
+                subq = (db.session
+                          .query(ProgramApp.contact_id)
+                          .filter(ProgramApp.program_id.in_(programs))
+                          .filter(ProgramApp.is_interested==True)
+                          .subquery())
+                q = q.filter(Contact.id.in_(subq))
 
             # iteratively adds query parameters to query for Profile
             for param in query:
