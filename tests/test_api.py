@@ -1882,6 +1882,36 @@ def test_put_about_me_race_all(app):
         billy = Contact.query.get(123)
         assert billy.race.race_all == 'Hispanic or Latinx;Not Listed;White'
 
+def test_put_about_me_race_no_response(app):
+    url = '/api/contacts/123/about-me'
+    update = copy.deepcopy(CONTACT_PROFILE['billy_update'])
+    update['profile']['race'] = {
+        'american_indian': False,
+        'asian': False,
+        'black': False,
+        'hispanic': False, # updated
+        'hawaiian': False,
+        'south_asian': False,
+        'white': False,
+        'not_listed': False, # updated
+        'race_other': None,
+    }
+
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+
+    with app.test_client() as client:
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+
+        billy = Contact.query.get(123)
+        assert billy.race.race_all == 'No Response'
+
 
 def test_put_about_me_email(app):
     url = '/api/contacts/123/about-me'
