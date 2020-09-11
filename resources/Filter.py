@@ -84,7 +84,10 @@ def format_row(row):
         'race'
     ]
     _dict = dict(zip(fields, row))
-    _dict['race'] = _dict['race'].split(';')
+    if _dict['race']:
+        _dict['race'] = _dict['race'].split(';')
+    else:
+        _dict['race'] = ['No Response']
     _dict['status'] = ContactStage(_dict['status']).name
     return _dict
 
