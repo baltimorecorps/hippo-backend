@@ -81,8 +81,13 @@ def format_row(row):
         'gender',
         'city',
         'state',
+        'race'
     ]
     _dict = dict(zip(fields, row))
+    if _dict['race']:
+        _dict['race'] = _dict['race'].split(';')
+    else:
+        _dict['race'] = ['No Response']
     _dict['status'] = ContactStage(_dict['status']).name
     return _dict
 
@@ -106,9 +111,10 @@ class Filter(Resource):
             return e.messages, 422
 
         q = (db.session
-                .query(Contact, Profile)
-                .join(Profile)
-                .join(ContactAddress)
+                .query(Contact)
+                .join(Contact.profile)
+                .join(Contact.race)
+                .join(Contact.address_primary)
                 .with_entities(
                     Contact.id,
                     Contact.first_name,
@@ -121,6 +127,7 @@ class Filter(Resource):
                     Profile.gender,
                     ContactAddress.city,
                     ContactAddress.state,
+                    Race.race_all,
                 ))
 
         if not query:
@@ -153,14 +160,17 @@ class Filter(Resource):
             apps = query.pop('program_apps', None)
             if apps:
                 programs = [app['program']['id'] for app in apps]
-                q = (q.join(ProgramApp)
-                      .filter(ProgramApp.program_id.in_(programs))
-                      .filter(ProgramApp.is_interested==True))
+                subq = (db.session
+                          .query(ProgramApp.contact_id)
+                          .filter(ProgramApp.program_id.in_(programs))
+                          .filter(ProgramApp.is_interested==True)
+                          .subquery())
+                q = q.filter(Contact.id.in_(subq))
 
             # iteratively adds query parameters to query for Profile
             for param in query:
                 q = q.filter(getattr(Profile, param).in_(query[param]))
-        print(q)
+
         result = [format_row(row) for row in q.all()]
 
         return {'status': 'success', 'data': result}, 201
