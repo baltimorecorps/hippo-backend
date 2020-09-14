@@ -1,3 +1,5 @@
+from skill_data import SKILLS_API
+
 import datetime as dt
 import math
 
@@ -84,15 +86,33 @@ EXPERIENCES_DATABASE = {
 
 ACHIEVEMENTS_API = {
     'billy_work': [
-        {**ACHIEVEMENTS_DATABASE['billy_work1'],
-         'skills': []},
-        {**ACHIEVEMENTS_DATABASE['billy_work1'],
-         'skills': []},
+        {
+            **ACHIEVEMENTS_DATABASE['billy_work1'],
+            'skills': [{
+                'name': 'Flask','capability_id': 'cap:it'
+            }]
+        },
+        {
+            **ACHIEVEMENTS_DATABASE['billy_work2'],
+            'skills': [{
+                'name': 'Community Organizing', 'capability_id': 'cap:advocacy'
+            }]
+        },
+        {
+            **ACHIEVEMENTS_DATABASE['billy_work3'],
+            'skills': [{
+                'name': 'Web Development', 'capability_id': 'cap:it',
+            }]
+        }
     ]
     },
-    'billy_edu1': [
-        {**ACHIEVEMENTS_DATABASE['billy_edu'],
-         'skills': []}
+    'billy_edu': [
+        {
+            **ACHIEVEMENTS_DATABASE['billy_edu'],
+            'skills': [{
+                'name': 'Python', 'capability_id': 'cap:it',
+            }],
+        }
     ]
 }
 
@@ -115,6 +135,7 @@ EXPERIENCES_API ={
         **EXPERIENCES_DATABASE['billy_work'],
         'length_year': math.floor(DATE_LENGTH/12),
         'length_month': DATE_LENGTH % 12,
-        'acheivements': ACHIEVEMENTS_API['billy_work']
+        'acheivements': ACHIEVEMENTS_API['billy_work'],
+        SKILLS['billy'][3],
     }
 }

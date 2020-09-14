@@ -1035,104 +1035,6 @@ EXPERIENCES = {
     },
 }
 
-TAGS = {
-    'python': {
-        'id': 123,
-        'name': 'Python',
-        'type': 'Skill',
-        'status': 'Active',
-    },
-    'webdev': {
-        'id': 124,
-        'name': 'Web Development',
-        'type': 'Function',
-        'status': 'Active',
-    },
-    'health': {
-        'id': 125,
-        'name': 'Public Health',
-        'type': 'Topic',
-        'status': 'Active',
-    },
-}
-
-TAG_ITEMS = {
-    'billy_webdev': {
-        'id': 21,
-        'name': 'Web Development',
-        'type': 'Function',
-        'contact_id': 123,
-        'tag_id': 124,
-        'score': 2,
-    }
-}
-
-# This is kind of gross -- maybe we should consider standardizing the resume
-# responses so that they're the same as everything else?
-def filter_dict(d, keys):
-    return {k:v for k, v in d.items() if k not in keys}
-
-RESUME_SECTIONS = {
-    'billy_work': {
-        'id': 61,
-        'resume_id': 51,
-        'max_count': None,
-        'min_count': None,
-        'name': "Work Experience",
-        'items': [
-            {
-                'resume_order': 0,
-                'indented': False,
-                'achievement': None,
-                'tag': None,
-                'experience': filter_dict(EXPERIENCES['baltimore'],
-                                          {'achievements', 'contact_id'}),
-            },
-        ],
-    },
-    'billy_skills': {
-        'id': 62,
-        'resume_id': 51,
-        'max_count': None,
-        'min_count': None,
-        'name': "Skills",
-        'items': [
-            {
-                'resume_order': 0,
-                'indented': False,
-                'achievement': None,
-                'experience': None,
-                'tag': filter_dict(TAG_ITEMS['billy_webdev'], {'contact_id'}),
-            },
-        ],
-    },
-}
-
-RESUMES = {
-    'billy': {
-        'id': 51,
-        'contact': CONTACTS['billy'],
-        'name': "Billy's Resume",
-        'date_created': '2019-05-04',
-        'gdoc_id': 'abcdefghijklmnopqrstuvwxyz1234567890-_',
-    },
-}
-
-RESUME_OUTPUT = {
-    'name': 'Billy Resume',
-    'date_created': dt.datetime.today().strftime('%Y-%m-%d'),
-    'contact': CONTACTS['billy'],
-    'gdoc_link': None,
-    'relevant_exp_dump': [EXPERIENCES['goucher']],
-    'other_exp_dump': [EXPERIENCES['baltimore']],
-    'relevant_edu_dump': [EXPERIENCES['goucher']],
-    'other_edu_dump': [EXPERIENCES['baltimore']],
-    'relevant_achieve_dump': [EXPERIENCES['baltimore']],
-    'other_achieve_dump': [EXPERIENCES['goucher']],
-    'relevant_skills_dump': [TAG_ITEMS['billy_webdev']],
-    'other_skills_dump': [TAG_ITEMS['billy_webdev']]
-}
-
 
 POSTS = {
     'experience': {
@@ -2712,26 +2614,6 @@ def test_get_contact_without_apps(app):
         pprint(expected)
         pprint(data)
         assert data == expected
-
-@pytest.mark.skip
-@pytest.mark.parametrize(
-    "url,input,output",
-    [('/api/contacts/123/generate-resume/',POSTS['resume'],RESUME_OUTPUT)]
-)
-def test_generate_resume(app, url, input, output):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    with app.test_client() as client:
-        response = client.post(url, data=json.dumps(input),
-                               headers=headers)
-        pprint(response.json)
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        assert data == output
 
 
 def make_session(contact_id, permissions=[]):
