@@ -1,6 +1,7 @@
 from contact_data import CONTACTS
 
-PROFILES = {
+
+PROFILES_API = {
     'billy': {
         **CONTACTS['billy'],
         'profile': {

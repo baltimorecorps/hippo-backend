@@ -51,37 +51,22 @@ from models.profile_model import (
     ProgramsCompleted
 )
 
-billy = Contact(
-    id=123,
-    first_name='Billy',
-    last_name='Daly',
-    email_primary=Email(
-        id=45,
-        is_primary=True,
-        email='billy@example.com',
-        type=EmailType.personal,
-    ),
-    email='billy@example.com',
-    phone_primary='555-245-2351',
-    account_id='test-valid|0123456789abcdefabcdefff',
-    terms_agreement=True,
-    stage=3
-)
-obama = Contact(
-    id=124,
-    first_name='Barack',
-    last_name='Obama',
-    email='obama@whitehouse.gov',
-    email_primary=Email(
-        id=90,
-        is_primary=True,
-        email='obama@whitehouse.gov',
-        type=EmailType('Work'),
-    ),
-    phone_primary='555-444-4444',
-    terms_agreement=True,
-    account_id='test-valid|alsghldwgsg120393020293',
+from .data.contact_data import CONTACTS_DATABASE
 
+billy = Contact(**{**CONTACTS_DATABASE['billy'], 'stage': 3})
+billy.email_primary = Email(
+    id=45,
+    is_primary=True,
+    email='billy@example.com',
+    type=EmailType.personal,
+)
+
+obama = Contact(**CONTACTS_DATABASE['obama'])
+obama.email_primary = Email(
+    id=90,
+    is_primary=True,
+    email='obama@whitehouse.gov',
+    type=EmailType('Work'),
 )
 
 billy_profile = Profile(
