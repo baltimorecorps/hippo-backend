@@ -91,6 +91,12 @@ QUERIES = {
             {'program': {'name': 'Mayoral Fellowship', 'id': 2},
              'is_interested': True}
         ]
+    },
+    'skills1': {
+        'skills': ['Python', 'Flask']
+    },
+    'skills2': {
+        'skills': ['Policy Writing']
     }
 }
 
@@ -154,7 +160,9 @@ UPDATES = {
      (UPDATES['default'], QUERIES['role2'], OUTPUT['empty']),
      (UPDATES['default'], QUERIES['program_app1'], OUTPUT['default']),
      (UPDATES['default'], QUERIES['program_app2'], OUTPUT['empty']),
-     (UPDATES['filter1'], QUERIES['program_app3'], OUTPUT['filter1']),]
+     (UPDATES['filter1'], QUERIES['program_app3'], OUTPUT['filter1']),
+     (UPDATES['default'], QUERIES['skills1'], OUTPUT['default']),
+     (UPDATES['default'], QUERIES['skills2'], OUTPUT['empty']),]
 )
 def test_basic_filter(app, update, query, response):
     mimetype = 'application/json'
