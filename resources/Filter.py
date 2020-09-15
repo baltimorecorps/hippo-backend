@@ -2,9 +2,12 @@ from flask_restful import Resource, request
 from flask_login import login_required
 import json
 
+from .skill_utils import get_skill_id
+
 from models.base_model import db
 from models.contact_model import Contact, ContactSchema, ContactStage
 from models.program_app_model import ProgramApp, ProgramAppSchema
+from models.skill_item_model import ContactSkill
 from models.profile_model import (
     Profile,
     Race,
@@ -35,6 +38,7 @@ class FilterInputSchema(Schema):
     current_job_status = fields.List(fields.String(), allow_none=True)
     current_edu_status = fields.List(fields.String(), allow_none=True)
     previous_bcorps_program = fields.List(fields.String(), allow_none=True)
+    skills = fields.List(fields.String(), allow_none=True)
     hear_about_us = fields.List(fields.String(), allow_none=True)
     roles = fields.Nested(RoleChoiceSchema, allow_none=True)
     programs_completed = fields.Nested(ProgramsCompletedSchema, allow_none=True)
@@ -142,28 +146,42 @@ class Filter(Resource):
             else:
                 q = q.filter(Contact.stage > 1)
 
-            # pops out roles and updates query with roles
+            # pops out roles and adds them to the filter
             roles = query.pop('roles', None)
             if roles:
                 q = q.join(Profile.roles)
                 for r in roles:
                     q = q.filter(getattr(RoleChoice, r)==roles[r])
 
-            # pops out programs_completed and updates query with it
+            # pops out programs_completed and adds them to the filter
             p_complete = query.pop('programs_completed', None)
             if p_complete:
                 q = q.join(Profile.programs_completed)
                 for p in p_complete:
                     q = q.filter(getattr(ProgramsCompleted, p)==p_complete[p])
 
-            # pops out program_apps and updates query with it
-            apps = query.pop('program_apps', None)
-            if apps:
-                programs = [app['program']['id'] for app in apps]
+            # pops out program_apps and adds them to the filter
+            app_params = query.pop('program_apps', None)
+            if app_params:
+                programs = [app['program']['id'] for app in app_params]
+                # uses subquery to prevent duplicate contacts
+                # from being returned
                 subq = (db.session
                           .query(ProgramApp.contact_id)
                           .filter(ProgramApp.program_id.in_(programs))
                           .filter(ProgramApp.is_interested==True)
+                          .subquery())
+                q = q.filter(Contact.id.in_(subq))
+
+            # pops out skills and adds them to the filter
+            skill_params = query.pop('skills', None)
+            if skill_params:
+                skills = [get_skill_id(skill) for skill in skill_params]
+                # uses subquery to prevent duplicate contacts
+                # from being returned
+                subq = (db.session
+                          .query(ContactSkill.contact_id)
+                          .filter(ContactSkill.skill_id.in_(skills))
                           .subquery())
                 q = q.filter(Contact.id.in_(subq))
 
