@@ -43,6 +43,12 @@ class ProgramAppSchema(Schema):
     is_interested = fields.Boolean(allow_none=True)
     decision_date = fields.Date(dump_only=True)
 
+    # For use in FilterOutputSchema, exclude from other Schemas
+    program_name = fields.Pluck(ProgramSchema,
+                                'name',
+                                dump_only=True,
+                                attribute='program')
+
     class Meta:
         unknown = EXCLUDE
 
