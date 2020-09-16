@@ -5,12 +5,13 @@ from hashlib import blake2b
 
 from models.skill_model import Skill
 from .skill_list import SKILL_LIST
+from models.skill_item_model import ContactSkill
 from models.skill_model import (
-    Capability, 
-    CapabilitySchema, 
+    Capability,
+    CapabilitySchema,
     CapabilitySkillSuggestion,
     Skill,
-    SkillSchema, 
+    SkillSchema,
     SkillRecommendationSchema
 )
 
@@ -28,6 +29,11 @@ def get_skill_id(skill):
     skill_bytes = normalize_skill_name(skill).encode('utf8');
     return base64.urlsafe_b64encode(blake2b(skill_bytes, digest_size=16).digest()).decode('utf8')
 
+def get_contact_skill(contact_id, skill_name):
+    return (ContactSkill.query
+                        .filter_by(contact_id=contact_id,
+                                   skill_id=get_skill_id(skill_name))
+                        .first())
 
 def make_skill(name):
     return Skill(
@@ -49,7 +55,7 @@ def dump_skill_with_capabilities(skill, contact_id):
     result['capabilities'] = capability_names_schema.dump(skill.capabilities)
     result['suggested_capabilities'] = capability_names_schema.dump(
         Capability.query
-        .join(CapabilitySkillSuggestion, 
+        .join(CapabilitySkillSuggestion,
               Capability.id == CapabilitySkillSuggestion.capability_id)
         .filter(CapabilitySkillSuggestion.skill_id==skill.id)
         .filter(CapabilitySkillSuggestion.contact_id==contact_id)
@@ -65,7 +71,7 @@ class Autocomplete(object):
     def __init__(self, items):
         self.lookup = {}
         for item in items:
-            self.lookup[normalize_skill_name(item)] = item 
+            self.lookup[normalize_skill_name(item)] = item
 
     def get_scores(self, query):
         prefix = normalize_skill_name(query)
@@ -101,5 +107,3 @@ def _autocomplete():
 
 def complete_skill(skill):
     return _autocomplete().match(skill)
-
-

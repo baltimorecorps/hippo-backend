@@ -31,7 +31,11 @@ from models.skill_model import (
     CapabilitySkillSuggestion
 )
 from models.skill_item_model import ContactSkill
-from resources.skill_utils import get_skill_id, make_skill
+from resources.skill_utils import (
+    get_skill_id,
+    get_contact_skill,
+    make_skill,
+)
 
 # imports models related to the resume
 from models.resume_model import ResumeSnapshot
@@ -427,11 +431,6 @@ app_obama = OpportunityApp(
 
 def get_skill(name):
     return Skill.query.get(get_skill_id(name))
-
-
-def get_contact_skill(contact_id, skill_name):
-    return ContactSkill.query.filter_by(
-        contact_id=contact_id, skill_id=get_skill_id(skill_name)).first()
 
 
 def populate(db):
