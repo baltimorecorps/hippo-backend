@@ -182,6 +182,7 @@ class Filter(Resource):
                 subq = (db.session
                           .query(ContactSkill.contact_id)
                           .filter(ContactSkill.skill_id.in_(skills))
+                          .filter(ContactSkill.deleted==False)
                           .subquery())
                 q = q.filter(Contact.id.in_(subq))
 

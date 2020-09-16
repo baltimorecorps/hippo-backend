@@ -1,5 +1,5 @@
-## Staging branch `staging-branch-name`
-{{overview of functionality added in this change set}}
+## Staging branch `staging-filter-skills`
+Adds skills as an optional paramater for `POST api/contacts/filter`
 
 ### Changes
 - Removes `trello_check.py` from directory
@@ -7,13 +7,7 @@
 
 ### Deployment Considerations
 
-- **Heroku Variables:** {{Yes/No}}
-    - {{variable 1}}
-    - {{variable 2}}
-- **DB Migrations:** {{Yes/No}}
-    - {{change 1}}
-    - {{change 2}}
-- **AuthZ/N Changes:** {{Yes/No}}
-    - {{change 1}}
-    - {{change 2}}
-- **Deployment Sequence:** {{Backend/Frontend First}}
+- **Heroku Variables:** No
+- **DB Migrations:** No
+- **AuthZ/N Changes:** No
+- **Deployment Sequence:** Backend First
