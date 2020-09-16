@@ -211,17 +211,52 @@ def test_filter_race_all_null(app):
         'Accept': mimetype,
     }
 
-    contact = Contact.query.get(123)
-    contact.race.race_all = None
-    db.session.commit()
-
-    contact = Contact.query.get(123)
-    assert contact.race.race_all is None
-
     payload = {}
     expected = OUTPUT['default']
 
     with app.test_client() as client:
+
+        # change race_all to None
+        contact = Contact.query.get(123)
+        contact.race.race_all = None
+        db.session.commit()
+
+        contact = Contact.query.get(123)
+        assert contact.race.race_all is None
+
+        response = client.post('/api/contacts/filter',
+                               data=json.dumps(payload),
+                               headers=headers)
+
+        assert response.status_code == 201
+
+        data = response.json['data']
+        print('DATA:')
+        pprint(data)
+        print('EXPECTED:')
+        pprint(expected)
+        assert data == expected
+
+
+def test_filter_deleted_skill(app):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype,
+    }
+
+    payload = {'skills': ['Python']}
+    expected = []
+
+    with app.test_client() as client:
+
+        skill = get_contact_skill(123, 'Python')
+        skill.deleted = True
+        db.session.commit()
+
+        skill = get_contact_skill(123, 'Python')
+        assert skill.deleted == True
+
         response = client.post('/api/contacts/filter',
                                data=json.dumps(payload),
                                headers=headers)
