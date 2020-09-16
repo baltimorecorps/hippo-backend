@@ -1,16 +1,18 @@
-from models.base_model import db
+
 import enum
 from marshmallow import Schema, fields, EXCLUDE, pre_dump, post_dump
 from marshmallow_enum import EnumField
+from sqlalchemy.ext.hybrid import hybrid_property
+
+from models.base_model import db
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.achievement_model import Achievement
 from models.skill_model import Skill, SkillSchema
 from models.skill_item_model import ContactSkill
 from models.program_contact_model import ProgramContactSchema
-from models.program_app_model import ProgramAppSchema
+from models.program_app_model import ProgramAppSchema, ProgramApp
 from models.profile_model import ProfileSchema, ContactAddress
-from sqlalchemy.ext.hybrid import hybrid_property
 
 UPDATE_FIELDS = [
     'first_name', 'last_name', 'email', 'phone_primary', 'stage', 'card_id'
@@ -73,6 +75,11 @@ class Contact(db.Model):
     program_apps = db.relationship('ProgramApp',
                                    back_populates='contact',
                                    cascade='all, delete, delete-orphan')
+    programs_interested = db.relationship('ProgramApp',
+                                          primaryjoin=db.and_(
+                                          id == ProgramApp.contact_id,
+                                          ProgramApp.is_interested),
+                                          back_populates='contact')
     applications = db.relationship('OpportunityApp',
                                    back_populates='contact',
                                    cascade='all, delete, delete-orphan')
@@ -200,6 +207,22 @@ class Contact(db.Model):
         return ContactStage(self.stage)
 
     @hybrid_property
+    def race_list(self):
+        race_dict = {
+            'american_indian': 'American Indian or Alaskan Native',
+            'asian':'Asian',
+            'black': 'Black or African Descent',
+            'hawaiian': 'Native Hawaiian or Other Pacific Islander',
+            'hispanic': 'Hispanic or Latinx',
+            'south_asian': 'South Asian',
+            'white': 'White',
+            'not_listed': 'Not Listed',
+        }
+        race_list = [race_dict[r] for r in race_dict.keys()
+                     if self.race.getattr(r)]
+        return race_list
+
+    @hybrid_property
     def instructions(self):
         instructions_dict = {
             'profile': self.profile_complete,
@@ -235,7 +258,9 @@ class ContactSchema(Schema):
     # Full contact
     skills = fields.Nested(SkillSchema, many=True)
     programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
-    program_apps = fields.Nested(ProgramAppSchema, many=True)
+    program_apps = fields.Nested(ProgramAppSchema,
+                                 exclude=['program_name'],
+                                 many=True)
     profile = fields.Nested(ProfileSchema)
     instructions = fields.Dict()
     experiences = fields.Nested(ExperienceSchema, many=True, dump_only=True)
