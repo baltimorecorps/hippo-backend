@@ -27,7 +27,6 @@ from auth import (
 from models.skill_model import Skill
 from .skill_utils import get_skill_id, get_or_make_skill
 from .Profile import create_profile
-from pprint import pprint
 
 
 contact_schema = ContactSchema(exclude=['instructions',
@@ -88,7 +87,6 @@ class ContactAll(Resource):
         if existing_contact:
             return {'message': 'A contact with this account already exists'}, 400
 
-        pprint(data)
         email_primary = data.pop('email_primary', None)
         email = data.get('email', None)
 
@@ -133,7 +131,6 @@ class ContactShort(Resource):
 
         status = request.args.get('status')
         status_list = ContactStage.__members__
-        print(status_list)
         if not status:
             contacts = Contact.query.all()
         elif status not in status_list:
