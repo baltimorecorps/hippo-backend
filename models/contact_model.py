@@ -1,7 +1,10 @@
-from models.base_model import db
+
 import enum
 from marshmallow import Schema, fields, EXCLUDE, pre_dump, post_dump
 from marshmallow_enum import EnumField
+from sqlalchemy.ext.hybrid import hybrid_property
+
+from models.base_model import db
 from models.experience_model import Experience, ExperienceSchema, Type
 from models.email_model import Email, EmailSchema
 from models.achievement_model import Achievement
@@ -10,7 +13,6 @@ from models.skill_item_model import ContactSkill
 from models.program_contact_model import ProgramContactSchema
 from models.program_app_model import ProgramAppSchema, ProgramApp
 from models.profile_model import ProfileSchema, ContactAddress
-from sqlalchemy.ext.hybrid import hybrid_property
 
 UPDATE_FIELDS = [
     'first_name', 'last_name', 'email', 'phone_primary', 'stage', 'card_id'
