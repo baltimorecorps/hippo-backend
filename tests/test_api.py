@@ -746,12 +746,7 @@ CONTACTS_SHORT = {
 }
 
 SNAPSHOTS = {
-    'snapshot1': {
-        'test': 'snapshot1'
-    },
-    'snapshot2': {
-        'test': 'snapshot2'
-    },
+    'snapshot1': {'test': 'snapshot1'},
 }
 
 APPLICATIONS_INTERNAL = {

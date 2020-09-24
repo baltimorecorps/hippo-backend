@@ -56,6 +56,11 @@ from models.profile_model import (
 )
 
 from .data.contact_data import CONTACTS_DATABASE, EMAILS_DATABASE
+from .data.opportunity_data import (
+    OPPS_DATABASE,
+    OPP_APPS_DATABASE,
+    RESUME_SNAPSHOTS
+)
 from .data.program_data import PROGRAMS_DATABASE
 from .data.skill_data import SKILLS_NAMES
 from .data.experience_data import (
@@ -254,71 +259,37 @@ obama_pfp = ProgramContact(
     stage=1,
 )
 
-test_opp1 = Opportunity(
-    id='123abc',
-    title="Test Opportunity",
-    short_description="This is a test opportunity.",
-    gdoc_id="ABC123xx==",
-    card_id="card",
-    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-    org_name="Test Org",
-    program_id=1,
-    program_name="Place for Purpose"
-)
+# creates opportunities
+test_opp1 = Opportunity(**OPPS_DATABASE['opp1'])
+test_opp2 = Opportunity(**OPPS_DATABASE['opp2'])
+test_opp3 = Opportunity(**OPPS_DATABASE['opp3'])
 
-test_opp2 = Opportunity(
-    id='222abc',
-    title="Another Test Opportunity",
-    short_description="This is another test opportunity.",
-    gdoc_id="BBB222xx==",
-    card_id="card",
-    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-    org_name="Test Org",
-    program_id=2,
-    program_name="Mayoral Fellowship"
-)
 
-test_opp3 = Opportunity(
-    id='333abc',
-    title="A Third Test Opportunity",
-    short_description="This is another test opportunity.",
-    gdoc_id="CCC333xx==",
-    card_id="card",
-    gdoc_link="https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-    org_name="Test Org",
-    program_id=1,
-    program_name="Place for Purpose"
-)
+# creates billy's app for test_opp1
+app_billy = OpportunityApp(**{
+    **OPP_APPS_DATABASE['billy1'],
+    'stage': 1,
+    'resume': ResumeSnapshot(**RESUME_SNAPSHOTS['snapshot1']),
+    'contact': billy,
+    'opportunity': test_opp1
+})
 
-snapshot1 = ResumeSnapshot(
-    id=1111,
-    resume='{"test":"snapshot1"}',
-)
 
-app_billy = OpportunityApp(
-    id='a1',
-    contact_id=123,
-    opportunity_id='123abc',
-    interest_statement="I'm interested in this test opportunity",
-    stage=1,
-    resume_id=1111,
-)
+# creates billy's app for test_opp2
+app_billy2 = OpportunityApp(**{
+    **OPP_APPS_DATABASE['billy2'],
+    'contact': billy,
+    'opportunity': test_opp2
+})
 
-app_billy2 = OpportunityApp(
-    id='a2',
-    contact_id=123,
-    opportunity_id='222abc',
-    interest_statement="I'm also interested in this test opportunity",
-    stage=0,
-)
 
-app_obama = OpportunityApp(
-    id='a3',
-    contact_id=124,
-    opportunity_id='123abc',
-    interest_statement="I'm also interested in this test opportunity",
-    stage=2,
-)
+# creates obama's app for test_opp1
+app_obama = OpportunityApp(**{
+    **OPP_APPS_DATABASE['obama1'],
+    'stage': 2,
+    'contact': obama,
+    'opportunity': test_opp1
+})
 
 
 def get_skill(name):
@@ -343,10 +314,6 @@ def populate(db):
     db.session.add(test_opp1)
     db.session.add(test_opp2)
     db.session.add(test_opp3)
-    db.session.add(snapshot1)
-    db.session.add(app_billy)
-    db.session.add(app_billy2)
-    db.session.add(app_obama)
 
     db.session.commit()
 
