@@ -1,4 +1,4 @@
-PROGRAMS = {
+PROGRAMS_DATABASE = {
     'pfp': {
         'id': 1,
         'name': 'Place for Purpose'
@@ -11,6 +11,6 @@ PROGRAMS = {
 
 PROGRAM_APPS_DATABASE = {
     'billy_pfp': {
-        
+
     }
 }
