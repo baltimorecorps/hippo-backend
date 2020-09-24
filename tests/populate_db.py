@@ -55,92 +55,56 @@ from models.profile_model import (
     ProgramsCompleted
 )
 
-from .data.contact_data import CONTACTS_DATABASE
+from .data.contact_data import CONTACTS_DATABASE, EMAILS_DATABASE
+from .data.program_data import PROGRAMS_DATABASE
+from .data.skill_data import SKILLS_NAMES
+from .data.experience_data import (
+    EXPERIENCES_DATABASE,
+    ACHIEVEMENTS_DATABASE
+)
+from .data.profile_data import (
+    ADDRESSES,
+    PROGRAMS_COMPLETED,
+    RACE,
+    ROLES,
+    PROFILES_DATABASE
+)
 
+# creates billy's contact
 billy = Contact(**{**CONTACTS_DATABASE['billy'], 'stage': 3})
-billy.email_primary = Email(
-    id=45,
-    is_primary=True,
-    email='billy@example.com',
-    type=EmailType.personal,
-)
+billy.email_primary = Email(**{
+    **EMAILS_DATABASE['billy'],
+    'type': EmailType('Personal'),
+})
 
+# creates obama's contact
 obama = Contact(**CONTACTS_DATABASE['obama'])
-obama.email_primary = Email(
-    id=90,
-    is_primary=True,
-    email='obama@whitehouse.gov',
-    type=EmailType('Work'),
-)
+obama.email_primary = Email(**{
+    **EMAILS_DATABASE['obama'],
+    'type': EmailType('Work'),
+})
 
-billy_profile = Profile(
-    id=123,
-    contact_id=123,
-    gender='Male',
-    gender_other=None,
-    pronoun='He/Him/His',
-    pronoun_other=None,
-    years_exp='3-5',
-    job_search_status='Actively looking',
-    current_job_status='Employed',
-    current_edu_status='Full-time Student',
-    previous_bcorps_program='Yes',
-    needs_help_programs=True,
-    hear_about_us='Facebook',
-    hear_about_us_other='Other',
-    value_question1='Test response',
-    value_question2='Test response',
-)
 
-billy_address = ContactAddress(
-    id=123,
-    contact_id=123,
-    profile_id=123,
-    street1='123 Main St',
-    street2='Apt 3',
-    city='Baltimore',
-    state='Maryland',
-    zip_code='21218',
-    country='United States',
-)
+# creates billy's profile records
+billy_profile = Profile(**PROFILES_DATABASE['billy'])
+billy.profile = billy_profile
 
-billy_race = Race(
-    id=123,
-    contact_id=123,
-    profile_id=123,
-    american_indian=False,
-    asian=False,
-    black=False,
-    hispanic=False,
-    hawaiian=False,
-    south_asian=False,
-    white=True,
-    not_listed=False,
-    race_other=None,
-)
+billy_address = ContactAddress(**ADDRESSES['billy'])
+billy_profile.addresses.append(billy_address)
+billy.addresses.append(billy_address)
 
-billy_roles = RoleChoice(
-    id=123,
-    profile_id=123,
-    advocacy_public_policy=True,
-    community_engagement_outreach=True,
-    data_analysis=True,
-    fundraising_development=False,
-    program_management=False,
-    marketing_public_relations=False
-)
+billy_race = Race(**RACE['billy'])
+billy_profile.race = billy_race
+billy.race = billy_race
 
-billy_programs_completed = ProgramsCompleted(
-    id=123,
-    profile_id=123,
-    mayoral_fellowship=True,
-    fellowship=False,
-    kiva=False,
-    public_allies=False,
-    civic_innovators=False,
-    elevation_awards=False
-)
+billy_p_complete = ProgramsCompleted(**PROGRAMS_COMPLETED['billy'])
+billy_profile.programs_completed = billy_p_complete
 
+billy_roles = RoleChoice(**ROLES['billy'])
+billy_profile.roles = billy_roles
+
+
+# creates billy's user session
 billy_session = UserSession(
     id=123,
     auth_id='test-valid|0123456789abcdefabcdefff',
@@ -294,17 +258,15 @@ billy_flask_suggestion = CapabilitySkillSuggestion(
     skill_id='QUEVjv1tcq6uLmzCku6ikg=='
 )
 
-program_pfp = Program(
-    id=1,
-    name='Place for Purpose',
-    trello_board_id='5e37744114d9d01a03ddbcfe',
-)
+program_pfp = Program(**{
+    **PROGRAMS_DATABASE['pfp'],
+    'trello_board_id': '5e37744114d9d01a03ddbcfe'
+})
 
-program_mayoral = Program(
-    id=2,
-    name='Mayoral Fellowship',
-    trello_board_id='5e37744114d9d01a03ddbcfe',
-)
+program_mayoral = Program(**{
+    **PROGRAMS_DATABASE['mayoral'],
+    'trello_board_id': '5e37744114d9d01a03ddbcfe'
+})
 
 
 billy_pfp = ProgramContact(
@@ -425,11 +387,6 @@ def populate(db):
 
     db.session.add(billy)
     db.session.add(obama)
-    db.session.add(billy_profile)
-    db.session.add(billy_race)
-    db.session.add(billy_address)
-    db.session.add(billy_roles)
-    db.session.add(billy_programs_completed)
     db.session.add(billy_session)
     db.session.add(exp_columbia)
     db.session.add(exp_goucher)
