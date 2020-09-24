@@ -113,51 +113,27 @@ billy_session = UserSession(
     expiration=dt.datetime.utcnow(),
 )
 
-exp_columbia = Experience(
-    id=511,
-    host='Columbia University',
-    title='Political Science',
-    description='Test description',
-    link='www.google.com',
-    link_name="Google",
-    start_month=Month('September'),
-    start_year=1979,
-    end_month=Month('May'),
-    end_year=1983,
-    type=ExpType('Accomplishment'),
-    location='New York, NY, USA',
-    contact_id=124,
-)
+exp_columbia = Experience(**{
+    **EXPERIENCES_DATABASE['obama_portfolio'],
+    'start_month': Month('September'),
+    'type': ExpType('Accomplishment'),
+    'end_month': Month('May'),
+})
 
 
-exp_goucher = Experience(
-    id=512,
-    host='Goucher College',
-    title='Economics',
-    degree='Undergraduate',
-    degree_other='Study Abroad',
-    start_month=Month('September'),
-    start_year=2012,
-    end_month=Month('May'),
-    end_year=2016,
-    type=ExpType('Education'),
-    location='Towson, MD, USA',
-    contact_id=123,
-)
+exp_goucher = Experience(**{
+    **EXPERIENCES_DATABASE['billy_edu'],
+    'start_month': Month('September'),
+    'end_month': Month('May'),
+    'type': ExpType('Education'),
+})
 
-exp_baltimore = Experience(
-    id=513,
-    host='Baltimore Corps',
-    description='Test description here',
-    title='Systems Design Manager',
-    start_month=Month('January'),
-    start_year=2000,
-    end_month='none',
-    end_year=0,
-    type=ExpType('Work'),
-    location='Baltimore, MD, USA',
-    contact_id=123,
-)
+exp_baltimore = Experience(**{
+    **EXPERIENCES_DATABASE['billy_work'],
+    'start_month': Month('January'),
+    'end_month': Month('none'),
+    'type': ExpType('Work'),
+})
 
 a_baltimore1 = Achievement(
     id=81,
