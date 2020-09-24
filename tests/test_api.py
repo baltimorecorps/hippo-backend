@@ -27,6 +27,10 @@ from models.skill_item_model import (
 
 from flask import g
 
+from .data.contact_data import CONTACTS_API
+from .data.opportunity_data import OPPS_API, OPP_APPS_API
+from .data.program_data import PROGRAMS_API
+
 SKILLS = {
     'billy': [
         {
@@ -100,22 +104,11 @@ CAPABILITIES = {
 }
 
 
-PROGRAMS = {
-    'pfp': {
-        'id': 1,
-        'name': 'Place for Purpose'
-    },
-    'mayoral': {
-        'id': 2,
-        'name': 'Mayoral Fellowship'
-    }
-}
-
 PROGRAM_CONTACTS = {
     'billy_pfp': {
         'id': 5,
         'contact_id': 123,
-        'program': PROGRAMS['pfp'],
+        'program': PROGRAMS_API['pfp'],
         'card_id': None,
         'stage': 1,
         'is_active': True,
@@ -124,7 +117,7 @@ PROGRAM_CONTACTS = {
     'obama_pfp': {
         'id': 6,
         'contact_id': 124,
-        'program': PROGRAMS['pfp'],
+        'program': PROGRAMS_API['pfp'],
         'card_id': 'card',
         'stage': 1,
         'is_active': True,
@@ -133,7 +126,7 @@ PROGRAM_CONTACTS = {
     'billy_mayoral': {
         'id': 7,
         'contact_id': 123,
-        'program': PROGRAMS['mayoral'],
+        'program': PROGRAMS_API['mayoral'],
         'card_id': 'card',
         'stage': 1,
         'is_active': True,
@@ -527,43 +520,6 @@ INSTRUCTIONS = {
     }
 }
 
-OPPORTUNITIES = {
-    'test_opp1': {
-        'id': '123abc',
-        'title': "Test Opportunity",
-        'short_description': "This is a test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'program_id': 1,
-        'is_active': True,
-        'program_name': "Place for Purpose"
-    },
-    'test_opp2': {
-        'id': '222abc',
-        'title': "Another Test Opportunity",
-        'short_description': "This is another test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'program_id': 2,
-        'is_active': True,
-        'program_name': "Mayoral Fellowship"
-    },
-    'test_opp3': {
-        'id': '333abc',
-        'title': "A Third Test Opportunity",
-        'short_description': "This is another test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'program_id': 1,
-        'is_active': True,
-        'program_name': "Place for Purpose"
-    },
-
-}
-
 
 CONTACTS = {
     'billy': {
@@ -724,27 +680,6 @@ CONTACTS = {
                 "other_skills":[{"id":"qXGYjA77UThj7WPKlvxBtg==","name":"Documentation"},{"id":"opfNJLiUftLHJH0cjBMMNg==","name":"Project Planning"},{"id":"ZFXHeJ5WsDwZSsQl_ge0MQ==","name":"Python Script"},{"id":"BPxYULhlGt-9tzxHsJNLSA==","name":"Report Writing"},{"id":"8t48rV-NkxP0h0Y0E8h-vQ==","name":"Technical Requirements"}],"email":"billy@baltimorecorps.org"}
 }
 
-CONTACTS_SHORT = {
-    'billy': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy@example.com",
-        'status': 'approved',
-        'phone_primary': "555-245-2351",
-        'account_id': 'test-valid|0123456789abcdefabcdefff',
-    },
-    'obama': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'status': 'created',
-        'phone_primary': "555-444-4444",
-        'account_id': 'test-valid|alsghldwgsg120393020293',
-    }
-}
-
 SNAPSHOTS = {
     'snapshot1': {'test': 'snapshot1'},
 }
@@ -755,19 +690,19 @@ APPLICATIONS_INTERNAL = {
         'is_approved': True,
         'is_active': True,
         'program_id': 1,
-        'contact': CONTACTS_SHORT['billy'],
+        'contact': CONTACTS_API['billy'],
         'applications': [{
             'id': 'a1',
             'status': 'submitted',
             'is_active': True,
-            'opportunity': OPPORTUNITIES['test_opp1'],
+            'opportunity': OPPS_API['opp1'],
             'interview_date': None,
             'interview_time': None,
             'interview_completed': False
         }]
     },
     'obama_pfp': {
-        'contact': CONTACTS_SHORT['obama'],
+        'contact': CONTACTS_API['obama'],
         'id': 6,
         'is_active': True,
         'is_approved': False,
@@ -776,7 +711,7 @@ APPLICATIONS_INTERNAL = {
             'id': 'a3',
             'status': 'recommended',
             'is_active': True,
-            'opportunity': OPPORTUNITIES['test_opp1'],
+            'opportunity': OPPS_API['opp1'],
             'interview_date': None,
             'interview_time': None,
             'interview_completed': False
@@ -787,12 +722,12 @@ APPLICATIONS_INTERNAL = {
         'is_approved': True,
         'is_active': True,
         'program_id': 2,
-        'contact': CONTACTS_SHORT['billy'],
+        'contact': CONTACTS_API['billy'],
         'applications': [{
             'id': 'a2',
             'status': 'draft',
             'is_active': True,
-            'opportunity': OPPORTUNITIES['test_opp2'],
+            'opportunity': OPPS_API['opp2'],
             'interview_date': None,
             'interview_time': None,
             'interview_completed': False
@@ -838,7 +773,7 @@ OPPORTUNITIES_INTERNAL = {
         'is_active': True,
         'program_name': "Place for Purpose",
         'applications': [{'id': 'a1',
-                          'contact': CONTACTS_SHORT['billy'],
+                          'contact': CONTACTS_API['billy'],
                           'interest_statement': "I'm interested in this test opportunity",
                           'status': 'submitted',
                           'is_active': True,
@@ -846,7 +781,7 @@ OPPORTUNITIES_INTERNAL = {
                           'interview_time': None,
                           'interview_completed': False},
                          {'id': 'a3',
-                          'contact': CONTACTS_SHORT['obama'],
+                          'contact': CONTACTS_API['obama'],
                           'interest_statement': "I'm also interested in this test opportunity",
                           'status': 'recommended',
                           'is_active': True,
@@ -865,7 +800,7 @@ OPPORTUNITIES_INTERNAL = {
         'is_active': True,
         'program_name': "Mayoral Fellowship",
         'applications': [{'id': 'a2',
-                          'contact': CONTACTS_SHORT['billy'],
+                          'contact': CONTACTS_API['billy'],
                           'interest_statement': "I'm also interested in this test opportunity",
                           'status': 'draft',
                           'is_active': True,
@@ -885,34 +820,6 @@ OPPORTUNITIES_INTERNAL = {
         'program_name': "Place for Purpose",
         'applications': []
     },
-}
-
-APPLICATIONS = {
-    'app_billy': {
-        'id': 'a1',
-        'contact': CONTACTS_SHORT['billy'],
-        'opportunity': OPPORTUNITIES['test_opp1'],
-        'interest_statement': "I'm interested in this test opportunity",
-        'status': 'submitted',
-        'resume': SNAPSHOTS['snapshot1'],
-        'is_active': True,
-        'interview_date': None,
-        'interview_time': None,
-        'interview_completed': False
-    },
-    'app_billy2': {
-        'id': 'a2',
-        'contact': CONTACTS_SHORT['billy'],
-        'opportunity': OPPORTUNITIES['test_opp2'],
-        'interest_statement': "I'm also interested in this test opportunity",
-        'status': 'draft',
-        'resume': None,
-        'is_active': True,
-        'interview_date': None,
-        'interview_time': None,
-        'interview_completed': False,
-    },
-
 }
 
 
@@ -1140,7 +1047,7 @@ POSTS = {
 }
 
 APP_PUT_FULL = {
-    "opportunity": OPPORTUNITIES['test_opp1'],
+    "opportunity": OPPS_API['opp1'],
     "interest_statement": "dfdddsdfff",
     "id": "052904ba-7b83-436c-aee3-334a208fefd9",
     "contact": CONTACTS['billy'],
@@ -1342,12 +1249,12 @@ def test_post_approve_contact(app):
         'Authorization': 'Bearer test-valid|0123456789',
     }
 
-    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected = [CONTACTS_API['obama'].copy()]
     expected[0]['status'] == 'approved'
 
     with app.test_client() as client:
         response = client.post('/api/contacts/approve',
-                               data=json.dumps([CONTACTS_SHORT['obama']]),
+                               data=json.dumps([CONTACTS_API['obama']]),
                                headers=headers)
 
         assert response.status_code == 201
@@ -2175,9 +2082,9 @@ def test_approve_many_program_contacts_new(app):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
-    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected = [CONTACTS_API['obama'].copy()]
     expected[0]['status'] = 'approved'
-    payload = [CONTACTS_SHORT['obama']]
+    payload = [CONTACTS_API['obama']]
     with app.test_client() as client:
         program_contact = (ProgramContact
                            .query
@@ -2208,9 +2115,9 @@ def test_approve_many_program_contacts_existing(app, ):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
-    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected = [CONTACTS_API['obama'].copy()]
     expected[0]['status'] = 'approved'
-    payload = [CONTACTS_SHORT['obama']]
+    payload = [CONTACTS_API['obama']]
     with app.test_client() as client:
         assert ProgramContact.query.get(6).is_approved == False
         response = client.post('/api/programs/1/contacts/approve-many/',
@@ -2230,11 +2137,11 @@ def test_reapprove_many_program_contacts(app, ):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
-    expected = [CONTACTS_SHORT['billy'].copy(),
-                CONTACTS_SHORT['obama'].copy()]
+    expected = [CONTACTS_API['billy'].copy(),
+                CONTACTS_API['obama'].copy()]
     expected[0]['status'] = 'approved'
     expected[1]['status'] = 'approved'
-    payload = [CONTACTS_SHORT['billy'], CONTACTS_SHORT['obama']]
+    payload = [CONTACTS_API['billy'], CONTACTS_API['obama']]
     with app.test_client() as client:
         assert ProgramContact.query.get(6).is_approved == False
         assert ProgramContact.query.get(5).is_approved == True
@@ -2322,8 +2229,8 @@ def test_delete_contact_skill_saved(app):
     ,('/api/experiences/513/', EXPERIENCES['baltimore'])
     ,('/api/contacts/123/skills', SKILLS['billy'])
     ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
-    ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
-    ,('/api/contacts/123/app/123abc', APPLICATIONS['app_billy'])
+    ,('/api/opportunity/123abc', OPPS_API['opp1'])
+    ,('/api/contacts/123/app/123abc', OPP_APPS_API['billy1'])
     ,('/api/org/opportunities/123abc', OPPORTUNITIES_INTERNAL['test_opp1'])
     ,('/api/contacts/123/about-me', CONTACT_PROFILE['billy_profile'])
     ,('/api/contacts/123/program-apps', PROGRAM_APPS['billy'])
@@ -2555,20 +2462,20 @@ def test_get_capability_recommendations(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/contacts/', [CONTACTS_SHORT['billy'], CONTACTS_SHORT['obama']])
+    [('/api/contacts/', [CONTACTS_API['billy'], CONTACTS_API['obama']])
     ,('/api/contacts/123/experiences/', [EXPERIENCES['goucher'],
                                          EXPERIENCES['baltimore']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES['columbia']])
     ,('/api/contacts/123/achievements/', ACHIEVEMENTS.values())
     ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp'], PROGRAM_CONTACTS['billy_mayoral']])
-    ,('/api/opportunity/', OPPORTUNITIES.values())
-    ,('/api/contacts/123/app/', [APPLICATIONS['app_billy']])
+    ,('/api/opportunity/', OPPS_API.values())
+    ,('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
     ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
-    ,('/api/contacts/short/', CONTACTS_SHORT.values())
+    ,('/api/contacts/short/', CONTACTS_API.values())
     ,('/api/contacts/programs/', CONTACT_PROGRAMS.values())
     ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
     ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])
-    ,('/api/programs', PROGRAMS.values())
+    ,('/api/programs', PROGRAMS_API.values())
     ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS['billy']])
     ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS['obama_none']])
     ]
@@ -2622,14 +2529,14 @@ def test_get_contact_status_query(app):
                               headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
-        assert data == [CONTACTS_SHORT['billy']]
+        assert data == [CONTACTS_API['billy']]
 
         # checks created
         response = client.get('/api/contacts/?status=created',
                               headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
-        assert data == [CONTACTS_SHORT['obama']]
+        assert data == [CONTACTS_API['obama']]
 
         # sets obama to submitted
         obama = Contact.query.get(124)
@@ -2637,7 +2544,7 @@ def test_get_contact_status_query(app):
         db.session.commit()
         obama = Contact.query.get(124)
         assert obama.status == ContactStage(2)
-        expected = [CONTACTS_SHORT['obama']].copy()
+        expected = [CONTACTS_API['obama']].copy()
         expected[0]['status'] = 'submitted'
 
         # checks submitted
