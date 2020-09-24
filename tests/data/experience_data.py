@@ -1,4 +1,4 @@
-from skill_data import SKILLS_API
+# from .skill_data import SKILLS_API
 
 import datetime as dt
 import math
@@ -12,7 +12,7 @@ ACHIEVEMENTS_DATABASE = {
         'id': 82,
         'description': 'Formalized organizational strategy for defining and analyzing KPIs.',
     },
-    'bily_work3': {
+    'billy_work3': {
         'id': 83,
         'description': 'Developed recruitment projection tools to model and track progress to goals.',
     },
@@ -92,11 +92,9 @@ ACHIEVEMENTS_API = {
                 'name': 'Web Development', 'capability_id': 'cap:it',
             }]
         }
-    ]
-    },
-    'billy_edu': [
-        {
-            **ACHIEVEMENTS_DATABASE['billy_edu'],
+    ],
+    'billy_edu': [{
+            **ACHIEVEMENTS_DATABASE['billy_edu1'],
             'skills': [{
                 'name': 'Python', 'capability_id': 'cap:it',
             }],

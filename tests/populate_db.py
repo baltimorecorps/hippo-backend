@@ -113,79 +113,48 @@ billy_session = UserSession(
     expiration=dt.datetime.utcnow(),
 )
 
-exp_columbia = Experience(**{
+
+# creates obama's portfolio experience
+obama_portfolio = Experience(**{
     **EXPERIENCES_DATABASE['obama_portfolio'],
     'start_month': Month('September'),
     'type': ExpType('Accomplishment'),
     'end_month': Month('May'),
 })
+obama.experiences.append(obama_portfolio)
 
 
-exp_goucher = Experience(**{
+# creates billy's educational experience
+billy_edu = Experience(**{
     **EXPERIENCES_DATABASE['billy_edu'],
     'start_month': Month('September'),
     'end_month': Month('May'),
     'type': ExpType('Education'),
 })
 
-exp_baltimore = Experience(**{
+billy_edu1 = Achievement(**ACHIEVEMENTS_DATABASE['billy_edu1'])
+
+billy_edu.achievements.append(billy_edu1)
+billy.achievements.append(billy_edu1)
+
+
+# creates billy's work experience
+billy_work = Experience(**{
     **EXPERIENCES_DATABASE['billy_work'],
     'start_month': Month('January'),
     'end_month': Month('none'),
     'type': ExpType('Work'),
 })
+billy_work1 = Achievement(**ACHIEVEMENTS_DATABASE['billy_work1'])
+billy_work2 = Achievement(**ACHIEVEMENTS_DATABASE['billy_work2'])
+billy_work3 = Achievement(**ACHIEVEMENTS_DATABASE['billy_work3'])
 
-a_baltimore1 = Achievement(
-    id=81,
-    exp_id=513,
-    contact_id=123,
-    description='Redesigned the Salesforce architecture to facilitate easier reporting.'
-)
-a_baltimore2 = Achievement(
-    id=82,
-    exp_id=513,
-    contact_id=123,
-    description='Formalized organizational strategy for defining and analyzing KPIs.'
-)
-a_baltimore3 = Achievement(
-    id=83,
-    exp_id=513,
-    contact_id=123,
-    description='Developed recruitment projection tools to model and track progress to goals.'
-)
-a_goucher1 = Achievement(
-    id=84,
-    exp_id=512,
-    contact_id=123,
-    description='Did some stuff'
-)
+billy_work.achievements.extend([billy_work1, billy_work2, billy_work3])
+billy.achievements.extend([billy_work1, billy_work2, billy_work3])
 
 
-skills = [
-    Skill(
-        id=get_skill_id(name),
-        name=name,
-    )
-    for name in [
-        'Python',
-        'C++',
-        'Web Development',
-        'Public Health',
-        'Advocacy and Public Policy',
-        'Community Organizing',
-        'Canvassing',
-        'Advocacy',
-        'Policy Writing',
-        'Volunteer Mobilization',
-        'Community Engagement and Outreach',
-        'Community Engagement',
-        'Client Recruitment',
-        'Partnership Building',
-        'Event Planning',
-        'Information Technology',
-        'Flask',
-    ]
-]
+skills = [Skill(id=get_skill_id(name),name=name,)
+          for name in SKILLS_NAMES]
 
 advocacy_capability = Capability(
     id='cap:advocacy',
@@ -364,13 +333,6 @@ def populate(db):
     db.session.add(billy)
     db.session.add(obama)
     db.session.add(billy_session)
-    db.session.add(exp_columbia)
-    db.session.add(exp_goucher)
-    db.session.add(exp_baltimore)
-    db.session.add(a_goucher1)
-    db.session.add(a_baltimore1)
-    db.session.add(a_baltimore2)
-    db.session.add(a_baltimore3)
     db.session.add(program_pfp)
     db.session.add(program_mayoral)
     db.session.add(billy_pfp)
@@ -392,13 +354,13 @@ def populate(db):
     billy.add_skill(get_skill('Community Organizing'))
     obama.add_skill(get_skill('Public Health'))
 
-    exp_baltimore.add_skill(get_skill('Python'))
-    exp_baltimore.add_skill(get_skill('Web Development'))
-    a_baltimore1.add_skill(get_skill('Flask'), it_capability)
-    a_baltimore2.add_skill(
+    billy_work.add_skill(get_skill('Python'))
+    billy_work.add_skill(get_skill('Web Development'))
+    billy_work1.add_skill(get_skill('Flask'), it_capability)
+    billy_work2.add_skill(
         get_skill('Community Organizing'), advocacy_capability)
-    a_baltimore3.add_skill(get_skill('Web Development'), it_capability)
-    a_goucher1.add_skill(get_skill('Python'), it_capability)
+    billy_work3.add_skill(get_skill('Web Development'), it_capability)
+    billy_edu1.add_skill(get_skill('Python'), it_capability)
 
     billy.add_skill(get_skill('Flask'))
     db.session.add(billy_flask_suggestion)
@@ -406,7 +368,7 @@ def populate(db):
     # Test deleted skills as well
     billy.add_skill(get_skill('Event Planning'))
     outreach_capability.related_skills.append(get_skill('Event Planning'))
-    a_baltimore2.add_skill(get_skill('Event Planning'))
+    billy_work2.add_skill(get_skill('Event Planning'))
     billy_eventplan = get_contact_skill(123, 'Event Planning')
     billy_eventplan.deleted = True
 
