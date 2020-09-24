@@ -252,6 +252,7 @@ CONTACT_PROFILE = {
                 'state': 'Maryland',
                 'zip_code': '21218',
                 'country': 'United States',
+                'is_primary': True,
              },
             'race': {
                 'american_indian': False,
@@ -312,6 +313,7 @@ CONTACT_PROFILE = {
                 'state': 'Maryland',
                 'zip_code': '21218',
                 'country': 'United States',
+                'is_primary': True,
              },
             'race': {
                 'american_indian': False,
@@ -373,6 +375,7 @@ CONTACT_PROFILE = {
                 'state': None,
                 'zip_code': None,
                 'country': None,
+                'is_primary': True,
              },
             'race': {
                 'american_indian': False,
@@ -408,6 +411,7 @@ CONTACT_PROFILE = {
                 'street1': '123 Main St.',
                 'street2': 'Apt 3',
                 'zip_code': '21111',
+                'is_primary': True,
             },
             'current_edu_status': 'Full-time student',
             'current_job_status': 'Unemployed',

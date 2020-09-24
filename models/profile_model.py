@@ -327,6 +327,7 @@ class ContactAddressSchema(Schema):
     state = fields.String(allow_none=True)
     country = fields.String(allow_none=True)
     zip_code = fields.String(allow_none=True)
+    is_primary = fields.Boolean(allow_none=True, dump_only=True)
 
     class Meta:
         unknown = EXCLUDE
