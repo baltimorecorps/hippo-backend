@@ -1,3 +1,4 @@
+# This is what is set in the database in populate_db.py
 CONTACTS_DATABASE = {
     'billy': {
         'id': 123,
@@ -17,17 +18,28 @@ CONTACTS_DATABASE = {
     }
 }
 
-EMAILS_API = {
-    'billy_email': {
+EMAILS_DATABASE = {
+    'billy': {
         'id': 45,
         'is_primary': True,
         'email': "billy@example.com",
-        'type': "Personal",
     },
-    'obama_email': {
+    'obama': {
         'id': 90,
         'is_primary': True,
         'email': "obama@whitehouse.gov",
-        'type': "Work",
     }
+}
+
+
+# This is what is returned in the API
+CONTACTS_API = {
+    'billy': {**CONTACTS_DATABASE['billy'], 'status': 'approved'},
+    'obama': {**CONTACTS_DATABASE['obama'], 'status': 'created'}
+}
+
+EMAILS_API = {
+    'billy': {**EMAILS_DATABASE, 'type': 'Personal'},
+    'obama': {**EMAILS_DATABASE, 'type': 'Work'}
+
 }
