@@ -74,31 +74,19 @@ EXPERIENCES_DATABASE = {
 
 ACHIEVEMENTS_API = {
     'billy_work': [
-        {
-            **ACHIEVEMENTS_DATABASE['billy_work1'],
-            'skills': [{
-                'name': 'Flask','capability_id': 'cap:it'
-            }]
-        },
-        {
-            **ACHIEVEMENTS_DATABASE['billy_work2'],
-            'skills': [{
-                'name': 'Community Organizing', 'capability_id': 'cap:advocacy'
-            }]
-        },
-        {
-            **ACHIEVEMENTS_DATABASE['billy_work3'],
-            'skills': [{
-                'name': 'Web Development', 'capability_id': 'cap:it',
-            }]
-        }
+        {**ACHIEVEMENTS_DATABASE['billy_work1'],
+        'skills': [{'name': 'Flask',
+                    'capability_id': 'cap:it'}]},
+        {**ACHIEVEMENTS_DATABASE['billy_work2'],
+         'skills': [{'name': 'Community Organizing',
+                     'capability_id': 'cap:advocacy'}]},
+        {**ACHIEVEMENTS_DATABASE['billy_work3'],
+         'skills': [{'name': 'Web Development',
+                     'capability_id': 'cap:it'}]}
     ],
-    'billy_edu': [{
-            **ACHIEVEMENTS_DATABASE['billy_edu1'],
-            'skills': [{
-                'name': 'Python', 'capability_id': 'cap:it',
-            }],
-        }
+    'billy_edu': [
+        {**ACHIEVEMENTS_DATABASE['billy_edu1'],
+         'skills': [{'name': 'Python', 'capability_id': 'cap:it'}]}
     ]
 }
 
