@@ -30,37 +30,8 @@ from flask import g
 from .data.contact_data import CONTACTS_API
 from .data.opportunity_data import OPPS_API, OPP_APPS_API
 from .data.program_data import PROGRAMS_API
+from .data.skill_data import CONTACT_SKILLS
 
-SKILLS = {
-    'billy': [
-        {
-            'id': '74BgThI2os9wEdyArofEKA==',
-            'name': 'Community Organizing',
-        },
-        {
-            'id': 'QUEVjv1tcq6uLmzCku6ikg==',
-            'name': 'Flask',
-        },
-        {
-            'id': 'n1N02ypni69EZg0SggRIIg==',
-            'name': 'Public Health',
-        },
-        {
-            'id': '4R9tqGuK2672PavRTJrN_A==',
-            'name': 'Python',
-        },
-        {
-            'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
-            'name': 'Web Development',
-        },
-    ],
-    'obama': [
-        {
-            'id': 'n1N02ypni69EZg0SggRIIg==',
-            'name': 'Public Health',
-        },
-    ],
-}
 
 CAPABILITIES = {
     'billy': {
@@ -535,7 +506,7 @@ CONTACTS = {
         },
         'phone_primary': "555-245-2351",
         'account_id': 'test-valid|0123456789abcdefabcdefff',
-        'skills': SKILLS['billy'],
+        'skills': CONTACT_SKILLS['billy'],
         'programs': [PROGRAM_CONTACTS['billy_pfp'],
                      PROGRAM_CONTACTS['billy_mayoral']],
         'program_apps': PROGRAM_APPS['billy']['program_apps'],
@@ -556,7 +527,7 @@ CONTACTS = {
         },
         'phone_primary': "555-444-4444",
         'account_id': 'test-valid|alsghldwgsg120393020293',
-        'skills': SKILLS['obama'],
+        'skills': CONTACT_SKILLS['obama'],
         'programs': [PROGRAM_CONTACTS['obama_pfp']],
         'program_apps': [],
         'status': 'created',
@@ -910,7 +881,7 @@ EXPERIENCES = {
             ACHIEVEMENTS['goucher1'],
         ],
         'skills': [
-            SKILLS['billy'][3],
+            CONTACT_SKILLS['billy'][3],
         ],
     },
     'baltimore' : {
@@ -937,7 +908,7 @@ EXPERIENCES = {
             ACHIEVEMENTS['baltimore2'],
             ACHIEVEMENTS['baltimore3'],
         ],
-        'skills': SKILLS['billy'][0:2] + SKILLS['billy'][3:5],
+        'skills': CONTACT_SKILLS['billy'][0:2] + CONTACT_SKILLS['billy'][3:5],
     },
 }
 
@@ -1496,7 +1467,7 @@ def skill_name(skill):
       )
 
     ,('/api/experiences/513/',
-      {'skills': SKILLS['billy'][0:2] + [{'name': 'Test'}]},
+      {'skills': CONTACT_SKILLS['billy'][0:2] + [{'name': 'Test'}]},
       lambda: Experience.query.get(513),
       lambda e: (len(e.skills) == 3
                  and sorted(e.skills, key=skill_name)[0].name == 'Community Organizing'
@@ -1752,7 +1723,7 @@ def test_put_about_me_email(app):
     [('/api/contacts/123/',
       {'first_name': 'William', 'last_name':'Daly'},
       lambda: Contact.query.get(123),
-      lambda e: len(e.skills) == len(SKILLS['billy']),
+      lambda e: len(e.skills) == len(CONTACT_SKILLS['billy']),
       )
     ,('/api/experiences/513/',
       {'host': 'Test'},
@@ -2227,7 +2198,7 @@ def test_delete_contact_skill_saved(app):
     ,('/api/contacts/124/', CONTACTS['obama'])
     ,('/api/experiences/512/', EXPERIENCES['goucher'])
     ,('/api/experiences/513/', EXPERIENCES['baltimore'])
-    ,('/api/contacts/123/skills', SKILLS['billy'])
+    ,('/api/contacts/123/skills', CONTACT_SKILLS['billy'])
     ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
     ,('/api/opportunity/123abc', OPPS_API['opp1'])
     ,('/api/contacts/123/app/123abc', OPP_APPS_API['billy1'])
