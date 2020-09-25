@@ -107,3 +107,14 @@ PROGRAM_APPS_API = {
         **CONTACTS_API['obama'],
         'program_apps': []}
 }
+
+CONTACT_PROGRAMS_API = {
+    'billy': {
+        **CONTACTS_API['billy'],
+        'programs': [PROGRAM_CONTACTS_API['billy_pfp'],
+                     PROGRAM_CONTACTS_API['billy_mayoral']]
+    },
+    'obama': {
+        **CONTACTS_API['obama'],
+        'programs': [PROGRAM_CONTACTS_API['obama_pfp']]}
+}

@@ -1,3 +1,5 @@
+import copy
+
 from .contact_data import CONTACTS_API
 
 
@@ -9,6 +11,7 @@ ADDRESSES = {
         'state': 'Maryland',
         'zip_code': '21218',
         'country': 'United States',
+        'is_primary': True
     },
     'obama': {
         'street1': None,
@@ -17,6 +20,7 @@ ADDRESSES = {
         'state': None,
         'zip_code': None,
         'country': None,
+        'is_primary': True
     }
 }
 
@@ -142,3 +146,18 @@ PROFILES_API = {
         }
     }
 }
+
+# creates billy_update
+billy_update = copy.deepcopy(PROFILES_API['billy'])
+billy_update['email'] = "billy_new@email.com"
+billy_update['profile']['address_primary']['street1'] = '124 Main St'
+billy_update['profile']['roles']['data_analysis'] = False
+billy_update['profile']['race']['hispanic'] = True
+billy_update['profile']['race']['not_listed'] = True
+billy_update['profile']['race']['race_other'] = 'Test Text'
+PROFILES_API['billy_update'] = billy_update
+
+# creates billy_null
+billy_null = copy.deepcopy(PROFILES_API['billy'])
+del billy_null['profile']['programs_completed']
+PROFILES_API['billy_null'] = billy_null

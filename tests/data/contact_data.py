@@ -43,3 +43,66 @@ EMAILS_API = {
     'obama': {**EMAILS_DATABASE, 'type': 'Work'}
 
 }
+
+INSTRUCTIONS_API = {
+    'billy': {
+        **CONTACTS_API['billy'],
+        'instructions': {
+            'about_me': {
+                'is_complete': True,
+                'components': {
+                    'candidate_information': True,
+                    'value_alignment': True,
+                    'programs': True,
+                    'interests': True,
+                },
+            },
+            'profile': {
+                'is_complete': True,
+                'components': {
+                    'tag_skills': True,
+                    'add_experience': {
+                        'is_complete': True,
+                        'components': {
+                            'add_achievements': True,
+                            'tag_skills': True,
+                        }
+                    },
+                    'add_education': True,
+                    'add_portfolio': False,
+                },
+            },
+            'submit': {'is_complete': True}
+        }
+    },
+    'obama': {
+        **CONTACTS_API['obama'],
+        'instructions': {
+            'about_me': {
+                'is_complete': False,
+                'components': {
+                    'candidate_information': False,
+                    'value_alignment': False,
+                    'programs': False,
+                    'interests': False,
+                },
+            },
+            'profile': {
+                'is_complete': False,
+                'components': {
+                    'tag_skills': False,
+                    'add_experience': {
+                        'is_complete': False,
+                        'components': {
+                            'add_achievements': False,
+                            'tag_skills': False,
+                        }
+                    },
+                    'add_education': False,
+                    'add_portfolio': True,
+                },
+            },
+            'submit': {'is_complete': False}
+        }
+    }
+}
