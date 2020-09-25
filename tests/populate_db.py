@@ -61,7 +61,10 @@ from .data.opportunity_data import (
     OPP_APPS_DATABASE,
     RESUME_SNAPSHOTS
 )
-from .data.program_data import PROGRAMS_DATABASE
+from .data.program_data import (
+    PROGRAMS_DATABASE,
+    PROGRAM_CONTACTS_DATABASE
+)
 from .data.skill_data import SKILLS_NAMES
 from .data.experience_data import (
     EXPERIENCES_DATABASE,
@@ -82,11 +85,12 @@ billy.email_primary = Email(**{
     'type': EmailType('Personal'),
 })
 
+
 # creates obama's contact
 obama = Contact(**CONTACTS_DATABASE['obama'])
 obama.email_primary = Email(**{
     **EMAILS_DATABASE['obama'],
-    'type': EmailType('Work'),
+    'type': EmailType('Work')
 })
 
 
@@ -119,24 +123,22 @@ billy_session = UserSession(
 )
 
 
+def create_exp(contact, exp_data):
+    exp_data['start_month'] = Month(exp_data['start_month'])
+    exp_data['end_month'] = Month(exp_data['end_month'])
+    exp_data['type'] = ExpType(exp_data['type'])
+
+    exp = Experience(**exp_data)
+    contact.experiences.append(exp)
+
+    return exp
+
 # creates obama's portfolio experience
-obama_portfolio = Experience(**{
-    **EXPERIENCES_DATABASE['obama_portfolio'],
-    'start_month': Month('September'),
-    'type': ExpType('Accomplishment'),
-    'end_month': Month('May'),
-})
-obama.experiences.append(obama_portfolio)
+obama_portfolio = create_exp(obama, EXPERIENCES_DATABASE['obama_portfolio'])
 
 
 # creates billy's educational experience
-billy_edu = Experience(**{
-    **EXPERIENCES_DATABASE['billy_edu'],
-    'start_month': Month('September'),
-    'end_month': Month('May'),
-    'type': ExpType('Education'),
-})
-
+billy_edu = create_exp(billy, EXPERIENCES_DATABASE['billy_edu'])
 billy_edu1 = Achievement(**ACHIEVEMENTS_DATABASE['billy_edu1'])
 
 billy_edu.achievements.append(billy_edu1)
@@ -144,12 +146,7 @@ billy.achievements.append(billy_edu1)
 
 
 # creates billy's work experience
-billy_work = Experience(**{
-    **EXPERIENCES_DATABASE['billy_work'],
-    'start_month': Month('January'),
-    'end_month': Month('none'),
-    'type': ExpType('Work'),
-})
+billy_work = create_exp(billy, EXPERIENCES_DATABASE['billy_work'])
 billy_work1 = Achievement(**ACHIEVEMENTS_DATABASE['billy_work1'])
 billy_work2 = Achievement(**ACHIEVEMENTS_DATABASE['billy_work2'])
 billy_work3 = Achievement(**ACHIEVEMENTS_DATABASE['billy_work3'])
@@ -208,33 +205,24 @@ billy_flask_suggestion = CapabilitySkillSuggestion(
     skill_id='QUEVjv1tcq6uLmzCku6ikg=='
 )
 
-program_pfp = Program(**{
-    **PROGRAMS_DATABASE['pfp'],
-    'trello_board_id': '5e37744114d9d01a03ddbcfe'
-})
 
-program_mayoral = Program(**{
-    **PROGRAMS_DATABASE['mayoral'],
-    'trello_board_id': '5e37744114d9d01a03ddbcfe'
-})
+# creates program records
+program_pfp = Program(**PROGRAMS_DATABASE['pfp'])
+program_pfp.trello_board_id = '5e37744114d9d01a03ddbcfe'
+
+program_mayoral = Program(**PROGRAMS_DATABASE['mayoral'])
 
 
-billy_pfp = ProgramContact(
-    id=5,
-    program_id=1,
-    contact_id=123,
-    stage=1,
-    is_approved=True
-)
+# creates program contact records
+billy_pfp = ProgramContact(**PROGRAM_CONTACTS_DATABASE['billy_pfp'])
+billy_pfp.program = program_pfp
 
-billy_mayoral = ProgramContact(
-    id=7,
-    program_id=2,
-    contact_id=123,
-    card_id='card',
-    stage=1,
-    is_approved=False
-)
+billy_mayoral = ProgramContact(**PROGRAM_CONTACTS_DATABASE['billy_mayoral'])
+billy_mayoral.program = program_mayoral
+
+obama_pfp = ProgramContact(**PROGRAM_CONTACTS_DATABASE['obama_pfp'])
+obama_pfp.program = program_pfp
+
 
 billy_pfp_app = ProgramApp(
     id=7,
@@ -251,13 +239,6 @@ billy_mayoral_app = ProgramApp(
     program_id=2,
 )
 
-obama_pfp = ProgramContact(
-    id=6,
-    program_id=1,
-    contact_id=124,
-    card_id='card',
-    stage=1,
-)
 
 # creates opportunities
 test_opp1 = Opportunity(**OPPS_DATABASE['opp1'])
@@ -266,30 +247,22 @@ test_opp3 = Opportunity(**OPPS_DATABASE['opp3'])
 
 
 # creates billy's app for test_opp1
-app_billy = OpportunityApp(**{
-    **OPP_APPS_DATABASE['billy1'],
-    'stage': 1,
-    'resume': ResumeSnapshot(**RESUME_SNAPSHOTS['snapshot1']),
-    'contact': billy,
-    'opportunity': test_opp1
-})
+app_billy = OpportunityApp(**{**OPP_APPS_DATABASE['billy1'], 'stage': 1})
+app_billy.resume = ResumeSnapshot(**RESUME_SNAPSHOTS['snapshot1'])
+app_billy.contact = billy
+app_billy.opportunity = test_opp1
 
 
 # creates billy's app for test_opp2
-app_billy2 = OpportunityApp(**{
-    **OPP_APPS_DATABASE['billy2'],
-    'contact': billy,
-    'opportunity': test_opp2
-})
+app_billy2 = OpportunityApp(**OPP_APPS_DATABASE['billy2'])
+app_billy2.contact = billy
+app_billy2.opportunity =  test_opp2
 
 
 # creates obama's app for test_opp1
-app_obama = OpportunityApp(**{
-    **OPP_APPS_DATABASE['obama1'],
-    'stage': 2,
-    'contact': obama,
-    'opportunity': test_opp1
-})
+app_obama = OpportunityApp(**{**OPP_APPS_DATABASE['obama1'],'stage': 2})
+app_obama.contact = obama
+app_obama.opportunity = test_opp1
 
 
 def get_skill(name):
@@ -306,11 +279,8 @@ def populate(db):
     db.session.add(billy_session)
     db.session.add(program_pfp)
     db.session.add(program_mayoral)
-    db.session.add(billy_pfp)
-    db.session.add(billy_mayoral)
     db.session.add(billy_pfp_app)
     db.session.add(billy_mayoral_app)
-    db.session.add(obama_pfp)
     db.session.add(test_opp1)
     db.session.add(test_opp2)
     db.session.add(test_opp3)
