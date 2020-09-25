@@ -41,6 +41,9 @@ EXPERIENCES_DATABASE = {
         'start_year': 1979,
         'end_year': 1983,
         'location': 'New York, NY, USA',
+        'type': 'Accomplishment',
+        'end_month': 'May',
+        'start_month': 'September',
     },
     'billy_edu': {
         'id': 512,
@@ -55,6 +58,9 @@ EXPERIENCES_DATABASE = {
         'start_year': 2012,
         'end_year': 2016,
         'location': 'Towson, MD, USA',
+        'type': 'Education',
+        'start_month': 'September',
+        'end_month': 'May',
     },
     'billy_work' : {
         'id': 513,
@@ -69,6 +75,9 @@ EXPERIENCES_DATABASE = {
         'start_year': 2000,
         'end_year': 0,
         'location': 'Baltimore, MD, USA',
+        'type': 'Work',
+        'start_month': 'January',
+        'end_month': 'none',
     },
 }
 
@@ -93,9 +102,6 @@ ACHIEVEMENTS_API = {
 EXPERIENCES_API ={
     'obama_portfolio': {
         **EXPERIENCES_DATABASE['obama_portfolio'],
-        'type': 'Accomplishment',
-        'end_month': 'May',
-        'start_month': 'September',
         'is_current': False,
         'length_year': 3,
         'length_month': 8,
@@ -104,9 +110,6 @@ EXPERIENCES_API ={
     },
     'billy_edu': {
         **EXPERIENCES_DATABASE['billy_edu'],
-        'type': 'Education',
-        'start_month': 'September',
-        'end_month': 'May',
         'length_year': 3,
         'length_month': 8,
         'is_current': False,
@@ -115,9 +118,6 @@ EXPERIENCES_API ={
     },
     'billy_work': {
         **EXPERIENCES_DATABASE['billy_work'],
-        'type': 'Work',
-        'start_month': 'January',
-        'end_month': 'none',
         'length_year': math.floor(DATE_LENGTH/12),
         'length_month': DATE_LENGTH % 12,
         'is_current': True,
