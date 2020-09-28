@@ -1,3 +1,5 @@
+import copy
+
 from .contact_data import CONTACTS_API
 
 RESUME_SNAPSHOTS = {
@@ -89,8 +91,31 @@ OPP_APPS_API = {
     'obama1': {
         **OPP_APPS_DATABASE['obama1'],
         'contact': CONTACTS_API['obama'],
+        'opportunity': OPPS_API['opp1'],
         'resume': None,
         'status': 'recommended',
         'interview_completed': False
     }
 }
+billy_update = copy.deepcopy(OPP_APPS_API['billy1'])
+billy_update['interest_statement'] = 'dfdddsdfff'
+OPP_APPS_API['billy_update'] = billy_update
+
+
+OPPS_INTERNAL_API = {
+    'opp1': {**OPPS_API['opp1'],
+             'applications': [OPP_APPS_API['billy1'].copy(),
+                              OPP_APPS_API['obama1'].copy()]},
+    'opp2': {**OPPS_API['opp2'],
+             'applications': [OPP_APPS_API['billy2'].copy()]},
+    'opp3': {**OPPS_API['opp3'],
+             'applications': []},
+}
+# this deletes the opportunity field from each application
+del OPPS_INTERNAL_API['opp1']['applications'][0]['opportunity']
+del OPPS_INTERNAL_API['opp1']['applications'][1]['opportunity']
+del OPPS_INTERNAL_API['opp2']['applications'][0]['opportunity']
+
+del OPPS_INTERNAL_API['opp1']['applications'][0]['resume']
+del OPPS_INTERNAL_API['opp1']['applications'][1]['resume']
+del OPPS_INTERNAL_API['opp2']['applications'][0]['resume']

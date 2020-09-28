@@ -56,7 +56,7 @@ CONTACT_SKILLS = {
     ],
 }
 
-CAPABILITIES = {
+CAPABILITIES_API = {
     'billy': {
         'contact_id': 123,
         'capabilities': [

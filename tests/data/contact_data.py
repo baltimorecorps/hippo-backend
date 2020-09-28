@@ -39,8 +39,8 @@ CONTACTS_API = {
 }
 
 EMAILS_API = {
-    'billy': {**EMAILS_DATABASE, 'type': 'Personal'},
-    'obama': {**EMAILS_DATABASE, 'type': 'Work'}
+    'billy': {**EMAILS_DATABASE['billy'], 'type': 'Personal'},
+    'obama': {**EMAILS_DATABASE['obama'], 'type': 'Work'}
 
 }
 

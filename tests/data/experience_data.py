@@ -1,4 +1,4 @@
-# from .skill_data import SKILLS_API
+from .skill_data import CONTACT_SKILLS
 
 import datetime as dt
 import math
@@ -114,7 +114,7 @@ EXPERIENCES_API ={
         'length_month': 8,
         'is_current': False,
         'achievements': ACHIEVEMENTS_API['billy_edu'],
-        'skills': [],
+        'skills': [CONTACT_SKILLS['billy'][3]],
     },
     'billy_work': {
         **EXPERIENCES_DATABASE['billy_work'],
@@ -122,6 +122,6 @@ EXPERIENCES_API ={
         'length_month': DATE_LENGTH % 12,
         'is_current': True,
         'achievements': ACHIEVEMENTS_API['billy_work'],
-        'skills': [],
+        'skills': CONTACT_SKILLS['billy'][0:2] + CONTACT_SKILLS['billy'][3:5]
     }
 }
