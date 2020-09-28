@@ -1,12 +1,8 @@
 import datetime as dt
+
 # imports models related to the contact
-from models.contact_model import (
-    Contact,
-)
-from models.email_model import (
-    Email,
-    Type as EmailType,
-)
+from models.contact_model import Contact
+from models.email_model import Email, Type as EmailType
 
 # imports models related to experiences
 from models.experience_model import (
@@ -18,12 +14,6 @@ from models.experience_model import (
 from models.achievement_model import Achievement
 
 # imports models related to skills
-from models.tag_model import (
-    Tag,
-    TagType,
-    TagStatusType,
-)
-from models.tag_item_model import TagItem
 from models.skill_model import (
     Skill,
     Capability,
@@ -63,7 +53,8 @@ from .data.opportunity_data import (
 )
 from .data.program_data import (
     PROGRAMS_DATABASE,
-    PROGRAM_CONTACTS_DATABASE
+    PROGRAM_CONTACTS_DATABASE,
+    PROGRAM_APPS_DATABASE
 )
 from .data.skill_data import SKILLS_NAMES
 from .data.experience_data import (
@@ -80,18 +71,14 @@ from .data.profile_data import (
 
 # creates billy's contact
 billy = Contact(**{**CONTACTS_DATABASE['billy'], 'stage': 3})
-billy.email_primary = Email(**{
-    **EMAILS_DATABASE['billy'],
-    'type': EmailType('Personal'),
-})
+billy.email_primary = Email(**EMAILS_DATABASE['billy'])
+billy.email_primary.type = EmailType('Personal')
 
 
 # creates obama's contact
 obama = Contact(**CONTACTS_DATABASE['obama'])
-obama.email_primary = Email(**{
-    **EMAILS_DATABASE['obama'],
-    'type': EmailType('Work')
-})
+obama.email_primary = Email(**EMAILS_DATABASE['obama'])
+obama.email_primary.type = EmailType('Work')
 
 
 # creates billy's profile records
@@ -224,20 +211,14 @@ obama_pfp = ProgramContact(**PROGRAM_CONTACTS_DATABASE['obama_pfp'])
 obama_pfp.program = program_pfp
 
 
-billy_pfp_app = ProgramApp(
-    id=7,
-    contact_id=123,
-    program_id=1,
-    is_interested=True,
-    is_approved=True,
-    decision_date='2020-01-01'
-)
+# creates billy's program apps
+billy_pfp_app = ProgramApp(**PROGRAM_APPS_DATABASE['billy_pfp'])
+billy_pfp_app.contact = billy
+billy_pfp_app.program = program_pfp
 
-billy_mayoral_app = ProgramApp(
-    id=8,
-    contact_id=123,
-    program_id=2,
-)
+billy_mayoral_app = ProgramApp(**PROGRAM_APPS_DATABASE['billy_mayoral'])
+billy_mayoral_app.contact = billy
+billy_mayoral_app.program = program_mayoral
 
 
 # creates opportunities
@@ -279,8 +260,6 @@ def populate(db):
     db.session.add(billy_session)
     db.session.add(program_pfp)
     db.session.add(program_mayoral)
-    db.session.add(billy_pfp_app)
-    db.session.add(billy_mayoral_app)
     db.session.add(test_opp1)
     db.session.add(test_opp2)
     db.session.add(test_opp3)
