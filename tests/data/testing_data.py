@@ -1,0 +1,6 @@
+
+
+INSTRUCTIONS = {
+    'billy': {},
+    'obama': {},
+}

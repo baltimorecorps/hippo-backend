@@ -1,3 +1,5 @@
+# TODO: DELETE THIS
+
 from models.base_model import db
 from models.tag_item_model import TagItem, TagItemSchema
 from models.experience_model import Experience, ExperienceSchema
