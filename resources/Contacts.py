@@ -1,4 +1,4 @@
-from flask import request as reqobj #ask David why this is here
+'status'from flask import request as reqobj #ask David why this is here
 from flask import current_app
 from flask_restful import Resource, request
 from flask_login import login_user, current_user, login_required
@@ -67,6 +67,38 @@ class ContactAll(Resource):
     }
 
     def post(self):
+        """Adds new contacts to the database.
+
+        ENDPOINT
+            - POST api/contacts/
+
+        PAYLOAD
+            {'first_name': 'Tester',
+             'last_name': 'Byte',
+             'email': 'testerb@example.com',
+             'phone_primary': '111-111-1111',
+             'account_id': 'test-valid|0123456789',
+             'terms_agreement': True}
+
+        RESPONSE BODY
+            {'first_name': 'Tester',
+             'last_name': 'Byte',
+             'email_primary': {'email': 'testerb@example.com',
+                               'is_primary': True},
+             'phone_primary': '111-111-1111',
+             'account_id': 'test-valid|0123456789',
+             ''}
+
+        RESPONSE STATUS CODES
+            - 201: Success
+            - 422: Error validating payload
+            - 400: No input data provided OR Account does not match post
+
+        MODELS
+            - Contact
+            - Email
+
+        """
         json_data = request.get_json(force=True)
         # Validate and deserialize input
 
@@ -118,7 +150,7 @@ class ContactAll(Resource):
         login_user(user_session)
 
         result = contact_schema.dump(contact)
-        return {"status": 'success', 'data': result}, 201
+        return {'status': 'success', 'data': result}, 201
 
 class ContactShort(Resource):
     method_decorators = {
@@ -126,6 +158,33 @@ class ContactShort(Resource):
     }
 
     def get(self):
+        """Returns a list of all contacts using the short response body schema
+
+        ENDPOINTS
+            - GET api/contacts/short
+            - GET api/contacts/
+
+        QUERY PARAMETERS
+            - status
+                - created: Contacts created, but not yet submitted
+                - submitted: Contacts whose profiles have been submitted
+                - approved: Contacts who have been approved for matching
+
+        RESPONSE BODY
+            [{'first_name': 'Tester',
+             'last_name': 'Byte',
+             'email': 'testerb@example.com',
+             'phone_primary': '111-111-1111',
+             'account_id': 'test-valid|0123456789'},
+             {...}]
+
+        RESPONSE STATUS CODES
+            - 200: Success
+            - 400: Not a valid stage
+
+        MODELS
+            - Contact
+        """
         if not is_authorized_with_permission('view:all-users'):
             return unauthorized()
 
@@ -144,7 +203,7 @@ class ContactShort(Resource):
         contacts = contacts_short_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 
-class ContactPrograms(Resource):
+class ContactPrograms(Resource): # TODO: DELETE THIS
     method_decorators = {
         'get': [login_required, refresh_session],
     }
@@ -170,6 +229,29 @@ class ContactAccount(Resource):
     }
 
     def get(self):
+        """Returns the contact associated with the user currently logged in
+
+        ENDPOINTS
+            - GET api/contacts/me
+
+        HEADERS
+            - jwt: Javascript web token associated with a user's login
+                   which helps us identify the user's contact
+
+        RESPONSE BODY
+            {'first_name': 'Tester',
+             'last_name': 'Byte',
+             'email': 'testerb@example.com',
+             'phone_primary': '111-111-1111',
+             'account_id': 'test-valid|0123456789'}
+
+        RESPONSE STATUS CODES
+            - 200: Success
+            - 404: Contact does not exist
+
+        MODELS
+            - Contact
+        """
         account_id = request.jwt['sub']
         contact = Contact.query.filter_by(account_id=account_id).first()
         if not contact:
@@ -186,6 +268,28 @@ class ContactOne(Resource):
     }
 
     def get(self, contact_id):
+        """Returns the contact associated with the user currently logged in
+
+        ENDPOINTS
+            - GET api/contacts/<int:contact_id>
+
+        PATH PARAMETERS
+            - contact_id: (int) the primary key for a specific contact
+
+        RESPONSE BODY
+            {'first_name': 'Tester',
+             'last_name': 'Byte',
+             'email': 'testerb@example.com',
+             'phone_primary': '111-111-1111',
+             'account_id': 'test-valid|0123456789'}
+
+        RESPONSE STATUS CODES
+            - 200: Success
+            - 404: Contact does not exist
+
+        MODELS
+            - Contact
+        """
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404
@@ -198,6 +302,30 @@ class ContactOne(Resource):
         return {'status': 'success', 'data': contact}, 200
 
     def put(self, contact_id):
+        """Updates a contact and their related data, including skills
+
+        ENDPOINTS
+            - PUT api/contacts/<int:contact_id>
+
+        PATH PARAMETERS
+            - contact_id: (int) the primary key for a specific contact
+
+        RESPONSE BODY
+            {'first_name': 'Tester',
+             'last_name': 'Byte',
+             'email': 'testerb@example.com',
+             'phone_primary': '111-111-1111',
+             'account_id': 'test-valid|0123456789'}
+
+        RESPONSE STATUS CODES
+            - 200: Success
+            - 404: Contact does not exist
+            - 400: No input data provided
+            - 422: Validation error with payload
+
+        MODELS
+            - Contact
+        """
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404
@@ -225,9 +353,24 @@ class ContactOne(Resource):
 
         db.session.commit()
         result = contact_schema.dump(contact)
-        return {"status": 'success', 'data': result}, 200
+        return {'status': 'success', 'data': result}, 200
 
     def delete(self, contact_id):
+        """Deletes the contact specified by the contact_id
+
+        ENDPOINTS
+            - DELETE api/contacts/<int:contact_id>
+
+        PATH PARAMETERS
+            - contact_id: (int) the primary key for a specific contact
+
+        RESPONSE STATUS CODES
+            - 200: Success
+            - 404: Contact does not exist
+
+        MODELS
+            - Contact
+        """
         if not is_authorized_with_permission('delete:all-users'):
             return unauthorized()
         contact = Contact.query.get(contact_id)
@@ -235,7 +378,7 @@ class ContactOne(Resource):
             return {'message': 'Contact does not exist'}, 404
         db.session.delete(contact)
         db.session.commit()
-        return {"status": 'success'}, 200
+        return {'status': 'success'}, 200
 
 class ContactFull(Resource):
     method_decorators = {
@@ -243,6 +386,28 @@ class ContactFull(Resource):
     }
 
     def get(self, contact_id):
+        """Updates a contact and their related
+
+        ENDPOINTS
+            - PUT api/contacts/<int:contact_id>
+
+        PATH PARAMETERS
+            - contact_id: (int) the primary key for a specific contact
+
+        RESPONSE BODY
+            {'first_name': 'Tester',
+             'last_name': 'Byte',
+             'email': 'testerb@example.com',
+             'phone_primary': '111-111-1111',
+             'account_id': 'test-valid|0123456789'}
+
+        RESPONSE STATUS CODES
+            - 200: Success
+            - 404: Contact does not exist
+
+        MODELS
+            - Contact
+        """
         contact = Contact.query.get(contact_id)
         if not contact:
             return {'message': 'Contact does not exist'}, 404
@@ -259,6 +424,35 @@ class ContactApproveMany(Resource):
     }
 
     def post(self):
+        """Updates a contact and their related
+
+        ENDPOINTS
+            - POST api/contacts/approve
+
+        PAYLOAD
+            [{'first_name': 'Tester',
+             'last_name': 'Byte',
+             'email': 'testerb@example.com',
+             'phone_primary': '111-111-1111',
+             'account_id': 'test-valid|0123456789'},
+             {...}]
+
+        RESPONSE BODY
+            [{'first_name': 'Tester',
+             'last_name': 'Byte',
+             'email': 'testerb@example.com',
+             'phone_primary': '111-111-1111',
+             'account_id': 'test-valid|0123456789'},
+             {...}]
+
+        RESPONSE STATUS CODES
+            - 201: Success
+            - 404: Payload contains contacts that couldn't be found
+            - 400: No data provided to update
+
+        MODELS
+            - Contact
+        """
         if not is_authorized_with_permission('write:all-users'):
             return unauthorized()
 
