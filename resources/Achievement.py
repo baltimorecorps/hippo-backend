@@ -1,10 +1,12 @@
+# TODO: DELETE THIS
+
 from flask_restful import Resource, request
 from models.achievement_model import Achievement, AchievementSchema
 from models.base_model import db
 
 from flask_login import login_required
 from auth import (
-    refresh_session, 
+    refresh_session,
     is_authorized_view,
     unauthorized
 )
@@ -23,7 +25,7 @@ class AchievementAll(Resource):
         achievement = Achievement.query.filter_by(contact_id=contact_id)
         achievement_list = achievements_schema.dump(achievement)
 
-        if not is_authorized_view(contact_id): 
+        if not is_authorized_view(contact_id):
             return unauthorized()
 
         return {'status': 'success', 'data': achievement_list}, 200

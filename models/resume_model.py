@@ -1,3 +1,5 @@
+# TODO: DELETE THIS
+
 import json
 from models.base_model import db
 from marshmallow import Schema, fields, EXCLUDE, pre_load, post_dump
@@ -78,6 +80,3 @@ class ResumeSnapshotSchema(Schema):
         if 'resume' in data:
             data['resume'] = json.loads(data['resume'])
         return data
-
-
-
