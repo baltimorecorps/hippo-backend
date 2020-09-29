@@ -50,30 +50,12 @@ QUERIES = {
         'previous_bcorps_program': ['filter1'],
         'hear_about_us': ['filter1']
     },
-    'profile2': {
-        'years_exp': ['filter2'],
-    },
-    'program1': {
-        'programs_completed': {
-            'mayoral_fellowship': True,
-        }
-    },
-    'program2': {
-        'programs_completed': {
-            'mayoral_fellowship': False,
-        }
-    },
-    'role1': {
-        'roles': {
-            'advocacy_public_policy': True
-        }
-    },
-    'role2': {
-        'roles': {
-            'advocacy_public_policy': True,
-            'community_engagement_outreach': False
-        }
-    },
+    'profile2': {'years_exp': ['filter2']},
+    'program1': {'programs_completed': {'mayoral_fellowship': True}},
+    'program2': {'programs_completed': {'mayoral_fellowship': False}},
+    'role1': {'roles': {'advocacy_public_policy': True}},
+    'role2': {'roles': {'advocacy_public_policy': True,
+                        'community_engagement_outreach': False}},
     'program_app1': {
         'program_apps': [
             {'program': {'name': 'Place for Purpose', 'id': 1},
@@ -94,12 +76,8 @@ QUERIES = {
              'is_interested': True}
         ]
     },
-    'skills1': {
-        'skills': ['Python', 'Flask']
-    },
-    'skills2': {
-        'skills': ['Policy Writing']
-    }
+    'skills1': {'skills': ['Python', 'Flask']},
+    'skills2': {'skills': ['Policy Writing']}
 }
 
 UPDATES = {
