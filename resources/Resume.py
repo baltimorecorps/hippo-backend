@@ -1,3 +1,5 @@
+# TODO: DELETE THIS
+
 from flask_restful import Resource, request
 from models.resume_model import Resume, ResumeSchema, ResumeSchemaNew
 from models.resume_section_model import ResumeSection, ResumeSectionSchema
@@ -13,9 +15,9 @@ from pprint import pprint
 
 from flask_login import login_required
 from auth import (
-    refresh_session, 
-    is_authorized_view, 
-    is_authorized_write, 
+    refresh_session,
+    is_authorized_view,
+    is_authorized_write,
 
     unauthorized
 )
@@ -36,7 +38,7 @@ class GenerateResume(Resource):
 
 
     def post(self, contact_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         #load the input data
@@ -102,7 +104,7 @@ class ResumeAll(Resource):
     }
 
     def get(self, contact_id):
-        if not is_authorized_view(contact_id): 
+        if not is_authorized_view(contact_id):
             return unauthorized()
 
         res = Resume.query.filter_by(contact_id=contact_id)
@@ -110,7 +112,7 @@ class ResumeAll(Resource):
         return {'status': 'success', 'data': res_list}, 200
 
     def post(self, contact_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         json_data = request.get_json(force=True)
@@ -138,7 +140,7 @@ class ResumeOne(Resource):
         if not res:
             return {'message': 'Resume does not exist'}, 404
 
-        if not is_authorized_view(res.contact.id): 
+        if not is_authorized_view(res.contact.id):
             return unauthorized()
 
         result = resume_schema.dump(res)
@@ -148,7 +150,7 @@ class ResumeOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
-        if not is_authorized_write(res.contact.id): 
+        if not is_authorized_write(res.contact.id):
             return unauthorized()
 
         db.session.delete(res)
@@ -159,7 +161,7 @@ class ResumeOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
-        if not is_authorized_write(res.contact.id): 
+        if not is_authorized_write(res.contact.id):
             return unauthorized()
 
         json_data = request.get_json(force=True)
@@ -185,7 +187,7 @@ class ResumeSectionAll(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
-        if not is_authorized_view(res.contact.id): 
+        if not is_authorized_view(res.contact.id):
             return unauthorized()
 
         sections = ResumeSection.query.filter_by(resume_id=resume_id)
@@ -196,7 +198,7 @@ class ResumeSectionAll(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
-        if not is_authorized_write(res.contact.id): 
+        if not is_authorized_write(res.contact.id):
             return unauthorized()
 
         json_data = request.get_json(force=True)
@@ -229,7 +231,7 @@ class ResumeSectionOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
-        if not is_authorized_view(res.contact.id): 
+        if not is_authorized_view(res.contact.id):
             return unauthorized()
 
         section = ResumeSection.query.get(section_id)
@@ -242,7 +244,7 @@ class ResumeSectionOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
-        if not is_authorized_write(res.contact.id): 
+        if not is_authorized_write(res.contact.id):
             return unauthorized()
 
         section = ResumeSection.query.get(section_id)
@@ -272,7 +274,7 @@ class ResumeSectionOne(Resource):
         res = Resume.query.get(resume_id)
         if not res:
             return {'message': 'Resume does not exist'}, 404
-        if not is_authorized_write(res.contact.id): 
+        if not is_authorized_write(res.contact.id):
             return unauthorized()
 
         section = ResumeSection.query.get(section_id)

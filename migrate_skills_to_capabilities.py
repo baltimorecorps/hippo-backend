@@ -1,3 +1,5 @@
+# TODO: DELETE THIS
+
 from app import create_app
 from models.base_model import db
 
@@ -21,6 +23,5 @@ def main():
         db.init_app(app)
         migrate(db)
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
     main()
-

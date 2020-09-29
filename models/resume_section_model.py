@@ -1,3 +1,5 @@
+# TODO: DELETE THIS
+
 from models.base_model import db
 from models.resume_item_model import ResumeItem, ResumeItemSchema
 from marshmallow import Schema, fields, EXCLUDE

@@ -1,3 +1,5 @@
+# TODO: DELETE THIS
+
 from models.base_model import db
 import enum
 from marshmallow import Schema, fields, EXCLUDE
