@@ -1,3 +1,5 @@
+# TODO: DELETE THIS
+
 from flask_restful import Resource, request
 from models.tag_model import Tag, TagSchema, TagStatusType, TagType
 from models.tag_item_model import TagItem, TagItemSchema

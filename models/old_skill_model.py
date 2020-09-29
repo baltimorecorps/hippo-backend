@@ -1,3 +1,5 @@
+# TODO: DELETE THIS
+
 from models.base_model import db
 from marshmallow import Schema, fields, post_dump, EXCLUDE
 

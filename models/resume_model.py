@@ -7,7 +7,7 @@ from models.experience_model import ExperienceSchema
 from models.tag_item_model import TagItemSchema
 
 
-class Resume(db.Model):
+class Resume(db.Model): # TODO: DELETE THIS
     __tablename__ = 'resume'
     id = db.Column(db.Integer, primary_key=True)
     contact_id = db.Column(db.Integer, db.ForeignKey("contact.id"), nullable=False)
@@ -25,7 +25,7 @@ class ResumeSnapshot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     resume = db.Column(db.Text, nullable=False)
 
-class ResumeSchemaNew(Schema):
+class ResumeSchemaNew(Schema): # TODO: DELETE THIS
     #fields used to load the data from the POST request
     name = fields.String(required=True)
     relevant_exp = fields.List(fields.Integer(), load_only=True)
@@ -54,7 +54,7 @@ class ResumeSchemaNew(Schema):
     class Meta:
         unknown = EXCLUDE
 
-class ResumeSchema(Schema):
+class ResumeSchema(Schema): # TODO: DELETE THIS
     id = fields.Integer(dump_only=True)
     contact_id = fields.Integer(required=True, load_only=True)
     contact = fields.Nested(ContactSchema, dump_only=True)
@@ -78,6 +78,3 @@ class ResumeSnapshotSchema(Schema):
         if 'resume' in data:
             data['resume'] = json.loads(data['resume'])
         return data
-
-
-
