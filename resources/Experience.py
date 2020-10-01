@@ -62,6 +62,55 @@ class ExperienceAll(Resource):
     }
 
     def get(self, contact_id):
+        """Returns all of the experiences associated with a given contact
+
+        ENDPOINT
+            - POST api/contacts/<int:contact_id>/experiences
+
+        PATH PARAMETERS
+            - contact_id: (int) primary key of row in contact table
+
+        QUERY PARAMETERS
+            - type
+                - work: Includes internships, paid employment, etc.
+                - education: Includes degrees, courses, certificates, etc.
+                - accomplishment: Includes honors, work products, portolio, etc.
+
+        RESPONSE BODY
+            [{'id': 511,
+            'contact_id': 124,
+            'description': 'Test description',
+            'host': 'Columbia University',
+            'title': 'Political Science',
+            'degree': None,
+            'degree_other': None,
+            'link': 'www.google.com',
+            'link_name': 'Google',
+            'start_year': 1979,
+            'end_year': 1983,
+            'location': 'New York, NY, USA',
+            'type': 'Accomplishment',
+            'end_month': 'May',
+            'start_month': 'September',
+            'length_year': 3,
+            'length_month': 8,
+            'is_current': False,
+            'achievements': [
+                {'id': 81,
+                'description': 'Redesigned the salesforce...',
+                'skills': [{'name': 'Python','capability_id': 'cap:it'}]}
+            ]},
+            {...}]
+
+        RESPONSE STATUS CODES
+            - 201: Success
+            - 422: Error validating payload
+            - 400: No input data provided OR Account does not match post
+
+        MODELS
+            - Contact
+            - Email
+        """
         # TODO: Create employer permissions so we can restore AuthZ
         #if not is_authorized_view(contact_id):
         #    return unauthorized()
