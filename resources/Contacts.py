@@ -1,4 +1,4 @@
-'status'from flask import request as reqobj #ask David why this is here
+from flask import request as reqobj #ask David why this is here
 from flask import current_app
 from flask_restful import Resource, request
 from flask_login import login_user, current_user, login_required
