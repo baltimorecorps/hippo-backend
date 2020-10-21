@@ -23,12 +23,6 @@ from resources.ProgramApp import (
     ContactProgramAppsAll,
     ContactProgramAppsInterested
 )
-# TODO: DELETE THIS
-from resources.ProgramContacts import (
-    ProgramContactOne,
-    ProgramContactAll,
-    ProgramContactApproveMany,
-)
 from resources.Opportunity import (
     OpportunityAll,
     OpportunityAllInternal,
@@ -47,7 +41,6 @@ from resources.OpportunityApp import (
     OpportunityAppInterview,
     OpportunityAppConsider,
 )
-from resources.FormAssembly import TalentProgramApp
 from resources.Profile import ProfileOne, ContactInstructions, ProfileSubmit
 from resources.Program import ProgramAll
 from resources.Filter import Filter
@@ -127,9 +120,6 @@ api.add_resource(OpportunityAppRecommend,
 api.add_resource(OpportunityAppReopen,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen/')
-api.add_resource(TalentProgramApp,
-                 '/form-assembly/talent-app',
-                 '/form-assembly/talent-app/')
 api.add_resource(Session,
                  '/session/',
                  '/session')

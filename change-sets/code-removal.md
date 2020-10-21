@@ -34,6 +34,23 @@ Removes endpoints from api.py and the tests that reference those endpoints in te
    - `test_post()` for `/api/contacts/124/programs/`
 
 
+### Branch `feature-file-removal`
+Removes the `resources/` and `models/` files that were referenced by the endpoints deleted
+
+#### Changes
+
+- Removes the following endpoints:
+  - `/tags/`
+  - `/tags/<int:tag_id>`
+  - `/contacts/<int:contact_id>/tags/`
+  - `/contacts/<int:contact_id>/tags/<int:tag_id>`
+  - `/contacts/<int:contact_id>/achievements/`
+  - `/contacts/<int:contact_id>/resumes/`
+  - `/resumes/<int:resume_id>/`
+  - `/resumes/<int:resume_id>/sections/`
+  - `/resumes/<int:resume_id>/sections/<int:section_id>`
+
+
 ### Deployment Considerations
 
 - **Heroku Variables:** No

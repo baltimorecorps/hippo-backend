@@ -12,7 +12,7 @@ from models.email_model import Email, Type as EmailType
 from models.base_model import db
 from models.program_contact_model import ProgramContact
 from models.program_model import Program
-from .ProgramContacts import create_program_contact
+# from .ProgramContacts import create_program_contact
 from marshmallow import ValidationError
 from auth import (
     validate_jwt,
@@ -107,12 +107,15 @@ class ContactAll(Resource):
         create_profile(contact)
         db.session.add(contact)
         db.session.commit()
+
+        '''
         program_contact_data = {
             'stage': 1,
             'program_id': 1
         }
         create_program_contact(contact.id, **program_contact_data)
         db.session.commit()
+        '''
 
         user_session = create_session(contact.id, request.jwt)
         login_user(user_session)

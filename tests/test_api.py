@@ -313,34 +313,6 @@ def test_post_duplicate_contact(app):
         message = json.loads(response.data)['message']
         assert message == 'A contact with this account already exists'
 
-# TODO: Add trello specific checks
-def test_create_program_contact_with_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
-
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        assert data['id'] is not None
-        id_ = data['id']
-
-        program_contacts = Contact.query.get(id_).programs
-        assert len(program_contacts) == 1
-        assert program_contacts[0].program_id == 1
-        assert program_contacts[0].stage == 1
-        assert program_contacts[0].program.name == 'Place for Purpose'
-        assert program_contacts[0].is_active == True
-        assert program_contacts[0].is_approved == False
-        assert program_contacts[0].card_id is None
-
 def test_post_approve_contact(app):
     mimetype = 'application/json'
     headers = {
