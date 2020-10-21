@@ -8,9 +8,6 @@ import copy
 from models.base_model import db
 from models.contact_model import Contact, ContactStage
 from models.experience_model import Experience, Month, Type as ExpType
-from models.resume_model import Resume
-from models.resume_section_model import ResumeSection
-from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
@@ -204,13 +201,6 @@ def post_request(app, url, data):
       },
       lambda id: CapabilitySkillSuggestion.query.get(
           (123, 'cap:it', '_s-apdaP_WZpH69G8hlcGA=='))
-      )
-
-    ,pytest.param('/api/contacts/124/programs/',
-      POSTS['program_contact'],
-      lambda id: ProgramContact.query.filter_by(contact_id=124,program_id=1).first(),
-      marks=pytest.mark.skip
-      # TODO: unskip when trello stuff is mocked out
       )
     ,('/api/opportunity/',
       POSTS['opportunity'],
@@ -613,11 +603,6 @@ def skill_name(skill):
                  and sorted(e.skills, key=skill_name)[1].name == 'Flask'
                  and sorted(e.skills, key=skill_name)[2].name == 'Test'),
       )
-    ,('/api/contacts/123/programs/1/',
-      {'stage': 2},
-      lambda: ProgramContact.query.get(5),
-      lambda r: r.stage == 2,
-      )
     ,pytest.param('/api/opportunity/123abc/',
       {'title': "New title"},
       lambda: Opportunity.query.get('123abc'),
@@ -878,7 +863,6 @@ def test_put_about_me_email(app):
       )
     ])
 def test_put_preserves_list_fields(app, url, update, query, test):
-    # from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -893,7 +877,6 @@ def test_put_preserves_list_fields(app, url, update, query, test):
         assert test(query())
 
 def test_put_update_achievement_skills(app):
-    # from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -930,7 +913,6 @@ def test_put_update_achievement_skills(app):
 
 
 def test_contact_put_preserves_experience_skills(app):
-    # from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -956,11 +938,6 @@ def test_contact_put_preserves_experience_skills(app):
       {'id': 555, 'host': 'test'},
       lambda: Experience.query.get(512),
       lambda: Experience.query.get(555),
-      )
-    ,('/api/contacts/123/programs/1/',
-      {'id': 555, 'stage': 2},
-      lambda: ProgramContact.query.get(5),
-      lambda: ProgramContact.query.get(555),
       )
     ,('/api/opportunity/123abc/',
       {'id': 'aaaaaa', 'title': 'new title'},
@@ -1188,105 +1165,6 @@ def test_opportunity_activate(app):
         assert response.status_code == 200
         assert Opportunity.query.get('123abc').is_active == True
 
-def test_approve_many_program_contacts_new(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    expected = [CONTACTS_API['obama'].copy()]
-    expected[0]['status'] = 'approved'
-    payload = [CONTACTS_API['obama']]
-    with app.test_client() as client:
-        program_contact = (ProgramContact
-                           .query
-                           .filter_by(contact_id=124, program_id=2)
-                           .first())
-        assert program_contact is None
-        response = client.post('/api/programs/2/contacts/approve-many/',
-                              data=json.dumps(payload),
-                              headers=headers)
-        assert response.status_code == 200
-        program_contact = (ProgramContact
-                           .query
-                           .filter_by(contact_id=124, program_id=2)
-                           .first())
-        assert program_contact is not None
-        assert program_contact.is_approved == True
-        data = json.loads(response.data)['data']
-        contact = Contact.query.get(124)
-        assert contact.stage == 3
-        pprint(expected)
-        for item in data:
-            pprint(item)
-            assert item in expected
-
-def test_approve_many_program_contacts_existing(app, ):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    expected = [CONTACTS_API['obama'].copy()]
-    expected[0]['status'] = 'approved'
-    payload = [CONTACTS_API['obama']]
-    with app.test_client() as client:
-        assert ProgramContact.query.get(6).is_approved == False
-        response = client.post('/api/programs/1/contacts/approve-many/',
-                              data=json.dumps(payload),
-                              headers=headers)
-        assert response.status_code == 200
-        assert ProgramContact.query.get(6).is_approved == True
-        data = json.loads(response.data)['data']
-        pprint(expected)
-        for item in data:
-            pprint(item)
-            assert item in expected
-
-def test_reapprove_many_program_contacts(app, ):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    expected = [CONTACTS_API['billy'].copy(),
-                CONTACTS_API['obama'].copy()]
-    expected[0]['status'] = 'approved'
-    expected[1]['status'] = 'approved'
-    payload = [CONTACTS_API['billy'], CONTACTS_API['obama']]
-    with app.test_client() as client:
-        assert ProgramContact.query.get(6).is_approved == False
-        assert ProgramContact.query.get(5).is_approved == True
-        response = client.post('/api/programs/1/contacts/approve-many/',
-                              data=json.dumps(payload),
-                              headers=headers)
-        assert response.status_code == 200
-        assert ProgramContact.query.get(6).is_approved == True
-        assert ProgramContact.query.get(5).is_approved == True
-        data = json.loads(response.data)['data']
-        pprint(expected)
-        for item in data:
-            pprint(item)
-            assert item in expected
-
-def test_approve_program_contact_fake_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    payload = [{'id': 4,
-                'first_name': 'Fake',
-                'last_name': 'Person',
-                'email': 'fake@gmail.com'}]
-    with app.test_client() as client:
-        assert ProgramContact.query.get(5).is_approved == True
-        response = client.post('/api/programs/1/contacts/approve-many/',
-                              data=json.dumps(payload),
-                              headers=headers)
-        assert response.status_code == 404
-        message = json.loads(response.data)['message']
-        assert message == "Payload contained contacts that couldn't be found"
 
 @pytest.mark.parametrize(
     "delete_url,query",
@@ -1340,7 +1218,6 @@ def test_delete_contact_skill_saved(app):
     ,('/api/experiences/512/', EXPERIENCES_API['billy_edu'])
     ,('/api/experiences/513/', EXPERIENCES_API['billy_work'])
     ,('/api/contacts/123/skills', CONTACT_SKILLS['billy'])
-    ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS_API['billy_pfp'])
     ,('/api/opportunity/123abc', OPPS_API['opp1'])
     ,('/api/contacts/123/app/123abc', OPP_APPS_API['billy1'])
     ,('/api/org/opportunities/123abc', OPPS_INTERNAL_API['opp1'])
@@ -1578,8 +1455,6 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
                                          EXPERIENCES_API['billy_work']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES_API['obama_portfolio']])
-    ,('/api/contacts/123/achievements/', ACHIEVEMENTS_API['billy_edu'] + ACHIEVEMENTS_API['billy_work'])
-    ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS_API['billy_pfp'], PROGRAM_CONTACTS_API['billy_mayoral']])
     ,('/api/opportunity/', OPPS_API.values())
     ,('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
     ,('/api/internal/opportunities/', OPPS_INTERNAL_API.values())
