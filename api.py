@@ -9,11 +9,7 @@ from resources.Contacts import (
     ContactFull,
     ContactApproveMany
 )
-from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne # TODO: DELETE THIS
 from resources.Experience import ExperienceAll, ExperienceOne
-from resources.Achievement import AchievementAll # TODO: DELETE THIS
-from resources.Resume import ResumeAll, ResumeOne, GenerateResume # TODO: DELETE THIS
-from resources.Resume import ResumeSectionAll, ResumeSectionOne # TODO: DELETE THIS
 from resources.Skills import ContactSkills, ContactSkillOne, AutocompleteSkill
 from resources.Capability import (
     CapabilityRecommended,
@@ -107,44 +103,6 @@ api.add_resource(ExperienceAll,
 api.add_resource(ExperienceOne,
                  '/experiences/<int:experience_id>',
                  '/experiences/<int:experience_id>/')
-api.add_resource(TagAll, # TODO: DELETE THIS
-                 '/tags/',
-                 '/tags')
-api.add_resource(TagOne, # TODO: DELETE THIS
-                 '/tags/<int:tag_id>',
-                 '/tags/<int:tag_id>/')
-api.add_resource(TagItemAll, # TODO: DELETE THIS
-                 '/contacts/<int:contact_id>/tags/',
-                 '/contacts/<int:contact_id>/tags')
-api.add_resource(TagItemOne, # TODO: DELETE THIS
-                 '/contacts/<int:contact_id>/tags/<int:tag_id>',
-                 '/contacts/<int:contact_id>/tags/<int:tag_id>/')
-api.add_resource(AchievementAll, # TODO: DELETE THIS
-                 '/contacts/<int:contact_id>/achievements/',
-                 '/contacts/<int:contact_id>/achievements')
-api.add_resource(ResumeAll, # TODO: DELETE THIS
-                 '/contacts/<int:contact_id>/resumes/',
-                 '/contacts/<int:contact_id>/resumes')
-api.add_resource(ResumeOne, # TODO: DELETE THIS
-                 '/resumes/<int:resume_id>/',
-                 '/resumes/<int:resume_id>')
-api.add_resource(ResumeSectionAll, # TODO: DELETE THIS
-                 '/resumes/<int:resume_id>/sections/',
-                 '/resumes/<int:resume_id>/sections')
-api.add_resource(ResumeSectionOne, # TODO: DELETE THIS
-                 '/resumes/<int:resume_id>/sections/<int:section_id>',
-                 '/resumes/<int:resume_id>/sections/<int:section_id>/')
-api.add_resource(GenerateResume, # TODO: DELETE THIS
-                 '/contacts/<int:contact_id>/generate-resume/')
-api.add_resource(ProgramContactAll, # TODO: DELETE THIS
-                 '/contacts/<int:contact_id>/programs',
-                 '/contacts/<int:contact_id>/programs/')
-api.add_resource(ProgramContactOne, # TODO: DELETE THIS
-                 '/contacts/<int:contact_id>/programs/<int:program_id>',
-                 '/contacts/<int:contact_id>/programs/<int:program_id>/')
-api.add_resource(ProgramContactApproveMany, # TODO: DELETE THIS
-                 '/programs/<int:program_id>/contacts/approve-many',
-                 '/programs/<int:program_id>/contacts/approve-many/')
 api.add_resource(OpportunityAppOne,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/')
