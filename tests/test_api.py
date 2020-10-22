@@ -31,9 +31,11 @@ from .data.profile_data import PROFILES_API
 from .data.experience_data import EXPERIENCES_API, ACHIEVEMENTS_API
 from .data.program_data import (
     PROGRAMS_API,
-    PROGRAM_CONTACTS_API,
+    # TODO: DELETE THIS
+    # PROGRAM_CONTACTS_API,
     PROGRAM_APPS_API,
-    CONTACT_PROGRAMS_API
+    # TODO: DELETE THIS
+    #CONTACT_PROGRAMS_API
 )
 
 
@@ -42,8 +44,9 @@ CONTACTS = {
         **CONTACTS_API['billy'],
         'email_primary': EMAILS_API['billy'],
         'skills': CONTACT_SKILLS['billy'],
-        'programs': [PROGRAM_CONTACTS_API['billy_pfp'],
-                     PROGRAM_CONTACTS_API['billy_mayoral']],
+        # TODO: DELETE THIS
+        #'programs': [PROGRAM_CONTACTS_API['billy_pfp'],
+        #             PROGRAM_CONTACTS_API['billy_mayoral']],
         'program_apps': PROGRAM_APPS_API['billy']['program_apps'],
         'profile': PROFILES_API['billy']['profile']
     },
@@ -52,7 +55,8 @@ CONTACTS = {
         **CONTACTS_API['obama'],
         'email_primary': EMAILS_API['obama'],
         'skills': CONTACT_SKILLS['obama'],
-        'programs': [PROGRAM_CONTACTS_API['obama_pfp']],
+        # TODO: DELETE THIS
+        #'programs': [PROGRAM_CONTACTS_API['obama_pfp']],
         'program_apps': [],
         'profile': None
     }
@@ -314,34 +318,6 @@ def test_post_duplicate_contact(app):
         assert response.status_code == 400
         message = json.loads(response.data)['message']
         assert message == 'A contact with this account already exists'
-
-# TODO: Add trello specific checks
-def test_create_program_contact_with_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
-
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        assert data['id'] is not None
-        id_ = data['id']
-
-        program_contacts = Contact.query.get(id_).programs
-        assert len(program_contacts) == 1
-        assert program_contacts[0].program_id == 1
-        assert program_contacts[0].stage == 1
-        assert program_contacts[0].program.name == 'Place for Purpose'
-        assert program_contacts[0].is_active == True
-        assert program_contacts[0].is_approved == False
-        assert program_contacts[0].card_id is None
 
 def test_post_approve_contact(app):
     mimetype = 'application/json'
@@ -1463,9 +1439,10 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
     ,('/api/internal/opportunities/', OPPS_INTERNAL_API.values())
     ,('/api/contacts/short/', CONTACTS_API.values())
-    ,('/api/contacts/programs/', CONTACT_PROGRAMS_API.values())
-    ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS_API['billy']])
-    ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS_API['obama']])
+    # TODO: DELETE THIS
+    #,('/api/contacts/programs/', CONTACT_PROGRAMS_API.values())
+    #,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS_API['billy']])
+    #,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS_API['obama']])
     ,('/api/programs', PROGRAMS_API.values())
     ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS_API['billy']])
     ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS_API['obama_none']])
