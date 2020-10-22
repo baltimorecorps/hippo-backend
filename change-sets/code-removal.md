@@ -50,11 +50,35 @@ Removes the `resources/` and `models/` files that were referenced by the endpoin
 - Removes the following directory level files:
   - `migrate_skills_to_capabilities.py`
   - `get_skill_id.py`
+- Removes the following files from `models` folder:
+  - `old_skill_model.py`
+  - `resume_item_model.py`
+  - `resume_section_model.py`
+  - `tag_item.py`
+  - `tag_model.py`
+  - `templates_model.py`
+  - Model and schemas related to `Resume` in `resume_model.py`
+- Comments out references to `ProgramContact` in the following files:
+  - `api.py`
+  - `contact_model.py`
+  - `program_model.py`
+  - `Contacts.py`
+  - `Profile.py`
+  - `ProgramApp.py`
+  - `program_data.py`
+  - `populate_db.py`
+  - `test_api.py`
 
 
 ### Deployment Considerations
 
 - **Heroku Variables:** No
-- **DB Migrations:** No
+- **DB Migrations:** Yes
+  - Removes `old_skill_model` table
+  - Removes `resume_item_model` table
+  - Removes `resume_section` table
+  - Removes `resume` table
+  - Removes `tag_item` table
+  - Removes `tag` table
 - **AuthZ/N Changes:** No
 - **Deployment Sequence:** Frontend first

@@ -5,11 +5,6 @@ import pytest
 
 from models.contact_model import Contact
 from models.experience_model import Experience, Month
-from models.resume_model import Resume
-from models.resume_section_model import ResumeSection
-from models.tag_model import Tag
-from models.tag_item_model import TagItem
-from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 from models.base_model import db
 

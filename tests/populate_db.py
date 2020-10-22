@@ -32,7 +32,8 @@ from models.resume_model import ResumeSnapshot
 
 # imports models related to the program and cycle
 from models.program_model import Program
-from models.program_contact_model import ProgramContact
+# TODO: DELETE THIS
+# from models.program_contact_model import ProgramContact
 from models.program_app_model import ProgramApp
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp
@@ -53,7 +54,8 @@ from .data.opportunity_data import (
 )
 from .data.program_data import (
     PROGRAMS_DATABASE,
-    PROGRAM_CONTACTS_DATABASE,
+    # TODO: DELETE THIS
+    # PROGRAM_CONTACTS_DATABASE,
     PROGRAM_APPS_DATABASE
 )
 from .data.skill_data import SKILLS_NAMES
@@ -201,6 +203,8 @@ program_mayoral = Program(**PROGRAMS_DATABASE['mayoral'])
 
 
 # creates program contact records
+# TODO: DELETE THIS
+"""
 billy_pfp = ProgramContact(**PROGRAM_CONTACTS_DATABASE['billy_pfp'])
 billy_pfp.program = program_pfp
 
@@ -209,7 +213,7 @@ billy_mayoral.program = program_mayoral
 
 obama_pfp = ProgramContact(**PROGRAM_CONTACTS_DATABASE['obama_pfp'])
 obama_pfp.program = program_pfp
-
+"""
 
 # creates billy's program apps
 billy_pfp_app = ProgramApp(**PROGRAM_APPS_DATABASE['billy_pfp'])

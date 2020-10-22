@@ -10,8 +10,10 @@ from models.contact_model import (
 )
 from models.email_model import Email, Type as EmailType
 from models.base_model import db
-from models.program_contact_model import ProgramContact
+# TODO: DELETE THIS
+# from models.program_contact_model import ProgramContact
 from models.program_model import Program
+# TODO: DELETE THIS
 # from .ProgramContacts import create_program_contact
 from marshmallow import ValidationError
 from auth import (
@@ -147,6 +149,8 @@ class ContactShort(Resource):
         contacts = contacts_short_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 
+# TODO: DELETE THIS
+"""
 class ContactPrograms(Resource):
     method_decorators = {
         'get': [login_required, refresh_session],
@@ -166,6 +170,7 @@ class ContactPrograms(Resource):
                 contacts = Contact.query.filter(Contact.stage<3)
         contacts = contact_program_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
+"""
 
 class ContactAccount(Resource):
     method_decorators = {

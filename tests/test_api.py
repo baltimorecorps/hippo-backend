@@ -31,9 +31,11 @@ from .data.profile_data import PROFILES_API
 from .data.experience_data import EXPERIENCES_API, ACHIEVEMENTS_API
 from .data.program_data import (
     PROGRAMS_API,
-    PROGRAM_CONTACTS_API,
+    # TODO: DELETE THIS
+    # PROGRAM_CONTACTS_API,
     PROGRAM_APPS_API,
-    CONTACT_PROGRAMS_API
+    # TODO: DELETE THIS
+    #CONTACT_PROGRAMS_API
 )
 
 
@@ -42,8 +44,9 @@ CONTACTS = {
         **CONTACTS_API['billy'],
         'email_primary': EMAILS_API['billy'],
         'skills': CONTACT_SKILLS['billy'],
-        'programs': [PROGRAM_CONTACTS_API['billy_pfp'],
-                     PROGRAM_CONTACTS_API['billy_mayoral']],
+        # TODO: DELETE THIS
+        #'programs': [PROGRAM_CONTACTS_API['billy_pfp'],
+        #             PROGRAM_CONTACTS_API['billy_mayoral']],
         'program_apps': PROGRAM_APPS_API['billy']['program_apps'],
         'profile': PROFILES_API['billy']['profile']
     },
@@ -52,7 +55,8 @@ CONTACTS = {
         **CONTACTS_API['obama'],
         'email_primary': EMAILS_API['obama'],
         'skills': CONTACT_SKILLS['obama'],
-        'programs': [PROGRAM_CONTACTS_API['obama_pfp']],
+        # TODO: DELETE THIS
+        #'programs': [PROGRAM_CONTACTS_API['obama_pfp']],
         'program_apps': [],
         'profile': None
     }
@@ -1431,9 +1435,10 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
     ,('/api/internal/opportunities/', OPPS_INTERNAL_API.values())
     ,('/api/contacts/short/', CONTACTS_API.values())
-    ,('/api/contacts/programs/', CONTACT_PROGRAMS_API.values())
-    ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS_API['billy']])
-    ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS_API['obama']])
+    # TODO: DELETE THIS
+    #,('/api/contacts/programs/', CONTACT_PROGRAMS_API.values())
+    #,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS_API['billy']])
+    #,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS_API['obama']])
     ,('/api/programs', PROGRAMS_API.values())
     ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS_API['billy']])
     ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS_API['obama_none']])

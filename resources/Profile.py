@@ -30,13 +30,15 @@ from auth import (
 
 
 profile_schema = ContactSchema(exclude=['skills',
-                                        'programs',
+                                        # TODO: DELETE THIS
+                                        # 'programs',
                                         'program_apps',
                                         'email_primary',
                                         'instructions',
                                         'experiences'])
 instructions_schema = ContactSchema(exclude=['skills',
-                                             'programs',
+                                             # TODO: DELETE THIS
+                                             # 'programs',
                                              'program_apps',
                                              'email_primary',
                                              'profile',
