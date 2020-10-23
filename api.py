@@ -5,7 +5,8 @@ from resources.Contacts import (
     ContactOne,
     ContactAccount,
     ContactShort,
-    ContactPrograms,
+    # TODO: DELETE THIS
+    # ContactPrograms,
     ContactFull,
     ContactApproveMany
 )
@@ -22,12 +23,6 @@ from resources.ProgramApp import (
     ContactProgramAppsOne,
     ContactProgramAppsAll,
     ContactProgramAppsInterested
-)
-# TODO: DELETE THIS
-from resources.ProgramContacts import (
-    ProgramContactOne,
-    ProgramContactAll,
-    ProgramContactApproveMany,
 )
 from resources.Opportunity import (
     OpportunityAll,
@@ -47,7 +42,6 @@ from resources.OpportunityApp import (
     OpportunityAppInterview,
     OpportunityAppConsider,
 )
-from resources.FormAssembly import TalentProgramApp
 from resources.Profile import ProfileOne, ContactInstructions, ProfileSubmit
 from resources.Program import ProgramAll
 from resources.Filter import Filter
@@ -66,8 +60,9 @@ api.add_resource(ContactOne,
 api.add_resource(ContactAccount,
                  '/contacts/me',
                  '/contacts/me/')
-api.add_resource(ContactPrograms,
-                 '/contacts/programs/')
+# TODO: DELETE THIS
+# api.add_resource(ContactPrograms,
+#                 '/contacts/programs/')
 api.add_resource(ContactShort,
                  '/contacts/short',
                  '/contacts/short/',
@@ -127,9 +122,6 @@ api.add_resource(OpportunityAppRecommend,
 api.add_resource(OpportunityAppReopen,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen/')
-api.add_resource(TalentProgramApp,
-                 '/form-assembly/talent-app',
-                 '/form-assembly/talent-app/')
 api.add_resource(Session,
                  '/session/',
                  '/session')

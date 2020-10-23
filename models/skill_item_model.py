@@ -2,9 +2,6 @@ from models.base_model import db
 from marshmallow import Schema, fields, post_dump, EXCLUDE
 from sqlalchemy.ext.associationproxy import association_proxy
 
-# Just do this so alembic knows we want to keep these tables around
-from models.old_skill_model import SkillItem as OldSkillItem
-
 # We make heavy use of this to create a tree structure for skill associations
 # https://docs.sqlalchemy.org/en/13/orm/extensions/associationproxy.html
 class ContactSkill(db.Model):
@@ -18,7 +15,7 @@ class ContactSkill(db.Model):
 
     #relationships
     skill = db.relationship('Skill')
-    experiences = db.relationship('ExperienceSkill', 
+    experiences = db.relationship('ExperienceSkill',
                                   back_populates='parent',
                                   cascade='all, delete, delete-orphan')
     contact = db.relationship('Contact', back_populates='skill_items')
@@ -38,7 +35,7 @@ class ExperienceSkill(db.Model):
 
     #relationships
     parent = db.relationship('ContactSkill', back_populates='experiences')
-    achievements = db.relationship('AchievementSkill', 
+    achievements = db.relationship('AchievementSkill',
                                    back_populates='parent',
                                    cascade='all, delete, delete-orphan')
 
@@ -71,4 +68,3 @@ class AchievementSkill(db.Model):
         self.achievement = achievement
         if capability is not None:
             self.capability = capability
-
