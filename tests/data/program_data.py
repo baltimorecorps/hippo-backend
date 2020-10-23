@@ -38,6 +38,8 @@ PROGRAM_APPS_DATABASE = {
     }
 }
 
+# TODO: DELETE THIS
+"""
 PROGRAM_CONTACTS_DATABASE = {
     'billy_pfp': {
         'id': 5,
@@ -64,9 +66,12 @@ PROGRAM_CONTACTS_DATABASE = {
         'is_approved': False,
     }
 }
+"""
 
 PROGRAMS_API = PROGRAMS_DATABASE
 
+# TODO: DELETE THIS
+"""
 PROGRAM_CONTACTS_API = {
     'billy_pfp': {
         **PROGRAM_CONTACTS_DATABASE['billy_pfp'],
@@ -81,6 +86,7 @@ PROGRAM_CONTACTS_API = {
         'program': PROGRAMS_API['mayoral'],
     }
 }
+"""
 
 PROGRAM_APPS_API = {
     'billy': {
@@ -108,6 +114,8 @@ PROGRAM_APPS_API = {
         'program_apps': []}
 }
 
+# TODO: DELETE THIS
+"""
 CONTACT_PROGRAMS_API = {
     'billy': {
         **CONTACTS_API['billy'],
@@ -118,3 +126,4 @@ CONTACT_PROGRAMS_API = {
         **CONTACTS_API['obama'],
         'programs': [PROGRAM_CONTACTS_API['obama_pfp']]}
 }
+"""
