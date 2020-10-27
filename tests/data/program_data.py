@@ -39,7 +39,6 @@ PROGRAM_APPS_DATABASE = {
 }
 
 # TODO: DELETE THIS
-"""
 PROGRAM_CONTACTS_DATABASE = {
     'billy_pfp': {
         'id': 5,
@@ -66,7 +65,6 @@ PROGRAM_CONTACTS_DATABASE = {
         'is_approved': False,
     }
 }
-"""
 
 PROGRAMS_API = PROGRAMS_DATABASE
 
