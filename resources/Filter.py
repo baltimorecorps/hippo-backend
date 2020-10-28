@@ -2,7 +2,7 @@ from flask_restful import Resource, request
 from flask_login import login_required
 import json
 
-from .skill_utils import get_skill_id
+from resources.skill_utils import get_skill_id
 
 from models.base_model import db
 from models.contact_model import Contact, ContactSchema, ContactStage

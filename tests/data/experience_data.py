@@ -1,4 +1,4 @@
-from .skill_data import CONTACT_SKILLS
+from tests.data.skill_data import CONTACT_SKILLS
 
 import datetime as dt
 import math

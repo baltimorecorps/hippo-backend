@@ -5,19 +5,19 @@ from models.skill_item_model import ContactSkill
 from models.base_model import db
 from marshmallow import ValidationError
 
-from .skill_utils import (
-    get_skill_id, 
-    get_or_make_skill, 
-    normalize_skill_name, 
+from resources.skill_utils import (
+    get_skill_id,
+    get_or_make_skill,
+    normalize_skill_name,
     complete_skill,
     dump_skill_with_capabilities,
 )
 
 from flask_login import login_required
 from auth import (
-    refresh_session, 
-    is_authorized_view, 
-    is_authorized_write, 
+    refresh_session,
+    is_authorized_view,
+    is_authorized_write,
     unauthorized
 )
 
@@ -41,7 +41,7 @@ class ContactSkills(Resource):
     }
 
     def get(self, contact_id):
-        if not is_authorized_view(contact_id): 
+        if not is_authorized_view(contact_id):
             return unauthorized()
 
         contact = Contact.query.get(contact_id)
@@ -53,7 +53,7 @@ class ContactSkills(Resource):
         return {'status': 'success', 'data': skills}, 200
 
     def post(self, contact_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         json_data = request.get_json(force=True)
@@ -83,7 +83,7 @@ class ContactSkills(Resource):
 
 def delete_skill(contact_id, skill_id):
     skill = (ContactSkill.query
-             .filter_by(skill_id=skill_id, 
+             .filter_by(skill_id=skill_id,
                         contact_id=contact_id)
              .first())
     if not skill:
@@ -98,10 +98,7 @@ class ContactSkillOne(Resource):
     }
 
     def delete(self, contact_id, skill_id):
-        if not is_authorized_write(contact_id): 
+        if not is_authorized_write(contact_id):
             return unauthorized()
 
         return delete_skill(contact_id, skill_id)
-
-
-

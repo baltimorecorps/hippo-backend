@@ -5,7 +5,7 @@ from testing.postgresql import Postgresql
 
 from run import create_app
 from models.base_model import db
-from .populate_db import populate
+from tests.populate_db import populate
 
 collect_ignore = ["trello_integration_test.py"]
 @pytest.fixture(scope='session')

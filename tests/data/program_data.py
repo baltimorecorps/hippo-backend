@@ -1,4 +1,4 @@
-from .contact_data import CONTACTS_API
+from tests.data.contact_data import CONTACTS_API
 
 PROGRAMS_DATABASE = {
     'pfp': {
