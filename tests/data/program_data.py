@@ -38,53 +38,7 @@ PROGRAM_APPS_DATABASE = {
     }
 }
 
-# TODO: DELETE THIS
-PROGRAM_CONTACTS_DATABASE = {
-    'billy_pfp': {
-        'id': 5,
-        'contact_id': 123,
-        'card_id': None,
-        'stage': 1,
-        'is_active': True,
-        'is_approved': True,
-    },
-    'obama_pfp': {
-        'id': 6,
-        'contact_id': 124,
-        'card_id': 'card',
-        'stage': 1,
-        'is_active': True,
-        'is_approved': False,
-    },
-    'billy_mayoral': {
-        'id': 7,
-        'contact_id': 123,
-        'card_id': 'card',
-        'stage': 1,
-        'is_active': True,
-        'is_approved': False,
-    }
-}
-
 PROGRAMS_API = PROGRAMS_DATABASE
-
-# TODO: DELETE THIS
-"""
-PROGRAM_CONTACTS_API = {
-    'billy_pfp': {
-        **PROGRAM_CONTACTS_DATABASE['billy_pfp'],
-        'program': PROGRAMS_API['pfp']
-    },
-    'obama_pfp': {
-        **PROGRAM_CONTACTS_DATABASE['obama_pfp'],
-        'program': PROGRAMS_API['pfp'],
-    },
-    'billy_mayoral': {
-        **PROGRAM_CONTACTS_DATABASE['billy_mayoral'],
-        'program': PROGRAMS_API['mayoral'],
-    }
-}
-"""
 
 PROGRAM_APPS_API = {
     'billy': {
@@ -111,17 +65,3 @@ PROGRAM_APPS_API = {
         **CONTACTS_API['obama'],
         'program_apps': []}
 }
-
-# TODO: DELETE THIS
-"""
-CONTACT_PROGRAMS_API = {
-    'billy': {
-        **CONTACTS_API['billy'],
-        'programs': [PROGRAM_CONTACTS_API['billy_pfp'],
-                     PROGRAM_CONTACTS_API['billy_mayoral']]
-    },
-    'obama': {
-        **CONTACTS_API['obama'],
-        'programs': [PROGRAM_CONTACTS_API['obama_pfp']]}
-}
-"""

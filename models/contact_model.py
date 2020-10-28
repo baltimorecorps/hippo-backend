@@ -10,8 +10,6 @@ from models.email_model import Email, EmailSchema
 from models.achievement_model import Achievement
 from models.skill_model import Skill, SkillSchema
 from models.skill_item_model import ContactSkill
-# TODO: DELETE THIS
-from models.program_contact_model import ProgramContact
 from models.program_app_model import ProgramAppSchema, ProgramApp
 from models.profile_model import ProfileSchema, ContactAddress
 
@@ -70,10 +68,6 @@ class Contact(db.Model):
     experiences = db.relationship('Experience',
                                   back_populates='contact',
                                   cascade='all, delete, delete-orphan')
-    # TODO: DELETE THIS
-    programs = db.relationship('ProgramContact',
-                               back_populates='contact',
-                               cascade='all, delete, delete-orphan')
     program_apps = db.relationship('ProgramApp',
                                    back_populates='contact',
                                    cascade='all, delete, delete-orphan')
@@ -259,8 +253,6 @@ class ContactSchema(Schema):
 
     # Full contact
     skills = fields.Nested(SkillSchema, many=True)
-    # TODO: DELETE THIS
-    #programs = fields.Nested(ProgramContactSchema, many=True, dump_only=True)
     program_apps = fields.Nested(ProgramAppSchema,
                                  exclude=['program_name'],
                                  many=True)

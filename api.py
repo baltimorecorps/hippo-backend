@@ -5,8 +5,6 @@ from resources.Contacts import (
     ContactOne,
     ContactAccount,
     ContactShort,
-    # TODO: DELETE THIS
-    # ContactPrograms,
     ContactFull,
     ContactApproveMany
 )
@@ -60,9 +58,6 @@ api.add_resource(ContactOne,
 api.add_resource(ContactAccount,
                  '/contacts/me',
                  '/contacts/me/')
-# TODO: DELETE THIS
-# api.add_resource(ContactPrograms,
-#                 '/contacts/programs/')
 api.add_resource(ContactShort,
                  '/contacts/short',
                  '/contacts/short/',
