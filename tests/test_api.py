@@ -24,12 +24,12 @@ from models.skill_item_model import (
 
 from flask import g
 
-from tests.data.contact_data import CONTACTS_API, INSTRUCTIONS_API, EMAILS_API
-from tests.data.opportunity_data import OPPS_API, OPP_APPS_API, OPPS_INTERNAL_API
-from tests.data.skill_data import CONTACT_SKILLS, CAPABILITIES_API
-from tests.data.profile_data import PROFILES_API
-from tests.data.experience_data import EXPERIENCES_API, ACHIEVEMENTS_API
-from tests.data.program_data import PROGRAMS_API, PROGRAM_APPS_API
+from tests.contact.contact_data import CONTACTS_API, INSTRUCTIONS_API, EMAILS_API
+from tests.opportunity.opportunity_data import OPPS_API, OPP_APPS_API, OPPS_INTERNAL_API
+from tests.skill.skill_data import CONTACT_SKILLS, CAPABILITIES_API
+from tests.profile.profile_data import PROFILES_API
+from tests.experience.experience_data import EXPERIENCES_API, ACHIEVEMENTS_API
+from tests.program.program_data import PROGRAMS_API, PROGRAM_APPS_API
 
 
 CONTACTS = {

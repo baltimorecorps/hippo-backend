@@ -2,10 +2,10 @@ import json
 import pytest
 
 #imports test data
-from tests.data.contact_data import CONTACTS_API, EMAILS_API
-from tests.data.skill_data import CONTACT_SKILLS
-from tests.data.profile_data import PROFILES_API
-from tests.data.program_data import PROGRAM_APPS_API
+from tests.contact.contact_data import CONTACTS_API, EMAILS_API
+from tests.skill.skill_data import CONTACT_SKILLS
+from tests.profile.profile_data import PROFILES_API
+from tests.program.program_data import PROGRAM_APPS_API
 
 CONTACTS = {
     'billy': {

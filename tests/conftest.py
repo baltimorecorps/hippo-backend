@@ -7,7 +7,7 @@ from run import create_app
 from models.base_model import db
 from tests.populate_db import populate
 
-collect_ignore = ["api_tests/trello_integration_test.py"]
+collect_ignore = ["integrations/trello_integration_test.py"]
 @pytest.fixture(scope='session')
 def _app(request):
     app = create_app('test')
