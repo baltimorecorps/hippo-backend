@@ -10,10 +10,6 @@ class Program(db.Model):
     trello_board_id = db.Column(db.String)
 
     #relationship fields
-    # TODO: DELETE THIS
-    contacts = db.relationship('ProgramContact',
-                               back_populates='program',
-                               cascade='all, delete, delete-orphan')
     program_apps = db.relationship('ProgramApp',
                                    back_populates='program',
                                    cascade='all, delete, delete-orphan')
