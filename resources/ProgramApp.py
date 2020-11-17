@@ -1,7 +1,6 @@
 from flask_restful import Resource, request
 from models.program_model import Program, ProgramSchema
 from models.contact_model import Contact, ContactSchema
-from models.program_contact_model import ProgramContact, ProgramContactSchema
 from models.program_app_model import ProgramApp
 from models.base_model import db
 from marshmallow import ValidationError
@@ -18,7 +17,6 @@ from auth import (
 program_app_schema = ContactSchema(exclude=[
     'email_primary',
     'skills',
-    'programs',
     'profile',
     'instructions',
     'experiences'
@@ -29,16 +27,10 @@ program_app_many_schema = ContactSchema(
     exclude=[
         'email_primary',
         'skills',
-        'programs',
         'profile',
         'instructions',
         'experiences'
 ])
-
-def get_program_app(c_id, p_id):
-    return (ProgramContact.query
-                          .filter_by(contact_id=c_id,program_id=p_id)
-                          .first())
 
 class ContactProgramAppsOne(Resource):
     method_decorators = {
