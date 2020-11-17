@@ -5,15 +5,10 @@ from resources.Contacts import (
     ContactOne,
     ContactAccount,
     ContactShort,
-    ContactPrograms,
     ContactFull,
     ContactApproveMany
 )
-from resources.Tag import TagAll, TagOne, TagItemAll, TagItemOne
 from resources.Experience import ExperienceAll, ExperienceOne
-from resources.Achievement import AchievementAll
-from resources.Resume import ResumeAll, ResumeOne, GenerateResume
-from resources.Resume import ResumeSectionAll, ResumeSectionOne
 from resources.Skills import ContactSkills, ContactSkillOne, AutocompleteSkill
 from resources.Capability import (
     CapabilityRecommended,
@@ -26,11 +21,6 @@ from resources.ProgramApp import (
     ContactProgramAppsOne,
     ContactProgramAppsAll,
     ContactProgramAppsInterested
-)
-from resources.ProgramContacts import (
-    ProgramContactOne,
-    ProgramContactAll,
-    ProgramContactApproveMany,
 )
 from resources.Opportunity import (
     OpportunityAll,
@@ -50,7 +40,6 @@ from resources.OpportunityApp import (
     OpportunityAppInterview,
     OpportunityAppConsider,
 )
-from resources.FormAssembly import TalentProgramApp
 from resources.Profile import ProfileOne, ContactInstructions, ProfileSubmit
 from resources.Program import ProgramAll
 from resources.Filter import Filter
@@ -69,8 +58,6 @@ api.add_resource(ContactOne,
 api.add_resource(ContactAccount,
                  '/contacts/me',
                  '/contacts/me/')
-api.add_resource(ContactPrograms,
-                 '/contacts/programs/')
 api.add_resource(ContactShort,
                  '/contacts/short',
                  '/contacts/short/',
@@ -106,44 +93,6 @@ api.add_resource(ExperienceAll,
 api.add_resource(ExperienceOne,
                  '/experiences/<int:experience_id>',
                  '/experiences/<int:experience_id>/')
-api.add_resource(TagAll,
-                 '/tags/',
-                 '/tags')
-api.add_resource(TagOne,
-                 '/tags/<int:tag_id>',
-                 '/tags/<int:tag_id>/')
-api.add_resource(TagItemAll,
-                 '/contacts/<int:contact_id>/tags/',
-                 '/contacts/<int:contact_id>/tags')
-api.add_resource(TagItemOne,
-                 '/contacts/<int:contact_id>/tags/<int:tag_id>',
-                 '/contacts/<int:contact_id>/tags/<int:tag_id>/')
-api.add_resource(AchievementAll,
-                 '/contacts/<int:contact_id>/achievements/',
-                 '/contacts/<int:contact_id>/achievements')
-api.add_resource(ResumeAll,
-                 '/contacts/<int:contact_id>/resumes/',
-                 '/contacts/<int:contact_id>/resumes')
-api.add_resource(ResumeOne,
-                 '/resumes/<int:resume_id>/',
-                 '/resumes/<int:resume_id>')
-api.add_resource(ResumeSectionAll,
-                 '/resumes/<int:resume_id>/sections/',
-                 '/resumes/<int:resume_id>/sections')
-api.add_resource(ResumeSectionOne,
-                 '/resumes/<int:resume_id>/sections/<int:section_id>',
-                 '/resumes/<int:resume_id>/sections/<int:section_id>/')
-api.add_resource(GenerateResume,
-                 '/contacts/<int:contact_id>/generate-resume/')
-api.add_resource(ProgramContactAll,
-                 '/contacts/<int:contact_id>/programs',
-                 '/contacts/<int:contact_id>/programs/')
-api.add_resource(ProgramContactOne,
-                 '/contacts/<int:contact_id>/programs/<int:program_id>',
-                 '/contacts/<int:contact_id>/programs/<int:program_id>/')
-api.add_resource(ProgramContactApproveMany,
-                 '/programs/<int:program_id>/contacts/approve-many',
-                 '/programs/<int:program_id>/contacts/approve-many/')
 api.add_resource(OpportunityAppOne,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/')
@@ -168,9 +117,6 @@ api.add_resource(OpportunityAppRecommend,
 api.add_resource(OpportunityAppReopen,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen/')
-api.add_resource(TalentProgramApp,
-                 '/form-assembly/talent-app',
-                 '/form-assembly/talent-app/')
 api.add_resource(Session,
                  '/session/',
                  '/session')

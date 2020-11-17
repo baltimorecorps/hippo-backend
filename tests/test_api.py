@@ -8,9 +8,6 @@ import copy
 from models.base_model import db
 from models.contact_model import Contact, ContactStage
 from models.experience_model import Experience, Month, Type as ExpType
-from models.resume_model import Resume
-from models.resume_section_model import ResumeSection
-from models.program_contact_model import ProgramContact
 from models.session_model import UserSession
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
@@ -27,1110 +24,30 @@ from models.skill_item_model import (
 
 from flask import g
 
-SKILLS = {
-    'billy': [
-        {
-            'id': '74BgThI2os9wEdyArofEKA==',
-            'name': 'Community Organizing',
-        },
-        {
-            'id': 'QUEVjv1tcq6uLmzCku6ikg==',
-            'name': 'Flask',
-        },
-        {
-            'id': 'n1N02ypni69EZg0SggRIIg==',
-            'name': 'Public Health',
-        },
-        {
-            'id': '4R9tqGuK2672PavRTJrN_A==',
-            'name': 'Python',
-        },
-        {
-            'id': 'hbBWJS6x6gDxGMUC5HAOYg==',
-            'name': 'Web Development',
-        },
-    ],
-    'obama': [
-        {
-            'id': 'n1N02ypni69EZg0SggRIIg==',
-            'name': 'Public Health',
-        },
-    ],
-}
-
-CAPABILITIES = {
-    'billy': {
-        'contact_id': 123,
-        'capabilities': [
-            {
-                'id': 'cap:it',
-                'name': 'Information Technology',
-                'score': 2,
-                'skills': [
-                    {'id': '4R9tqGuK2672PavRTJrN_A==', 'name': 'Python'},
-                    {'id': 'hbBWJS6x6gDxGMUC5HAOYg==', 'name': 'Web Development'}
-                ],
-                'suggested_skills': [
-                    {'id': 'QUEVjv1tcq6uLmzCku6ikg==', 'name': 'Flask'}
-                ]
-            },
-            {
-                'id': 'cap:advocacy',
-                'name': 'Advocacy and Public Policy',
-                'score': 1,
-                'skills': [
-                    {'id': '74BgThI2os9wEdyArofEKA==', 'name': 'Community Organizing'}
-                ],
-                'suggested_skills': []
-            },
-            {
-                'id': 'cap:outreach',
-                'name': 'Community Engagement and Outreach',
-                'score': 0,
-                'skills': [
-                    {'id': '74BgThI2os9wEdyArofEKA==', 'name': 'Community Organizing'}
-                ],
-                'suggested_skills': []
-            }
-        ],
-        'other_skills': [
-            { 'id': 'n1N02ypni69EZg0SggRIIg==', 'name': 'Public Health'}
-        ]
-    }
-}
-
-
-PROGRAMS = {
-    'pfp': {
-        'id': 1,
-        'name': 'Place for Purpose'
-    },
-    'mayoral': {
-        'id': 2,
-        'name': 'Mayoral Fellowship'
-    }
-}
-
-PROGRAM_CONTACTS = {
-    'billy_pfp': {
-        'id': 5,
-        'contact_id': 123,
-        'program': PROGRAMS['pfp'],
-        'card_id': None,
-        'stage': 1,
-        'is_active': True,
-        'is_approved': True,
-    },
-    'obama_pfp': {
-        'id': 6,
-        'contact_id': 124,
-        'program': PROGRAMS['pfp'],
-        'card_id': 'card',
-        'stage': 1,
-        'is_active': True,
-        'is_approved': False,
-    },
-    'billy_mayoral': {
-        'id': 7,
-        'contact_id': 123,
-        'program': PROGRAMS['mayoral'],
-        'card_id': 'card',
-        'stage': 1,
-        'is_active': True,
-        'is_approved': False,
-    }
-}
-
-PROGRAM_APPS = {
-    'billy': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy@example.com",
-        'status': 'approved',
-        'status': 'approved',
-        'phone_primary': "555-245-2351",
-        'account_id': 'test-valid|0123456789abcdefabcdefff',
-        'program_apps': [
-            {'id': 7,
-             'program': {'id': 1, 'name': 'Place for Purpose'},
-             'is_interested': True,
-             'is_approved': True,
-             'decision_date': '2020-01-01',
-             'status': 'Eligible'},
-            {'id': 8,
-             'program': {'id': 2, 'name': 'Mayoral Fellowship'},
-             'is_interested': False,
-             'is_approved': False,
-             'status': 'Not interested',
-             'decision_date': None},
-        ]},
-    'obama_put': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'status': 'created',
-        'phone_primary': "555-444-4444",
-        'account_id': 'test-valid|alsghldwgsg120393020293',
-        'program_apps': [
-            {'program': {'id': 1, 'name': 'Place for Purpose'},
-             'is_interested': True},
-            {'program': {'id': 2, 'name': 'Mayoral Fellowship'},
-             'is_interested': False},
-        ]},
-    'obama_get': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'status': 'created',
-        'phone_primary': "555-444-4444",
-        'account_id': 'test-valid|alsghldwgsg120393020293',
-        'program_apps': [
-            {'id': 1,
-             'program': {'id': 1, 'name': 'Place for Purpose'},
-             'is_interested': True,
-             'is_approved': False,
-             'decision_date': None,
-             'status': 'Waiting for approval'},
-            {'id': 2,
-             'program': {'id': 2, 'name': 'Mayoral Fellowship'},
-             'is_interested': False,
-             'is_approved': False,
-             'status': 'Not interested',
-             'decision_date': None},
-    ]},
-    'obama_none': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'status': 'created',
-        'phone_primary': "555-444-4444",
-        'account_id': 'test-valid|alsghldwgsg120393020293',
-        'program_apps': []}
-}
-
-CONTACT_PROFILE = {
-    'billy_profile': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy@example.com",
-        'status': 'approved',
-        'phone_primary': "555-245-2351",
-        'account_id': 'test-valid|0123456789abcdefabcdefff',
-        'profile': {
-            'id': 123,
-            'gender': 'Male',
-            'gender_other': None,
-            'pronoun': 'He/Him/His',
-            'pronoun_other': None,
-            'years_exp': '3-5',
-            'job_search_status': 'Actively looking',
-            'current_job_status': 'Employed',
-            'current_edu_status': 'Full-time Student',
-            'previous_bcorps_program': 'Yes',
-            'value_question1': 'Test response',
-            'value_question2': 'Test response',
-            'needs_help_programs': True,
-            'hear_about_us': 'Facebook',
-            'hear_about_us_other': 'Other',
-            'programs_completed': {
-                'fellowship': False,
-                'public_allies': False,
-                'mayoral_fellowship': True,
-                'kiva': False,
-                'elevation_awards': False,
-                'civic_innovators': False
-            },
-            'address_primary': {
-                'street1': '123 Main St',
-                'street2': 'Apt 3',
-                'city': 'Baltimore',
-                'state': 'Maryland',
-                'zip_code': '21218',
-                'country': 'United States',
-             },
-            'race': {
-                'american_indian': False,
-                'asian': False,
-                'black': False,
-                'hispanic': False,
-                'hawaiian': False,
-                'south_asian': False,
-                'white': True,
-                'not_listed': False,
-                'race_other': None,
-            },
-            'roles': {
-                'advocacy_public_policy': True,
-                'community_engagement_outreach': True,
-                'data_analysis': True,
-                'fundraising_development': False,
-                'program_management': False,
-                'marketing_public_relations': False
-            }
-        }
-    },
-    'billy_update': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy_new@email.com", # updated
-        'phone_primary': "555-245-2351",
-        'status': 'approved',
-        'profile': {
-            'id': 1,
-            'gender': 'Male',
-            'gender_other': None,
-            'pronoun': 'He/Him/His',
-            'pronoun_other': None,
-            'years_exp': '3-5',
-            'job_search_status': 'Actively looking',
-            'current_job_status': 'Employed',
-            'current_edu_status': 'Full-time Student',
-            'previous_bcorps_program': 'Yes',
-            'value_question1': 'Test response',
-            'value_question2': 'Test response',
-            'needs_help_programs': True,
-            'hear_about_us': 'Facebook',
-            'hear_about_us_other': 'Other New',
-            'programs_completed': {
-                'fellowship': False,
-                'public_allies': False,
-                'mayoral_fellowship': False,
-                'kiva': False,
-                'elevation_awards': False,
-                'civic_innovators': False
-            },
-            'address_primary': {
-                'street1': '124 Main St', # updated
-                'street2': 'Apt 3',
-                'city': 'Baltimore',
-                'state': 'Maryland',
-                'zip_code': '21218',
-                'country': 'United States',
-             },
-            'race': {
-                'american_indian': False,
-                'asian': False,
-                'black': False,
-                'hispanic': True, # updated
-                'hawaiian': False,
-                'south_asian': False,
-                'white': True,
-                'not_listed': True, # updated
-                'race_other': 'Test Text', # updated
-            },
-            'roles': {
-                'advocacy_public_policy': True,
-                'community_engagement_outreach': True,
-                'data_analysis': False,
-                'fundraising_development': False,
-                'program_management': False,
-                'marketing_public_relations': False
-            }
-        }
-    },
-    'obama_blank': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'status': 'created',
-        'phone_primary': "555-444-4444",
-        'account_id': 'test-valid|alsghldwgsg120393020293',
-        'profile': {
-            'id': 1,
-            'gender': None,
-            'gender_other': None,
-            'pronoun': None,
-            'pronoun_other': None,
-            'years_exp': None,
-            'job_search_status': None,
-            'current_job_status': None,
-            'current_edu_status': None,
-            'previous_bcorps_program': None,
-            'value_question1': None,
-            'value_question2': None,
-            'hear_about_us': None,
-            'hear_about_us_other': None,
-            'needs_help_programs': None,
-            'programs_completed': {
-                'fellowship': False,
-                'public_allies': False,
-                'mayoral_fellowship': False,
-                'kiva': False,
-                'elevation_awards': False,
-                'civic_innovators': False,
-            },
-            'address_primary': {
-                'street1': None,
-                'street2': None,
-                'city': None,
-                'state': None,
-                'zip_code': None,
-                'country': None,
-             },
-            'race': {
-                'american_indian': False,
-                'asian': False,
-                'black': False,
-                'hispanic': False,
-                'hawaiian': False,
-                'south_asian': False,
-                'white': False,
-                'not_listed': False,
-                'race_other': None,
-            },
-            'roles': {
-                'advocacy_public_policy': False,
-                'community_engagement_outreach': False,
-                'data_analysis': False,
-                'fundraising_development': False,
-                'program_management': False,
-                'marketing_public_relations': False
-            }
-        }
-    },
-    'billy_null': {
-        'email': 'billy@example.com',
-        'first_name': 'Billy',
-        'last_name': 'Daly',
-        'id': 123,
-        'profile': {
-            'address_primary': {
-                'city': 'Baltimore',
-                'country': 'United States',
-                'state': 'Maryland',
-                'street1': '123 Main St.',
-                'street2': 'Apt 3',
-                'zip_code': '21111',
-            },
-            'current_edu_status': 'Full-time student',
-            'current_job_status': 'Unemployed',
-            'gender': 'Not Listed',
-            'gender_other': 'sads',
-            'hear_about_us': None,
-            'hear_about_us_other': None,
-            'id': 1,
-            'job_search_status': 'Looking for a job in the next 2-6 months',
-            'needs_help_programs': None,
-            'previous_bcorps_program': 'No',
-            'programs_completed': None,
-            'pronoun': 'They/Them/Their',
-            'pronoun_other': None,
-            'value_question1': 'sasdsad',
-            'value_question2': 'asdsdasd',
-            'years_exp': '5+ years',
-            'race': {
-                'american_indian': False,
-                'asian': True,
-                'black': False,
-                'hawaiian': False,
-                'hispanic': False,
-                'not_listed': False,
-                'race_other': None,
-                'south_asian': False,
-                'white': True,
-            },
-            'roles': {
-                'advocacy_public_policy': False,
-                'community_engagement_outreach': None,
-                'data_analysis': True,
-                'fundraising_development': False,
-                'marketing_public_relations': False,
-                'program_management': True,
-            },
-        },
-    }
-}
-
-INSTRUCTIONS = {
-    'billy': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy@example.com",
-        'status': 'approved',
-        'phone_primary': "555-245-2351",
-        'account_id': 'test-valid|0123456789abcdefabcdefff',
-        'instructions': {
-            'about_me': {
-                'is_complete': True,
-                'components': {
-                    'candidate_information': True,
-                    'value_alignment': True,
-                    'programs': True,
-                    'interests': True,
-                },
-            },
-            'profile': {
-                'is_complete': True,
-                'components': {
-                    'tag_skills': True,
-                    'add_experience': {
-                        'is_complete': True,
-                        'components': {
-                            'add_achievements': True,
-                            'tag_skills': True,
-                        }
-                    },
-                    'add_education': True,
-                    'add_portfolio': False,
-                },
-            },
-            'submit': {'is_complete': True}
-        }
-    },
-    'obama': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'status': 'created',
-        'phone_primary': "555-444-4444",
-        'account_id': 'test-valid|alsghldwgsg120393020293',
-        'instructions': {
-            'about_me': {
-                'is_complete': False,
-                'components': {
-                    'candidate_information': False,
-                    'value_alignment': False,
-                    'programs': False,
-                    'interests': False,
-                },
-            },
-            'profile': {
-                'is_complete': False,
-                'components': {
-                    'tag_skills': False,
-                    'add_experience': {
-                        'is_complete': False,
-                        'components': {
-                            'add_achievements': False,
-                            'tag_skills': False,
-                        }
-                    },
-                    'add_education': False,
-                    'add_portfolio': True,
-                },
-            },
-            'submit': {'is_complete': False}
-        }
-    }
-}
-
-OPPORTUNITIES = {
-    'test_opp1': {
-        'id': '123abc',
-        'title': "Test Opportunity",
-        'short_description': "This is a test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'program_id': 1,
-        'is_active': True,
-        'program_name': "Place for Purpose"
-    },
-    'test_opp2': {
-        'id': '222abc',
-        'title': "Another Test Opportunity",
-        'short_description': "This is another test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'program_id': 2,
-        'is_active': True,
-        'program_name': "Mayoral Fellowship"
-    },
-    'test_opp3': {
-        'id': '333abc',
-        'title': "A Third Test Opportunity",
-        'short_description': "This is another test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'program_id': 1,
-        'is_active': True,
-        'program_name': "Place for Purpose"
-    },
-
-}
+from .data.contact_data import CONTACTS_API, INSTRUCTIONS_API, EMAILS_API
+from .data.opportunity_data import OPPS_API, OPP_APPS_API, OPPS_INTERNAL_API
+from .data.skill_data import CONTACT_SKILLS, CAPABILITIES_API
+from .data.profile_data import PROFILES_API
+from .data.experience_data import EXPERIENCES_API, ACHIEVEMENTS_API
+from .data.program_data import PROGRAMS_API, PROGRAM_APPS_API
 
 
 CONTACTS = {
     'billy': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy@example.com",
-        'email_primary': {
-            'id': 45,
-            'is_primary': True,
-            'email': "billy@example.com",
-            'type': "Personal",
-        },
-        'phone_primary': "555-245-2351",
-        'account_id': 'test-valid|0123456789abcdefabcdefff',
-        'skills': SKILLS['billy'],
-        'programs': [PROGRAM_CONTACTS['billy_pfp'],
-                     PROGRAM_CONTACTS['billy_mayoral']],
-        'program_apps': PROGRAM_APPS['billy']['program_apps'],
-        'status': 'approved',
-        'profile': CONTACT_PROFILE['billy_profile']['profile']
+        **CONTACTS_API['billy'],
+        'email_primary': EMAILS_API['billy'],
+        'skills': CONTACT_SKILLS['billy'],
+        'program_apps': PROGRAM_APPS_API['billy']['program_apps'],
+        'profile': PROFILES_API['billy']['profile']
     },
 
     'obama': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'email_primary': {
-            'id': 90,
-            'is_primary': True,
-            'email': "obama@whitehouse.gov",
-            'type': "Work",
-        },
-        'phone_primary': "555-444-4444",
-        'account_id': 'test-valid|alsghldwgsg120393020293',
-        'skills': SKILLS['obama'],
-        'programs': [PROGRAM_CONTACTS['obama_pfp']],
+        **CONTACTS_API['obama'],
+        'email_primary': EMAILS_API['obama'],
+        'skills': CONTACT_SKILLS['obama'],
         'program_apps': [],
-        'status': 'created',
         'profile': None
-    },
-    'billy_bug': {
-        "program_apps":[],
-        "account_id":"google-oauth2|107132552139022184223",
-        "email_primary":{
-            "email":"billy@baltimorecorps.org",
-            "id":123,
-            "type":"Personal",
-            "is_primary":True},
-        "first_name":"Billy",
-        "profile":{
-            "pronoun_other":None,
-            "needs_help_programs":None,
-            "pronoun":None,
-            "previous_bcorps_program":"No",
-            "job_search_status":"Looking for a job in the next 2-6 months",
-            "hear_about_us":None,
-            "years_exp":"0-2 years",
-            "current_job_status":"Unemployed",
-            "gender":None,
-            "gender_other":None,
-            "roles":{
-                "community_engagement_outreach":None,
-                "advocacy_public_policy":None,
-                "data_analysis":True,
-                "marketing_public_relations":True,
-                "fundraising_development":None,
-                "program_management":None},
-                "address_primary":{
-                    "zip_code":None,
-                    "country":None,
-                    "city":None,
-                    "state":None,
-                    "street1":None,
-                    "street2":None
-                },
-                "current_edu_status":"Full-time student",
-                "value_question2":None,
-                "id":6,
-                "value_question1":None,
-                "race":{
-                    "asian":None,
-                    "american_indian":None,
-                    "white":None,
-                    "black":None,
-                    "race_other":None,
-                    "hawaiian":None,
-                    "hispanic":None,
-                    "south_asian":None,
-                    "not_listed":None
-                },
-                "programs_completed":{
-                    "public_allies":False,
-                    "civic_innovators":False,
-                    "kiva":False,
-                    "elevation_awards":False,
-                    "mayoral_fellowship":False,
-                    "fellowship":False
-                },
-                "hear_about_us_other":None
-            },
-            "phone_primary":"+1 (908) 578-4622",
-            "programs":[
-                {"is_approved":True,
-                "contact_id":74,
-                "is_active":True,
-                "program":{"id":1,"name":"Place for Purpose"},
-                "stage":None,
-                "card_id":None,
-                "id":74}
-            ],
-            "id":74,
-            "last_name":"Daly1",
-            "skills":[
-                {"id":"FsleYWdpSaCA_qO3nkdMVw==","name":"Budgeting"},
-                {"id":"YtCEwpoJ8IcV5KPCU7BURg==","name":"Data Visualization"},
-                {"id":"qXGYjA77UThj7WPKlvxBtg==","name":"Documentation"},
-                {"id":"RMjj5QJ3seZnbRPDmDg8pQ==","name":"Grant Reporting"},
-                {"id":"oVUnhdEA5BJ_DLg0G4d1bw==","name":"Graphic Design"},
-                {"id":"opfNJLiUftLHJH0cjBMMNg==","name":"Project Planning"},
-                {"id":"8Z8qGXdVMDR2Q7OH3lkueA==","name":"Public Relations"},
-                {"id":"ZFXHeJ5WsDwZSsQl_ge0MQ==","name":"Python Script"},
-                {"id":"BPxYULhlGt-9tzxHsJNLSA==","name":"Report Writing"},
-                {"id":"BU7_v3jWFFgHpmHcw50xqg==","name":"Social Media Management"},
-                {"id":"8t48rV-NkxP0h0Y0E8h-vQ==","name":"Technical Requirements"}
-            ],
-            "capabilities":{
-                "cap:analysis":{
-                    "id":"cap:analysis",
-                    "name":"Data Analysis",
-                    "skills":[{"id":"YtCEwpoJ8IcV5KPCU7BURg==","name":"Data Visualization"}],
-                    "suggested_skills":[],
-                    "score":1
-                },
-                "cap:fundraising":{
-                    "id":"cap:fundraising",
-                    "name":"Fundraising and Development",
-                    "skills":[],
-                    "suggested_skills":[{"id":"RMjj5QJ3seZnbRPDmDg8pQ==","name":"Grant Reporting"}],
-                    "score":0
-                },
-                "cap:marketing":{
-                    "id":"cap:marketing",
-                    "name":"Marketing and Public Relations",
-                    "skills":[
-                        {"id":"8Z8qGXdVMDR2Q7OH3lkueA==","name":"Public Relations"},
-                        {"id":"BU7_v3jWFFgHpmHcw50xqg==","name":"Social Media Management"}],
-                    "suggested_skills":[{"id":"oVUnhdEA5BJ_DLg0G4d1bw==","name":"Graphic Design"}],"score":2},
-                    "cap:prog_mgmt":{
-                        "id":"cap:prog_mgmt",
-                        "name":"Program Management",
-                        "skills":[{"id":"FsleYWdpSaCA_qO3nkdMVw==","name":"Budgeting"}],
-                    "suggested_skills":[],
-                    "score":2
-                    }
-                },
-                "other_skills":[{"id":"qXGYjA77UThj7WPKlvxBtg==","name":"Documentation"},{"id":"opfNJLiUftLHJH0cjBMMNg==","name":"Project Planning"},{"id":"ZFXHeJ5WsDwZSsQl_ge0MQ==","name":"Python Script"},{"id":"BPxYULhlGt-9tzxHsJNLSA==","name":"Report Writing"},{"id":"8t48rV-NkxP0h0Y0E8h-vQ==","name":"Technical Requirements"}],"email":"billy@baltimorecorps.org"}
-}
-
-CONTACTS_SHORT = {
-    'billy': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy@example.com",
-        'status': 'approved',
-        'phone_primary': "555-245-2351",
-        'account_id': 'test-valid|0123456789abcdefabcdefff',
-    },
-    'obama': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'status': 'created',
-        'phone_primary': "555-444-4444",
-        'account_id': 'test-valid|alsghldwgsg120393020293',
     }
-}
-
-SNAPSHOTS = {
-    'snapshot1': {
-        'test': 'snapshot1'
-    },
-    'snapshot2': {
-        'test': 'snapshot2'
-    },
-}
-
-APPLICATIONS_INTERNAL = {
-    'billy_pfp': {
-        'id': 5,
-        'is_approved': True,
-        'is_active': True,
-        'program_id': 1,
-        'contact': CONTACTS_SHORT['billy'],
-        'applications': [{
-            'id': 'a1',
-            'status': 'submitted',
-            'is_active': True,
-            'opportunity': OPPORTUNITIES['test_opp1'],
-            'interview_date': None,
-            'interview_time': None,
-            'interview_completed': False
-        }]
-    },
-    'obama_pfp': {
-        'contact': CONTACTS_SHORT['obama'],
-        'id': 6,
-        'is_active': True,
-        'is_approved': False,
-        'program_id': 1,
-        'applications': [{
-            'id': 'a3',
-            'status': 'recommended',
-            'is_active': True,
-            'opportunity': OPPORTUNITIES['test_opp1'],
-            'interview_date': None,
-            'interview_time': None,
-            'interview_completed': False
-        }]
-    },
-    'billy_mayoral': {
-        'id': 7,
-        'is_approved': True,
-        'is_active': True,
-        'program_id': 2,
-        'contact': CONTACTS_SHORT['billy'],
-        'applications': [{
-            'id': 'a2',
-            'status': 'draft',
-            'is_active': True,
-            'opportunity': OPPORTUNITIES['test_opp2'],
-            'interview_date': None,
-            'interview_time': None,
-            'interview_completed': False
-        }]
-    },
-}
-
-CONTACT_PROGRAMS = {
-    'billy': {
-        'id': 123,
-        'first_name': "Billy",
-        'last_name': "Daly",
-        'email': "billy@example.com",
-        'status': 'approved',
-        'phone_primary': "555-245-2351",
-        'account_id': 'test-valid|0123456789abcdefabcdefff',
-        'programs': [
-            PROGRAM_CONTACTS['billy_pfp'],
-            PROGRAM_CONTACTS['billy_mayoral']
-        ]
-    },
-    'obama': {
-        'id': 124,
-        'first_name': "Barack",
-        'last_name': "Obama",
-        'email': "obama@whitehouse.gov",
-        'status': 'created',
-        'phone_primary': "555-444-4444",
-        'account_id': 'test-valid|alsghldwgsg120393020293',
-        'programs': [PROGRAM_CONTACTS['obama_pfp']]
-    }
-}
-
-OPPORTUNITIES_INTERNAL = {
-    'test_opp1': {
-        'id': '123abc',
-        'title': "Test Opportunity",
-        'short_description': "This is a test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'program_id': 1,
-        'is_active': True,
-        'program_name': "Place for Purpose",
-        'applications': [{'id': 'a1',
-                          'contact': CONTACTS_SHORT['billy'],
-                          'interest_statement': "I'm interested in this test opportunity",
-                          'status': 'submitted',
-                          'is_active': True,
-                          'interview_date': None,
-                          'interview_time': None,
-                          'interview_completed': False},
-                         {'id': 'a3',
-                          'contact': CONTACTS_SHORT['obama'],
-                          'interest_statement': "I'm also interested in this test opportunity",
-                          'status': 'recommended',
-                          'is_active': True,
-                          'interview_date': None,
-                          'interview_time': None,
-                          'interview_completed': False}]
-    },
-    'test_opp2': {
-        'id': '222abc',
-        'title': "Another Test Opportunity",
-        'short_description': "This is another test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'program_id': 2,
-        'is_active': True,
-        'program_name': "Mayoral Fellowship",
-        'applications': [{'id': 'a2',
-                          'contact': CONTACTS_SHORT['billy'],
-                          'interest_statement': "I'm also interested in this test opportunity",
-                          'status': 'draft',
-                          'is_active': True,
-                          'interview_date': None,
-                          'interview_time': None,
-                          'interview_completed': False}]
-    },
-    'test_opp3': {
-        'id': '333abc',
-        'title': "A Third Test Opportunity",
-        'short_description': "This is another test opportunity.",
-        'gdoc_link': "https://docs.google.com/document/d/19Xl2v69Fr2n8iTig4Do9l9BUvTqAwkJY87_fZiDIs4Q/edit",
-        'status': 'submitted',
-        'org_name': 'Test Org',
-        'program_id': 1,
-        'is_active': True,
-        'program_name': "Place for Purpose",
-        'applications': []
-    },
-}
-
-APPLICATIONS = {
-    'app_billy': {
-        'id': 'a1',
-        'contact': CONTACTS_SHORT['billy'],
-        'opportunity': OPPORTUNITIES['test_opp1'],
-        'interest_statement': "I'm interested in this test opportunity",
-        'status': 'submitted',
-        'resume': SNAPSHOTS['snapshot1'],
-        'is_active': True,
-        'interview_date': None,
-        'interview_time': None,
-        'interview_completed': False
-    },
-    'app_billy2': {
-        'id': 'a2',
-        'contact': CONTACTS_SHORT['billy'],
-        'opportunity': OPPORTUNITIES['test_opp2'],
-        'interest_statement': "I'm also interested in this test opportunity",
-        'status': 'draft',
-        'resume': None,
-        'is_active': True,
-        'interview_date': None,
-        'interview_time': None,
-        'interview_completed': False,
-    },
-
-}
-
-
-ACHIEVEMENTS = {
-    'baltimore1': {
-        'id': 81,
-        'description': 'Redesigned the Salesforce architecture to facilitate easier reporting.',
-        'skills': [{
-            'name': 'Flask', 'capability_id': 'cap:it',
-        }],
-    },
-    'baltimore2': {
-        'id': 82,
-        'description': 'Formalized organizational strategy for defining and analyzing KPIs.',
-        'skills': [{
-            'name': 'Community Organizing', 'capability_id': 'cap:advocacy',
-        }],
-    },
-    'baltimore3': {
-        'id': 83,
-        'description': 'Developed recruitment projection tools to model and track progress to goals.',
-        'skills': [{
-            'name': 'Web Development', 'capability_id': 'cap:it',
-        }],
-    },
-    'goucher1': {
-        'id': 84,
-        'description': 'Did some stuff',
-        'skills': [{
-            'name': 'Python', 'capability_id': 'cap:it',
-        }],
-    }
-}
-
-DATE_START = dt.date(2000, 1, 1)
-DATE_END = dt.datetime.today()
-DATE_LENGTH = ((DATE_END.year - DATE_START.year) * 12
-               + DATE_END.month - DATE_START.month)
-
-#Changes made to the EXPERIENCES constant also need to be
-#made to the data in the populate_db.py script
-#in the common directory
-
-EXPERIENCES = {
-    'columbia': {
-        'id': 511,
-        'description': 'Test description',
-        'host': 'Columbia University',
-        'title': 'Political Science',
-        'degree': None,
-        'degree_other': None,
-        'link': 'www.google.com',
-        'link_name': 'Google',
-        'is_current': False,
-        'start_month': 'September',
-        'start_year': 1979,
-        'end_month': 'May',
-        'end_year': 1983,
-        'length_year': 3,
-        'length_month': 8,
-        'type': 'Accomplishment',
-        'contact_id': 124,
-        'location': 'New York, NY, USA',
-        'achievements': [],
-        'skills': [
-        ],
-    },
-    'goucher': {
-        'id': 512,
-        'description': None,
-        'host': 'Goucher College',
-        'title': 'Economics',
-        'degree': 'Undergraduate',
-        'degree_other': 'Study Abroad',
-        'link': None,
-        'link_name': None,
-        'is_current': False,
-        'start_month': 'September',
-        'start_year': 2012,
-        'end_month': 'May',
-        'end_year': 2016,
-        'length_year': 3,
-        'length_month': 8,
-        'type': 'Education',
-        'contact_id': 123,
-        'location': 'Towson, MD, USA',
-        'achievements': [
-            ACHIEVEMENTS['goucher1'],
-        ],
-        'skills': [
-            SKILLS['billy'][3],
-        ],
-    },
-    'baltimore' : {
-        'id': 513,
-        'description': 'Test description here',
-        'host': 'Baltimore Corps',
-        'title': 'Systems Design Manager',
-        'degree': None,
-        'degree_other': None,
-        'link': None,
-        'link_name': None,
-        'is_current': True,
-        'start_month': 'January',
-        'start_year': 2000,
-        'end_month': 'none',
-        'end_year': 0,
-        'length_year': math.floor(DATE_LENGTH/12),
-        'length_month': DATE_LENGTH % 12,
-        'type': 'Work',
-        'contact_id': 123,
-        'location': 'Baltimore, MD, USA',
-        'achievements': [
-            ACHIEVEMENTS['baltimore1'],
-            ACHIEVEMENTS['baltimore2'],
-            ACHIEVEMENTS['baltimore3'],
-        ],
-        'skills': SKILLS['billy'][0:2] + SKILLS['billy'][3:5],
-    },
-}
-
-TAGS = {
-    'python': {
-        'id': 123,
-        'name': 'Python',
-        'type': 'Skill',
-        'status': 'Active',
-    },
-    'webdev': {
-        'id': 124,
-        'name': 'Web Development',
-        'type': 'Function',
-        'status': 'Active',
-    },
-    'health': {
-        'id': 125,
-        'name': 'Public Health',
-        'type': 'Topic',
-        'status': 'Active',
-    },
-}
-
-TAG_ITEMS = {
-    'billy_webdev': {
-        'id': 21,
-        'name': 'Web Development',
-        'type': 'Function',
-        'contact_id': 123,
-        'tag_id': 124,
-        'score': 2,
-    }
-}
-
-# This is kind of gross -- maybe we should consider standardizing the resume
-# responses so that they're the same as everything else?
-def filter_dict(d, keys):
-    return {k:v for k, v in d.items() if k not in keys}
-
-RESUME_SECTIONS = {
-    'billy_work': {
-        'id': 61,
-        'resume_id': 51,
-        'max_count': None,
-        'min_count': None,
-        'name': "Work Experience",
-        'items': [
-            {
-                'resume_order': 0,
-                'indented': False,
-                'achievement': None,
-                'tag': None,
-                'experience': filter_dict(EXPERIENCES['baltimore'],
-                                          {'achievements', 'contact_id'}),
-            },
-        ],
-    },
-    'billy_skills': {
-        'id': 62,
-        'resume_id': 51,
-        'max_count': None,
-        'min_count': None,
-        'name': "Skills",
-        'items': [
-            {
-                'resume_order': 0,
-                'indented': False,
-                'achievement': None,
-                'experience': None,
-                'tag': filter_dict(TAG_ITEMS['billy_webdev'], {'contact_id'}),
-            },
-        ],
-    },
-}
-
-RESUMES = {
-    'billy': {
-        'id': 51,
-        'contact': CONTACTS['billy'],
-        'name': "Billy's Resume",
-        'date_created': '2019-05-04',
-        'gdoc_id': 'abcdefghijklmnopqrstuvwxyz1234567890-_',
-    },
-}
-
-RESUME_OUTPUT = {
-    'name': 'Billy Resume',
-    'date_created': dt.datetime.today().strftime('%Y-%m-%d'),
-    'contact': CONTACTS['billy'],
-    'gdoc_link': None,
-    'relevant_exp_dump': [EXPERIENCES['goucher']],
-    'other_exp_dump': [EXPERIENCES['baltimore']],
-    'relevant_edu_dump': [EXPERIENCES['goucher']],
-    'other_edu_dump': [EXPERIENCES['baltimore']],
-    'relevant_achieve_dump': [EXPERIENCES['baltimore']],
-    'other_achieve_dump': [EXPERIENCES['goucher']],
-    'relevant_skills_dump': [TAG_ITEMS['billy_webdev']],
-    'other_skills_dump': [TAG_ITEMS['billy_webdev']]
 }
 
 
@@ -1238,16 +155,6 @@ POSTS = {
     },
 }
 
-APP_PUT_FULL = {
-    "opportunity": OPPORTUNITIES['test_opp1'],
-    "interest_statement": "dfdddsdfff",
-    "id": "052904ba-7b83-436c-aee3-334a208fefd9",
-    "contact": CONTACTS['billy'],
-    "status": "draft",
-    'interview_date': None,
-    'interview_time': None,
-  }
-
 def post_request(app, url, data):
     mimetype = 'application/json'
     headers = {
@@ -1287,13 +194,6 @@ def post_request(app, url, data):
       lambda id: CapabilitySkillSuggestion.query.get(
           (123, 'cap:it', '_s-apdaP_WZpH69G8hlcGA=='))
       )
-
-    ,pytest.param('/api/contacts/124/programs/',
-      POSTS['program_contact'],
-      lambda id: ProgramContact.query.filter_by(contact_id=124,program_id=1).first(),
-      marks=pytest.mark.skip
-      # TODO: unskip when trello stuff is mocked out
-      )
     ,('/api/opportunity/',
       POSTS['opportunity'],
       lambda id: Opportunity.query.filter_by(title="Test Opportunity").first()
@@ -1332,8 +232,8 @@ def test_post_about_me(app):
     contact = Contact.query.get(124)
     assert contact.profile != {}
     pprint(data)
-    pprint(CONTACT_PROFILE['obama_blank'])
-    assert data == CONTACT_PROFILE['obama_blank']
+    pprint(PROFILES_API['obama'])
+    assert data == PROFILES_API['obama']
 
 def test_post_contact(app):
     mimetype = 'application/json'
@@ -1405,34 +305,6 @@ def test_post_duplicate_contact(app):
         message = json.loads(response.data)['message']
         assert message == 'A contact with this account already exists'
 
-# TODO: Add trello specific checks
-def test_create_program_contact_with_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
-
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        assert data['id'] is not None
-        id_ = data['id']
-
-        program_contacts = Contact.query.get(id_).programs
-        assert len(program_contacts) == 1
-        assert program_contacts[0].program_id == 1
-        assert program_contacts[0].stage == 1
-        assert program_contacts[0].program.name == 'Place for Purpose'
-        assert program_contacts[0].is_active == True
-        assert program_contacts[0].is_approved == False
-        assert program_contacts[0].card_id is None
-
 def test_post_approve_contact(app):
     mimetype = 'application/json'
     headers = {
@@ -1441,12 +313,12 @@ def test_post_approve_contact(app):
         'Authorization': 'Bearer test-valid|0123456789',
     }
 
-    expected = [CONTACTS_SHORT['obama'].copy()]
+    expected = [CONTACTS_API['obama'].copy()]
     expected[0]['status'] == 'approved'
 
     with app.test_client() as client:
         response = client.post('/api/contacts/approve',
-                               data=json.dumps([CONTACTS_SHORT['obama']]),
+                               data=json.dumps([CONTACTS_API['obama']]),
                                headers=headers)
 
         assert response.status_code == 201
@@ -1658,14 +530,14 @@ def skill_name(skill):
       lambda e: e.end_month == Month.january and e.end_year == 2017,
       )
     ,('/api/experiences/512/',
-      {'achievements': EXPERIENCES['goucher']['achievements'] + [
+      {'achievements': EXPERIENCES_API['billy_edu']['achievements'] + [
           {'description': 'test'}
       ]},
       lambda: Experience.query.get(512),
       lambda e: e.achievements[-1].description == 'test',
       )
     ,('/api/experiences/513/',
-      {'achievements': EXPERIENCES['baltimore']['achievements'][0:2] + [{
+      {'achievements': EXPERIENCES_API['billy_work']['achievements'][0:2] + [{
           'id': 83,
           'description': 'Developed recruitment projection tools to model and track progress to goals.',
           'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
@@ -1676,7 +548,7 @@ def skill_name(skill):
                  and e.achievements[-1].skills[0]['capability_id'] == 'cap:it'),
       )
     ,('/api/experiences/513/',
-      {'achievements': EXPERIENCES['baltimore']['achievements'][0:2] + [{
+      {'achievements': EXPERIENCES_API['billy_work']['achievements'][0:2] + [{
           'id': 83,
           'description': 'Developed recruitment projection tools to model and track progress to goals.',
           'skills': [{'name': 'Recruitment', 'capability_id': 'cap:outreach'}],
@@ -1688,17 +560,12 @@ def skill_name(skill):
       )
 
     ,('/api/experiences/513/',
-      {'skills': SKILLS['billy'][0:2] + [{'name': 'Test'}]},
+      {'skills': CONTACT_SKILLS['billy'][0:2] + [{'name': 'Test'}]},
       lambda: Experience.query.get(513),
       lambda e: (len(e.skills) == 3
                  and sorted(e.skills, key=skill_name)[0].name == 'Community Organizing'
                  and sorted(e.skills, key=skill_name)[1].name == 'Flask'
                  and sorted(e.skills, key=skill_name)[2].name == 'Test'),
-      )
-    ,('/api/contacts/123/programs/1/',
-      {'stage': 2},
-      lambda: ProgramContact.query.get(5),
-      lambda r: r.stage == 2,
       )
     ,pytest.param('/api/opportunity/123abc/',
       {'title': "New title"},
@@ -1722,12 +589,12 @@ def skill_name(skill):
       lambda r: r.resume and r.resume.resume == '{"test":"snapshotnew"}',
       )
      ,('/api/contacts/123/app/123abc',
-       APP_PUT_FULL,
+       OPP_APPS_API['billy_update'],
        lambda: OpportunityApp.query.get('a1'),
        lambda r: r.interest_statement == 'dfdddsdfff',
        )
      ,('/api/contacts/123/about-me',
-       CONTACT_PROFILE['billy_update'],
+       PROFILES_API['billy_update'],
        lambda: Profile.query.get(123),
        lambda r: (r.contact.email == 'billy_new@email.com'
                   and r.address_primary.street1 == '124 Main St'
@@ -1776,7 +643,7 @@ def test_put_contact_saves_deleted_skills(app):
 
 def test_put_program_apps_new(app):
     url = '/api/contacts/124/program-apps/interested'
-    update = PROGRAM_APPS['obama_put']
+    update = PROGRAM_APPS_API['obama']
 
     mimetype = 'application/json'
     headers = {
@@ -1793,11 +660,11 @@ def test_put_program_apps_new(app):
         pprint(response.json)
         assert response.status_code == 200
         data = response.json['data']
-        assert data == PROGRAM_APPS['obama_get']
+        assert data == PROGRAM_APPS_API['obama']
 
 def test_put_program_apps_update(app):
     url = '/api/contacts/123/program-apps/interested'
-    update = copy.deepcopy(PROGRAM_APPS['billy'])
+    update = copy.deepcopy(PROGRAM_APPS_API['billy'])
     update['program_apps'][0]['is_interested'] = False
     update['program_apps'][1]['is_interested'] = True
 
@@ -1821,9 +688,10 @@ def test_put_program_apps_update(app):
         assert billy.program_apps[0].is_interested == False
         assert billy.program_apps[1].is_interested == True
 
+@pytest.mark.skip
 def test_put_contact_dict_error(app):
     url = '/api/contacts/123/'
-    update = CONTACTS['billy_bug']
+    update = copy.deepcopy(CONTACTS['billy'])
 
     mimetype = 'application/json'
     headers = {
@@ -1841,7 +709,7 @@ def test_put_contact_dict_error(app):
 
 def test_put_programs_completed_nullable(app):
     url = '/api/contacts/123/about-me'
-    update = CONTACT_PROFILE['billy_null']
+    update = PROFILES_API['billy_null']
 
     mimetype = 'application/json'
     headers = {
@@ -1862,7 +730,7 @@ def test_put_programs_completed_nullable(app):
 
 def test_put_about_me_race_all(app):
     url = '/api/contacts/123/about-me'
-    update = CONTACT_PROFILE['billy_update']
+    update = PROFILES_API['billy_update']
 
     mimetype = 'application/json'
     headers = {
@@ -1871,6 +739,7 @@ def test_put_about_me_race_all(app):
     }
 
     with app.test_client() as client:
+        pprint(json.dumps(update))
         response = client.put(url, data=json.dumps(update),
                               headers=headers)
         pprint(response.json)
@@ -1881,7 +750,7 @@ def test_put_about_me_race_all(app):
 
 def test_put_about_me_race_no_response(app):
     url = '/api/contacts/123/about-me'
-    update = copy.deepcopy(CONTACT_PROFILE['billy_update'])
+    update = copy.deepcopy(PROFILES_API['billy_update'])
     update['profile']['race'] = {
         'american_indian': False,
         'asian': False,
@@ -1912,7 +781,7 @@ def test_put_about_me_race_no_response(app):
 
 def test_put_about_me_email(app):
     url = '/api/contacts/123/about-me'
-    update = CONTACT_PROFILE['billy_update']
+    update = PROFILES_API['billy_update']
 
     mimetype = 'application/json'
     headers = {
@@ -1944,21 +813,20 @@ def test_put_about_me_email(app):
     [('/api/contacts/123/',
       {'first_name': 'William', 'last_name':'Daly'},
       lambda: Contact.query.get(123),
-      lambda e: len(e.skills) == len(SKILLS['billy']),
+      lambda e: len(e.skills) == len(CONTACT_SKILLS['billy']),
       )
     ,('/api/experiences/513/',
       {'host': 'Test'},
       lambda: Experience.query.get(513),
-      lambda e: len(e.achievements) == len(EXPERIENCES['baltimore']['achievements'])
+      lambda e: len(e.achievements) == len(EXPERIENCES_API['billy_work']['achievements'])
       )
     ,('/api/experiences/513/',
       {'host': 'Test'},
       lambda: Experience.query.get(513),
-      lambda e: len(e.skills) == len(EXPERIENCES['baltimore']['skills'])
+      lambda e: len(e.skills) == len(EXPERIENCES_API['billy_work']['skills'])
       )
     ])
 def test_put_preserves_list_fields(app, url, update, query, test):
-    from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -1973,7 +841,6 @@ def test_put_preserves_list_fields(app, url, update, query, test):
         assert test(query())
 
 def test_put_update_achievement_skills(app):
-    from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
@@ -1982,7 +849,7 @@ def test_put_update_achievement_skills(app):
     url = '/api/experiences/513/'
     update = {
         'achievements':
-              EXPERIENCES['baltimore']['achievements'][0:2] + [{
+              EXPERIENCES_API['billy_work']['achievements'][0:2] + [{
                   'id': 83,
                   'description': 'Developed recruitment projection tools to model and track progress to goals.',
                   'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
@@ -2010,20 +877,19 @@ def test_put_update_achievement_skills(app):
 
 
 def test_contact_put_preserves_experience_skills(app):
-    from models.resume_section_model import ResumeSectionSchema
     mimetype = 'application/json'
     headers = {
         'Content-Type': mimetype,
         'Accept': mimetype
     }
-    update = { 'skills': EXPERIENCES['baltimore']['skills'] }
+    update = { 'skills': EXPERIENCES_API['billy_work']['skills'] }
     with app.test_client() as client:
         response = client.put('/api/contacts/123/', data=json.dumps(update),
                               headers=headers)
         assert response.status_code == 200
 
         e = Experience.query.get(513)
-        assert len(e.skills) == len(EXPERIENCES['baltimore']['skills'])
+        assert len(e.skills) == len(EXPERIENCES_API['billy_work']['skills'])
 
 @pytest.mark.parametrize(
     "url,update,old_id,new_id",
@@ -2036,11 +902,6 @@ def test_contact_put_preserves_experience_skills(app):
       {'id': 555, 'host': 'test'},
       lambda: Experience.query.get(512),
       lambda: Experience.query.get(555),
-      )
-    ,('/api/contacts/123/programs/1/',
-      {'id': 555, 'stage': 2},
-      lambda: ProgramContact.query.get(5),
-      lambda: ProgramContact.query.get(555),
       )
     ,('/api/opportunity/123abc/',
       {'id': 'aaaaaa', 'title': 'new title'},
@@ -2268,105 +1129,6 @@ def test_opportunity_activate(app):
         assert response.status_code == 200
         assert Opportunity.query.get('123abc').is_active == True
 
-def test_approve_many_program_contacts_new(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    expected = [CONTACTS_SHORT['obama'].copy()]
-    expected[0]['status'] = 'approved'
-    payload = [CONTACTS_SHORT['obama']]
-    with app.test_client() as client:
-        program_contact = (ProgramContact
-                           .query
-                           .filter_by(contact_id=124, program_id=2)
-                           .first())
-        assert program_contact is None
-        response = client.post('/api/programs/2/contacts/approve-many/',
-                              data=json.dumps(payload),
-                              headers=headers)
-        assert response.status_code == 200
-        program_contact = (ProgramContact
-                           .query
-                           .filter_by(contact_id=124, program_id=2)
-                           .first())
-        assert program_contact is not None
-        assert program_contact.is_approved == True
-        data = json.loads(response.data)['data']
-        contact = Contact.query.get(124)
-        assert contact.stage == 3
-        pprint(expected)
-        for item in data:
-            pprint(item)
-            assert item in expected
-
-def test_approve_many_program_contacts_existing(app, ):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    expected = [CONTACTS_SHORT['obama'].copy()]
-    expected[0]['status'] = 'approved'
-    payload = [CONTACTS_SHORT['obama']]
-    with app.test_client() as client:
-        assert ProgramContact.query.get(6).is_approved == False
-        response = client.post('/api/programs/1/contacts/approve-many/',
-                              data=json.dumps(payload),
-                              headers=headers)
-        assert response.status_code == 200
-        assert ProgramContact.query.get(6).is_approved == True
-        data = json.loads(response.data)['data']
-        pprint(expected)
-        for item in data:
-            pprint(item)
-            assert item in expected
-
-def test_reapprove_many_program_contacts(app, ):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    expected = [CONTACTS_SHORT['billy'].copy(),
-                CONTACTS_SHORT['obama'].copy()]
-    expected[0]['status'] = 'approved'
-    expected[1]['status'] = 'approved'
-    payload = [CONTACTS_SHORT['billy'], CONTACTS_SHORT['obama']]
-    with app.test_client() as client:
-        assert ProgramContact.query.get(6).is_approved == False
-        assert ProgramContact.query.get(5).is_approved == True
-        response = client.post('/api/programs/1/contacts/approve-many/',
-                              data=json.dumps(payload),
-                              headers=headers)
-        assert response.status_code == 200
-        assert ProgramContact.query.get(6).is_approved == True
-        assert ProgramContact.query.get(5).is_approved == True
-        data = json.loads(response.data)['data']
-        pprint(expected)
-        for item in data:
-            pprint(item)
-            assert item in expected
-
-def test_approve_program_contact_fake_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    payload = [{'id': 4,
-                'first_name': 'Fake',
-                'last_name': 'Person',
-                'email': 'fake@gmail.com'}]
-    with app.test_client() as client:
-        assert ProgramContact.query.get(5).is_approved == True
-        response = client.post('/api/programs/1/contacts/approve-many/',
-                              data=json.dumps(payload),
-                              headers=headers)
-        assert response.status_code == 404
-        message = json.loads(response.data)['message']
-        assert message == "Payload contained contacts that couldn't be found"
 
 @pytest.mark.parametrize(
     "delete_url,query",
@@ -2417,17 +1179,16 @@ def test_delete_contact_skill_saved(app):
     "url,expected",
     [('/api/contacts/123/', CONTACTS['billy'])
     ,('/api/contacts/124/', CONTACTS['obama'])
-    ,('/api/experiences/512/', EXPERIENCES['goucher'])
-    ,('/api/experiences/513/', EXPERIENCES['baltimore'])
-    ,('/api/contacts/123/skills', SKILLS['billy'])
-    ,('/api/contacts/123/programs/1', PROGRAM_CONTACTS['billy_pfp'])
-    ,('/api/opportunity/123abc', OPPORTUNITIES['test_opp1'])
-    ,('/api/contacts/123/app/123abc', APPLICATIONS['app_billy'])
-    ,('/api/org/opportunities/123abc', OPPORTUNITIES_INTERNAL['test_opp1'])
-    ,('/api/contacts/123/about-me', CONTACT_PROFILE['billy_profile'])
-    ,('/api/contacts/123/program-apps', PROGRAM_APPS['billy'])
-    ,('/api/contacts/123/instructions', INSTRUCTIONS['billy'])
-    ,('/api/contacts/124/instructions', INSTRUCTIONS['obama'])
+    ,('/api/experiences/512/', EXPERIENCES_API['billy_edu'])
+    ,('/api/experiences/513/', EXPERIENCES_API['billy_work'])
+    ,('/api/contacts/123/skills', CONTACT_SKILLS['billy'])
+    ,('/api/opportunity/123abc', OPPS_API['opp1'])
+    ,('/api/contacts/123/app/123abc', OPP_APPS_API['billy1'])
+    ,('/api/org/opportunities/123abc', OPPS_INTERNAL_API['opp1'])
+    ,('/api/contacts/123/about-me', PROFILES_API['billy'])
+    ,('/api/contacts/123/program-apps', PROGRAM_APPS_API['billy'])
+    ,('/api/contacts/123/instructions', INSTRUCTIONS_API['billy'])
+    ,('/api/contacts/124/instructions', INSTRUCTIONS_API['obama'])
     ]
 )
 def test_get(app, url, expected):
@@ -2459,9 +1220,9 @@ def test_get_profile_full(app):
     }
 
     expected = CONTACTS['billy'].copy()
-    expected['experiences'] = [EXPERIENCES['goucher'],
-                               EXPERIENCES['baltimore']]
-    expected['instructions'] = INSTRUCTIONS['billy']['instructions']
+    expected['experiences'] = [EXPERIENCES_API['billy_edu'],
+                               EXPERIENCES_API['billy_work']]
+    expected['instructions'] = INSTRUCTIONS_API['billy']['instructions']
     expected['email'] = expected['email_primary']['email']
 
     with app.test_client() as client:
@@ -2654,22 +1415,17 @@ def test_get_capability_recommendations(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/contacts/', [CONTACTS_SHORT['billy'], CONTACTS_SHORT['obama']])
-    ,('/api/contacts/123/experiences/', [EXPERIENCES['goucher'],
-                                         EXPERIENCES['baltimore']])
-    ,('/api/contacts/124/experiences/', [EXPERIENCES['columbia']])
-    ,('/api/contacts/123/achievements/', ACHIEVEMENTS.values())
-    ,('/api/contacts/123/programs/', [PROGRAM_CONTACTS['billy_pfp'], PROGRAM_CONTACTS['billy_mayoral']])
-    ,('/api/opportunity/', OPPORTUNITIES.values())
-    ,('/api/contacts/123/app/', [APPLICATIONS['app_billy']])
-    ,('/api/internal/opportunities/', OPPORTUNITIES_INTERNAL.values())
-    ,('/api/contacts/short/', CONTACTS_SHORT.values())
-    ,('/api/contacts/programs/', CONTACT_PROGRAMS.values())
-    ,('/api/contacts/programs/?is_approved=true', [CONTACT_PROGRAMS['billy']])
-    ,('/api/contacts/programs/?is_approved=false', [CONTACT_PROGRAMS['obama']])
-    ,('/api/programs', PROGRAMS.values())
-    ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS['billy']])
-    ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS['obama_none']])
+    [('/api/contacts/', [CONTACTS_API['billy'], CONTACTS_API['obama']])
+    ,('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
+                                         EXPERIENCES_API['billy_work']])
+    ,('/api/contacts/124/experiences/', [EXPERIENCES_API['obama_portfolio']])
+    ,('/api/opportunity/', OPPS_API.values())
+    ,('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
+    ,('/api/internal/opportunities/', OPPS_INTERNAL_API.values())
+    ,('/api/contacts/short/', CONTACTS_API.values())
+    ,('/api/programs', PROGRAMS_API.values())
+    ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS_API['billy']])
+    ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS_API['obama_none']])
     ]
 )
 def test_get_many_unordered(app, url, expected):
@@ -2685,7 +1441,9 @@ def test_get_many_unordered(app, url, expected):
 
         # Test that the data and expected contain the same items, but not
         # necessarily in the same order
+        print('EXPECTED')
         pprint(list(expected))
+        print('DATA')
         pprint(data)
         assert len(data) == len(expected)
         for item in data:
@@ -2698,7 +1456,7 @@ def test_get_contact_capabilities(app):
         'Content-Type': mimetype,
         'Accept': mimetype
     }
-    url, expected = ('/api/contacts/123/capabilities/', CAPABILITIES['billy'])
+    url, expected = ('/api/contacts/123/capabilities/', CAPABILITIES_API['billy'])
     with app.test_client() as client:
         response = client.get(url, headers=headers)
         assert response.status_code == 200
@@ -2721,14 +1479,14 @@ def test_get_contact_status_query(app):
                               headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
-        assert data == [CONTACTS_SHORT['billy']]
+        assert data == [CONTACTS_API['billy']]
 
         # checks created
         response = client.get('/api/contacts/?status=created',
                               headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
-        assert data == [CONTACTS_SHORT['obama']]
+        assert data == [CONTACTS_API['obama']]
 
         # sets obama to submitted
         obama = Contact.query.get(124)
@@ -2736,7 +1494,7 @@ def test_get_contact_status_query(app):
         db.session.commit()
         obama = Contact.query.get(124)
         assert obama.status == ContactStage(2)
-        expected = [CONTACTS_SHORT['obama']].copy()
+        expected = [CONTACTS_API['obama']].copy()
         expected[0]['status'] = 'submitted'
 
         # checks submitted
@@ -2763,26 +1521,6 @@ def test_get_contact_without_apps(app):
         pprint(expected)
         pprint(data)
         assert data == expected
-
-@pytest.mark.skip
-@pytest.mark.parametrize(
-    "url,input,output",
-    [('/api/contacts/123/generate-resume/',POSTS['resume'],RESUME_OUTPUT)]
-)
-def test_generate_resume(app, url, input, output):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    with app.test_client() as client:
-        response = client.post(url, data=json.dumps(input),
-                               headers=headers)
-        pprint(response.json)
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        assert data == output
 
 
 def make_session(contact_id, permissions=[]):

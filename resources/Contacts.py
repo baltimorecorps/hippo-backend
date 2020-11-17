@@ -2,6 +2,8 @@ from flask import request as reqobj #ask David why this is here
 from flask import current_app
 from flask_restful import Resource, request
 from flask_login import login_user, current_user, login_required
+from marshmallow import ValidationError
+
 from models.contact_model import (
     Contact,
     ContactSchema,
@@ -10,10 +12,12 @@ from models.contact_model import (
 )
 from models.email_model import Email, Type as EmailType
 from models.base_model import db
-from models.program_contact_model import ProgramContact
 from models.program_model import Program
-from .ProgramContacts import create_program_contact
-from marshmallow import ValidationError
+from models.skill_model import Skill
+
+from .skill_utils import get_skill_id, get_or_make_skill
+from .Profile import create_profile
+
 from auth import (
     validate_jwt,
     create_session,
@@ -23,11 +27,6 @@ from auth import (
     is_authorized_with_permission,
     unauthorized
 )
-
-from models.skill_model import Skill
-from .skill_utils import get_skill_id, get_or_make_skill
-from .Profile import create_profile
-
 
 contact_schema = ContactSchema(exclude=['instructions',
                                         'experiences'])
@@ -107,12 +106,15 @@ class ContactAll(Resource):
         create_profile(contact)
         db.session.add(contact)
         db.session.commit()
+
+        '''
         program_contact_data = {
             'stage': 1,
             'program_id': 1
         }
         create_program_contact(contact.id, **program_contact_data)
         db.session.commit()
+        '''
 
         user_session = create_session(contact.id, request.jwt)
         login_user(user_session)
@@ -144,25 +146,6 @@ class ContactShort(Resource):
         contacts = contacts_short_schema.dump(contacts)
         return {'status': 'success', 'data': contacts}, 200
 
-class ContactPrograms(Resource):
-    method_decorators = {
-        'get': [login_required, refresh_session],
-    }
-
-    def get(self):
-        if not is_authorized_with_permission('view:all-users'):
-            return unauthorized()
-
-        approved_arg = request.args.get('is_approved')
-        if not approved_arg:
-            contacts = Contact.query.all()
-        else:
-            if approved_arg == 'true':
-                contacts = Contact.query.filter(Contact.stage>=3)
-            elif approved_arg == 'false':
-                contacts = Contact.query.filter(Contact.stage<3)
-        contacts = contact_program_schema.dump(contacts)
-        return {'status': 'success', 'data': contacts}, 200
 
 class ContactAccount(Resource):
     method_decorators = {
