@@ -41,7 +41,10 @@ CONTACTS = {
 POST_PAYLOAD = {
     "first_name": "Tester",
     "last_name": "Byte",
-    "email": "testerb@example.com",
+    "email_primary": {
+        "email": "testerb@example.com",
+        "is_primary": True,
+    },
     "phone_primary": "111-111-1111",
     "account_id": 'test-valid|0123456789',
     "terms_agreement": True
@@ -73,6 +76,51 @@ class TestContactAll:
 
             assert UserSession.query.filter_by(contact_id=contact.id).first()
 
+    def test_post_contact_without_email_primary(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype,
+            'Authorization': 'Bearer test-valid|0123456789',
+        }
+
+        payload = POST_PAYLOAD.copy()
+        payload['email'] = 'testerb@example.com'
+        del payload['email_primary']
+        assert payload.get('email_primary', None) is None
+        assert payload.get('email') == 'testerb@example.com'
+
+        with app.test_client() as client:
+            response = client.post('/api/contacts/',
+                                   data=json.dumps(payload),
+                                   headers=headers)
+            print(response.json)
+            assert response.status_code == 201
+            contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
+            assert contact.first_name == 'Tester'
+            assert contact.email == 'testerb@example.com'
+            assert contact.email_primary.email == 'testerb@example.com'
+
+            assert UserSession.query.filter_by(contact_id=contact.id).first()
+
+    def test_post_duplicate_contact(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype,
+            'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
+        }
+
+        contact_data = POST_PAYLOAD.copy()
+        contact_data['account_id'] = 'test-valid|0123456789abcdefabcdefff'
+
+        with app.test_client() as client:
+            response = client.post('/api/contacts/',
+                                   data=json.dumps(contact_data),
+                                   headers=headers)
+            assert response.status_code == 400
+            message = json.loads(response.data)['message']
+            assert message == 'A contact with this account already exists'
 
 class TestContactShort:
 
@@ -84,13 +132,18 @@ class TestContactShort:
         get_request_many(app, url, expected)
 
 class TestContactAccount:
-
+    # TODO: Write a test for this
     def test_get(self):
         assert 1
 
 class TestContactOne:
 
-    def test_get(self):
+    @pytest.mark.parametrize(
+        'url,expected',
+        [('/api/contacts/123/', CONTACTS['billy'])
+        ,('/api/contacts/124/', CONTACTS['obama'])]
+    )
+    def test_get(self, url, expected):
         assert 1
 
     def test_put(self):

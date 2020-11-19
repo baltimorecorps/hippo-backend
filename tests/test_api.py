@@ -114,17 +114,6 @@ POSTS = {
         'card_id': 'card',
         'stage': 1
     },
-    'contact': {
-        "first_name": "Tester",
-        "last_name": "Byte",
-        "email_primary": {
-            "email": "testerb@example.com",
-            "is_primary": True,
-        },
-        "phone_primary": "111-111-1111",
-        "account_id": 'test-valid|0123456789',
-        "terms_agreement": True
-    },
     'opportunity': {
         "title": "Test Opportunity",
         "short_description": "We are looking for a tester to test our application by taking this test opportunity. Testers of all experience welcome",
@@ -235,52 +224,6 @@ def test_post_about_me(app):
     pprint(PROFILES_API['obama'])
     assert data == PROFILES_API['obama']
 
-
-def test_post_contact_without_email_primary(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-
-    payload = POSTS['contact'].copy()
-    payload['email'] = 'testerb@example.com'
-    del payload['email_primary']
-    assert payload.get('email_primary', None) is None
-    assert payload.get('email') == 'testerb@example.com'
-
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(payload),
-                               headers=headers)
-        print(response.json)
-        assert response.status_code == 201
-        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
-        assert contact.first_name == 'Tester'
-        assert contact.email == 'testerb@example.com'
-        assert contact.email_primary.email == 'testerb@example.com'
-
-        assert UserSession.query.filter_by(contact_id=contact.id).first()
-
-def test_post_duplicate_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
-    }
-
-    contact_data = POSTS['contact'].copy()
-    contact_data['account_id'] = 'test-valid|0123456789abcdefabcdefff'
-
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(contact_data),
-                               headers=headers)
-        assert response.status_code == 400
-        message = json.loads(response.data)['message']
-        assert message == 'A contact with this account already exists'
 
 def test_post_approve_contact(app):
     mimetype = 'application/json'
