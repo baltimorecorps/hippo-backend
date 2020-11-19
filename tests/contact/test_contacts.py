@@ -1,5 +1,6 @@
 import json
 import pytest
+from pprint import pprint
 
 from models.contact_model import Contact, ContactStage
 from models.session_model import UserSession
@@ -75,9 +76,12 @@ class TestContactAll:
 
 class TestContactShort:
 
-    def test_get(self):
-        assert 1
+    def test_get(self, app):
 
+        url = '/api/contacts/'
+        expected = [CONTACTS_API['billy'], CONTACTS_API['obama']]
+
+        get_request_many(app, url, expected)
 
 class TestContactAccount:
 

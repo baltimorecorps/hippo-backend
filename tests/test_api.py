@@ -1392,8 +1392,7 @@ def test_get_capability_recommendations(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/contacts/', [CONTACTS_API['billy'], CONTACTS_API['obama']])
-    ,('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
+    [('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
                                          EXPERIENCES_API['billy_work']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES_API['obama_portfolio']])
     ,('/api/opportunity/', OPPS_API.values())
@@ -1471,7 +1470,7 @@ def test_get_contact_status_query(app):
         db.session.commit()
         obama = Contact.query.get(124)
         assert obama.status == ContactStage(2)
-        expected = [CONTACTS_API['obama']].copy()
+        expected = copy.deepcopy([CONTACTS_API['obama']])
         expected[0]['status'] = 'submitted'
 
         # checks submitted
