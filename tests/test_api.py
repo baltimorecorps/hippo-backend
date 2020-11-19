@@ -235,29 +235,6 @@ def test_post_about_me(app):
     pprint(PROFILES_API['obama'])
     assert data == PROFILES_API['obama']
 
-def test_post_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
-        assert response.status_code == 201
-        set_cookie = response.headers.get('set-cookie')
-        assert set_cookie is not None
-        assert set_cookie.find('HttpOnly;') is not -1
-        # Note: Can't test "secure" due to non-https connection
-        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
-        assert contact.first_name == 'Tester'
-        assert contact.email == 'testerb@example.com'
-        assert contact.profile.years_exp is None
-        assert contact.card_id is None
-
-        assert UserSession.query.filter_by(contact_id=contact.id).first()
 
 def test_post_contact_without_email_primary(app):
     mimetype = 'application/json'
