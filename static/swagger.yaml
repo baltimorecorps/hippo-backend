@@ -160,6 +160,11 @@ paths:
       tags:
         - "Capabilities and Skills"
       summary: "Delete a contact's skills"
+  /skills/autocomplete:
+    get:
+      tags:
+        - "Capabilities and Skills"
+      summary: "Get autocomplete skills"
 
   # Opportunities
   /opportunity:
