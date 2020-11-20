@@ -1,11 +1,11 @@
 get:
   tags:
-  - "contacts"
+    - "Contact Basics"
   summary: "Get a list of contacts"
   description: "Multiple status values can be provided with comma separated strings"
   operationId: "getAllContacts"
   produces:
-  - "application/json"
+    - "application/json"
   parameters:
   responses:
     "200":
@@ -17,6 +17,11 @@ get:
     "400":
       description: "Invalid status value"
   security:
-  - petstore_auth:
-    - "write:pets"
-    - "read:pets"
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+
+post:
+  tags:
+    - "Contact Basics"
+  summary: "Create a new contact"

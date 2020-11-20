@@ -24,8 +24,8 @@ Contact:
     status:
       type: "string"
       enum:
-      - "created"
-      - "submitted"
-      - "approved" 
+        - "created"
+        - "submitted"
+        - "approved"
   xml:
     name: "Contact"

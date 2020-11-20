@@ -1,42 +1,42 @@
 get:
   tags:
-  - "contacts"
-  summary: "Add a new pet to the store"
+    - "Contact Basics"
+  summary: "Get a contact"
   description: ""
   operationId: "getOneContact"
   produces:
-  - "application/json"
+    - "application/json"
   parameters:
-  - in: "body"
-    name: "body"
-    description: "Pet object that needs to be added to the store"
-    required: true
-    schema:
-      $ref: "../swagger.yaml#definitions/Contact"
+    - in: "body"
+      name: "body"
+      description: "Pet object that needs to be added to the store"
+      required: true
+      schema:
+        $ref: "../swagger.yaml#definitions/Contact"
   responses:
     "405":
       description: "Invalid input"
   security:
-  - petstore_auth:
-    - "write:pets"
-    - "read:pets"
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
 put:
   tags:
-  - "contacts"
-  summary: "Update an existing pet"
+    - "Contact Basics"
+  summary: "Update a contact"
   description: ""
   operationId: "updatePet"
   consumes:
-  - "application/json"
+    - "application/json"
   produces:
-  - "application/json"
+    - "application/json"
   parameters:
-  - in: "body"
-    name: "body"
-    description: "Pet object that needs to be added to the store"
-    required: true
-    schema:
-      $ref: "../swagger.yaml#definitions/Contact"
+    - in: "body"
+      name: "body"
+      description: "Pet object that needs to be added to the store"
+      required: true
+      schema:
+        $ref: "../swagger.yaml#definitions/Contact"
   responses:
     "400":
       description: "Invalid ID supplied"
@@ -45,34 +45,34 @@ put:
     "405":
       description: "Validation exception"
   security:
-  - petstore_auth:
-    - "write:pets"
-    - "read:pets"
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
 delete:
   tags:
-  - "contacts"
-  summary: "Deletes a contact"
+    - "Contact Basics"
+  summary: "Delete a contact"
   description: ""
   operationId: "delete"
   produces:
-  - "application/json"
+    - "application/json"
   parameters:
-  - name: "api_key"
-    in: "header"
-    required: false
-    type: "string"
-  - name: "petId"
-    in: "path"
-    description: "Pet id to delete"
-    required: true
-    type: "integer"
-    format: "int64"
+    - name: "api_key"
+      in: "header"
+      required: false
+      type: "string"
+    - name: "petId"
+      in: "path"
+      description: "Pet id to delete"
+      required: true
+      type: "integer"
+      format: "int64"
   responses:
     "400":
       description: "Invalid ID supplied"
     "404":
       description: "Pet not found"
   security:
-  - petstore_auth:
-    - "write:pets"
-    - "read:pets"
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

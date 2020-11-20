@@ -12,291 +12,255 @@ info:
 host: "petstore.swagger.io"
 basePath: "/v2"
 tags:
-- name: "contacts"
-  description: "Everything about your Pets"
-- name: "opportunities"
-  description: "Access to Petstore orders"
-- name: "opportunity applications"
-  description: "Operations about user"
-- name: "capabilities and skills"
-  description: "Operations about user"
+  - name: "Session"
+    description: "Everything about session"
+  - name: "Contact Basics"
+    description: "Contact basics"
+  - name: "Contact Profile"
+    description: "Everything about contact's profile"
+  - name: "Experiences"
+    description: "Everything about experiences"
+  - name: "Capabilities and Skills"
+    description: "Everything about capabilities and skills"
+  - name: "Opportunities"
+    description: "Everything about opportunities"
+  - name: "Applications and Programs"
+    description: "Everything about applications and programs"
+  - name: "Staff and Employer Decisions"
+    description: "All staff and employer decisions for applications"
+
 schemes:
-- "https"
-- "http"
+  - "https"
+  - "http"
 paths:
+  # Session
+  /session:
+    get:
+      tags:
+        - "Session"
+      summary: "Get session"
+    post:
+      tags:
+        - "Session"
+      summary: "Create session"
+    delete:
+      tags:
+        - "Session"
+      summary: "Delete session"
+
+  # Contacts
   /contacts/:
     $ref: "./paths/contacts-all.yaml"
+  /contact/me:
+    get:
+      tags:
+        - "Contact Basics"
+      summary: "Get the logged in account contact"
   /contact/{contact_id}:
     $ref: "./paths/contact-one.yaml"
-  /store/inventory:
-    get:
-      tags:
-      - "opportunities"
-      summary: "Returns pet inventories by status"
-      description: "Returns a map of status codes to quantities"
-      operationId: "getInventory"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            type: "object"
-            additionalProperties:
-              type: "integer"
-              format: "int32"
-      security:
-      - api_key: []
-  /store/order:
+  /contacts/filter:
     post:
       tags:
-      - "opportunities"
-      summary: "Place an order for a pet"
-      description: ""
-      operationId: "placeOrder"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "order placed for purchasing the pet"
-        required: true
-        schema:
-          $ref: "#/definitions/Contact"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Contact"
-        "400":
-          description: "Invalid Order"
-  /store/order/{orderId}:
+        - "Contact Basics"
+      summary: "Filter contacts"
+
+  # Contact's Profile
+  /contact/{contact_id}/profile:
     get:
       tags:
-      - "opportunities"
-      summary: "Find purchase order by ID"
-      description: "For valid response try integer IDs with value >= 1 and <= 10.         Other values will generated exceptions"
-      operationId: "getOrderById"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of pet that needs to be fetched"
-        required: true
-        type: "integer"
-        maximum: 10.0
-        minimum: 1.0
-        format: "int64"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Contact"
-        "400":
-          description: "Invalid ID supplied"
-        "404":
-          description: "Order not found"
-    delete:
-      tags:
-      - "opportunities"
-      summary: "Delete purchase order by ID"
-      description: "For valid response try integer IDs with positive integer value.         Negative or non-integer values will generate API errors"
-      operationId: "deleteOrder"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "orderId"
-        in: "path"
-        description: "ID of the order that needs to be deleted"
-        required: true
-        type: "integer"
-        minimum: 1.0
-        format: "int64"
-      responses:
-        "400":
-          description: "Invalid ID supplied"
-        "404":
-          description: "Order not found"
-  /user:
-    post:
-      tags:
-      - "opportunity applications"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/Contact"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithArray:
-    post:
-      tags:
-      - "opportunity applications"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithArrayInput"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/Contact"
-      responses:
-        default:
-          description: "successful operation"
-  /user/createWithList:
-    post:
-      tags:
-      - "opportunity applications"
-      summary: "Creates list of users with given input array"
-      description: ""
-      operationId: "createUsersWithListInput"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "List of user object"
-        required: true
-        schema:
-          type: "array"
-          items:
-            $ref: "#/definitions/Contact"
-      responses:
-        default:
-          description: "successful operation"
-  /user/login:
+        - "Contact Profile"
+      summary: "Get a contact's profile"
+  /contact/{contact_id}/instructions:
     get:
       tags:
-      - "opportunity applications"
-      summary: "Logs user into the system"
-      description: ""
-      operationId: "loginUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "query"
-        description: "The user name for login"
-        required: true
-        type: "string"
-      - name: "password"
-        in: "query"
-        description: "The password for login in clear text"
-        required: true
-        type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            type: "string"
-          headers:
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
-        "400":
-          description: "Invalid username/password supplied"
-  /user/logout:
+        - "Contact Profile"
+      summary: "Get a contact's dynamic instructions"
+  /contacts/{contact_id}/about-me:
     get:
       tags:
-      - "opportunity applications"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
-      produces:
-      - "application/json"
-      parameters: []
-      responses:
-        default:
-          description: "successful operation"
-  /user/{username}:
-    get:
-      tags:
-      - "opportunity applications"
-      summary: "Get user by user name"
-      description: ""
-      operationId: "getUserByName"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be fetched. Use user1 for testing. "
-        required: true
-        type: "string"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/Contact"
-        "400":
-          description: "Invalid username supplied"
-        "404":
-          description: "User not found"
+        - "Contact Profile"
+      summary: "Get About Me"
     put:
       tags:
-      - "opportunity applications"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
-        required: true
-        schema:
-          $ref: "#/definitions/Contact"
-      responses:
-        "400":
-          description: "Invalid user supplied"
-        "404":
-          description: "User not found"
+        - "Contact Profile"
+      summary: "Update About Me"
+    post:
+      tags:
+        - "Contact Profile"
+      summary: "Create About Me"
+  /contacts/{contact_id}/program-apps/interested:
+    put:
+      tags:
+        - "Contact Profile"
+      summary: "Update Programs Interested"
+  /contacts/{contact_id}/profile/submit:
+    post:
+      tags:
+        - "Contact Profile"
+      summary: "Submit profile for review"
+  /contacts/approve:
+    post:
+      tags:
+        - "Contact Profile"
+      summary: "Approve contacts"
+
+  # Experiences
+  /contacts/{contact_id}/experiences:
+    post:
+      tags:
+        - "Experiences"
+      summary: "Add new experience"
+  /contacts/{contact_id}/experiences/?type={experience_type}:
+    get:
+      tags:
+        - "Experiences"
+      summary: "Get experience by type"
+  /experiences/{experience_id}:
+    get:
+      tags:
+        - "Experiences"
+      summary: "Get an experience"
+    put:
+      tags:
+        - "Experiences"
+      summary: "Update an experience"
     delete:
       tags:
-      - "opportunity applications"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "username"
-        in: "path"
-        description: "The name that needs to be deleted"
-        required: true
-        type: "string"
-      responses:
-        "400":
-          description: "Invalid username supplied"
-        "404":
-          description: "User not found"
+        - "Experiences"
+      summary: "Delete an experience"
+
+  # Capabilities and Skills
+  /capabilities:
+    get:
+      tags:
+        - "Capabilities and Skills"
+      summary: "Get all capabilities"
+  /contact/{contact_id}/capabilities:
+    get:
+      tags:
+        - "Capabilities and Skills"
+      summary: "Get a contact's capabilities"
+  /contacts/{contact_id}/skills:
+    post:
+      tags:
+        - "Capabilities and Skills"
+      summary: "Add contact's skills"
+  /contacts/{contact_id}/capabilities/{capability_id}/suggestion:
+    post:
+      tags:
+        - "Capabilities and Skills"
+      summary: "Add contact's skill suggestion"
+  /contacts/{contact_id}/capabilities/{capability_id}/suggestion/{skill_id}:
+    delete:
+      tags:
+        - "Capabilities and Skills"
+      summary: "Delete contact's skill suggestion"
+  /contacts/{contact_id}/skills/{skills_id}:
+    delete:
+      tags:
+        - "Capabilities and Skills"
+      summary: "Delete a contact's skills"
+
+  # Opportunities
+  /opportunity:
+    get:
+      tags:
+        - "Opportunities"
+      summary: "Get all opportunities"
+    post:
+      tags:
+        - "Opportunities"
+      summary: "Create a new opportunity"
+
+  /opportunity/{opportunity_id}:
+    put:
+      tags:
+        - "Opportunities"
+      summary: "Update an opportunity"
+  /internal/opportunities:
+    get:
+      tags:
+        - "Opportunities"
+      summary: "Get all opportunities with their applications"
+  /org/opportunities/{opportunity_id}:
+    get:
+      tags:
+        - "Opportunities"
+      summary: "Get an opportunity with its applications"
+  /opportunity/${opportunity_id}/deactivate:
+    post:
+      tags:
+        - "Opportunities"
+      summary: "Deactivate an opportunity"
+  /opportunity/${opportunity_id}/activate:
+    post:
+      tags:
+        - "Opportunities"
+      summary: "Activate an opportunity"
+
+  # Applications and Programs
+  /contacts/{contact_id}/app/{opportunity_id}:
+    get:
+      tags:
+        - "Applications and Programs"
+      summary: "Get an application"
+    post:
+      tags:
+        - "Applications and Programs"
+      summary: "Create new application"
+    put:
+      tags:
+        - "Applications and Programs"
+      summary: "Update an application"
+  /contacts/{contact_id}/app/{opportunity_id}/submit:
+    post:
+      tags:
+        - "Applications and Programs"
+      summary: "Submit an application"
+  /contacts/{contact_id}/app:
+    get:
+      tags:
+        - "Applications and Programs"
+      summary: "Get a contact's applications"
+  /internal/applications:
+    get:
+      tags:
+        - "Applications and Programs"
+      summary: "Get all applicants who have status 'submitted' and 'approved'"
+  /programs:
+    get:
+      tags:
+        - "Applications and Programs"
+      summary: "Get all programs"
+
+  # Staff and Employer Decisions
+  /contacts/{contact_id}/app/{opportunity_id}/reopen:
+    post:
+      tags:
+        - "Staff and Employer Decisions"
+      summary: "Staff reopens an application"
+  /contacts/{contact_id}/app/{opportunity_id}/recommend:
+    post:
+      tags:
+        - "Staff and Employer Decisions"
+      summary: "Staff recommends an application"
+
+  /contacts/{contact_id}/app/{opportunity_id}/interview:
+    post:
+      tags:
+        - "Staff and Employer Decisions"
+      summary: "Employer updates interview schedule to an application"
+  /contacts/{contact_id}/app/{opportunity_id}/consider:
+    post:
+      tags:
+        - "Staff and Employer Decisions"
+      summary: "Employer marks an application to be a finalist"
+  /contacts/{contact_id}/app/{opportunity_id}/not-a-fit:
+    post:
+      tags:
+        - "Staff and Employer Decisions"
+      summary: "Staff or Employer marks an application to be not a fit"
+
 securityDefinitions:
   petstore_auth:
     type: "oauth2"
