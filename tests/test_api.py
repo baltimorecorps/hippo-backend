@@ -194,10 +194,7 @@ def post_request(app, url, data):
       lambda id: CapabilitySkillSuggestion.query.get(
           (123, 'cap:it', '_s-apdaP_WZpH69G8hlcGA=='))
       )
-    ,('/api/opportunity/',
-      POSTS['opportunity'],
-      lambda id: Opportunity.query.filter_by(title="Test Opportunity").first()
-      )
+    
     ,pytest.param('/api/contacts/124/app/333abc/',
       {},
       lambda id: (OpportunityApp.query
