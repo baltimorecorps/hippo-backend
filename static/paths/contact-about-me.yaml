@@ -1,0 +1,12 @@
+get:
+  tags:
+    - "Contact Profile"
+  summary: "Get About Me"
+put:
+  tags:
+    - "Contact Profile"
+  summary: "Update About Me"
+post:
+  tags:
+    - "Contact Profile"
+  summary: "Create About Me"

@@ -4,24 +4,43 @@ Profile:
     id:
       type: "integer"
       format: "int64"
-    petId:
-      type: "integer"
-      format: "int64"
-    quantity:
-      type: "integer"
-      format: "int32"
-    shipDate:
+    address_primary:
+      type: "object"
+      $ref: "./address_primary.yaml#Address"
+    hear_about_us:
       type: "string"
-      format: "date-time"
-    status:
+    hear_about_us_other:
       type: "string"
-      description: "Order Status"
-      enum:
-      - "placed"
-      - "approved"
-      - "delivered"
-    complete:
+    previous_bcorps_program:
+      type: "string"
+    years_exp:
+      type: "string"
+    job_search_status:
+      type: "string"
+    value_question1:
+      type: "string"
+    value_question2:
+      type: "string"
+    pronoun:
+      type: "string"
+    pronoun_other:
+      type: "string"
+    program_completed:
+      type: "string"
+    gender:
+      type: "string"
+    gender_other:
+      type: "string"
+    current_edu_status:
+      type: "string"
+    current_job_status:
+      type: "string"
+    needs_help_programs:
       type: "boolean"
       default: false
+    race:
+      type: "object"
+    roles:
+      type: "object"
   xml:
-    name: "Order"
+    name: "Profile"

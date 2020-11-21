@@ -2,7 +2,7 @@ Contact:
   type: "object"
   properties:
     id:
-      type: "string"
+      type: "integer"
       format: "int64"
     first_name:
       type: "string"
@@ -29,3 +29,37 @@ Contact:
         - "approved"
   xml:
     name: "Contact"
+
+Contact_Instructions:
+  type: "object"
+  properties:
+    id:
+      type: "integer"
+      format: "int64"
+    first_name:
+      type: "string"
+      example: "Barack"
+    last_name:
+      type: "string"
+      example: "Obama"
+    email:
+      type: "string"
+      example: "obama@whitehouse.gov"
+    phone_primary:
+      type: "string"
+      example: "+1(123)456-7890"
+    account_id:
+      type: "string"
+    terms_agreement:
+      type: "boolean"
+      default: false
+    status:
+      type: "string"
+      enum:
+        - "created"
+        - "submitted"
+        - "approved"
+    instructions:
+      $ref: "./instructions.yaml#Instructions"
+  xml:
+    name: "Contact_Instructions"
