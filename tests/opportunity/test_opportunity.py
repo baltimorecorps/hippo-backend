@@ -185,7 +185,23 @@ class TestOpportunityDeactivate:
 
 
 
-# class TestOpportunityActivate:
+class TestOpportunityActivate:
 
-#     def test_post(self):
-#         assert 1
+    def test_opportunity_activate(self,app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        update = {}
+        with app.test_client() as client:
+            opp = Opportunity.query.get('123abc')
+            opp.is_active = False
+            db.session.commit()
+            assert Opportunity.query.get('123abc').is_active == False
+            response = client.post('/api/opportunity/123abc/activate/',
+                                data=json.dumps(update),
+                                headers=headers)
+            assert response.status_code == 200
+            assert Opportunity.query.get('123abc').is_active == True
+
