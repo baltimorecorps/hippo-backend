@@ -17,7 +17,8 @@ from tests.utils import (
     get_request_one,
     get_request_many,
     put_request,
-    delete_request
+    delete_request,
+    skill_name
 )
 
 CONTACTS = {
@@ -143,14 +144,36 @@ class TestContactOne:
         [('/api/contacts/123/', CONTACTS['billy'])
         ,('/api/contacts/124/', CONTACTS['obama'])]
     )
-    def test_get(self, url, expected):
-        assert 1
     def test_get(self, app, url, expected):
         get_request_one(app, url, expected)
 
 
-    def test_put(self):
-        assert 1
+    @pytest.mark.parametrize(
+        "url,update,query,test",
+        [('/api/contacts/123/',
+          {'first_name': 'William', 'last_name':'Daly'},
+          lambda: Contact.query.get(123),
+          lambda e: e.first_name == 'William',
+          ),
+         ('/api/contacts/123/',
+          {'first_name': 'William', 'programs': 'This should be excluded from load'},
+           lambda: Contact.query.get(123),
+           lambda e: e.first_name == 'William'
+         ),
+         ('/api/contacts/123/',
+          {'skills': [
+              { 'name': 'Python' },
+              { 'name': 'Workforce Development' },
+          ]},
+          lambda: Contact.query.get(123),
+          lambda e: (len(e.skills) == 2
+                     and sorted(e.skills, key=skill_name)[0].name == 'Python'
+                     and sorted(e.skills, key=skill_name)[1].name == 'Workforce Development'),
+          )]
+    )
+    def test_put(self, app, url, update, query, test):
+        put_request(app, url, update, query, test)
+
 
     def test_delete(self):
         assert 1

@@ -424,27 +424,7 @@ def skill_name(skill):
 
 @pytest.mark.parametrize(
     "url,update,query,test",
-    [('/api/contacts/123/',
-      {'first_name': 'William', 'last_name':'Daly'},
-      lambda: Contact.query.get(123),
-      lambda e: e.first_name == 'William',
-      ),
-     ('/api/contacts/123/',
-      {'first_name': 'William', 'programs': 'This should be excluded from load'},
-       lambda: Contact.query.get(123),
-       lambda e: e.first_name == 'William'
-     ),
-     ('/api/contacts/123/',
-      {'skills': [
-          { 'name': 'Python' },
-          { 'name': 'Workforce Development' },
-      ]},
-      lambda: Contact.query.get(123),
-      lambda e: (len(e.skills) == 2
-                 and sorted(e.skills, key=skill_name)[0].name == 'Python'
-                 and sorted(e.skills, key=skill_name)[1].name == 'Workforce Development'),
-      ),
-     ('/api/experiences/512/',
+    [('/api/experiences/512/',
       {'end_month': 'January', 'end_year': 2017},
       lambda: Experience.query.get(512),
       lambda e: e.end_month == Month.january and e.end_year == 2017,

@@ -2,6 +2,9 @@ import json
 from pprint import pprint
 import pytest
 
+def skill_name(skill):
+    return skill.name
+
 def post_request(app, url, data):
     mimetype = 'application/json'
     headers = {
