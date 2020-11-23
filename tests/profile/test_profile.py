@@ -90,6 +90,18 @@ class TestProfileOne:
         put_request(app, url, update, query, test)
 
 
+    def test_put_about_me_email(self, app):
+        url = '/api/contacts/123/about-me'
+        update = PROFILES_API['billy_update']
+        query = lambda: Contact.query.get(123)
+        test = (lambda c: (c.email == 'billy_new@email.com'
+                           and c.email == 'billy_new@email.com'
+                           and c.email_main == 'billy_new@email.com'
+                           and c.email_primary.email == 'billy_new@email.com'))
+
+        put_request(app, url, update, query, test)
+
+
 class TestContactInstructions:
 
     def test_get(self):
