@@ -1058,7 +1058,6 @@ def test_delete_contact_skill_saved(app):
     ,('/api/opportunity/123abc', OPPS_API['opp1'])
     ,('/api/contacts/123/app/123abc', OPP_APPS_API['billy1'])
     ,('/api/org/opportunities/123abc', OPPS_INTERNAL_API['opp1'])
-    ,('/api/contacts/123/about-me', PROFILES_API['billy'])
     ,('/api/contacts/123/program-apps', PROGRAM_APPS_API['billy'])
     ,('/api/contacts/123/instructions', INSTRUCTIONS_API['billy'])
     ,('/api/contacts/124/instructions', INSTRUCTIONS_API['obama'])
