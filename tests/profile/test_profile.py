@@ -4,6 +4,7 @@ import copy
 from pprint import pprint
 
 from tests.profile.profile_data import PROFILES_API
+from tests.contact.contact_data import INSTRUCTIONS_API
 
 from models.profile_model import Profile
 from models.contact_model import Contact
@@ -123,8 +124,18 @@ class TestProfileOne:
 
 class TestContactInstructions:
 
-    def test_get(self):
-        assert 1
+    def test_get_completed(self, app):
+        url = '/api/contacts/123/instructions'
+        expected = INSTRUCTIONS_API['billy']
+        get_request_one(app, url, expected)
+
+
+    def test_get_incomplete(self, app):
+        url = '/api/contacts/124/instructions'
+        expected = INSTRUCTIONS_API['obama']
+        get_request_one(app, url, expected)
+
+    
 
 
 class TestProfileSubmit:
