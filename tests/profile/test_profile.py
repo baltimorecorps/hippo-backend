@@ -1,5 +1,6 @@
 import json
 import pytest
+import copy
 from pprint import pprint
 
 from tests.profile.profile_data import PROFILES_API
@@ -42,6 +43,7 @@ class TestProfileOne:
                            and r.race.race_other == 'Test Text'))
         put_request(app, url, update, query, test)
 
+
     def test_put_programs_completed_nullable(self, app):
         url = '/api/contacts/123/about-me'
         update = PROFILES_API['billy_null']
@@ -58,6 +60,35 @@ class TestProfileOne:
             assert response.status_code == 200
             billy = Contact.query.get(123)
             assert billy.profile.programs_completed.kiva == False
+
+
+    def test_put_about_me_race_all(self, app):
+        url = '/api/contacts/123/about-me'
+        update = PROFILES_API['billy_update']
+        query = lambda: Contact.query.get(123)
+        test = lambda c: c.race.race_all == 'Hispanic or Latinx;Not Listed;White'
+
+        put_request(app, url, update, query, test)
+
+    def test_put_about_me_race_no_response(self, app):
+        url = '/api/contacts/123/about-me'
+        query = lambda: Contact.query.get(123)
+        test = lambda c: c.race.race_all == 'No Response'
+        update = copy.deepcopy(PROFILES_API['billy_update'])
+        update['profile']['race'] = {
+            'american_indian': False,
+            'asian': False,
+            'black': False,
+            'hispanic': False, # updated
+            'hawaiian': False,
+            'south_asian': False,
+            'white': False,
+            'not_listed': False, # updated
+            'race_other': None,
+        }
+
+        put_request(app, url, update, query, test)
+
 
 class TestContactInstructions:
 
