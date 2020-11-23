@@ -6,10 +6,12 @@ from models.contact_model import Contact, ContactStage
 from models.session_model import UserSession
 
 # imports test data
-from tests.contact.contact_data import CONTACTS_API, EMAILS_API
+from tests.contact.contact_data import CONTACTS_API, INSTRUCTIONS_API, EMAILS_API
 from tests.skill.skill_data import CONTACT_SKILLS
 from tests.profile.profile_data import PROFILES_API
 from tests.program.program_data import PROGRAM_APPS_API
+from tests.experience.experience_data import EXPERIENCES_API
+
 
 # imports testing utils
 from tests.utils import (
@@ -182,10 +184,37 @@ class TestContactOne:
 
 class TestContactFull:
 
-    def test_get(self):
-        assert 1
+    def test_get(self, app):
+        url = '/api/contacts/123/profile'
+        expected = CONTACTS['billy'].copy()
+        expected['experiences'] = [EXPERIENCES_API['billy_edu'],
+                                   EXPERIENCES_API['billy_work']]
+        expected['instructions'] = INSTRUCTIONS_API['billy']['instructions']
+        expected['email'] = expected['email_primary']['email']
+
+        get_request_one(app, url, expected)
 
 class TestContactApproveMany:
 
-    def test_post(self):
-        assert 1
+    def test_post(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype,
+            'Authorization': 'Bearer test-valid|0123456789',
+        }
+
+        expected = [CONTACTS_API['obama'].copy()]
+        expected[0]['status'] == 'approved'
+
+        with app.test_client() as client:
+            response = client.post('/api/contacts/approve',
+                                   data=json.dumps([CONTACTS_API['obama']]),
+                                   headers=headers)
+
+            assert response.status_code == 201
+            data = json.loads(response.data)['data']
+            pprint(data)
+            assert len(data) > 0
+            for contact in data:
+                assert contact['status'] == 'approved'

@@ -53,7 +53,9 @@ def get_request_one(app, url, expected):
         response = client.get(url, headers=headers)
         assert response.status_code == 200
         data = json.loads(response.data)['data']
+        print('DATA')
         pprint(data)
+        print('EXPECTED')
         pprint(expected)
         assert len(data) > 0
         assert data == expected

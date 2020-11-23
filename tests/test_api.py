@@ -225,29 +225,6 @@ def test_post_about_me(app):
     assert data == PROFILES_API['obama']
 
 
-def test_post_approve_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-
-    expected = [CONTACTS_API['obama'].copy()]
-    expected[0]['status'] == 'approved'
-
-    with app.test_client() as client:
-        response = client.post('/api/contacts/approve',
-                               data=json.dumps([CONTACTS_API['obama']]),
-                               headers=headers)
-
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        for contact in data:
-            assert contact['status'] == 'approved'
-
-
 def test_post_experience_date(app):
     id_, _ = post_request(app, '/api/contacts/123/experiences/',
                           POSTS['experience'])
@@ -1105,33 +1082,6 @@ def test_get(app, url, expected):
         assert len(data) > 0
         assert data == expected
 
-def test_get_profile_full(app):
-    #the expected data comes from the EXPERIENCES constant above
-    #the actual data come from the populate_db.py script
-    #in the common directory
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    expected = CONTACTS['billy'].copy()
-    expected['experiences'] = [EXPERIENCES_API['billy_edu'],
-                               EXPERIENCES_API['billy_work']]
-    expected['instructions'] = INSTRUCTIONS_API['billy']['instructions']
-    expected['email'] = expected['email_primary']['email']
-
-    with app.test_client() as client:
-        response = client.get('/api/contacts/123/profile',
-                              headers=headers)
-        assert response.status_code == 200
-        data = json.loads(response.data)['data']
-        print('DATA')
-        pprint(data)
-        print('EXPECTED')
-        pprint(expected)
-        assert len(data) > 0
-        assert data == expected
 
 def test_get_instructions_null_question(app):
     mimetype = 'application/json'
