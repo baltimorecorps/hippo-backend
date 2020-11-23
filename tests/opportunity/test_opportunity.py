@@ -151,6 +151,29 @@ def test_put(app, url, update, query, test):
         assert response.status_code == 200
         assert test(query())
 
+@pytest.mark.parametrize(
+    "url,update,old_id,new_id",
+    [('/api/opportunity/123abc/',
+      {'id': 'aaaaaa', 'title': 'new title'},
+      lambda: Opportunity.query.get('123abc'),
+      lambda: Opportunity.query.get('aaaaaa'),
+      )])
+
+def test_put_rejects_id_update(app, url, update, old_id, new_id):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        assert old_id() is not None, "Item to update should exist"
+        assert new_id() is None, "New id should not exist before test"
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        assert response.status_code == 200
+        assert old_id() is not None, "Item to update should still exist"
+        assert new_id() is None, "New id should not exist after test"
+
 
 # class TestOpportunityDeactivate:
 

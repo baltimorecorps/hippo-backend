@@ -883,11 +883,11 @@ def test_contact_put_preserves_experience_skills(app):
       lambda: Experience.query.get(512),
       lambda: Experience.query.get(555),
       )
-    ,('/api/opportunity/123abc/',
-      {'id': 'aaaaaa', 'title': 'new title'},
-      lambda: Opportunity.query.get('123abc'),
-      lambda: Opportunity.query.get('aaaaaa'),
-      )
+    # ,('/api/opportunity/123abc/',
+    #   {'id': 'aaaaaa', 'title': 'new title'},
+    #   lambda: Opportunity.query.get('123abc'),
+    #   lambda: Opportunity.query.get('aaaaaa'),
+    #   )
     ]
 )
 def test_put_rejects_id_update(app, url, update, old_id, new_id):
