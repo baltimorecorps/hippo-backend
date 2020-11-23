@@ -934,7 +934,6 @@ def test_get_capability_recommendations(app):
     ,('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
     ,('/api/internal/opportunities/', OPPS_INTERNAL_API.values())
     ,('/api/contacts/short/', CONTACTS_API.values())
-    ,('/api/programs', PROGRAMS_API.values())
     ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS_API['billy']])
     ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS_API['obama_none']])
     ]
