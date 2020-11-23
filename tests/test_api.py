@@ -1032,9 +1032,7 @@ def test_opportunity_activate(app):
 
 @pytest.mark.parametrize(
     "delete_url,query",
-    [('/api/contacts/123',
-      lambda: Contact.query.get(123))
-    ,('/api/experiences/512/', lambda: Experience.query.get(512))
+    [('/api/experiences/512/', lambda: Experience.query.get(512))
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: ContactSkill.query.filter_by(
           skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123, deleted=False).first())

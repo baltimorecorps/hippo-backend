@@ -175,8 +175,10 @@ class TestContactOne:
         put_request(app, url, update, query, test)
 
 
-    def test_delete(self):
-        assert 1
+    def test_delete(self, app):
+        url = '/api/contacts/123'
+        query = (lambda: Contact.query.get(123))
+        delete_request(app, url, query)
 
 class TestContactFull:
 
