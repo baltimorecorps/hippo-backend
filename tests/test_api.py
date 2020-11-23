@@ -32,24 +32,6 @@ from tests.experience.experience_data import EXPERIENCES_API, ACHIEVEMENTS_API
 from tests.program.program_data import PROGRAMS_API, PROGRAM_APPS_API
 
 
-CONTACTS = {
-    'billy': {
-        **CONTACTS_API['billy'],
-        'email_primary': EMAILS_API['billy'],
-        'skills': CONTACT_SKILLS['billy'],
-        'program_apps': PROGRAM_APPS_API['billy']['program_apps'],
-        'profile': PROFILES_API['billy']['profile']
-    },
-
-    'obama': {
-        **CONTACTS_API['obama'],
-        'email_primary': EMAILS_API['obama'],
-        'skills': CONTACT_SKILLS['obama'],
-        'program_apps': [],
-        'profile': None
-    }
-}
-
 
 POSTS = {
     'experience': {
@@ -72,47 +54,6 @@ POSTS = {
                 { 'name': 'Test Skill 1' }
             ]},
         ],
-    },
-    'portfolio': {
-        'description': 'Test description',
-        'host': 'Test Org',
-        'title': 'Test title',
-        'start_month': 'September',
-        'start_year': 2000,
-        'end_month': 'none',
-        'end_year': 0,
-        'link': None,
-        'link_name': None,
-        'type': 'Accomplishment',
-        'contact_id': 123,
-        'location': 'Test City, MD, USA',
-        'achievements': [
-            {'description': 'Test achievement 1'},
-            {'description': 'Test achievement 2', 'skills': [
-                { 'name': 'Community Organizing', 'capability_id': 'cap:advocacy' },
-                { 'name': 'Test Skill 1' }
-            ]},
-        ],
-    },
-    'resume': {
-        'name': 'Billy Resume',
-        'gdoc_link': None,
-        'contact_id': 123,
-        'relevant_exp': [512],
-        'other_exp': [513],
-        'relevant_edu': [512],
-        'other_edu': [513],
-        'relevant_achieve': [513],
-        'other_achieve': [512],
-        'relevant_skills': [21],
-        'other_skills': [21],
-    },
-    'program_contact': {
-        'id': 5,
-        'program_id': 1,
-        'contact_id': 124,
-        'card_id': 'card',
-        'stage': 1
     },
     'opportunity': {
         "title": "Test Opportunity",
@@ -535,25 +476,6 @@ def test_put_program_apps_update(app):
         billy = Contact.query.get(123)
         assert billy.program_apps[0].is_interested == False
         assert billy.program_apps[1].is_interested == True
-
-@pytest.mark.skip
-def test_put_contact_dict_error(app):
-    url = '/api/contacts/123/'
-    update = copy.deepcopy(CONTACTS['billy'])
-
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    billy = Contact.query.get(123)
-
-    with app.test_client() as client:
-        response = client.put(url, data=json.dumps(update),
-                              headers=headers)
-        pprint(response.json)
-        assert response.status_code == 200
 
 
 @pytest.mark.parametrize(
