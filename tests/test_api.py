@@ -212,17 +212,6 @@ def test_post(app, url, data, query):
     id_, _ = post_request(app, url, data)
     assert query(id_) is not None
 
-@pytest.mark.parametrize(
-    "data,program_id",
-    [(POSTS['opportunity'], 1),
-    (POSTS['mayoral_opportunity'], 2),
-    (POSTS['blank_opportunity'], 1)]
-)
-def test_post_opp_program(app, data, program_id):
-    id_, data = post_request(app, '/api/opportunity/', data)
-    opp = Opportunity.query.filter_by(title=data['title']).first()
-    assert opp is not None
-    assert opp.program_id == program_id
 
 def test_post_about_me(app):
     id_, data = post_request(app, '/api/contacts/124/about-me/', {})

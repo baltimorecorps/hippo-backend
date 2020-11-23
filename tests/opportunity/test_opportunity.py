@@ -1,5 +1,6 @@
 import json
 import pytest
+import unittest
 from pprint import pprint
 
 from models.base_model import db
@@ -74,17 +75,32 @@ def test_post(app, url, data, query):
     id_, _ = post_request(app, url, data)
     assert query(id_) is not None
 
+@pytest.mark.parametrize(
+        "data,program_id",
+        [(OPP_POST_PAYLOAD['opportunity'], 1),
+        (OPP_POST_PAYLOAD['mayoral_opportunity'], 2),
+        (OPP_POST_PAYLOAD['blank_opportunity'], 1)]
+    )
+def test_post_opp_program(app, data, program_id):
+    id_, data = post_request(app, '/api/opportunity/', data)
+    opp = Opportunity.query.filter_by(title=data['title']).first()
+    assert opp is not None
+    assert opp.program_id == program_id
 
-
-class TestOpportunityAll:
+class TestOpportunityAll(unittest.TestCase):
 
     def test_get(app):
         assert 1
 
-
                 
-    # def test_post_opp_program(self, data, program_id):
-    #     id_, data = post_request(self, '/api/opportunity/', data)
+    # @pytest.mark.parametrize(
+    #     "data,program_id",
+    #     [(OPP_POST_PAYLOAD['opportunity'], 1),
+    #     (OPP_POST_PAYLOAD['mayoral_opportunity'], 2),
+    #     (OPP_POST_PAYLOAD['blank_opportunity'], 1)]
+    # )
+    # def test_post_opp_program(app, data, program_id):
+    #     id_, data = post_request(app, '/api/opportunity/', data)
     #     opp = Opportunity.query.filter_by(title=data['title']).first()
     #     assert opp is not None
     #     assert opp.program_id == program_id
