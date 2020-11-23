@@ -127,11 +127,9 @@ class TestContactAll:
 
 class TestContactShort:
 
-    def test_get(self, app):
-
-        url = '/api/contacts/'
-        expected = [CONTACTS_API['billy'], CONTACTS_API['obama']]
-
+    @pytest.mark.parametrize('url', ['/api/contacts/', '/api/contacts/short'])
+    def test_get(self, app, url):
+        expected = CONTACTS_API.values()
         get_request_many(app, url, expected)
 
 class TestContactAccount:
