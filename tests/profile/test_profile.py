@@ -6,8 +6,10 @@ from pprint import pprint
 from tests.profile.profile_data import PROFILES_API
 from tests.contact.contact_data import INSTRUCTIONS_API
 
+from models.base_model import db
 from models.profile_model import Profile
 from models.contact_model import Contact
+from models.experience_model import Type as ExpType
 
 # imports testing utils
 from tests.utils import (
@@ -135,10 +137,135 @@ class TestContactInstructions:
         expected = INSTRUCTIONS_API['obama']
         get_request_one(app, url, expected)
 
-    
+
+    def test_get_instructions_null_question(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+
+        with app.test_client() as client:
+            # sets value question to None
+            billy = Contact.query.get(123)
+            billy.profile.value_question1 = None
+            db.session.commit()
+            billy = Contact.query.get(123)
+            assert billy.profile.value_question1 is None
+
+            response = client.get('/api/contacts/123/instructions',
+                                  headers=headers)
+            assert response.status_code == 200
+            data = json.loads(response.data)['data']
+            pprint(data)
+            assert data['instructions']['about_me']['is_complete'] == False
+
+
+    def test_instructions_tag_skills(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+
+        with app.test_client() as client:
+            # sets value question to None
+            billy = Contact.query.get(123)
+            assert billy.tag_skills_complete == True
+            for skill in billy.skill_items:
+                setattr(skill, 'deleted', True)
+            db.session.commit()
+            billy = Contact.query.get(123)
+            print(billy.skills)
+            assert billy.tag_skills_complete == False
+
+
+    def test_instructions_profile_complete(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+
+        with app.test_client() as client:
+            # sets value question to None
+            billy = Contact.query.get(123)
+            assert billy.add_experience_complete['is_complete'] == True
+            assert billy.profile_complete['is_complete'] == True
+            for exp in billy.experiences:
+                if exp.type == ExpType('Work'):
+                    db.session.delete(exp)
+            db.session.commit()
+            billy = Contact.query.get(123)
+            pprint(billy.instructions)
+            assert billy.add_experience_complete['is_complete'] == False
+            assert billy.profile_complete['is_complete'] == False
+
+
+    def test_instructions_about_me(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        update = {
+            'reset': {
+                'gender': None,
+                'gender_other': None,
+                'pronoun': None,
+                'pronoun_other': None,
+                'years_exp': None,
+                'job_search_status': None,
+                'current_job_status': None,
+                'current_edu_status': None,
+                'previous_bcorps_program': None,
+                'value_question1': None,
+                'value_question2': None,
+                'needs_help_programs': False,
+                'hear_about_us': None,
+                'hear_about_us_other': None,
+            },
+            'set': {
+                'years_exp': '3-5',
+                'job_search_status': 'Test',
+                'current_job_status': 'Test',
+                'current_edu_status': 'Test',
+                'needs_help_programs': True,
+                'value_question1': 'Test',
+                'value_question2': 'Test'
+            }
+        }
+        with app.test_client() as client:
+            # sets value question to None
+            profile = Contact.query.get(123).profile
+            profile.update(**update['reset'])
+            db.session.commit()
+
+            profile = Contact.query.get(123).profile
+            assert profile.job_search_status is None
+            assert profile.years_exp is None
+            assert profile.current_job_status is None
+            assert profile.current_edu_status is None
+
+            assert profile.value_alignment_complete == False
+            assert profile.interests_and_goals_complete == False
+            assert profile.contact.about_me_complete['is_complete'] == False
+            profile.update(**update['set'])
+            db.session.commit()
+
+            profile = Contact.query.get(123).profile
+            assert profile.job_search_status == 'Test'
+            assert profile.years_exp == '3-5'
+            assert profile.current_job_status == 'Test'
+            assert profile.current_edu_status == 'Test'
+            assert profile.needs_help_programs == True
+
+            assert profile.value_alignment_complete == True
+            assert profile.interests_and_goals_complete == True
+            assert profile.contact.about_me_complete['is_complete'] == True
 
 
 class TestProfileSubmit:
-
+    # TODO: Write test for this outside of trello_integration_test.py
     def test_post(self):
         assert 1
