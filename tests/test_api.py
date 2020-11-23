@@ -470,15 +470,6 @@ def skill_name(skill):
        lambda: OpportunityApp.query.get('a1'),
        lambda r: r.interest_statement == 'dfdddsdfff',
        )
-     ,('/api/contacts/123/about-me',
-       PROFILES_API['billy_update'],
-       lambda: Profile.query.get(123),
-       lambda r: (r.contact.email == 'billy_new@email.com'
-                  and r.address_primary.street1 == '124 Main St'
-                  and r.race.hispanic == True
-                  and r.roles.data_analysis == False
-                  and r.race.race_other == 'Test Text'),
-       )
     ]
 )
 def test_put(app, url, update, query, test):
@@ -584,26 +575,6 @@ def test_put_contact_dict_error(app):
         pprint(response.json)
         assert response.status_code == 200
 
-def test_put_programs_completed_nullable(app):
-    url = '/api/contacts/123/about-me'
-    update = PROFILES_API['billy_null']
-
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    billy = Contact.query.get(123)
-    assert billy.profile.programs_completed is not None
-
-    with app.test_client() as client:
-        response = client.put(url, data=json.dumps(update),
-                              headers=headers)
-        pprint(response.json)
-        assert response.status_code == 200
-        billy = Contact.query.get(123)
-        assert billy.profile.programs_completed.kiva == False
 
 def test_put_about_me_race_all(app):
     url = '/api/contacts/123/about-me'

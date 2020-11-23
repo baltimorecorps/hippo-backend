@@ -2,6 +2,12 @@ import json
 from pprint import pprint
 import pytest
 
+mimetype = 'application/json'
+HEADERS = {
+    'Content-Type': mimetype,
+    'Accept': mimetype
+}
+
 def skill_name(skill):
     return skill.name
 
