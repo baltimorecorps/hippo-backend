@@ -2,11 +2,60 @@ get:
   tags:
     - "Contact Profile"
   summary: "Get About Me"
+  description: "Get a contact's data for about me section"
+  operationId: "getAboutMe"
+  parameters: []
+  produces:
+    - "application/json"
+  responses:
+    "200":
+      description: "success"
+      schema:
+        $ref: "../models/contact.yaml#Contact_AboutMe"
+    "404":
+      description: "Contact not found"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+
 put:
   tags:
     - "Contact Profile"
   summary: "Update About Me"
+  description: "Update a contact's data in about me section"
+  operationId: "updateAboutMe"
+  parameters: []
+  produces:
+    - "application/json"
+  responses:
+    "200":
+      description: "success"
+      schema:
+        $ref: "../models/profile.yaml#Profile"
+    "404":
+      description: "Contact not found"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
 post:
   tags:
     - "Contact Profile"
   summary: "Create About Me"
+  description: "Create a new contact's data for about me section"
+  operationId: "createAboutMe"
+  parameters: []
+  produces:
+    - "application/json"
+  responses:
+    "200":
+      description: "success"
+      schema:
+        $ref: "../models/profile.yaml#Profile"
+    "404":
+      description: "Contact not found"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

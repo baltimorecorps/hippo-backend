@@ -4,9 +4,10 @@ Profile:
     id:
       type: "integer"
       format: "int64"
+      example: 1
     address_primary:
       type: "object"
-      $ref: "./address_primary.yaml#Address"
+      $ref: "#/definitions/Address"
     hear_about_us:
       type: "string"
     hear_about_us_other:
@@ -25,8 +26,6 @@ Profile:
       type: "string"
     pronoun_other:
       type: "string"
-    program_completed:
-      type: "string"
     gender:
       type: "string"
     gender_other:
@@ -38,9 +37,110 @@ Profile:
     needs_help_programs:
       type: "boolean"
       default: false
+    program_completed:
+      $ref: "#/definitions/Program_Completed"
     race:
-      type: "object"
+      $ref: "#/definitions/Race"
     roles:
-      type: "object"
+      $ref: "#/definitions/Roles"
   xml:
     name: "Profile"
+
+definitions:
+  Address:
+    type: "object"
+    properties:
+      street1:
+        type: "string"
+      street2:
+        type: "string"
+      city:
+        type: "string"
+      state:
+        type: "string"
+      zip_code:
+        type: "string"
+      country:
+        type: "string"
+      is_primary:
+        type: "boolean"
+        default: true
+    xml:
+      name: "Address"
+  Program_Completed:
+    type: "object"
+    properties:
+      public_allies:
+        type: "boolean"
+        default: false
+      civic_innovators:
+        type: "boolean"
+        default: false
+      fellowship:
+        type: "boolean"
+        default: false
+      elevation_awards:
+        type: "boolean"
+        default: false
+      kiva:
+        type: "boolean"
+        default: false
+      mayoral_fellowship:
+        type: "boolean"
+        default: false
+    xml:
+      name: "Program_Completed"
+  Race:
+    type: "object"
+    properties:
+      hispanic:
+        type: "boolean"
+        default: false
+      south_asian:
+        type: "boolean"
+        default: false
+      black:
+        type: "boolean"
+        default: false
+      asian:
+        type: "boolean"
+        default: false
+      hawaiian:
+        type: "boolean"
+        default: false
+      not_listed:
+        type: "boolean"
+        default: false
+      american_indian:
+        type: "boolean"
+        default: false
+      white:
+        type: "boolean"
+        default: false
+      race_other:
+        type: "string"
+    xml:
+      name: "Race"
+  Roles:
+    type: "object"
+    properties:
+      advocacy_public_policy:
+        type: "boolean"
+        default: false
+      marketing_public_relations:
+        type: "boolean"
+        default: false
+      community_engagement_outreach:
+        type: "boolean"
+        default: false
+      data_analysis:
+        type: "boolean"
+        default: false
+      fundraising_development:
+        type: "boolean"
+        default: false
+      program_management:
+        type: "boolean"
+        default: false
+    xml:
+      name: "Roles"
