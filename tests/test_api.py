@@ -883,11 +883,6 @@ def test_contact_put_preserves_experience_skills(app):
       lambda: Experience.query.get(512),
       lambda: Experience.query.get(555),
       )
-    # ,('/api/opportunity/123abc/',
-    #   {'id': 'aaaaaa', 'title': 'new title'},
-    #   lambda: Opportunity.query.get('123abc'),
-    #   lambda: Opportunity.query.get('aaaaaa'),
-    #   )
     ]
 )
 def test_put_rejects_id_update(app, url, update, old_id, new_id):
@@ -1076,20 +1071,6 @@ def test_opportunity_app_reopen(app):
         assert response.status_code == 200
         assert OpportunityApp.query.get('a1').stage == ApplicationStage.draft.value
 
-def test_opportunity_deactivate(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    update = {}
-    with app.test_client() as client:
-        assert Opportunity.query.get('123abc').is_active == True
-        response = client.post('/api/opportunity/123abc/deactivate/',
-                              data=json.dumps(update),
-                              headers=headers)
-        assert response.status_code == 200
-        assert Opportunity.query.get('123abc').is_active == False
 
 def test_opportunity_activate(app):
     mimetype = 'application/json'

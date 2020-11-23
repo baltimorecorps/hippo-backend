@@ -75,35 +75,26 @@ def test_post(app, url, data, query):
     id_, _ = post_request(app, url, data)
     assert query(id_) is not None
 
-@pytest.mark.parametrize(
-        "data,program_id",
-        [(OPP_POST_PAYLOAD['opportunity'], 1),
-        (OPP_POST_PAYLOAD['mayoral_opportunity'], 2),
-        (OPP_POST_PAYLOAD['blank_opportunity'], 1)]
-    )
-def test_post_opp_program(app, data, program_id):
-    id_, data = post_request(app, '/api/opportunity/', data)
-    opp = Opportunity.query.filter_by(title=data['title']).first()
-    assert opp is not None
-    assert opp.program_id == program_id
 
-class TestOpportunityAll(unittest.TestCase):
+
+class TestOpportunityAll:
+
 
     def test_get(app):
         assert 1
 
                 
-    # @pytest.mark.parametrize(
-    #     "data,program_id",
-    #     [(OPP_POST_PAYLOAD['opportunity'], 1),
-    #     (OPP_POST_PAYLOAD['mayoral_opportunity'], 2),
-    #     (OPP_POST_PAYLOAD['blank_opportunity'], 1)]
-    # )
-    # def test_post_opp_program(app, data, program_id):
-    #     id_, data = post_request(app, '/api/opportunity/', data)
-    #     opp = Opportunity.query.filter_by(title=data['title']).first()
-    #     assert opp is not None
-    #     assert opp.program_id == program_id
+    @pytest.mark.parametrize(
+        "data,program_id",
+        [(OPP_POST_PAYLOAD['opportunity'], 1),
+        (OPP_POST_PAYLOAD['mayoral_opportunity'], 2),
+        (OPP_POST_PAYLOAD['blank_opportunity'], 1)]
+    )
+    def test_post_opp_program(self, app, data, program_id):
+        id_, data = post_request(app, '/api/opportunity/', data)
+        opp = Opportunity.query.filter_by(title=data['title']).first()
+        assert opp is not None
+        assert opp.program_id == program_id
 
 # class TestOpportunityAllInternal:
 
@@ -117,68 +108,81 @@ class TestOpportunityAll(unittest.TestCase):
 #         assert 1
 
 
-# class TestOpportunityOne:
+class TestOpportunityOne:
 
-#     def test_get(self):
-#         assert 1
+    # def test_get(self):
+    #     assert 1
 
-#     def test_delete(self):
-#         assert 1
+    # def test_delete(self):
+    #     assert 1
 
-#     def test_put(self):
-#         assert 1
-@pytest.mark.parametrize(
-    "url,update,query,test",
-    [pytest.param('/api/opportunity/123abc/',
-      {'title': "New title"},
-      lambda: Opportunity.query.get('123abc'),
-      lambda r: r.title == 'New title',
-    #   marks=pytest.mark.skip
-    )]
-)
-def test_put(app, url, update, query, test):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    with app.test_client() as client:
-        assert query() is not None, "Item to update should exist"
-        assert not test(query())
-        response = client.put(url, data=json.dumps(update),
-                              headers=headers)
-        pprint(response.json)
-        assert response.status_code == 200
-        assert test(query())
+    @pytest.mark.parametrize(
+        "url,update,query,test",
+        [pytest.param('/api/opportunity/123abc/',
+        {'title': "New title"},
+        lambda: Opportunity.query.get('123abc'),
+        lambda r: r.title == 'New title',
+        #   marks=pytest.mark.skip
+        )]
+    )
 
-@pytest.mark.parametrize(
-    "url,update,old_id,new_id",
-    [('/api/opportunity/123abc/',
-      {'id': 'aaaaaa', 'title': 'new title'},
-      lambda: Opportunity.query.get('123abc'),
-      lambda: Opportunity.query.get('aaaaaa'),
-      )])
+    def test_put(self,app, url, update, query, test):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            assert query() is not None, "Item to update should exist"
+            assert not test(query())
+            response = client.put(url, data=json.dumps(update),
+                                headers=headers)
+            pprint(response.json)
+            assert response.status_code == 200
+            assert test(query())
 
-def test_put_rejects_id_update(app, url, update, old_id, new_id):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    with app.test_client() as client:
-        assert old_id() is not None, "Item to update should exist"
-        assert new_id() is None, "New id should not exist before test"
-        response = client.put(url, data=json.dumps(update),
-                              headers=headers)
-        assert response.status_code == 200
-        assert old_id() is not None, "Item to update should still exist"
-        assert new_id() is None, "New id should not exist after test"
+    @pytest.mark.parametrize(
+        "url,update,old_id,new_id",
+        [('/api/opportunity/123abc/',
+        {'id': 'aaaaaa', 'title': 'new title'},
+        lambda: Opportunity.query.get('123abc'),
+        lambda: Opportunity.query.get('aaaaaa'),
+        )])
+
+    def test_put_rejects_id_update(self, app, url, update, old_id, new_id):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            assert old_id() is not None, "Item to update should exist"
+            assert new_id() is None, "New id should not exist before test"
+            response = client.put(url, data=json.dumps(update),
+                                headers=headers)
+            assert response.status_code == 200
+            assert old_id() is not None, "Item to update should still exist"
+            assert new_id() is None, "New id should not exist after test"
 
 
-# class TestOpportunityDeactivate:
 
-#     def test_post(self):
-#         assert 1
+class TestOpportunityDeactivate:
+ 
+    def test_opportunity_deactivate(self,app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        update = {}
+        with app.test_client() as client:
+            assert Opportunity.query.get('123abc').is_active == True
+            response = client.post('/api/opportunity/123abc/deactivate/',
+                                data=json.dumps(update),
+                                headers=headers)
+            assert response.status_code == 200
+            assert Opportunity.query.get('123abc').is_active == False
+
 
 
 # class TestOpportunityActivate:
