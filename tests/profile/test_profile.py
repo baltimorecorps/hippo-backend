@@ -29,14 +29,26 @@ class TestProfileOne:
         get_request_one(app, url, expected)
 
 
+    def test_get_no_profile(self, app):
+        url = '/api/contacts/124/about-me'
+        headers = HEADERS
+
+        with app.test_client() as client:
+            response = client.get(url , headers=headers)
+            assert response.status_code == 404
+            assert response.json['message'] == 'Profile does not exist'
+
+
     def test_post(self, app):
-        id_, data = post_request(app, '/api/contacts/124/about-me/', {})
+        url = '/api/contacts/124/about-me/'
+
+        id_, data = post_request(app, url, {})
         contact = Contact.query.get(124)
         assert contact.profile != {}
         pprint(data)
         pprint(PROFILES_API['obama'])
         assert data == PROFILES_API['obama']
-        
+
 
     def test_put(self, app):
         url = '/api/contacts/123/about-me'
