@@ -553,12 +553,6 @@ def skill_name(skill):
                  and sorted(e.skills, key=skill_name)[1].name == 'Flask'
                  and sorted(e.skills, key=skill_name)[2].name == 'Test'),
       )
-    ,pytest.param('/api/opportunity/123abc/',
-      {'title': "New title"},
-      lambda: Opportunity.query.get('123abc'),
-      lambda r: r.title == 'New title',
-      marks=pytest.mark.skip
-      )
     ,('/api/contacts/123/app/123abc',
       {'interest_statement': "New interest statement", 'resume': None},
       lambda: OpportunityApp.query.get('a1'),

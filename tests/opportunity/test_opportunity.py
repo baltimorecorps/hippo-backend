@@ -127,6 +127,29 @@ class TestOpportunityAll(unittest.TestCase):
 
 #     def test_put(self):
 #         assert 1
+@pytest.mark.parametrize(
+    "url,update,query,test",
+    [pytest.param('/api/opportunity/123abc/',
+      {'title': "New title"},
+      lambda: Opportunity.query.get('123abc'),
+      lambda r: r.title == 'New title',
+    #   marks=pytest.mark.skip
+    )]
+)
+def test_put(app, url, update, query, test):
+    mimetype = 'application/json'
+    headers = {
+        'Content-Type': mimetype,
+        'Accept': mimetype
+    }
+    with app.test_client() as client:
+        assert query() is not None, "Item to update should exist"
+        assert not test(query())
+        response = client.put(url, data=json.dumps(update),
+                              headers=headers)
+        pprint(response.json)
+        assert response.status_code == 200
+        assert test(query())
 
 
 # class TestOpportunityDeactivate:
