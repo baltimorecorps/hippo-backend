@@ -145,6 +145,9 @@ class TestContactOne:
     )
     def test_get(self, url, expected):
         assert 1
+    def test_get(self, app, url, expected):
+        get_request_one(app, url, expected)
+
 
     def test_put(self):
         assert 1
