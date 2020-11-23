@@ -216,15 +216,6 @@ def test_post_opp_program(app, data, program_id):
     assert opp is not None
     assert opp.program_id == program_id
 
-def test_post_about_me(app):
-    id_, data = post_request(app, '/api/contacts/124/about-me/', {})
-    contact = Contact.query.get(124)
-    assert contact.profile != {}
-    pprint(data)
-    pprint(PROFILES_API['obama'])
-    assert data == PROFILES_API['obama']
-
-
 def test_post_experience_date(app):
     id_, _ = post_request(app, '/api/contacts/123/experiences/',
                           POSTS['experience'])

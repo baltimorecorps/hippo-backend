@@ -29,8 +29,14 @@ class TestProfileOne:
         get_request_one(app, url, expected)
 
 
-    def test_post(self):
-        assert 1
+    def test_post(self, app):
+        id_, data = post_request(app, '/api/contacts/124/about-me/', {})
+        contact = Contact.query.get(124)
+        assert contact.profile != {}
+        pprint(data)
+        pprint(PROFILES_API['obama'])
+        assert data == PROFILES_API['obama']
+        
 
     def test_put(self, app):
         url = '/api/contacts/123/about-me'
@@ -69,6 +75,7 @@ class TestProfileOne:
         test = lambda c: c.race.race_all == 'Hispanic or Latinx;Not Listed;White'
 
         put_request(app, url, update, query, test)
+
 
     def test_put_about_me_race_no_response(self, app):
         url = '/api/contacts/123/about-me'
