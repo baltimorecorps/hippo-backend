@@ -1,6 +1,7 @@
 import pytest
 from pprint import pprint
 import json
+import copy
 
 from models.contact_model import Contact
 from models.base_model import db
@@ -20,7 +21,7 @@ OUTPUT = {
         'gender': 'Male',
         'city': 'Baltimore',
         'state': 'Maryland',
-        'race': ['No Response']
+        'race': ['White']
     }],
     'filter1': [{
         'id': 123,
@@ -34,7 +35,7 @@ OUTPUT = {
         'gender': 'Male',
         'city': 'Baltimore',
         'state': 'Maryland',
-        'race': ['White']
+        'race': ['Asian']
     }],
     'empty': []
 }
@@ -113,12 +114,12 @@ UPDATES = {
             },
             'race': {
                 'american_indian': False,
-                'asian': False,
+                'asian': True,
                 'black': False,
                 'hispanic': False,
                 'hawaiian': False,
                 'south_asian': False,
-                'white': True,
+                'white': False,
                 'not_listed': False,
                 'race_other': None,
             }
@@ -190,7 +191,8 @@ def test_filter_race_all_null(app):
     }
 
     payload = {}
-    expected = OUTPUT['default']
+    expected = copy.deepcopy(OUTPUT['default'])
+    expected[0]['race'] = ['No Response']
 
     with app.test_client() as client:
 

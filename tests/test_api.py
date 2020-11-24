@@ -32,24 +32,6 @@ from tests.experience.experience_data import EXPERIENCES_API, ACHIEVEMENTS_API
 from tests.program.program_data import PROGRAMS_API, PROGRAM_APPS_API
 
 
-CONTACTS = {
-    'billy': {
-        **CONTACTS_API['billy'],
-        'email_primary': EMAILS_API['billy'],
-        'skills': CONTACT_SKILLS['billy'],
-        'program_apps': PROGRAM_APPS_API['billy']['program_apps'],
-        'profile': PROFILES_API['billy']['profile']
-    },
-
-    'obama': {
-        **CONTACTS_API['obama'],
-        'email_primary': EMAILS_API['obama'],
-        'skills': CONTACT_SKILLS['obama'],
-        'program_apps': [],
-        'profile': None
-    }
-}
-
 
 POSTS = {
     'experience': {
@@ -72,58 +54,6 @@ POSTS = {
                 { 'name': 'Test Skill 1' }
             ]},
         ],
-    },
-    'portfolio': {
-        'description': 'Test description',
-        'host': 'Test Org',
-        'title': 'Test title',
-        'start_month': 'September',
-        'start_year': 2000,
-        'end_month': 'none',
-        'end_year': 0,
-        'link': None,
-        'link_name': None,
-        'type': 'Accomplishment',
-        'contact_id': 123,
-        'location': 'Test City, MD, USA',
-        'achievements': [
-            {'description': 'Test achievement 1'},
-            {'description': 'Test achievement 2', 'skills': [
-                { 'name': 'Community Organizing', 'capability_id': 'cap:advocacy' },
-                { 'name': 'Test Skill 1' }
-            ]},
-        ],
-    },
-    'resume': {
-        'name': 'Billy Resume',
-        'gdoc_link': None,
-        'contact_id': 123,
-        'relevant_exp': [512],
-        'other_exp': [513],
-        'relevant_edu': [512],
-        'other_edu': [513],
-        'relevant_achieve': [513],
-        'other_achieve': [512],
-        'relevant_skills': [21],
-        'other_skills': [21],
-    },
-    'program_contact': {
-        'id': 5,
-        'program_id': 1,
-        'contact_id': 124,
-        'card_id': 'card',
-        'stage': 1
-    },
-    'contact': {
-        "first_name": "Tester",
-        "last_name": "Byte",
-        "email_primary": {
-            "email": "testerb@example.com",
-            "is_primary": True,
-        },
-        "phone_primary": "111-111-1111",
-        "account_id": 'test-valid|0123456789',
-        "terms_agreement": True
     },
     'opportunity': {
         "title": "Test Opportunity",
@@ -211,107 +141,6 @@ def test_post(app, url, data, query):
 
     id_, _ = post_request(app, url, data)
     assert query(id_) is not None
-
-
-def test_post_about_me(app):
-    id_, data = post_request(app, '/api/contacts/124/about-me/', {})
-    contact = Contact.query.get(124)
-    assert contact.profile != {}
-    pprint(data)
-    pprint(PROFILES_API['obama'])
-    assert data == PROFILES_API['obama']
-
-def test_post_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(POSTS['contact']),
-                               headers=headers)
-        assert response.status_code == 201
-        set_cookie = response.headers.get('set-cookie')
-        assert set_cookie is not None
-        assert set_cookie.find('HttpOnly;') is not -1
-        # Note: Can't test "secure" due to non-https connection
-        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
-        assert contact.first_name == 'Tester'
-        assert contact.email == 'testerb@example.com'
-        assert contact.profile.years_exp is None
-        assert contact.card_id is None
-
-        assert UserSession.query.filter_by(contact_id=contact.id).first()
-
-def test_post_contact_without_email_primary(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-
-    payload = POSTS['contact'].copy()
-    payload['email'] = 'testerb@example.com'
-    del payload['email_primary']
-    assert payload.get('email_primary', None) is None
-    assert payload.get('email') == 'testerb@example.com'
-
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(payload),
-                               headers=headers)
-        print(response.json)
-        assert response.status_code == 201
-        contact = Contact.query.filter_by(account_id='test-valid|0123456789').first()
-        assert contact.first_name == 'Tester'
-        assert contact.email == 'testerb@example.com'
-        assert contact.email_primary.email == 'testerb@example.com'
-
-        assert UserSession.query.filter_by(contact_id=contact.id).first()
-
-def test_post_duplicate_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789abcdefabcdefff',
-    }
-
-    contact_data = POSTS['contact'].copy()
-    contact_data['account_id'] = 'test-valid|0123456789abcdefabcdefff'
-
-    with app.test_client() as client:
-        response = client.post('/api/contacts/',
-                               data=json.dumps(contact_data),
-                               headers=headers)
-        assert response.status_code == 400
-        message = json.loads(response.data)['message']
-        assert message == 'A contact with this account already exists'
-
-def test_post_approve_contact(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-        'Authorization': 'Bearer test-valid|0123456789',
-    }
-
-    expected = copy.deepcopy([CONTACTS_API['obama']])
-    expected[0]['status'] == 'approved'
-
-    with app.test_client() as client:
-        response = client.post('/api/contacts/approve',
-                               data=json.dumps([CONTACTS_API['obama']]),
-                               headers=headers)
-
-        assert response.status_code == 201
-        data = json.loads(response.data)['data']
-        assert len(data) > 0
-        for contact in data:
-            assert contact['status'] == 'approved'
 
 
 def test_post_experience_date(app):
@@ -425,17 +254,6 @@ def test_post_contact_skill_undelete(app):
     print(achievement_skills)
     assert 'Event Planning' in achievement_skills
 
-def test_get_no_profile(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype,
-    }
-    with app.test_client() as client:
-        response = client.get('/api/contacts/124/about-me', headers=headers)
-        assert response.status_code == 404
-        assert response.json['message'] == 'Profile does not exist'
-
 
 def test_post_session(app):
     mimetype = 'application/json'
@@ -490,27 +308,7 @@ def skill_name(skill):
 
 @pytest.mark.parametrize(
     "url,update,query,test",
-    [('/api/contacts/123/',
-      {'first_name': 'William', 'last_name':'Daly'},
-      lambda: Contact.query.get(123),
-      lambda e: e.first_name == 'William',
-      ),
-     ('/api/contacts/123/',
-      {'first_name': 'William', 'programs': 'This should be excluded from load'},
-       lambda: Contact.query.get(123),
-       lambda e: e.first_name == 'William'
-     ),
-     ('/api/contacts/123/',
-      {'skills': [
-          { 'name': 'Python' },
-          { 'name': 'Workforce Development' },
-      ]},
-      lambda: Contact.query.get(123),
-      lambda e: (len(e.skills) == 2
-                 and sorted(e.skills, key=skill_name)[0].name == 'Python'
-                 and sorted(e.skills, key=skill_name)[1].name == 'Workforce Development'),
-      ),
-     ('/api/experiences/512/',
+    [('/api/experiences/512/',
       {'end_month': 'January', 'end_year': 2017},
       lambda: Experience.query.get(512),
       lambda e: e.end_month == Month.january and e.end_year == 2017,
@@ -572,15 +370,6 @@ def skill_name(skill):
        OPP_APPS_API['billy_update'],
        lambda: OpportunityApp.query.get('a1'),
        lambda r: r.interest_statement == 'dfdddsdfff',
-       )
-     ,('/api/contacts/123/about-me',
-       PROFILES_API['billy_update'],
-       lambda: Profile.query.get(123),
-       lambda r: (r.contact.email == 'billy_new@email.com'
-                  and r.address_primary.street1 == '124 Main St'
-                  and r.race.hispanic == True
-                  and r.roles.data_analysis == False
-                  and r.race.race_other == 'Test Text'),
        )
     ]
 )
@@ -668,125 +457,6 @@ def test_put_program_apps_update(app):
         assert billy.program_apps[0].is_interested == False
         assert billy.program_apps[1].is_interested == True
 
-@pytest.mark.skip
-def test_put_contact_dict_error(app):
-    url = '/api/contacts/123/'
-    update = copy.deepcopy(CONTACTS['billy'])
-
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    billy = Contact.query.get(123)
-
-    with app.test_client() as client:
-        response = client.put(url, data=json.dumps(update),
-                              headers=headers)
-        pprint(response.json)
-        assert response.status_code == 200
-
-def test_put_programs_completed_nullable(app):
-    url = '/api/contacts/123/about-me'
-    update = PROFILES_API['billy_null']
-
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    billy = Contact.query.get(123)
-    assert billy.profile.programs_completed is not None
-
-    with app.test_client() as client:
-        response = client.put(url, data=json.dumps(update),
-                              headers=headers)
-        pprint(response.json)
-        assert response.status_code == 200
-        billy = Contact.query.get(123)
-        assert billy.profile.programs_completed.kiva == False
-
-def test_put_about_me_race_all(app):
-    url = '/api/contacts/123/about-me'
-    update = PROFILES_API['billy_update']
-
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    with app.test_client() as client:
-        pprint(json.dumps(update))
-        response = client.put(url, data=json.dumps(update),
-                              headers=headers)
-        pprint(response.json)
-        assert response.status_code == 200
-
-        billy = Contact.query.get(123)
-        assert billy.race.race_all == 'Hispanic or Latinx;Not Listed;White'
-
-def test_put_about_me_race_no_response(app):
-    url = '/api/contacts/123/about-me'
-    update = copy.deepcopy(PROFILES_API['billy_update'])
-    update['profile']['race'] = {
-        'american_indian': False,
-        'asian': False,
-        'black': False,
-        'hispanic': False, # updated
-        'hawaiian': False,
-        'south_asian': False,
-        'white': False,
-        'not_listed': False, # updated
-        'race_other': None,
-    }
-
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    with app.test_client() as client:
-        response = client.put(url, data=json.dumps(update),
-                              headers=headers)
-        pprint(response.json)
-        assert response.status_code == 200
-
-        billy = Contact.query.get(123)
-        assert billy.race.race_all == 'No Response'
-
-
-def test_put_about_me_email(app):
-    url = '/api/contacts/123/about-me'
-    update = PROFILES_API['billy_update']
-
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    billy = Contact.query.get(123)
-    assert billy.email == 'billy@example.com'
-    assert billy.email_primary.email == 'billy@example.com'
-    assert billy.email_main == 'billy@example.com'
-
-    with app.test_client() as client:
-        response = client.put(url, data=json.dumps(update),
-                              headers=headers)
-        pprint(response.json)
-        assert response.status_code == 200
-
-        billy = Contact.query.get(123)
-        data = response.json['data']
-        assert data['email'] == 'billy_new@email.com'
-
-        assert billy.email == 'billy_new@email.com'
-        assert billy.email_main == 'billy_new@email.com'
-        assert billy.email_primary.email == 'billy_new@email.com'
 
 @pytest.mark.parametrize(
     "url,update,query,test",
@@ -1076,9 +746,7 @@ def test_opportunity_app_reopen(app):
 
 @pytest.mark.parametrize(
     "delete_url,query",
-    [('/api/contacts/123',
-      lambda: Contact.query.get(123))
-    ,('/api/experiences/512/', lambda: Experience.query.get(512))
+    [('/api/experiences/512/', lambda: Experience.query.get(512))
     ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: ContactSkill.query.filter_by(
           skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123, deleted=False).first())
@@ -1121,9 +789,7 @@ def test_delete_contact_skill_saved(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/contacts/123/', CONTACTS['billy'])
-    ,('/api/contacts/124/', CONTACTS['obama'])
-    ,('/api/experiences/512/', EXPERIENCES_API['billy_edu'])
+    [('/api/experiences/512/', EXPERIENCES_API['billy_edu'])
     ,('/api/experiences/513/', EXPERIENCES_API['billy_work'])
     ,('/api/contacts/123/skills', CONTACT_SKILLS['billy'])
     ,('/api/contacts/123/app/123abc', OPP_APPS_API['billy1'])
@@ -1131,7 +797,8 @@ def test_delete_contact_skill_saved(app):
     ,('/api/contacts/123/program-apps', PROGRAM_APPS_API['billy'])
     ,('/api/contacts/123/instructions', INSTRUCTIONS_API['billy'])
     ,('/api/contacts/124/instructions', INSTRUCTIONS_API['obama'])
-    ]
+    ,('/api/org/opportunities/123abc', OPPS_INTERNAL_API['opp1'])
+    ,('/api/contacts/123/program-apps', PROGRAM_APPS_API['billy'])]
 )
 def test_get(app, url, expected):
     #the expected data comes from the EXPERIENCES constant above
@@ -1151,156 +818,6 @@ def test_get(app, url, expected):
         assert len(data) > 0
         assert data == expected
 
-def test_get_profile_full(app):
-    #the expected data comes from the EXPERIENCES constant above
-    #the actual data come from the populate_db.py script
-    #in the common directory
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    expected = CONTACTS['billy'].copy()
-    expected['experiences'] = [EXPERIENCES_API['billy_edu'],
-                               EXPERIENCES_API['billy_work']]
-    expected['instructions'] = INSTRUCTIONS_API['billy']['instructions']
-    expected['email'] = expected['email_primary']['email']
-
-    with app.test_client() as client:
-        response = client.get('/api/contacts/123/profile',
-                              headers=headers)
-        assert response.status_code == 200
-        data = json.loads(response.data)['data']
-        print('DATA')
-        pprint(data)
-        print('EXPECTED')
-        pprint(expected)
-        assert len(data) > 0
-        assert data == expected
-
-def test_get_instructions_null_question(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    with app.test_client() as client:
-        # sets value question to None
-        billy = Contact.query.get(123)
-        billy.profile.value_question1 = None
-        db.session.commit()
-        billy = Contact.query.get(123)
-        assert billy.profile.value_question1 is None
-
-        response = client.get('/api/contacts/123/instructions',
-                              headers=headers)
-        assert response.status_code == 200
-        data = json.loads(response.data)['data']
-        pprint(data)
-        assert data['instructions']['about_me']['is_complete'] == False
-
-def test_instructions_tag_skills(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    with app.test_client() as client:
-        # sets value question to None
-        billy = Contact.query.get(123)
-        assert billy.tag_skills_complete == True
-        for skill in billy.skill_items:
-            setattr(skill, 'deleted', True)
-        db.session.commit()
-        billy = Contact.query.get(123)
-        print(billy.skills)
-        assert billy.tag_skills_complete == False
-
-def test_instructions_profile_complete(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-
-    with app.test_client() as client:
-        # sets value question to None
-        billy = Contact.query.get(123)
-        assert billy.add_experience_complete['is_complete'] == True
-        assert billy.profile_complete['is_complete'] == True
-        for exp in billy.experiences:
-            if exp.type == ExpType('Work'):
-                db.session.delete(exp)
-        db.session.commit()
-        billy = Contact.query.get(123)
-        pprint(billy.instructions)
-        assert billy.add_experience_complete['is_complete'] == False
-        assert billy.profile_complete['is_complete'] == False
-
-def test_instructions_about_me(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    update = {
-        'reset': {
-            'gender': None,
-            'gender_other': None,
-            'pronoun': None,
-            'pronoun_other': None,
-            'years_exp': None,
-            'job_search_status': None,
-            'current_job_status': None,
-            'current_edu_status': None,
-            'previous_bcorps_program': None,
-            'value_question1': None,
-            'value_question2': None,
-            'needs_help_programs': False,
-            'hear_about_us': None,
-            'hear_about_us_other': None,
-        },
-        'set': {
-            'years_exp': '3-5',
-            'job_search_status': 'Test',
-            'current_job_status': 'Test',
-            'current_edu_status': 'Test',
-            'needs_help_programs': True,
-            'value_question1': 'Test',
-            'value_question2': 'Test'
-        }
-    }
-    with app.test_client() as client:
-        # sets value question to None
-        profile = Contact.query.get(123).profile
-        profile.update(**update['reset'])
-        db.session.commit()
-
-        profile = Contact.query.get(123).profile
-        assert profile.job_search_status is None
-        assert profile.years_exp is None
-        assert profile.current_job_status is None
-        assert profile.current_edu_status is None
-
-        assert profile.value_alignment_complete == False
-        assert profile.interests_and_goals_complete == False
-        assert profile.contact.about_me_complete['is_complete'] == False
-        profile.update(**update['set'])
-        db.session.commit()
-
-        profile = Contact.query.get(123).profile
-        assert profile.job_search_status == 'Test'
-        assert profile.years_exp == '3-5'
-        assert profile.current_job_status == 'Test'
-        assert profile.current_edu_status == 'Test'
-        assert profile.needs_help_programs == True
-
-        assert profile.value_alignment_complete == True
-        assert profile.interests_and_goals_complete == True
-        assert profile.contact.about_me_complete['is_complete'] == True
 
 def test_get_autocomplete(app):
     mimetype = 'application/json'
@@ -1357,15 +874,12 @@ def test_get_capability_recommendations(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/contacts/', [CONTACTS_API['billy'], CONTACTS_API['obama']])
-    ,('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
+    [('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
                                          EXPERIENCES_API['billy_work']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES_API['obama_portfolio']])
     ,('/api/opportunity/', OPPS_API.values())
     ,('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
     ,('/api/internal/opportunities/', OPPS_INTERNAL_API.values())
-    ,('/api/contacts/short/', CONTACTS_API.values())
-    ,('/api/programs', PROGRAMS_API.values())
     ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS_API['billy']])
     ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS_API['obama_none']])
     ]
