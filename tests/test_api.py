@@ -299,7 +299,7 @@ def test_post_approve_contact(app):
         'Authorization': 'Bearer test-valid|0123456789',
     }
 
-    expected = [CONTACTS_API['obama'].copy()]
+    expected = copy.deepcopy([CONTACTS_API['obama']])
     expected[0]['status'] == 'approved'
 
     with app.test_client() as client:
@@ -1126,9 +1126,7 @@ def test_delete_contact_skill_saved(app):
     ,('/api/experiences/512/', EXPERIENCES_API['billy_edu'])
     ,('/api/experiences/513/', EXPERIENCES_API['billy_work'])
     ,('/api/contacts/123/skills', CONTACT_SKILLS['billy'])
-    ,('/api/opportunity/123abc', OPPS_API['opp1'])
     ,('/api/contacts/123/app/123abc', OPP_APPS_API['billy1'])
-    ,('/api/org/opportunities/123abc', OPPS_INTERNAL_API['opp1'])
     ,('/api/contacts/123/about-me', PROFILES_API['billy'])
     ,('/api/contacts/123/program-apps', PROGRAM_APPS_API['billy'])
     ,('/api/contacts/123/instructions', INSTRUCTIONS_API['billy'])
@@ -1438,7 +1436,7 @@ def test_get_contact_status_query(app):
         db.session.commit()
         obama = Contact.query.get(124)
         assert obama.status == ContactStage(2)
-        expected = [CONTACTS_API['obama']].copy()
+        expected = copy.deepcopy([CONTACTS_API['obama']])
         expected[0]['status'] = 'submitted'
 
         # checks submitted

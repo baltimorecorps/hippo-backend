@@ -7,6 +7,7 @@ from models.base_model import db
 from models.opportunity_model import Opportunity
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
 #imports test data
+from tests.opportunity.opportunity_data import OPPS_API, OPP_APPS_API, OPPS_INTERNAL_API
 
 
 OPP_POST_PAYLOAD = {
@@ -109,9 +110,28 @@ class TestOpportunityAll:
 
 
 class TestOpportunityOne:
-
-    # def test_get(self):
-    #     assert 1
+    @pytest.mark.parametrize("url,expected",
+    [('/api/org/opportunities/123abc', OPPS_INTERNAL_API['opp1'])
+    ,('/api/opportunity/123abc', OPPS_API['opp1'])])
+    
+    def test_get(self,app, url, expected):
+        #the expected data comes from the EXPERIENCES constant above
+        #the actual data come from the populate_db.py script
+        #in the common directory
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            response = client.get(url, headers=headers)
+            assert response.status_code == 200
+            data = json.loads(response.data)['data']
+            pprint(data)
+            pprint(expected)
+            assert len(data) > 0
+            assert data == expected
+            
 
     # def test_delete(self):
     #     assert 1
