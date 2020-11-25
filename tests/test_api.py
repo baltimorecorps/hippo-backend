@@ -240,42 +240,8 @@ def skill_name(skill):
 
 @pytest.mark.parametrize(
     "url,update,query,test",
-    [('/api/experiences/512/',
-      {'end_month': 'January', 'end_year': 2017},
-      lambda: Experience.query.get(512),
-      lambda e: e.end_month == Month.january and e.end_year == 2017,
-      )
-    ,('/api/experiences/512/',
-      {'achievements': EXPERIENCES_API['billy_edu']['achievements'] + [
-          {'description': 'test'}
-      ]},
-      lambda: Experience.query.get(512),
-      lambda e: e.achievements[-1].description == 'test',
-      )
-    ,('/api/experiences/513/',
-      {'achievements': EXPERIENCES_API['billy_work']['achievements'][0:2] + [{
-          'id': 83,
-          'description': 'Developed recruitment projection tools to model and track progress to goals.',
-          'skills': [{'name': 'Python', 'capability_id': 'cap:it'}],
-      }]},
-      lambda: Experience.query.get(513),
-      lambda e: (len(e.achievements[-1].skills) == 1
-                 and e.achievements[-1].skills[0]['name'] == 'Python'
-                 and e.achievements[-1].skills[0]['capability_id'] == 'cap:it'),
-      )
-    ,('/api/experiences/513/',
-      {'achievements': EXPERIENCES_API['billy_work']['achievements'][0:2] + [{
-          'id': 83,
-          'description': 'Developed recruitment projection tools to model and track progress to goals.',
-          'skills': [{'name': 'Recruitment', 'capability_id': 'cap:outreach'}],
-      }]},
-      lambda: Experience.query.get(513),
-      lambda e: (len(e.achievements[-1].skills) == 1
-                 and e.achievements[-1].skills[0]['name'] == 'Recruitment'
-                 and e.achievements[-1].skills[0]['capability_id'] == 'cap:outreach'),
-      )
-
-    ,('/api/experiences/513/',
+    [
+    ('/api/experiences/513/',
       {'skills': CONTACT_SKILLS['billy'][0:2] + [{'name': 'Test'}]},
       lambda: Experience.query.get(513),
       lambda e: (len(e.skills) == 3
