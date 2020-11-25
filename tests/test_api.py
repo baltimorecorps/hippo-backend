@@ -147,9 +147,6 @@ def test_post_experience_date(app):
     assert Experience.query.get(id_).start_month == Month.september
     assert Experience.query.get(id_).start_year == 2000
 
-def test_post_opportunity_app_status(app):
-    id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
-    assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
 
 def test_post_experience_null_start_date(app):
     exp = POSTS['experience'].copy()

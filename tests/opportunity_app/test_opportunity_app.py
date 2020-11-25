@@ -62,6 +62,10 @@ class TestOpportunityAppSubmit:
         id_, _ = post_request(app, url, data)
         assert query(id_) is not None
 
+    def test_post_opportunity_app_status(self,app):
+        id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
+        assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
+
 
 class TestOpportunityAppRecommend:
 
