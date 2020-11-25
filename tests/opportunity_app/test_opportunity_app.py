@@ -96,7 +96,7 @@ class TestOpportunityAppReopen:
 
 
 class TestOpportunityAppSubmit:
-    
+
     @pytest.mark.parametrize(
         "url,data,query",
         [pytest.param('/api/contacts/124/app/333abc/',
@@ -118,6 +118,23 @@ class TestOpportunityAppSubmit:
     def test_post_opportunity_app_status(self,app):
         id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
         assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
+
+
+class TestOpportunityAppNotAFit:
+    def test_opportunity_app_not_a_fit(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        update = {}
+        with app.test_client() as client:
+            assert OpportunityApp.query.get('a1').is_active == True
+            response = client.post('/api/contacts/123/app/123abc/not-a-fit/',
+                                data=json.dumps(update),
+                                headers=headers)
+            assert response.status_code == 200
+            assert OpportunityApp.query.get('a1').is_active == False
 
 
 class TestOpportunityAppRecommend:

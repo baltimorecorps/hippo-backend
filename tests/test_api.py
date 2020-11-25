@@ -544,22 +544,6 @@ def test_put_rejects_id_update(app, url, update, old_id, new_id):
         assert new_id() is None, "New id should not exist after test"
 
 
-
-def test_opportunity_app_not_a_fit(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    update = {}
-    with app.test_client() as client:
-        assert OpportunityApp.query.get('a1').is_active == True
-        response = client.post('/api/contacts/123/app/123abc/not-a-fit/',
-                              data=json.dumps(update),
-                              headers=headers)
-        assert response.status_code == 200
-        assert OpportunityApp.query.get('a1').is_active == False
-
 def test_opportunity_app_submit(app):
     mimetype = 'application/json'
     headers = {
