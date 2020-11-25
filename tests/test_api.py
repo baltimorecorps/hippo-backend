@@ -135,63 +135,6 @@ def test_post(app, url, data, query):
     assert query(id_) is not None
 
 
-def test_post_experience_date(app):
-    id_, _ = post_request(app, '/api/contacts/123/experiences/',
-                          POSTS['experience'])
-    assert Experience.query.get(id_).end_month == Month.may
-    assert Experience.query.get(id_).end_year == 2019
-    assert Experience.query.get(id_).start_month == Month.september
-    assert Experience.query.get(id_).start_year == 2000
-
-
-def test_post_experience_null_start_date(app):
-    exp = POSTS['experience'].copy()
-    exp['start_month'] = 'none'
-    exp['start_year'] = 0
-    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
-    assert Experience.query.get(id_) is not None
-    assert Experience.query.get(id_).start_month == Month.none
-    assert Experience.query.get(id_).start_year == 0
-    pprint(Experience.query.get(id_).start_month)
-    pprint(Experience.query.get(id_).start_year)
-
-def test_post_experience_current(app):
-    exp = POSTS['experience'].copy()
-    exp['end_month'] = 'none'
-    exp['end_year'] = 0
-    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
-    assert Experience.query.get(id_) is not None
-    assert Experience.query.get(id_).is_current == True
-
-def test_post_experience_dump_only(app):
-    exp = POSTS['experience'].copy()
-    exp['length_year'] = 18
-    exp['length_month'] = 8
-    exp['is_current'] = False
-    exp['id'] = 1
-    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
-    assert Experience.query.get(id_) is not None
-
-def test_post_experience_skills(app):
-    exp = POSTS['experience'].copy()
-    exp['skills'] = [{'name': 'C++'}, {'name': 'Python'}]
-    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
-    assert Experience.query.get(id_).skills[0].name == 'C++'
-    assert Experience.query.get(id_).skills[1].name == 'Community Organizing'
-    assert Experience.query.get(id_).skills[2].name == 'Python'
-    assert Experience.query.get(id_).skills[3].name == 'Test Skill 1'
-
-def test_post_experience_achievement_skills(app):
-    exp = POSTS['experience']
-    id_, _ = post_request(app, '/api/contacts/123/experiences/', exp)
-    skills = Experience.query.get(id_).achievements[1].skills
-    assert len(Experience.query.get(id_).achievements[1].skills) == 2
-    assert skills[0]['name'] == 'Community Organizing'
-    assert skills[0]['capability_id'] == 'cap:advocacy'
-    assert skills[1]['name'] == 'Test Skill 1'
-    assert skills[1]['capability_id'] is None
-
-
 def test_post_contact_skill(app):
     url, update = ('/api/contacts/123/skills/', { 'name': 'C++', })
 
