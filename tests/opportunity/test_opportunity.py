@@ -9,6 +9,15 @@ from models.opportunity_app_model import OpportunityApp, ApplicationStage
 #imports test data
 from tests.opportunity.opportunity_data import OPPS_API, OPP_APPS_API, OPPS_INTERNAL_API
 
+from tests.utils import (
+    post_request,
+    get_request_one,
+    get_request_many,
+    put_request,
+    delete_request,
+    skill_name
+)
+
 
 OPP_POST_PAYLOAD = {
       'opportunity': {
@@ -80,9 +89,31 @@ def test_post(app, url, data, query):
 
 class TestOpportunityAll:
 
+    @pytest.mark.parametrize(
+        "url,expected",
+        [('/api/internal/opportunities/', OPPS_INTERNAL_API.values()),('/api/opportunity/', OPPS_API.values())])
 
-    def test_get(app):
-        assert 1
+    def test_get_many_unordered(self,app,url,expected):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            response = client.get(url, headers=headers)
+            assert response.status_code == 200
+            data = json.loads(response.data)['data']
+
+            # Test that the data and expected contain the same items, but not
+            # necessarily in the same order
+            print('EXPECTED')
+            pprint(list(expected))
+            print('DATA')
+            pprint(data)
+            assert len(data) == len(expected)
+            for item in data:
+                pprint(item)
+                assert item in expected
 
                 
     @pytest.mark.parametrize(

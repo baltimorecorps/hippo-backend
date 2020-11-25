@@ -125,11 +125,7 @@ def post_request(app, url, data):
           (123, 'cap:it', '_s-apdaP_WZpH69G8hlcGA=='))
       )
     
-    ,pytest.param('/api/contacts/124/app/333abc/',
-      {},
-      lambda id: (OpportunityApp.query
-                  .filter_by(contact_id=124, opportunity_id='123abc').first()),
-      )
+  
     ]
 )
 def test_post(app, url, data, query):
@@ -877,9 +873,7 @@ def test_get_capability_recommendations(app):
     [('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
                                          EXPERIENCES_API['billy_work']])
     ,('/api/contacts/124/experiences/', [EXPERIENCES_API['obama_portfolio']])
-    ,('/api/opportunity/', OPPS_API.values())
     ,('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
-    ,('/api/internal/opportunities/', OPPS_INTERNAL_API.values())
     ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS_API['billy']])
     ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS_API['obama_none']])
     ]
