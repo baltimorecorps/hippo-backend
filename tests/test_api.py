@@ -545,24 +545,6 @@ def test_put_rejects_id_update(app, url, update, old_id, new_id):
 
 
 
-# def test_opportunity_app_reopen(app):
-#     mimetype = 'application/json'
-#     headers = {
-#         'Content-Type': mimetype,
-#         'Accept': mimetype
-#     }
-#     update = {}
-#     with app.test_client() as client:
-#         assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
-#         response = client.post('/api/contacts/123/app/123abc/reopen/',
-#                               data=json.dumps(update),
-#                               headers=headers)
-#         assert response.status_code == 200
-#         assert OpportunityApp.query.get('a1').stage == ApplicationStage.draft.value
-
-
-
-
 @pytest.mark.parametrize(
     "delete_url,query",
     [('/api/experiences/512/', lambda: Experience.query.get(512))
@@ -616,7 +598,6 @@ def test_delete_contact_skill_saved(app):
     ,('/api/contacts/123/program-apps', PROGRAM_APPS_API['billy'])
     ,('/api/contacts/123/instructions', INSTRUCTIONS_API['billy'])
     ,('/api/contacts/124/instructions', INSTRUCTIONS_API['obama'])
-    ,('/api/org/opportunities/123abc', OPPS_INTERNAL_API['opp1'])
     ,('/api/contacts/123/program-apps', PROGRAM_APPS_API['billy'])]
 )
 def test_get(app, url, expected):
