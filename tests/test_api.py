@@ -343,29 +343,9 @@ def skill_name(skill):
                  and sorted(e.skills, key=skill_name)[0].name == 'Community Organizing'
                  and sorted(e.skills, key=skill_name)[1].name == 'Flask'
                  and sorted(e.skills, key=skill_name)[2].name == 'Test'),
-      )
-    ,('/api/contacts/123/app/123abc',
-      {'interest_statement': "New interest statement", 'resume': None},
-      lambda: OpportunityApp.query.get('a1'),
-      lambda r: r.interest_statement == 'New interest statement',
-      )
-    ,('/api/contacts/123/app/123abc',
-      {'resume': {'test': 'snapshotnew'}},
-      lambda: OpportunityApp.query.get('a1'),
-      lambda r: r.resume.resume == '{"test":"snapshotnew"}',
-      )
-    ,('/api/contacts/123/app/222abc',
-      {'resume': {'test': 'snapshotnew'}},
-      lambda: OpportunityApp.query.get('a2'),
-      lambda r: r.resume and r.resume.resume == '{"test":"snapshotnew"}',
-      )
-     ,('/api/contacts/123/app/123abc',
-       OPP_APPS_API['billy_update'],
-       lambda: OpportunityApp.query.get('a1'),
-       lambda r: r.interest_statement == 'dfdddsdfff',
-       )
-    ]
-)
+      )]
+    )
+    
 def test_put(app, url, update, query, test):
     mimetype = 'application/json'
     headers = {
