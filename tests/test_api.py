@@ -106,11 +106,7 @@ def post_request(app, url, data):
 
 @pytest.mark.parametrize(
     "url,data,query",
-    [('/api/contacts/123/experiences/',
-      POSTS['experience'],
-      lambda id: Experience.query.get(id)
-      )
-    ,('/api/contacts/123/skills/',
+    [('/api/contacts/123/skills/',
       {
         'name': 'C++',
       },
