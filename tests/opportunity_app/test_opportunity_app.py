@@ -28,8 +28,9 @@ class TestOpportunityAppAll:
 
 class TestOpportunityAppOne:
 
-    def test_get(self):
-        assert 1
+    def test_get_opportunity_app(self,app):
+        id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
+        assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
 
     def test_post(self):
         assert 1
@@ -97,6 +98,21 @@ class TestOpportunityAppReopen:
 
 class TestOpportunityAppSubmit:
 
+    def test_opportunity_app_submit(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        update = {}
+        with app.test_client() as client:
+            assert OpportunityApp.query.get('a2').stage == ApplicationStage.draft.value
+            response = client.post('/api/contacts/123/app/222abc/submit/',
+                                data=json.dumps(update),
+                                headers=headers)
+            assert response.status_code == 200
+            assert OpportunityApp.query.get('a2').stage == ApplicationStage.submitted.value
+
     @pytest.mark.parametrize(
         "url,data,query",
         [pytest.param('/api/contacts/124/app/333abc/',
@@ -115,9 +131,6 @@ class TestOpportunityAppSubmit:
         id_, _ = post_request(app, url, data)
         assert query(id_) is not None
 
-    def test_post_opportunity_app_status(self,app):
-        id_, _ = post_request(app, '/api/contacts/124/app/333abc/', {})
-        assert OpportunityApp.query.get(id_).stage == ApplicationStage.draft.value
 
 
 class TestOpportunityAppNotAFit:
