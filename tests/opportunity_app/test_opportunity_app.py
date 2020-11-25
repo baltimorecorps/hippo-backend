@@ -5,6 +5,7 @@ import pytest
 import math
 import copy
 
+from models.base_model import db
 from models.opportunity_app_model import OpportunityApp, ApplicationStage
 
 #imports test data
@@ -164,8 +165,64 @@ class TestOpportunityAppReject:
 
 class TestOpportunityAppInterview:
 
-    def test_post(self):
-        assert 1
+    def test_opportunity_app_interview_completed_property(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            opp_app = OpportunityApp.query.get('a1')
+            assert  opp_app.interview_completed == False
+
+            # set interview to a scheduled date
+            now = dt.datetime.now()
+            scheduled = now + dt.timedelta(hours=1)
+            completed = now - dt.timedelta(hours=1)
+            opp_app.interview_date = scheduled.date()
+            opp_app.interview_time = scheduled.strftime('%H:%M:%S')
+            db.session.commit()
+
+            # test that interview fields were set
+            # and that interview_completed == False
+            opp_app = OpportunityApp.query.get('a1')
+            assert opp_app.interview_date == scheduled.date()
+            assert opp_app.interview_time == scheduled.strftime('%H:%M:%S')
+            assert opp_app.interview_completed == False
+
+            # set interview to a completed date
+            opp_app.interview_date = completed.date()
+            opp_app.interview_time = completed.strftime('%H:%M:%S')
+            db.session.commit()
+
+            # test that interview fields were set
+            # and that interview_completed == False
+            opp_app = OpportunityApp.query.get('a1')
+            assert opp_app.interview_date == completed.date()
+            assert opp_app.interview_time == completed.strftime('%H:%M:%S')
+            assert opp_app.interview_completed == True
+
+    def test_opportunity_app_interview(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        update = {'interview_date': '2050-02-01',
+                'interview_time': '13:00:00'}
+        with app.test_client() as client:
+            assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
+            response = client.post('/api/contacts/123/app/123abc/interview/',
+                                data=json.dumps(update),
+                                headers=headers)
+            assert response.status_code == 200
+            opp_app = OpportunityApp.query.get('a1')
+            assert opp_app.stage == ApplicationStage.interviewed.value
+            assert opp_app.is_active == True
+            assert opp_app.interview_date == dt.date(2050,2,1)
+            assert opp_app.interview_time == '13:00:00'
+            assert opp_app.interview_completed == False
+
 
 
 class TestOpportunityAppConsider:
