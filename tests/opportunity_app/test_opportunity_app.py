@@ -73,6 +73,22 @@ class TestOpportunityAppOne:
             assert response.status_code == 200
             assert test(query())
 
+    def test_put_rejects_app_stage_update(self, app):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        update = {
+            'stage': 0,
+            'status': 'draft',
+        }
+        with app.test_client() as client:
+            response = client.put('/api/contacts/123/app/123abc/',
+                                data=json.dumps(update),
+                                headers=headers)
+            assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
+
 class TestOpportunityAppReopen:
 
     def test_post(self):
@@ -80,6 +96,7 @@ class TestOpportunityAppReopen:
 
 
 class TestOpportunityAppSubmit:
+    
     @pytest.mark.parametrize(
         "url,data,query",
         [pytest.param('/api/contacts/124/app/333abc/',

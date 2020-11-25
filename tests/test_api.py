@@ -345,7 +345,7 @@ def skill_name(skill):
                  and sorted(e.skills, key=skill_name)[2].name == 'Test'),
       )]
     )
-    
+
 def test_put(app, url, update, query, test):
     mimetype = 'application/json'
     headers = {
@@ -543,21 +543,7 @@ def test_put_rejects_id_update(app, url, update, old_id, new_id):
         assert old_id() is not None, "Item to update should still exist"
         assert new_id() is None, "New id should not exist after test"
 
-def test_put_rejects_app_stage_update(app):
-    mimetype = 'application/json'
-    headers = {
-        'Content-Type': mimetype,
-        'Accept': mimetype
-    }
-    update = {
-        'stage': 0,
-        'status': 'draft',
-    }
-    with app.test_client() as client:
-        response = client.put('/api/contacts/123/app/123abc/',
-                              data=json.dumps(update),
-                              headers=headers)
-        assert OpportunityApp.query.get('a1').stage == ApplicationStage.submitted.value
+
 
 def test_opportunity_app_not_a_fit(app):
     mimetype = 'application/json'
