@@ -185,3 +185,31 @@ class TestExperienceOne:
             pprint(response.json)
             assert response.status_code == 200
             assert test(query())
+
+    @pytest.mark.parametrize(
+        "url,update,query,test",
+        [
+        ('/api/experiences/513/',
+        {'host': 'Test'},
+        lambda: Experience.query.get(513),
+        lambda e: len(e.achievements) == len(EXPERIENCES_API['billy_work']['achievements'])
+        )
+        ,('/api/experiences/513/',
+        {'host': 'Test'},
+        lambda: Experience.query.get(513),
+        lambda e: len(e.skills) == len(EXPERIENCES_API['billy_work']['skills'])
+        )
+        ])
+    def test_put_preserves_list_fields(self, app, url, update, query, test):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            assert query() is not None, "Item to update should exist"
+            response = client.put(url, data=json.dumps(update),
+                                headers=headers)
+            pprint(response.json)
+            assert response.status_code == 200
+            assert test(query())

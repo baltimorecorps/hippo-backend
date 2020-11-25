@@ -343,16 +343,6 @@ def test_put_program_apps_update(app):
       lambda: Contact.query.get(123),
       lambda e: len(e.skills) == len(CONTACT_SKILLS['billy']),
       )
-    ,('/api/experiences/513/',
-      {'host': 'Test'},
-      lambda: Experience.query.get(513),
-      lambda e: len(e.achievements) == len(EXPERIENCES_API['billy_work']['achievements'])
-      )
-    ,('/api/experiences/513/',
-      {'host': 'Test'},
-      lambda: Experience.query.get(513),
-      lambda e: len(e.skills) == len(EXPERIENCES_API['billy_work']['skills'])
-      )
     ])
 def test_put_preserves_list_fields(app, url, update, query, test):
     mimetype = 'application/json'
