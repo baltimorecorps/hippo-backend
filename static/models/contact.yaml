@@ -1,100 +1,79 @@
 Contact:
-  type: "object"
-  properties:
-    id:
-      type: "integer"
-      format: "int64"
-    first_name:
-      type: "string"
-      example: "Barack"
-    last_name:
-      type: "string"
-      example: "Obama"
-    email:
-      type: "string"
-      example: "obama@whitehouse.gov"
-    phone_primary:
-      type: "string"
-      example: "+1(123)456-7890"
-    account_id:
-      type: "string"
-    terms_agreement:
-      type: "boolean"
-      default: false
-    status:
-      type: "string"
-      enum:
-        - "created"
-        - "submitted"
-        - "approved"
+  $ref: "#definitions/Contact_Short"
   xml:
     name: "Contact"
 
 Contact_Instructions:
-  type: "object"
-  properties:
-    id:
-      type: "integer"
-      format: "int64"
-    first_name:
-      type: "string"
-      example: "Barack"
-    last_name:
-      type: "string"
-      example: "Obama"
-    email:
-      type: "string"
-      example: "obama@whitehouse.gov"
-    phone_primary:
-      type: "string"
-      example: "+1(123)456-7890"
-    account_id:
-      type: "string"
-    terms_agreement:
-      type: "boolean"
-      default: false
-    status:
-      type: "string"
-      enum:
-        - "created"
-        - "submitted"
-        - "approved"
-    instructions:
-      $ref: "./instructions.yaml#Instructions"
+  allOf:
+    - $ref: "#definitions/Contact_Short"
+    - properties:
+        instructions:
+          $ref: "./instructions.yaml#Instructions"
   xml:
     name: "Contact_Instructions"
 
 Contact_AboutMe:
-  type: "object"
-  properties:
-    id:
-      type: "integer"
-      format: "int64"
-      example: 1
-    first_name:
-      type: "string"
-      example: "Barack"
-    last_name:
-      type: "string"
-      example: "Obama"
-    email:
-      type: "string"
-      example: "obama@whitehouse.gov"
-    phone_primary:
-      type: "string"
-      example: "+1(123)456-7890"
-    account_id:
-      type: "string"
-    terms_agreement:
-      type: "boolean"
-      default: false
-    status:
-      type: "string"
-      enum:
-        - "created"
-        - "submitted"
-        - "approved"
-    profile:
-      $ref: "./profile.yaml#Profile"
+  allOf:
+    - $ref: "#definitions/Contact_Short"
+    - properties:
+        profile:
+          $ref: "./profile.yaml#Profile"
   xml:
     name: "Contact_AboutMe"
+
+Contact_Full:
+  allOf:
+    - $ref: "#definitions/Contact_Short"
+    - properties:
+        profile:
+          $ref: "./profile.yaml#Profile"
+        skills:
+          type: "array"
+          items:
+            $ref: "#/definitions/Skills"
+  xml:
+    name: "Contact_Full"
+
+definitions:
+  Skills:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        example: "saska38sdfhsdfkl322sfm3="
+      name:
+        type: "string"
+        example: "Python"
+    xml:
+      name: "Skills"
+  Contact_Short:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      first_name:
+        type: "string"
+        example: "Barack"
+      last_name:
+        type: "string"
+        example: "Obama"
+      email:
+        type: "string"
+        example: "obama@whitehouse.gov"
+      phone_primary:
+        type: "string"
+        example: "+1(123)456-7890"
+      account_id:
+        type: "string"
+      terms_agreement:
+        type: "boolean"
+        default: false
+      status:
+        type: "string"
+        enum:
+          - "created"
+          - "submitted"
+          - "approved"
+    xml:
+      name: "Contact_Short"

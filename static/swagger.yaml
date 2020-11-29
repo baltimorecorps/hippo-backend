@@ -51,12 +51,12 @@ paths:
   # Contacts
   /contacts/:
     $ref: "./paths/contacts-all.yaml"
-  /contact/me:
+  /contacts/me:
     get:
       tags:
         - "Contact Basics"
       summary: "Get the logged in account contact"
-  /contact/{contact_id}:
+  /contacts/{contact_id}:
     $ref: "./paths/contact-one.yaml"
   /contacts/filter:
     post:
@@ -66,10 +66,7 @@ paths:
 
   # Contact's Profile
   /contacts/{contact_id}/profile:
-    get:
-      tags:
-        - "Contact Profile"
-      summary: "Get a contact's profile"
+    $ref: "./paths/contact-full.yaml"
   /contacts/{contact_id}/instructions:
     $ref: "./paths/contact-instructions.yaml"
   /contacts/{contact_id}/about-me:
