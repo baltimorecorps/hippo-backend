@@ -59,10 +59,7 @@ paths:
   /contacts/{contact_id}:
     $ref: "./paths/contact-one.yaml"
   /contacts/filter:
-    post:
-      tags:
-        - "Contact Basics"
-      summary: "Filter contacts"
+    $ref: "./paths/contact-filter.yaml"
 
   # Contact's Profile
   /contacts/{contact_id}/profile:
