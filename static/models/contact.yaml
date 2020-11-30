@@ -31,6 +31,10 @@ Contact_Full:
           type: "array"
           items:
             $ref: "#/definitions/Skills"
+        program_apps:
+          type: "array"
+          items:
+            $ref: "../models/program.yaml#ProgramApp"
   xml:
     name: "Contact_Full"
 

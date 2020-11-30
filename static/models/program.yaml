@@ -4,9 +4,16 @@ Program:
     id:
       type: "integer"
       format: "int64"
+      example: "1"
     name:
       type: "string"
-      example: "Place for Purpose"
+      description: "Program names"
+      enum:
+        - "Place for Purpose"
+        - "Mayoral Fellowship"
+        - "Fellowship"
+        - "Public Allies"
+        - "JHU Carey Humanities Fellowship"
   xml:
     name: "Program"
 
@@ -16,6 +23,7 @@ ProgramApp:
     id:
       type: "integer"
       format: "int64"
+      example: "1"
     program:
       $ref: "#Program"
     is_interested:
@@ -28,8 +36,8 @@ ProgramApp:
       type: "string"
       description: "Application status"
       enum:
-      - "Not interested"
-      - "Waiting for approval"
-      - "Eligible"
+        - "Not interested"
+        - "Waiting for approval"
+        - "Eligible"
   xml:
     name: "ProgramApp"
