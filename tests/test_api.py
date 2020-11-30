@@ -485,9 +485,7 @@ def test_delete_contact_skill_saved(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/experiences/512/', EXPERIENCES_API['billy_edu'])
-    ,('/api/experiences/513/', EXPERIENCES_API['billy_work'])
-    ,('/api/contacts/123/skills', CONTACT_SKILLS['billy'])
+    [('/api/contacts/123/skills', CONTACT_SKILLS['billy'])
     ,('/api/contacts/123/app/123abc', OPP_APPS_API['billy1'])
     ,('/api/contacts/123/about-me', PROFILES_API['billy'])
     ,('/api/contacts/123/program-apps', PROGRAM_APPS_API['billy'])

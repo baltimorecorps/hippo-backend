@@ -71,8 +71,28 @@ class TestExperienceAll:
 
 class TestExperienceOne:
 
-    def test_get(self):
-        assert 1
+    @pytest.mark.parametrize(
+        "url,expected",
+        [('/api/experiences/512/', EXPERIENCES_API['billy_edu'])
+        ,('/api/experiences/513/', EXPERIENCES_API['billy_work'])])
+
+    def test_get_experience_one(self,app, url, expected):
+        #the expected data comes from the EXPERIENCES constant above
+        #the actual data come from the populate_db.py script
+        #in the common directory
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            response = client.get(url, headers=headers)
+            assert response.status_code == 200
+            data = json.loads(response.data)['data']
+            pprint(data)
+            pprint(expected)
+            assert len(data) > 0
+            assert data == expected
 
     def test_post_experience_date(self, app):
         id_, _ = post_request(app, '/api/contacts/123/experiences/',
@@ -213,3 +233,5 @@ class TestExperienceOne:
             pprint(response.json)
             assert response.status_code == 200
             assert test(query())
+
+
