@@ -87,15 +87,7 @@ paths:
 
   # Experiences
   /contacts/{contact_id}/experiences:
-    post:
-      tags:
-        - "Experiences"
-      summary: "Add new experience"
-  /contacts/{contact_id}/experiences/?type={experience_type}:
-    get:
-      tags:
-        - "Experiences"
-      summary: "Get experience by type"
+    $ref: "./paths/experiences-all.yaml"
   /experiences/{experience_id}:
     get:
       tags:
