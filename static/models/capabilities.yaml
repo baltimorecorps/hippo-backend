@@ -10,7 +10,7 @@ Capabilities:
     related_skills:
       type: "array"
       items:
-        $ref: "#Related_Skills"
+        $ref: "#Skill"
     recommended_skills:
       type: "array"
       items:
@@ -18,7 +18,31 @@ Capabilities:
   xml:
     name: "Capabilities"
 
-Related_Skills:
+Contact_Capability:
+  type: "object"
+  properties:
+    id:
+      type: "string"
+      example: "cap:analysis"
+    name:
+      type: "string"
+      example: "Data Analysis"
+    skills:
+      type: "array"
+      items:
+        $ref: "#Skill"
+    suggested_skills:
+      type: "array"
+      items:
+        - "not sure"
+    score:
+      type: "integer"
+      format: "int64"
+      example: "0"
+  xml:
+    name: "Contact_Capability"
+
+Skill:
   type: "object"
   properties:
     id:
@@ -28,7 +52,7 @@ Related_Skills:
       type: "string"
       example: "Public Policy"
   xml:
-    name: "Related_Skills"
+    name: "Skill"
 
 Recommended_Skill:
   type: "object"

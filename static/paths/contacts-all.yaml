@@ -1,8 +1,8 @@
 get:
   tags:
     - "Contact Basics"
-  summary: "Get a list of contacts"
-  description: "Multiple status values can be provided with comma separated strings"
+  summary: "Get all contacts"
+  description: "Get all contacts"
   operationId: "getAllContacts"
   produces:
     - "application/json"
@@ -25,3 +25,19 @@ post:
   tags:
     - "Contact Basics"
   summary: "Create a new contact"
+  description: "Create a new contact"
+  operationId: "addNewContact"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../models/contact.yaml#Contact_Full"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

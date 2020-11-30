@@ -95,10 +95,7 @@ paths:
   /capabilities:
     $ref: "./paths/capabilities-all.yaml"
   /contact/{contact_id}/capabilities:
-    get:
-      tags:
-        - "Capabilities and Skills"
-      summary: "Get a contact's capabilities"
+    $ref: "./paths/contact-capabilities.yaml"
   /contacts/{contact_id}/skills:
     post:
       tags:
