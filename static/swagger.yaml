@@ -89,18 +89,7 @@ paths:
   /contacts/{contact_id}/experiences:
     $ref: "./paths/experiences-all.yaml"
   /experiences/{experience_id}:
-    get:
-      tags:
-        - "Experiences"
-      summary: "Get an experience"
-    put:
-      tags:
-        - "Experiences"
-      summary: "Update an experience"
-    delete:
-      tags:
-        - "Experiences"
-      summary: "Delete an experience"
+    $ref: "./paths/experience-one.yaml"
 
   # Capabilities and Skills
   /capabilities:
