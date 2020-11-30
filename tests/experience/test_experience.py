@@ -48,8 +48,33 @@ POSTS={'experience': {
 
 class TestExperienceAll:
 
-    def test_get(self):
-        assert 1
+    @pytest.mark.parametrize(
+        "url,expected",
+        [('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
+                                            EXPERIENCES_API['billy_work']])
+        ,('/api/contacts/124/experiences/', [EXPERIENCES_API['obama_portfolio']])])
+
+    def test_get_many_unordered(self, app, url, expected):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            response = client.get(url, headers=headers)
+            assert response.status_code == 200
+            data = json.loads(response.data)['data']
+
+            # Test that the data and expected contain the same items, but not
+            # necessarily in the same order
+            print('EXPECTED')
+            pprint(list(expected))
+            print('DATA')
+            pprint(data)
+            assert len(data) == len(expected)
+            for item in data:
+                pprint(item)
+                assert item in expected
 
     @pytest.mark.parametrize(
         "url,data,query",

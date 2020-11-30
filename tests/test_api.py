@@ -567,10 +567,11 @@ def test_get_capability_recommendations(app):
 
 @pytest.mark.parametrize(
     "url,expected",
-    [('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
-                                         EXPERIENCES_API['billy_work']])
-    ,('/api/contacts/124/experiences/', [EXPERIENCES_API['obama_portfolio']])
-    ,('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
+    [
+    # ('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
+    #                                      EXPERIENCES_API['billy_work']])
+    # ,('/api/contacts/124/experiences/', [EXPERIENCES_API['obama_portfolio']])
+    ('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
     ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS_API['billy']])
     ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS_API['obama_none']])
     ]
