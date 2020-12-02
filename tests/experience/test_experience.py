@@ -175,8 +175,23 @@ class TestExperienceOne:
         assert skills[1]['name'] == 'Test Skill 1'
         assert skills[1]['capability_id'] is None
 
-    def test_delete(self):
-        assert 1
+    @pytest.mark.parametrize(
+        "delete_url,query",
+        [('/api/experiences/512/', lambda: Experience.query.get(512))])
+
+    def test_delete(self, app, delete_url, query):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            assert query() is not None, "Item to delete should exist"
+
+            response = client.delete(delete_url, headers=headers)
+            assert response.status_code == 200
+            assert query() is None, "Deleted item should not exist"
+
 
     @pytest.mark.parametrize(
         "url,update,query,test",

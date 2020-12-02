@@ -442,8 +442,7 @@ def test_put_rejects_id_update(app, url, update, old_id, new_id):
 
 @pytest.mark.parametrize(
     "delete_url,query",
-    [('/api/experiences/512/', lambda: Experience.query.get(512))
-    ,('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
+    [('/api/contacts/123/skills/n1N02ypni69EZg0SggRIIg==',
       lambda: ContactSkill.query.filter_by(
           skill_id='n1N02ypni69EZg0SggRIIg==', contact_id=123, deleted=False).first())
     ,('/api/contacts/123/capabilities/cap:it/suggestion/QUEVjv1tcq6uLmzCku6ikg==',
@@ -568,9 +567,6 @@ def test_get_capability_recommendations(app):
 @pytest.mark.parametrize(
     "url,expected",
     [
-    # ('/api/contacts/123/experiences/', [EXPERIENCES_API['billy_edu'],
-    #                                      EXPERIENCES_API['billy_work']])
-    # ,('/api/contacts/124/experiences/', [EXPERIENCES_API['obama_portfolio']])
     ('/api/contacts/123/app/', [OPP_APPS_API['billy1']])
     ,('/api/contacts/program-apps/?is_approved=true', [PROGRAM_APPS_API['billy']])
     ,('/api/contacts/program-apps/?is_approved=false', [PROGRAM_APPS_API['obama_none']])
