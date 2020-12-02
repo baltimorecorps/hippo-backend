@@ -415,11 +415,6 @@ def test_contact_put_preserves_experience_skills(app):
       {'id': 111, 'first_name': 'test'},
       lambda: Contact.query.get(123),
       lambda: Contact.query.get(111),
-      ),
-     ('/api/experiences/512/',
-      {'id': 555, 'host': 'test'},
-      lambda: Experience.query.get(512),
-      lambda: Experience.query.get(555),
       )
     ]
 )

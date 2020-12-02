@@ -274,4 +274,29 @@ class TestExperienceOne:
             assert response.status_code == 200
             assert test(query())
 
+    @pytest.mark.parametrize(
+        "url,update,old_id,new_id",
+        [('/api/experiences/512/',
+        {'id': 555, 'host': 'test'},
+        lambda: Experience.query.get(512),
+        lambda: Experience.query.get(555),
+        )
+        ]
+    )
+
+    def test_put_rejects_id_update(self, app, url, update, old_id, new_id):
+        mimetype = 'application/json'
+        headers = {
+            'Content-Type': mimetype,
+            'Accept': mimetype
+        }
+        with app.test_client() as client:
+            assert old_id() is not None, "Item to update should exist"
+            assert new_id() is None, "New id should not exist before test"
+            response = client.put(url, data=json.dumps(update),
+                                headers=headers)
+            assert response.status_code == 200
+            assert old_id() is not None, "Item to update should still exist"
+            assert new_id() is None, "New id should not exist after test"
+
 
