@@ -97,10 +97,7 @@ paths:
   /contact/{contact_id}/capabilities:
     $ref: "./paths/contact-capabilities.yaml"
   /contacts/{contact_id}/skills:
-    post:
-      tags:
-        - "Capabilities and Skills"
-      summary: "Add contact's skills"
+    $ref: "./paths/contact-skills.yaml"
   /contacts/{contact_id}/capabilities/{capability_id}/suggestion:
     post:
       tags:
