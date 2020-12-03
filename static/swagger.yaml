@@ -143,7 +143,6 @@ paths:
   # Applications and Programs
   /contacts/{contact_id}/app/{opportunity_id}:
     $ref: "./paths/application.yaml"
-
   /contacts/{contact_id}/app/{opportunity_id}/submit:
     post:
       tags:
@@ -151,17 +150,13 @@ paths:
       summary: "Submit an application"
   /contacts/{contact_id}/app:
     $ref: "./paths/contact-applications.yaml"
-
   /internal/applications:
     get:
       tags:
         - "Applications and Programs"
       summary: "Get all applicants who have status 'submitted' and 'approved'"
   /programs:
-    get:
-      tags:
-        - "Applications and Programs"
-      summary: "Get all programs"
+    $ref: "./paths/programs.yaml"
 
   # Staff and Employer Decisions
   /contacts/{contact_id}/app/{opportunity_id}/reopen:
