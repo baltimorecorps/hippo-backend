@@ -1,9 +1,9 @@
 get:
   tags:
-    - "Capabilities and Skills"
-  summary: "Get a contact's capabilities"
-  description: "Get a contact's capabilities"
-  operationId: "getContactCapabilities"
+    - "Contact Profile"
+  summary: "Get a contact's full profile"
+  description: "Get all data to generate a user's profile"
+  operationId: "getContactFullProfile"
   produces:
     - "application/json"
   parameters:
@@ -11,9 +11,7 @@ get:
     "200":
       description: "successful operation"
       schema:
-        type: "array"
-        items:
-          $ref: "../models/capabilities.yaml#Contact_Capability"
+        $ref: "../../models/contact.yaml#Contact_Full"
     "400":
       description: "Invalid status value"
   security:

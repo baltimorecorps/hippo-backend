@@ -1,0 +1,22 @@
+post:
+  tags:
+    - "Contact Basics"
+  summary: "Filter contacts"
+  description: "Multiple status values can be provided with comma separated strings"
+  operationId: "FilterContacts"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "201":
+      description: "successful operation"
+      schema:
+        type: "array"
+        items:
+          $ref: "../../models/contact.yaml#definitions/Contact_Filter"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

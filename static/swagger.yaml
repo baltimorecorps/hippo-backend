@@ -47,24 +47,24 @@ paths:
 
   # Contacts
   /contacts/:
-    $ref: "./paths/contacts-all.yaml"
+    $ref: "./paths/contact/contacts-all.yaml"
   /contacts/me:
     get:
       tags:
         - "Contact Basics"
       summary: "Get the logged in account contact"
   /contacts/{contact_id}:
-    $ref: "./paths/contact-one.yaml"
+    $ref: "./paths/contact/contact-one.yaml"
   /contacts/filter:
-    $ref: "./paths/contact-filter.yaml"
+    $ref: "./paths/contact/contact-filter.yaml"
 
   # Contact's Profile
   /contacts/{contact_id}/profile:
-    $ref: "./paths/contact-full.yaml"
+    $ref: "./paths/contact/contact-full.yaml"
   /contacts/{contact_id}/instructions:
-    $ref: "./paths/contact-instructions.yaml"
+    $ref: "./paths/contact/contact-instructions.yaml"
   /contacts/{contact_id}/about-me:
-    $ref: "./paths/contact-about-me.yaml"
+    $ref: "./paths/contact/contact-about-me.yaml"
 
   /contacts/{contact_id}/program-apps/interested:
     put:
@@ -84,17 +84,17 @@ paths:
 
   # Experiences
   /contacts/{contact_id}/experiences:
-    $ref: "./paths/experiences-all.yaml"
+    $ref: "./paths/experiences/experiences-all.yaml"
   /experiences/{experience_id}:
-    $ref: "./paths/experience-one.yaml"
+    $ref: "./paths/experiences/experience-one.yaml"
 
   # Capabilities and Skills
   /capabilities:
     $ref: "./paths/capabilities-all.yaml"
   /contact/{contact_id}/capabilities:
-    $ref: "./paths/contact-capabilities.yaml"
+    $ref: "./paths/contact/contact-capabilities.yaml"
   /contacts/{contact_id}/skills:
-    $ref: "./paths/contact-skills.yaml"
+    $ref: "./paths/contact/contact-skills.yaml"
   /contacts/{contact_id}/capabilities/{capability_id}/suggestion:
     post:
       tags:
@@ -118,13 +118,13 @@ paths:
 
   # Opportunities
   /opportunity:
-    $ref: "./paths/opportunities.yaml"
+    $ref: "./paths/opportunities/opportunities.yaml"
   /opportunity/{opportunity_id}:
-    $ref: "./paths/opportunity.yaml"
+    $ref: "./paths/opportunities/opportunity.yaml"
   /internal/opportunities:
-    $ref: "./paths/internal-opportunities.yaml"
+    $ref: "./paths/opportunities/internal-opportunities.yaml"
   /org/opportunities/{opportunity_id}:
-    $ref: "./paths/employer-opportunity.yaml"
+    $ref: "./paths/opportunities/employer-opportunity.yaml"
 
   /opportunity/${opportunity_id}/deactivate:
     post:
@@ -146,7 +146,7 @@ paths:
         - "Applications and Programs"
       summary: "Submit an application"
   /contacts/{contact_id}/app:
-    $ref: "./paths/contact-applications.yaml"
+    $ref: "./paths/contact/contact-applications.yaml"
   /internal/applications:
     get:
       tags:
@@ -157,7 +157,7 @@ paths:
 
   # Staff and Employer Decisions
   /contacts/{contact_id}/app/{opportunity_id}/reopen:
-    $ref: "./paths/decision-reopen.yaml"
+    $ref: "./paths/decisions/decision-reopen.yaml"
 
   /contacts/{contact_id}/app/{opportunity_id}/recommend:
     post:
@@ -176,7 +176,7 @@ paths:
         - "Staff and Employer Decisions"
       summary: "Employer marks an application to be a finalist"
   /contacts/{contact_id}/app/{opportunity_id}/not-a-fit:
-    $ref: "./paths/decision-not_a_fit.yaml"
+    $ref: "./paths/decisions/decision-not_a_fit.yaml"
 
 securityDefinitions:
   petstore_auth:

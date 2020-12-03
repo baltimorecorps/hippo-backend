@@ -8,12 +8,12 @@ post:
     - "application/json"
   parameters:
   responses:
-    "200":
+    "201":
       description: "successful operation"
       schema:
         type: "array"
         items:
-        $ref: "../swagger.yaml#definitions/Experience"
+        $ref: "../../swagger.yaml#definitions/Experience"
     "400":
       description: "Invalid status value"
   security:
@@ -44,7 +44,7 @@ get:
       schema:
         type: "array"
         items:
-          $ref: "../swagger.yaml#definitions/Experience"
+          $ref: "../../swagger.yaml#definitions/Experience"
     "400":
       description: "Invalid status value"
   security:

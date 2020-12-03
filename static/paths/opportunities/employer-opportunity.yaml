@@ -1,9 +1,9 @@
 get:
   tags:
     - "Opportunities"
-  summary: "Get all opportunities with their applications"
-  description: "Get all opportunities with their applications"
-  operationId: "getAllInternalOpportunities"
+  summary: "Get an opportunity with its applications"
+  description: "Get an opportunity with its applications"
+  operationId: "getEmployerOpportunity"
   produces:
     - "application/json"
   parameters:
@@ -11,9 +11,7 @@ get:
     "200":
       description: "successful operation"
       schema:
-        type: "array"
-        items:
-          $ref: "../swagger.yaml#definitions/OpportunityApps"
+        $ref: "../../swagger.yaml#definitions/OpportunityApps"
     "400":
       description: "Invalid status value"
   security:

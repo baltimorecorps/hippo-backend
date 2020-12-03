@@ -1,9 +1,9 @@
 get:
   tags:
-    - "Capabilities and Skills"
-  summary: "Get a contact's skills"
-  description: "Get a contact's skills"
-  operationId: "getContactSkills"
+    - "Contact Basics"
+  summary: "Get all contacts"
+  description: "Get all contacts"
+  operationId: "getAllContacts"
   produces:
     - "application/json"
   parameters:
@@ -13,27 +13,28 @@ get:
       schema:
         type: "array"
         items:
-          $ref: "../swagger.yaml#definitions/Skill"
+          $ref: "../../swagger.yaml#definitions/Contact"
     "400":
       description: "Invalid status value"
   security:
     - petstore_auth:
         - "write:pets"
         - "read:pets"
+
 post:
   tags:
-    - "Capabilities and Skills"
-  summary: "Add a contact's skills"
-  description: "Add a contact's skills"
-  operationId: "addContactSkills"
+    - "Contact Basics"
+  summary: "Create a new contact"
+  description: "Create a new contact"
+  operationId: "addNewContact"
   produces:
     - "application/json"
   parameters:
   responses:
-    "200":
+    "201":
       description: "successful operation"
       schema:
-        $ref: "../swagger.yaml#definitions/Skill"
+        $ref: "../../models/contact.yaml#Contact_Full"
     "400":
       description: "Invalid status value"
   security:

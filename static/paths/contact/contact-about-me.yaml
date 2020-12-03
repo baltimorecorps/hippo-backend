@@ -11,7 +11,7 @@ get:
     "200":
       description: "success"
       schema:
-        $ref: "../models/contact.yaml#Contact_AboutMe"
+        $ref: "../../models/contact.yaml#Contact_AboutMe"
     "404":
       description: "Contact not found"
   security:
@@ -32,7 +32,7 @@ put:
     "200":
       description: "success"
       schema:
-        $ref: "../models/profile.yaml#Profile"
+        $ref: "../../models/profile.yaml#Profile"
     "404":
       description: "Contact not found"
   security:
@@ -52,7 +52,7 @@ post:
     "200":
       description: "success"
       schema:
-        $ref: "../models/profile.yaml#Profile"
+        $ref: "../../models/profile.yaml#Profile"
     "404":
       description: "Contact not found"
   security:

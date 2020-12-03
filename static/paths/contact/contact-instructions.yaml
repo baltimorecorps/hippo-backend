@@ -11,7 +11,7 @@ get:
     "200":
       description: "success"
       schema:
-        $ref: "../models/contact.yaml#Contact_Instructions"
+        $ref: "../../models/contact.yaml#Contact_Instructions"
 
     "404":
       description: "Contact not found"

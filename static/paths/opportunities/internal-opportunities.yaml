@@ -1,9 +1,9 @@
 get:
   tags:
-    - "Applications and Programs"
-  summary: "Get a contact's applications"
-  description: "Get a contact's applications"
-  operationId: "getContactApplications"
+    - "Opportunities"
+  summary: "Get all opportunities with their applications"
+  description: "Get all opportunities with their applications"
+  operationId: "getAllInternalOpportunities"
   produces:
     - "application/json"
   parameters:
@@ -13,7 +13,7 @@ get:
       schema:
         type: "array"
         items:
-          $ref: "../swagger.yaml#definitions/Application_Full"
+          $ref: "../../swagger.yaml#definitions/OpportunityApps"
     "400":
       description: "Invalid status value"
   security:

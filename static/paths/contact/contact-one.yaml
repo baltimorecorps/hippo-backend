@@ -12,7 +12,7 @@ get:
       description: "Pet object that needs to be added to the store"
       required: true
       schema:
-        $ref: "../swagger.yaml#definitions/Contact"
+        $ref: "../../swagger.yaml#definitions/Contact"
   responses:
     "405":
       description: "Invalid input"
@@ -36,7 +36,7 @@ put:
       description: "Pet object that needs to be added to the store"
       required: true
       schema:
-        $ref: "../swagger.yaml#definitions/Contact"
+        $ref: "../../swagger.yaml#definitions/Contact"
   responses:
     "400":
       description: "Invalid ID supplied"
