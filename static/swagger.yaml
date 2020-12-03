@@ -157,10 +157,8 @@ paths:
 
   # Staff and Employer Decisions
   /contacts/{contact_id}/app/{opportunity_id}/reopen:
-    post:
-      tags:
-        - "Staff and Employer Decisions"
-      summary: "Staff reopens an application"
+    $ref: "./paths/decision-reopen.yaml"
+
   /contacts/{contact_id}/app/{opportunity_id}/recommend:
     post:
       tags:
@@ -178,10 +176,7 @@ paths:
         - "Staff and Employer Decisions"
       summary: "Employer marks an application to be a finalist"
   /contacts/{contact_id}/app/{opportunity_id}/not-a-fit:
-    post:
-      tags:
-        - "Staff and Employer Decisions"
-      summary: "Staff or Employer marks an application to be not a fit"
+    $ref: "./paths/decision-not_a_fit.yaml"
 
 securityDefinitions:
   petstore_auth:

@@ -11,7 +11,6 @@ get:
       description: "successful operation"
       schema:
         $ref: "../models/contact.yaml#Contact_Session"
-
     "404":
       description: ""
   security:
