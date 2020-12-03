@@ -2,16 +2,21 @@ Opportunity:
   type: "object"
   properties:
     id:
-      type: "integer"
-      format: "int64"
+      type: "string"
+      example: "2043490c-85f4-43c2-b1b3-7c86202c8dd2"
     org_name:
       type: "string"
       example: "Baltimore Corps"
     title:
       type: "string"
       example: "Data Analyst"
-    program:
-      $ref: "./program.yaml#Program"
+    program_name:
+      type: "string"
+      example: "Place for Purpose"
+    program_id:
+      type: "integer"
+      format: "int64"
+      example: 1
     gdoc_link:
       type: "string"
       example: "https://docs.google.com/document/d/1q9eCVq4zME7RYl"
@@ -20,6 +25,6 @@ Opportunity:
       example: "This role will be responsible for..."
     is_active:
       type: "boolean"
-      default: True
+      default: true
   xml:
-    name: "Order"
+    name: "Opportunity"

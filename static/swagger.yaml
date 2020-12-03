@@ -121,15 +121,7 @@ paths:
 
   # Opportunities
   /opportunity:
-    get:
-      tags:
-        - "Opportunities"
-      summary: "Get all opportunities"
-    post:
-      tags:
-        - "Opportunities"
-      summary: "Create a new opportunity"
-
+    $ref: "./paths/opportunities.yaml"
   /opportunity/{opportunity_id}:
     put:
       tags:
