@@ -127,10 +127,8 @@ paths:
   /internal/opportunities:
     $ref: "./paths/internal-opportunities.yaml"
   /org/opportunities/{opportunity_id}:
-    get:
-      tags:
-        - "Opportunities"
-      summary: "Get an opportunity with its applications"
+    $ref: "./paths/employer-opportunity.yaml"
+
   /opportunity/${opportunity_id}/deactivate:
     post:
       tags:
