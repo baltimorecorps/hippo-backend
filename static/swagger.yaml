@@ -150,10 +150,8 @@ paths:
         - "Applications and Programs"
       summary: "Submit an application"
   /contacts/{contact_id}/app:
-    get:
-      tags:
-        - "Applications and Programs"
-      summary: "Get a contact's applications"
+    $ref: "./paths/contact-applications.yaml"
+
   /internal/applications:
     get:
       tags:

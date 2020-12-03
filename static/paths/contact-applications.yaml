@@ -1,0 +1,22 @@
+get:
+  tags:
+    - "Applications and Programs"
+  summary: "Get a contact's applications"
+  description: "Get a contact's applications"
+  operationId: "getContactApplications"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        type: "array"
+        items:
+          $ref: "../swagger.yaml#definitions/Application_Full"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
