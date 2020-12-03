@@ -142,18 +142,8 @@ paths:
 
   # Applications and Programs
   /contacts/{contact_id}/app/{opportunity_id}:
-    get:
-      tags:
-        - "Applications and Programs"
-      summary: "Get an application"
-    post:
-      tags:
-        - "Applications and Programs"
-      summary: "Create new application"
-    put:
-      tags:
-        - "Applications and Programs"
-      summary: "Update an application"
+    $ref: "./paths/application.yaml"
+
   /contacts/{contact_id}/app/{opportunity_id}/submit:
     post:
       tags:
@@ -290,6 +280,8 @@ definitions:
     $ref: "./models/opportunity.yaml#Opportunity"
   OpportunityApps:
     $ref: "./models/opportunity.yaml#OpportunityApps"
+  Application_Full:
+    $ref: "./models/application.yaml#Application_Full"
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"

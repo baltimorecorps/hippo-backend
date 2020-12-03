@@ -40,6 +40,6 @@ OpportunityApps:
         applications:
           type: "array"
           items:
-            $ref: "./application.yaml#Application"
+            $ref: "./application.yaml#Application_Short"
   xml:
     name: "OpportunityApps"

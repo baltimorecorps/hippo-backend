@@ -1,0 +1,60 @@
+get:
+  tags:
+    - "Applications and Programs"
+  summary: "Get an application"
+  description: "Get an experience"
+  operationId: "getAnExperience"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../models/application.yaml#Application_Full"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+post:
+  tags:
+    - "Applications and Programs"
+  summary: "Create new application"
+  description: "Get an experience"
+  operationId: "getAnExperience"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../models/application.yaml#Application_Full"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+put:
+  tags:
+    - "Applications and Programs"
+  summary: "Update an application"
+  description: "Get an experience"
+  operationId: "getAnExperience"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../models/application.yaml#Application_Full"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

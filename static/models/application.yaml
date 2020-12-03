@@ -1,4 +1,4 @@
-Application:
+Application_Short:
   type: "object"
   properties:
     id:
@@ -33,4 +33,40 @@ Application:
     contact:
       $ref: "./contact.yaml#Contact"
   xml:
-    name: "Order"
+    name: "Application_Short"
+
+Application_Full:
+  allOf:
+    - $ref: "#Application_Short"
+    - properties:
+        resume:
+          type: "string"
+          example: "resume object"
+        opportunity:
+          $ref: "./opportunity.yaml#Opportunity"
+  xml:
+    name: "Application_Full"
+
+    #  "resume": {
+    #   "531": {
+    #     "selected": true
+    #   },
+    #   "532": {
+    #     "selected": true
+    #   },
+    #   "533": {
+    #     "1005": true,
+    #     "1006": true,
+    #     "selected": true
+    #   },
+    #   "cap:advocacy": {
+    #     "selected": true,
+    #     "74BgThI2os9wEdyArofEKA==": true,
+    #     "ePargQpold0hKreooSM7aQ==": true
+    #   },
+    #   "cap:outreach": {
+    #     "selected": true,
+    #     "74BgThI2os9wEdyArofEKA==": true,
+    #     "Pqb6PuqVzXV5BCkuylQqxw==": true
+    #   },
+    #  }
