@@ -160,21 +160,14 @@ paths:
     $ref: "./paths/decisions/decision-reopen.yaml"
 
   /contacts/{contact_id}/app/{opportunity_id}/recommend:
-    post:
-      tags:
-        - "Staff and Employer Decisions"
-      summary: "Staff recommends an application"
+    $ref: "./paths/decisions/decision-recommend.yaml"
 
   /contacts/{contact_id}/app/{opportunity_id}/interview:
-    post:
-      tags:
-        - "Staff and Employer Decisions"
-      summary: "Employer updates interview schedule to an application"
+    $ref: "./paths/decisions/decision-interview.yaml"
+
   /contacts/{contact_id}/app/{opportunity_id}/consider:
-    post:
-      tags:
-        - "Staff and Employer Decisions"
-      summary: "Employer marks an application to be a finalist"
+    $ref: "./paths/decisions/decision-finalist.yaml"
+
   /contacts/{contact_id}/app/{opportunity_id}/not-a-fit:
     $ref: "./paths/decisions/decision-not_a_fit.yaml"
 
