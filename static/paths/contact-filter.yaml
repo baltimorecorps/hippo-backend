@@ -8,7 +8,7 @@ post:
     - "application/json"
   parameters:
   responses:
-    "200":
+    "201":
       description: "successful operation"
       schema:
         type: "array"

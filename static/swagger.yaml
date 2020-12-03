@@ -35,18 +35,15 @@ schemes:
 paths:
   # Session
   /session:
-    get:
-      tags:
-        - "Session"
-      summary: "Get session"
-    post:
-      tags:
-        - "Session"
-      summary: "Create session"
-    delete:
-      tags:
-        - "Session"
-      summary: "Delete session"
+    $ref: "./paths/session.yaml"
+    # post:
+    #   tags:
+    #     - "Session"
+    #   summary: "Create session"
+    # delete:
+    #   tags:
+    #     - "Session"
+    #   summary: "Delete session"
 
   # Contacts
   /contacts/:

@@ -21,6 +21,17 @@ Contact_AboutMe:
   xml:
     name: "Contact_AboutMe"
 
+Contact_Session:
+  type: "object"
+  properties:
+    contact:
+      $ref: "#definitions/Contact_Short"
+    jwt:
+      type: "string"
+      example: "JSON JWT"
+  xml:
+    name: "Contact_Session"
+
 Contact_Full:
   allOf:
     - $ref: "#definitions/Contact_Short"
