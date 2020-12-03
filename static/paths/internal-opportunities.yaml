@@ -1,0 +1,22 @@
+get:
+  tags:
+    - "Opportunities"
+  summary: "Get all opportunities with their applications"
+  description: "Get all opportunities with their applications"
+  operationId: "getAllInternalOpportunities"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        type: "array"
+        items:
+          $ref: "../swagger.yaml#definitions/OpportunityApps"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

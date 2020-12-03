@@ -3,6 +3,7 @@ Opportunity:
   properties:
     id:
       type: "string"
+      format: "uuid"
       example: "2043490c-85f4-43c2-b1b3-7c86202c8dd2"
     org_name:
       type: "string"
@@ -26,5 +27,19 @@ Opportunity:
     is_active:
       type: "boolean"
       default: true
+    status:
+      type: "string"
+      example: "submitted"
   xml:
     name: "Opportunity"
+
+OpportunityApps:
+  allOf:
+    - $ref: "#Opportunity"
+    - properties:
+        applications:
+          type: "array"
+          items:
+            $ref: "./application.yaml#Application"
+  xml:
+    name: "OpportunityApps"

@@ -123,15 +123,9 @@ paths:
   /opportunity:
     $ref: "./paths/opportunities.yaml"
   /opportunity/{opportunity_id}:
-    put:
-      tags:
-        - "Opportunities"
-      summary: "Update an opportunity"
+    $ref: "./paths/opportunity.yaml"
   /internal/opportunities:
-    get:
-      tags:
-        - "Opportunities"
-      summary: "Get all opportunities with their applications"
+    $ref: "./paths/internal-opportunities.yaml"
   /org/opportunities/{opportunity_id}:
     get:
       tags:
@@ -296,8 +290,8 @@ definitions:
     $ref: "./models/program.yaml#ProgramApp"
   Opportunity:
     $ref: "./models/opportunity.yaml#Opportunity"
-  OpportunityApp:
-    $ref: "./models/opportunity_app.yaml#OpportunityApp"
+  OpportunityApps:
+    $ref: "./models/opportunity.yaml#OpportunityApps"
 externalDocs:
   description: "Find out more about Swagger"
   url: "http://swagger.io"

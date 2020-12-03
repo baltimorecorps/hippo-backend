@@ -1,9 +1,10 @@
-OpportunityApp:
+Application:
   type: "object"
   properties:
     id:
       type: "string"
       format: "uuid"
+      example: "0422af6-64b3-4625-bea7-3942cf760681"
     interest_statement:
       type: "string"
       example: "I am interested in this opportunity because..."
@@ -17,19 +18,19 @@ OpportunityApp:
     interview_completed:
       type: "boolean"
       default: false
-    resume:
-      type: "string"
     status:
       type: "string"
       description: "Application Status"
       enum:
-      - "draft"
-      - "submitted"
-      - "recommended"
-      - "interviewed"
-      - "considered_for_role"
+        - "draft"
+        - "submitted"
+        - "recommended"
+        - "interviewed"
+        - "considered_for_role"
     is_active:
       type: "boolean"
       default: true
+    contact:
+      $ref: "./contact.yaml#Contact"
   xml:
     name: "Order"
