@@ -12,8 +12,8 @@ from models.skill_model import (
     SkillRecommendationSchema
 )
 from models.skill_item_model import ContactSkill
-from .Skills import delete_skill
-from .skill_utils import get_or_make_skill, dump_skill_with_capabilities
+from resources.Skills import delete_skill
+from resources.skill_utils import get_or_make_skill, dump_skill_with_capabilities
 from sqlalchemy.sql.expression import and_
 
 from flask_login import login_required

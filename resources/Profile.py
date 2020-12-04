@@ -11,7 +11,7 @@ from models.profile_model import (
     RoleChoice,
     ProgramsCompleted
 )
-from .trello_utils import (
+from resources.trello_utils import (
     query_board_data,
     update_card,
     Board,

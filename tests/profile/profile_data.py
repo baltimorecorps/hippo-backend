@@ -1,6 +1,6 @@
 import copy
 
-from .contact_data import CONTACTS_API
+from tests.contact.contact_data import CONTACTS_API
 
 
 ADDRESSES = {

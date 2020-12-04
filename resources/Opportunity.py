@@ -76,7 +76,6 @@ class OpportunityAllInternal(Resource):
             return unauthorized()
         opp_list = opportunities_internal_schema.dump(opportunities)
         return {'status': 'success', 'data': opp_list}, 200
-        return {'status': 'success', 'data': 'Hello World'}, 200
 
 
 class OpportunityOneOrg(Resource):
