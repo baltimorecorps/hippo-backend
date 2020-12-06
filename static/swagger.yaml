@@ -36,14 +36,6 @@ paths:
   # Session
   /session:
     $ref: "./paths/session.yaml"
-    # post:
-    #   tags:
-    #     - "Session"
-    #   summary: "Create session"
-    # delete:
-    #   tags:
-    #     - "Session"
-    #   summary: "Delete session"
 
   # Contacts
   /contacts/:
@@ -183,67 +175,10 @@ securityDefinitions:
     type: "apiKey"
     name: "api_key"
     in: "header"
+
 definitions:
   Contact:
     $ref: "./models/contact.yaml#Contact"
-  Instructions:
-    type: "object"
-    properties:
-      profile:
-        type: "object"
-        properties:
-          is_complete:
-            type: "boolean"
-            default: false
-            example: false
-          components:
-            type: "object"
-            properties:
-              tag_skills:
-                type: "boolean"
-                default: false
-                example: false
-              add_experience:
-                type: "object"
-                properties:
-                  is_complete:
-                    type: "boolean"
-                    default: false
-                    example: false
-                  components:
-                    type: "object"
-                    properties:
-                      tag_skills:
-                        type: "boolean"
-                        default: false
-                        example: false
-                      add_achievements:
-                        type: "boolean"
-                        default: false
-                        example: false
-      about_me:
-        type: "object"
-        properties:
-          is_complete:
-            type: "boolean"
-            default: false
-            example: false
-          components:
-            type: "object"
-            properties:
-              tag_skills:
-                type: "boolean"
-                default: false
-                example: false
-      submit:
-        type: "object"
-        properties:
-          is_complete:
-            type: "boolean"
-            default: false
-            example: false
-    xml:
-      name: "Instructions"
   Capability:
     $ref: "./models/skill.yaml#Capability"
   Skill:

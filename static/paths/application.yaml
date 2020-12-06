@@ -12,8 +12,8 @@ get:
       description: "successful operation"
       schema:
         $ref: "../models/application.yaml#Application_Full"
-    "400":
-      description: "Invalid status value"
+    "404":
+      description: "Application does not exist"
   security:
     - petstore_auth:
         - "write:pets"

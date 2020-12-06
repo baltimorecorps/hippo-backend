@@ -49,6 +49,34 @@ Contact_Full:
   xml:
     name: "Contact_Full"
 
+Contact_Payload:
+  type: "object"
+  properties:
+    id:
+      type: "integer"
+      format: "int64"
+      example: "120"
+    first_name:
+      type: "string"
+      example: "Barack"
+    last_name:
+      type: "string"
+      example: "Obama"
+    email:
+      type: "string"
+      example: "obama@whitehouse.gov"
+    phone_primary:
+      type: "string"
+      example: "+1(123)456-7890"
+    account_id:
+      type: "string"
+    terms_agreement:
+      type: "boolean"
+      default: false
+      example: true
+  xml:
+    name: "Contact_Payload"
+
 definitions:
   Skills:
     type: "object"
