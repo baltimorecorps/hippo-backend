@@ -117,10 +117,8 @@ paths:
   /contacts/{contact_id}/app/{opportunity_id}:
     $ref: "./paths/application.yaml"
   /contacts/{contact_id}/app/{opportunity_id}/submit:
-    post:
-      tags:
-        - "Applications and Programs"
-      summary: "Submit an application"
+    $ref: "./paths/submit-application.yaml"
+
   /contacts/{contact_id}/app:
     $ref: "./paths/contact/contact-applications.yaml"
   /internal/applications:
