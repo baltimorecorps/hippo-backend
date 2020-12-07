@@ -7,6 +7,11 @@ post:
   produces:
     - "application/json"
   parameters:
+    - in: body
+      name: experience
+      description: Contact's experience.
+      schema:
+        $ref: "../../models/experience.yaml#Experience"
   responses:
     "201":
       description: "successful operation"
