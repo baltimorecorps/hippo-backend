@@ -134,3 +134,28 @@ Contact_Capability_Suggestion_Payload:
       example: "Python"
   xml:
     name: "Contact_Capability_Suggestion_Payload"
+
+Opportunity_Payload:
+  type: "object"
+  properties:
+    cycle_id:
+      type: "integer"
+      format: "int64"
+      example: 1
+    gdoc_link:
+      type: "string"
+      example: "https://docs.google.com/document/d/test"
+    org_name:
+      type: "string"
+      example: "Baltimore Corps"
+    title:
+      type: "string"
+      example: "Web Developer"
+    program_name:
+      type: "string"
+      example: "Place for Purpose"
+    short_description:
+      type: "string"
+      example: "Short job description"
+  xml:
+    name: "Opportunity_Payload"
