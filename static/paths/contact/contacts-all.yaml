@@ -33,7 +33,7 @@ post:
       name: contact
       description: Contact basic information.
       schema:
-        $ref: "../../models/contact.yaml#Contact_Payload"
+        $ref: "../../models/payload.yaml#Contact_Payload"
   produces:
     - "application/json"
   responses:

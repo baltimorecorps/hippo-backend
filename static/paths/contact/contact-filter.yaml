@@ -7,6 +7,11 @@ post:
   produces:
     - "application/json"
   parameters:
+    - in: body
+      name: contact
+      description: Contact basic information.
+      schema:
+        $ref: "../../models/payload.yaml#Contact_Filter_Payload"
   responses:
     "201":
       description: "successful operation"
