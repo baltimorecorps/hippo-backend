@@ -90,3 +90,15 @@ Contact_Filter_Payload:
           example: true
   xml:
     name: "Contact_Filter_Payload"
+
+Approve_Contacts_Payload:
+  type: "array"
+  items:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        example: 120
+  xml:
+    name: "Approve_Contacts_Payload"

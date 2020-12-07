@@ -69,10 +69,7 @@ paths:
         - "Contact Profile"
       summary: "Submit profile for review"
   /contacts/approve:
-    post:
-      tags:
-        - "Contact Profile"
-      summary: "Approve contacts"
+    $ref: "./paths/contact/contacts-approve.yaml"
 
   # Experiences
   /contacts/{contact_id}/experiences:
