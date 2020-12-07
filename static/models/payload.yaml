@@ -102,3 +102,19 @@ Approve_Contacts_Payload:
         example: 120
   xml:
     name: "Approve_Contacts_Payload"
+
+Contact_Skills_Payload:
+  type: "object"
+  properties:
+    contact_id:
+      type: "integer"
+      format: "int64"
+      example: 120
+    id:
+      type: "string"
+      example: "=CKCAHIgAjV1cq2w=QSFl6HY"
+    name:
+      type: "string"
+      example: "Public Policy"
+  xml:
+    name: "Contact_Skills_Payload"
