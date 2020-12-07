@@ -8,8 +8,8 @@ put:
     - "application/json"
   parameters:
     - in: body
-      name: contact's program apps
-      description: Contact info and program apps.
+      name: Opportunity
+      description: Updated opportunity.
       schema:
         $ref: "../../swagger.yaml#definitions/Opportunity"
   responses:

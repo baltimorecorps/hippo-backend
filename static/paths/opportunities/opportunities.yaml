@@ -30,8 +30,8 @@ post:
     - "application/json"
   parameters:
     - in: body
-      name: contact's program apps
-      description: Contact info and program apps.
+      name: Opportunity
+      description: New Opportunity.
       schema:
         $ref: "../../models/payload.yaml#Opportunity_Payload"
   responses:
