@@ -1,0 +1,25 @@
+post:
+  tags:
+    - "Capabilities and Skills"
+  summary: "Add contact's skill suggestion"
+  description: "Add contact's skill suggestion"
+  operationId: "addContactSkillsSuggestion"
+  produces:
+    - "application/json"
+  parameters:
+    - in: body
+      name: contact's program apps
+      description: Contact info and program apps.
+      schema:
+        $ref: "../models/payload.yaml#Contact_Capability_Suggestion_Payload"
+  responses:
+    "201":
+      description: "successful operation"
+      schema:
+        $ref: "../models/skill.yaml#Skills_Suggestion"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

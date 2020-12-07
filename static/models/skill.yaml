@@ -35,3 +35,37 @@ Skill_Autocomplete:
         example: "Python"
   xml:
     name: "Skill_Autocomplete"
+
+Skills_Suggestion:
+  type: "object"
+  properties:
+    id:
+      type: "string"
+      example: "=UkrAXi7iSYoGA==UkrAXi7mJSMD"
+    name:
+      type: "string"
+      example: "Python"
+    capabilities:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          name:
+            type: "string"
+            example: "Data Analysis"
+          id:
+            type: "string"
+            example: "dd9tqGuK2672PavRTJrN_A=="
+    suggested_capabilities:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          name:
+            type: "string"
+            example: "Program Management"
+          id:
+            type: "string"
+            example: "2d9tq90f672PavRTJrN_A=="
+  xml:
+    name: "Skills_Suggestion"

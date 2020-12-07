@@ -118,3 +118,19 @@ Contact_Skills_Payload:
       example: "Public Policy"
   xml:
     name: "Contact_Skills_Payload"
+
+Contact_Capability_Suggestion_Payload:
+  type: "object"
+  properties:
+    contact_id:
+      type: "integer"
+      format: "int64"
+      example: 120
+    capability_id:
+      type: "string"
+      example: "cap:prog_mgmt"
+    name:
+      type: "string"
+      example: "Python"
+  xml:
+    name: "Contact_Capability_Suggestion_Payload"
