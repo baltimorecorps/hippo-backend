@@ -25,7 +25,12 @@ put:
   summary: "Update About Me"
   description: "Update a contact's data in about me section"
   operationId: "updateAboutMe"
-  parameters: []
+  parameters:
+    - in: body
+      name: contact
+      description: Contact ids.
+      schema:
+        $ref: "../../models/contact.yaml#Contact_Full"
   produces:
     - "application/json"
   responses:
