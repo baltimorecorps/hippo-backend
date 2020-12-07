@@ -116,15 +116,9 @@ paths:
     $ref: "./paths/opportunities/employer-opportunity.yaml"
 
   /opportunity/${opportunity_id}/deactivate:
-    post:
-      tags:
-        - "Opportunities"
-      summary: "Deactivate an opportunity"
+    $ref: "./paths/opportunities/deactivate-opportunity.yaml"
   /opportunity/${opportunity_id}/activate:
-    post:
-      tags:
-        - "Opportunities"
-      summary: "Activate an opportunity"
+    $ref: "./paths/opportunities/activate-opportunity.yaml"
 
   # Applications and Programs
   /contacts/{contact_id}/app/{opportunity_id}:
