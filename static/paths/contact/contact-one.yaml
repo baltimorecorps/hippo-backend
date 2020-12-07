@@ -6,16 +6,13 @@ get:
   operationId: "getOneContact"
   produces:
     - "application/json"
-  parameters:
-    - in: "body"
-      name: "body"
-      description: "Pet object that needs to be added to the store"
-      required: true
-      schema:
-        $ref: "../../swagger.yaml#definitions/Contact"
   responses:
-    "405":
-      description: "Invalid input"
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Contact_Full"
+    "404":
+      description: "Contact does not exist"
   security:
     - petstore_auth:
         - "write:pets"
@@ -31,19 +28,18 @@ put:
   produces:
     - "application/json"
   parameters:
-    - in: "body"
-      name: "body"
-      description: "Pet object that needs to be added to the store"
-      required: true
+    - in: body
+      name: contact
+      description: Contact full information.
       schema:
-        $ref: "../../swagger.yaml#definitions/Contact"
+        $ref: "../../models/contact.yaml#Contact_Full"
   responses:
-    "400":
-      description: "Invalid ID supplied"
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Contact_Full"
     "404":
-      description: "Pet not found"
-    "405":
-      description: "Validation exception"
+      description: "Contact does not exist"
   security:
     - petstore_auth:
         - "write:pets"
@@ -52,26 +48,16 @@ delete:
   tags:
     - "Contact Basics"
   summary: "Delete a contact"
-  description: ""
-  operationId: "delete"
+  description: "Delete a contact"
+  operationId: "deleteContact"
   produces:
     - "application/json"
-  parameters:
-    - name: "api_key"
-      in: "header"
-      required: false
-      type: "string"
-    - name: "petId"
-      in: "path"
-      description: "Pet id to delete"
-      required: true
-      type: "integer"
-      format: "int64"
   responses:
-    "400":
-      description: "Invalid ID supplied"
+    "200":
+      description: "Delete a contact"
     "404":
-      description: "Pet not found"
+      description: "Contact does not exist"
+
   security:
     - petstore_auth:
         - "write:pets"

@@ -179,6 +179,8 @@ securityDefinitions:
 definitions:
   Contact:
     $ref: "./models/contact.yaml#Contact"
+  Contact_Full:
+    $ref: "./models/contact.yaml#Contact_Full"
   Capability:
     $ref: "./models/skill.yaml#Capability"
   Skill:
