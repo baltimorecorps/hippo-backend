@@ -29,6 +29,11 @@ post:
   produces:
     - "application/json"
   parameters:
+    - in: body
+      name: contact's program apps
+      description: Contact info and program apps.
+      schema:
+        $ref: "../../models/payload.yaml#Opportunity_Payload"
   responses:
     "200":
       description: "successful operation"

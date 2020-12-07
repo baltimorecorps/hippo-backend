@@ -11,7 +11,7 @@ put:
       name: contact's program apps
       description: Contact info and program apps.
       schema:
-        $ref: "../../models/payload.yaml#Opportunity_Payload"
+        $ref: "../../swagger.yaml#definitions/Opportunity"
   responses:
     "200":
       description: "successful operation"
