@@ -20,4 +20,18 @@ Capability:
       type: "string"
       example: "Data Analysis"
   xml:
-    name: "Skill"
+    name: "Capability"
+
+Skill_Autocomplete:
+  type: "object"
+  properties:
+    got_exact:
+      type: "boolean"
+      example: true
+    matches:
+      type: "array"
+      items:
+        type: "string"
+        example: "Python"
+  xml:
+    name: "Skill_Autocomplete"

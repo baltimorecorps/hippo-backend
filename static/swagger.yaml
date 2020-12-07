@@ -98,10 +98,7 @@ paths:
         - "Capabilities and Skills"
       summary: "Delete a contact's skills"
   /skills/autocomplete:
-    get:
-      tags:
-        - "Capabilities and Skills"
-      summary: "Get autocomplete skills"
+    $ref: "./paths/skills-autocomplete.yaml"
 
   # Opportunities
   /opportunity:
