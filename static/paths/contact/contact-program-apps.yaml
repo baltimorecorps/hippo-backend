@@ -1,0 +1,27 @@
+put:
+  tags:
+    - "Contact Profile"
+  summary: "Update Programs Interested"
+  description: "Update Programs Interested"
+  operationId: "updateProgramsInterested"
+  consumes:
+    - "application/json"
+  produces:
+    - "application/json"
+  parameters:
+    - in: body
+      name: contact's program apps
+      description: Contact info and program apps.
+      schema:
+        $ref: "../../models/contact.yaml#Contact_ProgramApps"
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../../models/contact.yaml#Contact_ProgramApps"
+    "404":
+      description: "Contact does not exist"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

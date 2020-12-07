@@ -21,6 +21,15 @@ Contact_AboutMe:
   xml:
     name: "Contact_AboutMe"
 
+Contact_ProgramApps:
+  allOf:
+    - $ref: "#definitions/Contact_Short"
+    - properties:
+        program_apps:
+          $ref: "./program.yaml#ProgramApp"
+  xml:
+    name: "Contact_ProgramApps"
+
 Contact_Session:
   type: "object"
   properties:
