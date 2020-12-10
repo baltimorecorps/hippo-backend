@@ -40,7 +40,17 @@ Application_Full:
     - $ref: "#Application_Short"
     - properties:
         resume:
-          type: "string"
+          type: "object"
+          properties:
+            <exp_id>:
+              type: "object"
+              properties:
+                selected:
+                  type: "boolean"
+                  example: true
+                <achievement_id>:
+                  type: "boolean"
+                  example: true
           example: "resume object"
         opportunity:
           $ref: "./opportunity.yaml#Opportunity"

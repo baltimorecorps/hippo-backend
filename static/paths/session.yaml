@@ -11,8 +11,8 @@ get:
       description: "successful operation"
       schema:
         $ref: "../models/contact.yaml#Contact_Session"
-    "404":
-      description: ""
+    "401":
+      description: "UNAUTHORIZED"
   security:
     - petstore_auth:
         - "write:pets"
@@ -27,7 +27,7 @@ post:
     - "application/json"
   responses:
     "201":
-      description: "successful operation"
+      description: "CREATED"
       schema:
         $ref: "../models/contact.yaml#Contact_Session"
 

@@ -23,3 +23,27 @@ post:
     - petstore_auth:
         - "write:pets"
         - "read:pets"
+delete:
+  tags:
+    - "Capabilities and Skills"
+  summary: "Delete contact's skill suggestion"
+  description: "Delete contact's skill suggestion"
+  operationId: "deleteContactSkillsSuggestion"
+  produces:
+    - "application/json"
+  parameters:
+    - in: path
+      name: skill's id
+      description: Skill's id.
+      schema:
+        type: "string"
+        example: "55rtqGuK26yuPavRTJ9N_A0=/"
+  responses:
+    "200":
+      description: "OK"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

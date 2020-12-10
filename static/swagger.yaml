@@ -40,11 +40,6 @@ paths:
   # Contacts
   /contacts/:
     $ref: "./paths/contact/contacts-all.yaml"
-  /contacts/me:
-    get:
-      tags:
-        - "Contact Basics"
-      summary: "Get the logged in account contact"
   /contacts/{contact_id}:
     $ref: "./paths/contact/contact-one.yaml"
   /contacts/filter:
@@ -62,10 +57,8 @@ paths:
     $ref: "./paths/contact/contact-program-apps.yaml"
 
   /contacts/{contact_id}/profile/submit:
-    post:
-      tags:
-        - "Contact Profile"
-      summary: "Submit profile for review"
+    $ref: "./paths/contact/contact-profile-submit.yaml"
+
   /contacts/approve:
     $ref: "./paths/contact/contacts-approve.yaml"
 
@@ -84,17 +77,6 @@ paths:
     $ref: "./paths/contact/contact-skills.yaml"
   /contacts/{contact_id}/capabilities/{capability_id}/suggestion:
     $ref: "./paths/contact-skills-suggestion.yaml"
-
-  /contacts/{contact_id}/capabilities/{capability_id}/suggestion/{skill_id}:
-    delete:
-      tags:
-        - "Capabilities and Skills"
-      summary: "Delete contact's skill suggestion"
-  /contacts/{contact_id}/skills/{skills_id}:
-    delete:
-      tags:
-        - "Capabilities and Skills"
-      summary: "Delete a contact's skills"
   /skills/autocomplete:
     $ref: "./paths/skills-autocomplete.yaml"
 
@@ -118,14 +100,8 @@ paths:
     $ref: "./paths/application.yaml"
   /contacts/{contact_id}/app/{opportunity_id}/submit:
     $ref: "./paths/submit-application.yaml"
-
   /contacts/{contact_id}/app:
     $ref: "./paths/contact/contact-applications.yaml"
-  /internal/applications:
-    get:
-      tags:
-        - "Applications and Programs"
-      summary: "Get all applicants who have status 'submitted' and 'approved'"
   /programs:
     $ref: "./paths/programs.yaml"
 
