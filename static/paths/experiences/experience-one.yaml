@@ -1,0 +1,65 @@
+get:
+  tags:
+    - "Experiences"
+  summary: "Get an experience"
+  description: "Get an experience"
+  operationId: "getAnExperience"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Experience"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+put:
+  tags:
+    - "Experiences"
+  summary: "Update an experience"
+  description: "Update an experience"
+  operationId: "updateAnExperience"
+  produces:
+    - "application/json"
+  parameters:
+    - in: body
+      name: experience
+      description: Contact's experience.
+      schema:
+        $ref: "../../models/experience.yaml#Experience"
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Experience"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+delete:
+  tags:
+    - "Experiences"
+  summary: "Delete an experience"
+  description: "Delete an experience"
+  operationId: "deleteAnExperience"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Experience"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

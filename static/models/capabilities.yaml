@@ -1,0 +1,74 @@
+Capabilities:
+  type: "object"
+  properties:
+    id:
+      type: "string"
+      example: "cap:analysis"
+    name:
+      type: "string"
+      description: "Data Analysis"
+    related_skills:
+      type: "array"
+      items:
+        $ref: "#Skill"
+    recommended_skills:
+      type: "array"
+      items:
+        $ref: "#Recommended_Skill"
+  xml:
+    name: "Capabilities"
+
+Contact_Capability:
+  type: "object"
+  properties:
+    id:
+      type: "string"
+      example: "cap:analysis"
+    name:
+      type: "string"
+      example: "Data Analysis"
+    skills:
+      type: "array"
+      items:
+        $ref: "#Skill"
+    suggested_skills:
+      type: "array"
+      items:
+        - "not sure"
+    score:
+      type: "integer"
+      format: "int64"
+      example: "0"
+  xml:
+    name: "Contact_Capability"
+
+Skill:
+  type: "object"
+  properties:
+    id:
+      type: "string"
+      example: "=UkrAXi7iSYoGA==UkrAXi7mJSMD"
+    name:
+      type: "string"
+      example: "Public Policy"
+  xml:
+    name: "Skill"
+
+Recommended_Skill:
+  type: "object"
+  properties:
+    order:
+      type: "integer"
+      format: "int64"
+      example: "0"
+    skill:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          example: "=UkrAXi7iSYoGA==UkrAXi7mJSMD"
+        name:
+          type: "string"
+          example: "Public Policy"
+  xml:
+    name: "Related_Skills"

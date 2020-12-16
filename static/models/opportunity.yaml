@@ -1,0 +1,45 @@
+Opportunity:
+  type: "object"
+  properties:
+    id:
+      type: "string"
+      format: "uuid"
+      example: "2043490c-85f4-43c2-b1b3-7c86202c8dd2"
+    org_name:
+      type: "string"
+      example: "Baltimore Corps"
+    title:
+      type: "string"
+      example: "Data Analyst"
+    program_name:
+      type: "string"
+      example: "Place for Purpose"
+    program_id:
+      type: "integer"
+      format: "int64"
+      example: 1
+    gdoc_link:
+      type: "string"
+      example: "https://docs.google.com/document/d/1q9eCVq4zME7RYl"
+    short_description:
+      type: "string"
+      example: "This role will be responsible for..."
+    is_active:
+      type: "boolean"
+      default: true
+    status:
+      type: "string"
+      example: "submitted"
+  xml:
+    name: "Opportunity"
+
+OpportunityApps:
+  allOf:
+    - $ref: "#Opportunity"
+    - properties:
+        applications:
+          type: "array"
+          items:
+            $ref: "./application.yaml#Application_Short"
+  xml:
+    name: "OpportunityApps"

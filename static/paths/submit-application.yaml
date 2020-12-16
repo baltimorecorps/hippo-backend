@@ -1,0 +1,21 @@
+post:
+  tags:
+    - "Applications and Programs"
+  summary: "Submit an application"
+  description: "Submit an application"
+  operationId: "submitApplication"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../swagger.yaml#definitions/Application_Full"
+
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

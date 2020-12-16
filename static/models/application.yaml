@@ -1,0 +1,82 @@
+Application_Short:
+  type: "object"
+  properties:
+    id:
+      type: "string"
+      format: "uuid"
+      example: "0422af6-64b3-4625-bea7-3942cf760681"
+    interest_statement:
+      type: "string"
+      example: "I am interested in this opportunity because..."
+    interview_date:
+      type: "string"
+      format: "date"
+      example: "2020-03-21"
+    interview_time:
+      type: "string"
+      example: "13:00:00"
+    interview_completed:
+      type: "boolean"
+      default: false
+    status:
+      type: "string"
+      description: "Application Status"
+      enum:
+        - "draft"
+        - "submitted"
+        - "recommended"
+        - "interviewed"
+        - "considered_for_role"
+    is_active:
+      type: "boolean"
+      default: true
+    contact:
+      $ref: "./contact.yaml#Contact"
+  xml:
+    name: "Application_Short"
+
+Application_Full:
+  allOf:
+    - $ref: "#Application_Short"
+    - properties:
+        resume:
+          type: "object"
+          properties:
+            <exp_id>:
+              type: "object"
+              properties:
+                selected:
+                  type: "boolean"
+                  example: true
+                <achievement_id>:
+                  type: "boolean"
+                  example: true
+          example: "resume object"
+        opportunity:
+          $ref: "./opportunity.yaml#Opportunity"
+  xml:
+    name: "Application_Full"
+
+    #  "resume": {
+    #   "531": {
+    #     "selected": true
+    #   },
+    #   "532": {
+    #     "selected": true
+    #   },
+    #   "533": {
+    #     "1005": true,
+    #     "1006": true,
+    #     "selected": true
+    #   },
+    #   "cap:advocacy": {
+    #     "selected": true,
+    #     "74BgThI2os9wEdyArofEKA==": true,
+    #     "ePargQpold0hKreooSM7aQ==": true
+    #   },
+    #   "cap:outreach": {
+    #     "selected": true,
+    #     "74BgThI2os9wEdyArofEKA==": true,
+    #     "Pqb6PuqVzXV5BCkuylQqxw==": true
+    #   },
+    #  }

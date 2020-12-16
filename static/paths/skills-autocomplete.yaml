@@ -1,0 +1,25 @@
+get:
+  tags:
+    - "Capabilities and Skills"
+  summary: "Get autocomplete skills"
+  description: "Get autocomplete skills"
+  operationId: "getAutoCompleteSkill"
+  produces:
+    - "application/json"
+  parameters:
+    - name: "q"
+      in: "query"
+      description: "Name of skill"
+      required: true
+      type: "string"
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../models/skill.yaml#Skill_Autocomplete"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

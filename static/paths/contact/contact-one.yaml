@@ -1,0 +1,64 @@
+get:
+  tags:
+    - "Contact Basics"
+  summary: "Get a contact"
+  description: ""
+  operationId: "getOneContact"
+  produces:
+    - "application/json"
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Contact_Full"
+    "404":
+      description: "Contact does not exist"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+put:
+  tags:
+    - "Contact Basics"
+  summary: "Update a contact"
+  description: ""
+  operationId: "updatePet"
+  consumes:
+    - "application/json"
+  produces:
+    - "application/json"
+  parameters:
+    - in: body
+      name: contact
+      description: Contact full information.
+      schema:
+        $ref: "../../models/contact.yaml#Contact_Full"
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Contact_Full"
+    "404":
+      description: "Contact does not exist"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+delete:
+  tags:
+    - "Contact Basics"
+  summary: "Delete a contact"
+  description: "Delete a contact"
+  operationId: "deleteContact"
+  produces:
+    - "application/json"
+  responses:
+    "200":
+      description: "Delete a contact"
+    "404":
+      description: "Contact does not exist"
+
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

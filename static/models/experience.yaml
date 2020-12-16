@@ -1,0 +1,125 @@
+Experience:
+  type: "object"
+  properties:
+    id:
+      type: "integer"
+      format: "int64"
+      example: "100"
+    host:
+      type: "string"
+      example: "Baltimore Corps"
+    title:
+      type: "string"
+      example: "Web Developer"
+    type:
+      type: "string"
+      description: "Order Status"
+      enum:
+        - "Work"
+        - "Education"
+        - "Accomplishment"
+    degree:
+      type: "string"
+      example: "Masters"
+    degree_other:
+      type: "string"
+      example: "Certificate Program"
+    description:
+      type: "string"
+      example: "I received this award for my..."
+    link:
+      type: "string"
+      example: "https://github.com/baltimorecorps/hippo-backend"
+    link_name:
+      type: "string"
+      example: "GitHub Repo"
+    start_month:
+      type: "string"
+      description: "Month in which experience started"
+      enum:
+        - "none"
+        - "January"
+        - "February"
+        - "March"
+        - "April"
+        - "May"
+        - "June"
+        - "July"
+        - "August"
+        - "September"
+        - "October"
+        - "November"
+        - "December"
+    start_year:
+      type: "integer"
+      format: "int64"
+      example: 2012
+    end_year:
+      type: "integer"
+      format: "int64"
+      example: 2020
+    end_month:
+      type: "string"
+      description: "Month in which experience ended"
+      enum:
+        - "none"
+        - "January"
+        - "February"
+        - "March"
+        - "April"
+        - "May"
+        - "June"
+        - "July"
+        - "August"
+        - "September"
+        - "October"
+        - "November"
+        - "December"
+    is_current:
+      type: "boolean"
+      default: false
+    length_year:
+      type: "integer"
+      format: "int64"
+    length_month:
+      type: "integer"
+      format: "int64"
+    location:
+      type: "string"
+      example: "Baltimore, MD, USA"
+    achievements:
+      type: "array"
+      items:
+        $ref: "#Achievement"
+    skills:
+      type: "array"
+      items:
+        $ref: "#Skill"
+  xml:
+    name: "Experience"
+
+Achievement:
+  type: "object"
+  properties:
+    id:
+      type: "integer"
+      format: "int64"
+      example: 122
+    description:
+      type: "string"
+      example: "Wrote a grant for $1 million dollars"
+    skills:
+      type: "array"
+      items:
+        $ref: "#Skill"
+
+Skill:
+  type: "object"
+  properties:
+    id:
+      type: "integer"
+      format: "int64"
+      example: 1
+    name:
+      type: "string"
+      example: "Python"

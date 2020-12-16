@@ -1,0 +1,22 @@
+get:
+  tags:
+    - "Capabilities and Skills"
+  summary: "Get a contact's capabilities"
+  description: "Get a contact's capabilities"
+  operationId: "getContactCapabilities"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        type: "array"
+        items:
+          $ref: "../../models/capabilities.yaml#Contact_Capability"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

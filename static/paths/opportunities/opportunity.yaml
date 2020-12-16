@@ -1,0 +1,25 @@
+put:
+  tags:
+    - "Opportunities"
+  summary: "Update a new opportunity"
+  description: "Update a new opportunity"
+  operationId: "updateOpportunity"
+  produces:
+    - "application/json"
+  parameters:
+    - in: body
+      name: Opportunity
+      description: Updated opportunity.
+      schema:
+        $ref: "../../swagger.yaml#definitions/Opportunity"
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Opportunity"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

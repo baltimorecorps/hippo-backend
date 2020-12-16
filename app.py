@@ -6,6 +6,10 @@ from flask_login import LoginManager
 from api import api_bp
 from auth import AuthError
 from models.session_model import UserSession
+from flask_swagger_ui import get_swaggerui_blueprint
+
+SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/static/swagger.yaml'
 
 def load_from_dev(app):
     if os.path.isfile('secrets/dev.cfg'):
@@ -70,6 +74,16 @@ def create_app(env=None):
 
     # Initialization for flask-restful
     app.register_blueprint(api_bp, url_prefix='/api')
+
+    # Swagger initialization
+    swaggerui_blueprint = get_swaggerui_blueprint(
+        SWAGGER_URL,  # Swagger UI static files will be mapped to '{SWAGGER_URL}/dist/'
+        API_URL,
+        config={  # Swagger UI config overrides
+            'app_name': "Test application"
+        },
+    )
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
     @app.route('/')
     def home_page():

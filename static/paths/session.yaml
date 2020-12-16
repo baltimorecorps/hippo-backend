@@ -1,0 +1,59 @@
+get:
+  tags:
+    - "Session"
+  summary: "Get session"
+  description: "Get session"
+  operationId: "getSession"
+  produces:
+    - "application/json"
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../models/contact.yaml#Contact_Session"
+    "401":
+      description: "UNAUTHORIZED"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+post:
+  tags:
+    - "Session"
+  summary: "Create session"
+  description: "Create session"
+  operationId: "createSession"
+  produces:
+    - "application/json"
+  responses:
+    "201":
+      description: "CREATED"
+      schema:
+        $ref: "../models/contact.yaml#Contact_Session"
+
+    "404":
+      description: ""
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+delete:
+  tags:
+    - "Session"
+  summary: "Delete session"
+  description: "Delete session"
+  operationId: "deleteSession"
+  produces:
+    - "application/json"
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        $ref: "../models/contact.yaml#Contact_Session"
+
+    "404":
+      description: ""
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

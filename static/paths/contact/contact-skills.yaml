@@ -1,0 +1,72 @@
+get:
+  tags:
+    - "Capabilities and Skills"
+  summary: "Get a contact's skills"
+  description: "Get a contact's skills"
+  operationId: "getContactSkills"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        type: "array"
+        items:
+          $ref: "../../swagger.yaml#definitions/Skill"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+post:
+  tags:
+    - "Capabilities and Skills"
+  summary: "Add a contact's skills"
+  description: "Add a contact's skills"
+  operationId: "addContactSkills"
+  produces:
+    - "application/json"
+  parameters:
+    - in: body
+      name: contact's program apps
+      description: Contact info and program apps.
+      schema:
+        $ref: "../../models/payload.yaml#Contact_Skills_Payload"
+  responses:
+    "201":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Skill"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+
+delete:
+  tags:
+    - "Capabilities and Skills"
+  summary: "Delete contact's skill"
+  description: "Delete contact's skill"
+  operationId: "deleteContactSkill"
+  produces:
+    - "application/json"
+  parameters:
+    - in: path
+      name: skill's id
+      description: Skill's id.
+      schema:
+        type: "string"
+        example: "55rtqGuK26yuPavRTJ9N_A0=/"
+  responses:
+    "200":
+      description: "OK"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

@@ -1,0 +1,21 @@
+get:
+  tags:
+    - "Contact Profile"
+  summary: "Get a contact's dynamic instructions"
+  description: "Get a contact's dynamic instructions"
+  operationId: "getInstructions"
+  parameters: []
+  produces:
+    - "application/json"
+  responses:
+    "200":
+      description: "success"
+      schema:
+        $ref: "../../models/contact.yaml#Contact_Instructions"
+
+    "404":
+      description: "Contact not found"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

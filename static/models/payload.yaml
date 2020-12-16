@@ -1,0 +1,161 @@
+Contact_Payload:
+  type: "object"
+  properties:
+    id:
+      type: "integer"
+      format: "int64"
+      example: "120"
+    first_name:
+      type: "string"
+      example: "Barack"
+    last_name:
+      type: "string"
+      example: "Obama"
+    email:
+      type: "string"
+      example: "obama@whitehouse.gov"
+    phone_primary:
+      type: "string"
+      example: "+1(123)456-7890"
+    account_id:
+      type: "string"
+    terms_agreement:
+      type: "boolean"
+      default: false
+      example: true
+  xml:
+    name: "Contact_Payload"
+
+Contact_Filter_Payload:
+  type: "object"
+  properties:
+    status:
+      type: "array"
+      items:
+        type: "string"
+        enum:
+          - "submitted"
+          - "approved"
+    current_job_status:
+      type: "array"
+      items:
+        type: "string"
+        example: "Unemployed"
+    job_search_status:
+      type: "array"
+      items:
+        type: "string"
+        example: "Actively looking for a job"
+    previous_bcorps_program:
+      type: "array"
+      items:
+        type: "string"
+        example: "Yes"
+    years_exp:
+      type: "array"
+      items:
+        type: "string"
+        example: "5+ years"
+    skills:
+      type: "array"
+      items:
+        type: "string"
+        example: "Python"
+    program_apps:
+      type: "array"
+      items:
+        type: "object"
+        properties:
+          program:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                example: "Place for Purpose"
+              id:
+                type: "integer"
+                format: "int64"
+                example: 1
+    programs_completed:
+      type: "object"
+      properties:
+        kiva:
+          type: "boolean"
+          example: true
+    roles:
+      type: "object"
+      properties:
+        advocacy_public_policy:
+          type: "boolean"
+          example: true
+  xml:
+    name: "Contact_Filter_Payload"
+
+Approve_Contacts_Payload:
+  type: "array"
+  items:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        example: 120
+  xml:
+    name: "Approve_Contacts_Payload"
+
+Contact_Skills_Payload:
+  type: "object"
+  properties:
+    contact_id:
+      type: "integer"
+      format: "int64"
+      example: 120
+    id:
+      type: "string"
+      example: "=CKCAHIgAjV1cq2w=QSFl6HY"
+    name:
+      type: "string"
+      example: "Public Policy"
+  xml:
+    name: "Contact_Skills_Payload"
+
+Contact_Capability_Suggestion_Payload:
+  type: "object"
+  properties:
+    contact_id:
+      type: "integer"
+      format: "int64"
+      example: 120
+    capability_id:
+      type: "string"
+      example: "cap:prog_mgmt"
+    name:
+      type: "string"
+      example: "Python"
+  xml:
+    name: "Contact_Capability_Suggestion_Payload"
+
+Opportunity_Payload:
+  type: "object"
+  properties:
+    cycle_id:
+      type: "integer"
+      format: "int64"
+      example: 1
+    gdoc_link:
+      type: "string"
+      example: "https://docs.google.com/document/d/test"
+    org_name:
+      type: "string"
+      example: "Baltimore Corps"
+    title:
+      type: "string"
+      example: "Web Developer"
+    program_name:
+      type: "string"
+      example: "Place for Purpose"
+    short_description:
+      type: "string"
+      example: "Short job description"
+  xml:
+    name: "Opportunity_Payload"

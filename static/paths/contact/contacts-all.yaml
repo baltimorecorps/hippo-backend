@@ -1,0 +1,49 @@
+get:
+  tags:
+    - "Contact Basics"
+  summary: "Get all contacts"
+  description: "Get all contacts"
+  operationId: "getAllContacts"
+  produces:
+    - "application/json"
+  parameters:
+  responses:
+    "200":
+      description: "successful operation"
+      schema:
+        type: "array"
+        items:
+          $ref: "../../swagger.yaml#definitions/Contact"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+
+post:
+  tags:
+    - "Contact Basics"
+  summary: "Create a new contact"
+  description: "Create a new contact"
+  operationId: "addNewContact"
+
+  parameters:
+    - in: body
+      name: contact
+      description: Contact basic information.
+      schema:
+        $ref: "../../models/payload.yaml#Contact_Payload"
+  produces:
+    - "application/json"
+  responses:
+    "201":
+      description: "successful operation"
+      schema:
+        $ref: "../../models/contact.yaml#Contact_Full"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

@@ -1,0 +1,21 @@
+post:
+  tags:
+    - "Contact Profile"
+  summary: "Submit profile for review"
+  description: "Submit profile for review"
+  operationId: "submitContactProfile"
+  parameters: []
+  produces:
+    - "application/json"
+  responses:
+    "201":
+      description: "CREATED"
+      schema:
+        $ref: "../../models/contact.yaml#Contact_Instructions"
+
+    "404":
+      description: "Contact not found"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

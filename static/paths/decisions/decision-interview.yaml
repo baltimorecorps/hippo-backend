@@ -1,0 +1,19 @@
+post:
+  tags:
+    - "Staff and Employer Decisions"
+  summary: "Employer updates interview schedule to an application"
+  description: "Employer updates interview schedule to an application"
+  operationId: "decisionInterview"
+  produces:
+    - "application/json"
+  responses:
+    "201":
+      description: "successful operation"
+      schema:
+        $ref: "../../swagger.yaml#definitions/Application_Full"
+    "404":
+      description: ""
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

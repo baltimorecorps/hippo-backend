@@ -1,0 +1,27 @@
+post:
+  tags:
+    - "Contact Profile"
+  summary: "Approve contacts"
+  description: "Approve contacts"
+  operationId: "approveContacts"
+  parameters:
+    - in: body
+      name: contact
+      description: Contact ids.
+      schema:
+        $ref: "../../models/payload.yaml#Approve_Contacts_Payload"
+  produces:
+    - "application/json"
+  responses:
+    "201":
+      description: "successful operation"
+      schema:
+        type: "array"
+        items:
+          $ref: "../../swagger.yaml#definitions/Contact"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"

@@ -1,0 +1,49 @@
+post:
+  tags:
+    - "Capabilities and Skills"
+  summary: "Add contact's skill suggestion"
+  description: "Add contact's skill suggestion"
+  operationId: "addContactSkillsSuggestion"
+  produces:
+    - "application/json"
+  parameters:
+    - in: body
+      name: contact's program apps
+      description: Contact info and program apps.
+      schema:
+        $ref: "../models/payload.yaml#Contact_Capability_Suggestion_Payload"
+  responses:
+    "201":
+      description: "successful operation"
+      schema:
+        $ref: "../models/skill.yaml#Skills_Suggestion"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
+delete:
+  tags:
+    - "Capabilities and Skills"
+  summary: "Delete contact's skill suggestion"
+  description: "Delete contact's skill suggestion"
+  operationId: "deleteContactSkillsSuggestion"
+  produces:
+    - "application/json"
+  parameters:
+    - in: path
+      name: skill's id
+      description: Skill's id.
+      schema:
+        type: "string"
+        example: "55rtqGuK26yuPavRTJ9N_A0=/"
+  responses:
+    "200":
+      description: "OK"
+    "400":
+      description: "Invalid status value"
+  security:
+    - petstore_auth:
+        - "write:pets"
+        - "read:pets"
