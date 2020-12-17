@@ -51,6 +51,15 @@ Application_Full:
                 <achievement_id>:
                   type: "boolean"
                   example: true
+            <cap:capability_name>:
+              type: "object"
+              properties:
+                selected:
+                  type: "boolean"
+                  example: true
+                <skill_id>:
+                  type: "string"
+                  example: "74BgThO2os9wEdyArofEKA=="
           example: "resume object"
         opportunity:
           $ref: "./opportunity.yaml#Opportunity"
