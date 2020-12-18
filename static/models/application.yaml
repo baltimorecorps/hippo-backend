@@ -60,7 +60,6 @@ Application_Full:
                 <skill_id>:
                   type: "string"
                   example: "74BgThO2os9wEdyArofEKA=="
-          example: "resume object"
         opportunity:
           $ref: "./opportunity.yaml#Opportunity"
   xml:
