@@ -200,6 +200,8 @@ class ProfileSubmit(Resource):
                 f"{roles_str}\n\n---\n\n"
                 f"**Programs/Services they are interested in:**\n\n"
                 f"{programs_str}\n\n---\n\n"
+                f"**Currently a student:**\n\n"
+                f"{profile.current_edu_status}\n\n---\n\n"
             )
         }
         fields_data = {
