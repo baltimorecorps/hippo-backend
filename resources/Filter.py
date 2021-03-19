@@ -128,6 +128,7 @@ class Filter(Resource):
                     Contact.stage,
                     Profile.years_exp,
                     Profile.job_search_status,
+                    Profile.current_edu_status,
                     Profile.gender,
                     ContactAddress.city,
                     ContactAddress.state,
