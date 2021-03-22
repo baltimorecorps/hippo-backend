@@ -64,6 +64,10 @@ class FilterOutputSchema(Schema):
                                      'job_search_status',
                                      attribute='profile',
                                      dump_only=True)
+    current_edu_status = fields.Pluck(ProfileSchema,
+                                     'current_edu_status',
+                                     attribute='profile',
+                                     dump_only=True)
     programs_interested = fields.Pluck(ProgramAppSchema,
                                        'program_name',
                                        many=True,
@@ -82,6 +86,7 @@ def format_row(row):
         'status',
         'years_exp',
         'job_search_status',
+        'current_edu_status',
         'gender',
         'city',
         'state',
@@ -133,6 +138,7 @@ class Filter(Resource):
                     ContactAddress.city,
                     ContactAddress.state,
                     Race.race_all,
+                    
                 ))
 
         if not query:
