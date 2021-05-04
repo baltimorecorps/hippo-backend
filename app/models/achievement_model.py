@@ -1,5 +1,5 @@
-from models.base_model import db
-from models.skill_model import SkillSchema
+from app.models import db
+from app.models.skill_model import SkillSchema
 from models.skill_item_model import AchievementSkill
 from marshmallow import Schema, fields, EXCLUDE
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -19,7 +19,7 @@ class Achievement(db.Model):
     #relationships
     experience = db.relationship('Experience', back_populates='achievements')
     contact = db.relationship('Contact', back_populates='achievements')
-    skill_items = db.relationship('AchievementSkill', 
+    skill_items = db.relationship('AchievementSkill',
                                   cascade='all, delete, delete-orphan')
 
     def add_skill(self, skill, capability=None):
