@@ -1,9 +1,10 @@
-from models.base_model import db
-from models.contact_model import ContactSchema, ContactShortSchema
-from marshmallow import Schema, fields, EXCLUDE
-from flask_login import UserMixin
 from datetime import datetime
+
+from flask_login import UserMixin
 from sqlalchemy.ext.hybrid import hybrid_property
+
+from app.models import db
+
 
 class UserSession(UserMixin, db.Model):
     __tablename__ = 'user_session'
@@ -23,18 +24,3 @@ class UserSession(UserMixin, db.Model):
     @hybrid_property
     def is_authenticated(self):
         return self.expiration > datetime.utcnow()
-
-
-class UserSessionSchema(Schema):
-    # !!! The id being load only is security-critical, because the session id
-    # should not be exposed to the frontend out of the session cookie
-    #
-    # Anyone who gets a valid session id can functionally log in as the user
-    # TODO: test this
-    id = fields.String(required=True, load_only=True)
-
-    contact = fields.Nested(ContactShortSchema, required=True)
-    jwt = fields.String(required=True)
-
-    class Meta:
-        unknown = EXCLUDE

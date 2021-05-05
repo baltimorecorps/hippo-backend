@@ -1,5 +1,4 @@
-from models.base_model import db
-from marshmallow import Schema, fields, post_dump, EXCLUDE
+from app.models import db
 
 # Helper table to classify capabilities
 capability_skills = db.Table('capability_skills',
@@ -19,7 +18,7 @@ class Skill(db.Model):
     name = db.Column(db.String, nullable=False)
 
     #relationships
-    capabilities = db.relationship('Capability', 
+    capabilities = db.relationship('Capability',
                                    secondary=capability_skills,
                                    lazy='subquery',
                                    back_populates='related_skills'
@@ -37,11 +36,11 @@ class Capability(db.Model):
     name = db.Column(db.String, nullable=False)
 
     #relationships
-    related_skills = db.relationship('Skill', 
+    related_skills = db.relationship('Skill',
                                    secondary=capability_skills,
                                    lazy='subquery',
                                    back_populates='capabilities')
-    recommended_skills = db.relationship('SkillRecommendation', 
+    recommended_skills = db.relationship('SkillRecommendation',
                                          order_by='SkillRecommendation.order',
                                          cascade='all, delete')
 
@@ -89,30 +88,3 @@ class SkillRecommendation(db.Model):
         db.PrimaryKeyConstraint('capability_id', 'skill_id', name='cap_skill_rec_pk'),
         db.UniqueConstraint('capability_id', 'order', name='cap_skill_rec_order_uniq'),
     )
-    
-
-class SkillSchema(Schema):
-    id = fields.String(dump_only=True)
-    name = fields.String(required=True)
-
-    class Meta:
-        unknown = EXCLUDE
-
-class SkillRecommendationSchema(Schema):
-    capability_id = fields.String(required=True, load_only=True)
-    skill_id = fields.String(required=True, load_only=True)
-    skill = fields.Nested(SkillSchema, dump_only=True)
-    order = fields.Integer(required=True)
-
-class CapabilitySchema(Schema):
-    id = fields.String(dump_only=True)
-    name = fields.String(required=True)
-    related_skills = fields.List(
-        fields.Nested(SkillSchema(only=('id', 'name'))), dump_only=True)
-    recommended_skills = fields.List(
-        fields.Nested(SkillRecommendationSchema), dump_only=True)
-
-    class Meta:
-        unknown = EXCLUDE
-
-

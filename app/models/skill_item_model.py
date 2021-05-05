@@ -1,6 +1,7 @@
-from models.base_model import db
-from marshmallow import Schema, fields, post_dump, EXCLUDE
 from sqlalchemy.ext.associationproxy import association_proxy
+
+from app.models import db
+
 
 # We make heavy use of this to create a tree structure for skill associations
 # https://docs.sqlalchemy.org/en/13/orm/extensions/associationproxy.html

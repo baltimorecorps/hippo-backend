@@ -1,8 +1,7 @@
-from app.models import db
-from app.models.skill_model import SkillSchema
-from models.skill_item_model import AchievementSkill
-from marshmallow import Schema, fields, EXCLUDE
 from sqlalchemy.ext.hybrid import hybrid_property
+
+from app.models import db, AchievementSkill
+
 
 def add_skill_error(_):
     assert False, "use experience.add_skill instead of experience.skills.append"
@@ -47,18 +46,3 @@ class Achievement(db.Model):
                     'capability_id': skill_item.capability_id,
                 })
         return sorted(skills, key=lambda skill: skill['name'])
-
-class AchievementSkillItemSchema(Schema):
-    name = fields.String(required=True)
-    capability_id = fields.String(required=False, missing=None)
-
-    class Meta:
-        unknown = EXCLUDE
-
-class AchievementSchema(Schema):
-    id = fields.Integer(required=False)
-    description = fields.String()
-    skills = fields.Nested(AchievementSkillItemSchema, many=True)
-
-    class Meta:
-        unknown = EXCLUDE

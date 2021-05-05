@@ -1,5 +1,4 @@
-from models.base_model import db
-from marshmallow import Schema, fields, post_dump, EXCLUDE
+from app.models import db
 
 
 class Program(db.Model):
@@ -16,10 +15,3 @@ class Program(db.Model):
     opportunities = db.relationship('Opportunity',
                                back_populates='program',
                                cascade='all, delete, delete-orphan')
-
-class ProgramSchema(Schema):
-    id = fields.Integer()
-    name = fields.String()
-
-    class Meta:
-        unknown = EXCLUDE

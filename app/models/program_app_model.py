@@ -1,7 +1,9 @@
-from models.base_model import db
-from marshmallow import Schema, fields, EXCLUDE
-from models.program_model import Program, ProgramSchema
 from sqlalchemy.ext.hybrid import hybrid_property
+
+from app.models import db, Program
+
+# isolates the fields that can be updated in a PUT request
+UPDATE_FIELDS = ('is_approved', 'is_interested')
 
 
 class ProgramApp(db.Model):
@@ -19,7 +21,7 @@ class ProgramApp(db.Model):
     program = db.relationship('Program', back_populates='program_apps')
     contact = db.relationship('Contact', back_populates='program_apps')
 
-    # for more info on why to use setattr() read this:
+    # for more info on why we use setattr() read this:
     # https://medium.com/@s.azad4/modifying-python-objects-within-the-sqlalchemy-framework-7b6c8dd71ab3
     def update(self, **update_dict):
         for field, value in update_dict.items():
@@ -34,23 +36,3 @@ class ProgramApp(db.Model):
             return 'Eligible'
         else:
             return 'Waiting for approval'
-
-class ProgramAppSchema(Schema):
-    id = fields.Integer()
-    program = fields.Nested(ProgramSchema)
-    status = fields.String(dump_only=True)
-    is_approved = fields.Boolean(allow_none=True)
-    is_interested = fields.Boolean(allow_none=True)
-    decision_date = fields.Date(dump_only=True)
-
-    # For use in FilterOutputSchema, exclude from other Schemas
-    program_name = fields.Pluck(ProgramSchema,
-                                'name',
-                                dump_only=True,
-                                attribute='program')
-
-    class Meta:
-        unknown = EXCLUDE
-
-# isolates the fields that can be updated in a PUT request
-UPDATE_FIELDS = ('is_approved', 'is_interested')

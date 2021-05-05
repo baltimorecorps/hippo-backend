@@ -1,7 +1,6 @@
-from models.base_model import db
 import enum
-from marshmallow import Schema, fields, EXCLUDE
-from marshmallow_enum import EnumField
+
+from app.models import db
 
 
 class Type(enum.Enum):
@@ -21,13 +20,3 @@ class Email(db.Model):
 
     #relationships
     contact = db.relationship('Contact', back_populates='email_primary')
-
-
-class EmailSchema(Schema):
-    id = fields.Integer(dump_only=True)
-    is_primary = fields.Boolean()
-    email = fields.Email(required=True)
-    type = EnumField(Type, by_value=True)
-
-    class Meta:
-        unknown = EXCLUDE

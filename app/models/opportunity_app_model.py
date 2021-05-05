@@ -1,9 +1,15 @@
 import enum
-from models.base_model import db
-from sqlalchemy.ext.hybrid import hybrid_property
-from marshmallow import Schema, fields, EXCLUDE
-from marshmallow_enum import EnumField
 import datetime as dt
+
+from sqlalchemy.ext.hybrid import hybrid_property
+
+from app.models import db
+
+UPDATE_FIELDS = ['interest_statement',
+                 'stage',
+                 'interview_date',
+                 'interview_time']
+
 
 class ApplicationStage(enum.Enum):
     draft = 0
@@ -12,10 +18,6 @@ class ApplicationStage(enum.Enum):
     interviewed = 3
     considered_for_role = 4
 
-UPDATE_FIELDS = ['interest_statement',
-                 'stage',
-                 'interview_date',
-                 'interview_time']
 
 class OpportunityApp(db.Model):
     __tablename__ = 'opportunity_app'
