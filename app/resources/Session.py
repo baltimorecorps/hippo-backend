@@ -7,10 +7,10 @@ from flask_restful import Resource, request
 from flask_login import current_user, login_required, login_user, logout_user
 from flask import current_app 
 
-from auth import validate_jwt, create_session, delete_session, refresh_session
-from models.base_model import db
-from models.session_model import UserSessionSchema
-from models.contact_model import Contact
+from app.auth import validate_jwt, create_session, delete_session, refresh_session
+from app.models.base_model import db
+from app.models.session_model import UserSessionSchema
+from app.models.contact_model import Contact
 
 session_schema = UserSessionSchema()
 class Session(Resource):

@@ -1,14 +1,14 @@
 from marshmallow import Schema, fields, EXCLUDE, pre_dump, post_dump
 from marshmallow_enum import EnumField
 
-from app.models import ContactStage
 from app.schemas import (
     EmailSchema,
     ExperienceSchema,
-    ProfileSchema
+    ProfileSchema,
     ProgramAppSchema,
     SkillSchema,
 )
+from app.models import ContactStage
 
 
 class ContactSchema(Schema):

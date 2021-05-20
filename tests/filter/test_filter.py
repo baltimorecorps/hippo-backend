@@ -2,10 +2,10 @@ import pytest
 from pprint import pprint
 import json
 
-from models.contact_model import Contact
-from models.base_model import db
+from app.models.contact_model import Contact
+from app.models.base_model import db
 
-from resources.skill_utils import get_contact_skill
+from app.resources.skill_utils import get_contact_skill
 
 OUTPUT = {
     'default': [{

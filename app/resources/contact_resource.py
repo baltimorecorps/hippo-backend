@@ -1,32 +1,34 @@
-from flask import request as reqobj #ask David why this is here
-from flask import current_app
+# from flask import request as reqobj #ask David why this is here
+# from flask import current_app
 from flask_restful import Resource, request
 from flask_login import login_user, current_user, login_required
 from marshmallow import ValidationError
 
-from models.contact_model import (
+from app.models import (
+    db,
     Contact,
+    ContactStage,
+    Email,
+    EmailType,
+    Program,
+    Skill,
+)
+from app.schemas import (
     ContactSchema,
     ContactShortSchema,
-    ContactStage
 )
-from models.email_model import Email, Type as EmailType
-from models.base_model import db
-from models.program_model import Program
-from models.skill_model import Skill
-
-from resources.skill_utils import get_skill_id, get_or_make_skill
-from resources.Profile import create_profile
-
-from auth import (
+from app.auth import (
     validate_jwt,
     create_session,
     refresh_session,
     is_authorized_view,
     is_authorized_write,
     is_authorized_with_permission,
-    unauthorized
+    unauthorized,
 )
+from app.resources.skill_utils import get_skill_id, get_or_make_skill
+from app.resources.Profile import create_profile
+
 
 contact_schema = ContactSchema(exclude=['instructions',
                                         'experiences'])
@@ -45,6 +47,7 @@ contact_program_schema = ContactSchema(
              'email']
 )
 contact_full_schema = ContactSchema()
+
 
 def add_skills(skills, contact):
     for skill_data in skills:

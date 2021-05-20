@@ -1,5 +1,5 @@
 from app import create_app
-from models.base_model import db
+from app.models.base_model import db
 
 import common.add_skills as add_skills
 

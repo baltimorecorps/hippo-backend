@@ -5,18 +5,18 @@ import pytest
 import math
 import copy
 
-from models.base_model import db
-from models.contact_model import Contact, ContactStage
-from models.experience_model import Experience, Month, Type as ExpType
-from models.session_model import UserSession
-from models.opportunity_model import Opportunity
-from models.opportunity_app_model import OpportunityApp, ApplicationStage
-from models.profile_model import Profile
+from app.models.base_model import db
+from app.models.contact_model import Contact, ContactStage
+from app.models.experience_model import Experience, Month, Type as ExpType
+from app.models.session_model import UserSession
+from app.models.opportunity_model import Opportunity
+from app.models.opportunity_app_model import OpportunityApp, ApplicationStage
+from app.models.profile_model import Profile
 
-from models.skill_model import (
+from app.models.skill_model import (
     CapabilitySkillSuggestion
 )
-from models.skill_item_model import (
+from app.models.skill_item_model import (
     ContactSkill,
     ExperienceSkill,
     AchievementSkill,

@@ -1,17 +1,17 @@
 from flask_restful import Resource, request
 from flask_login import login_required
 
-from models.base_model import db
-from models.program_model import Program
-from models.contact_model import Contact, ContactSchema
-from models.profile_model import (
+from app.models.base_model import db
+from app.models.program_model import Program
+from app.models.contact_model import Contact, ContactSchema
+from app.models.profile_model import (
     Profile,
     Race,
     ContactAddress,
     RoleChoice,
     ProgramsCompleted
 )
-from resources.trello_utils import (
+from app.resources.trello_utils import (
     query_board_data,
     update_card,
     Board,
@@ -21,7 +21,7 @@ from resources.trello_utils import (
 
 from marshmallow import ValidationError
 
-from auth import (
+from app.auth import (
     refresh_session,
     is_authorized_view,
     is_authorized_write,

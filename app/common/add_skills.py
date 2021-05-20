@@ -1,10 +1,10 @@
-from models.skill_model import (
+from app.models.skill_model import (
     Skill, 
     Capability, 
     SkillRecommendation,
     CapabilitySkillSuggestion
 )
-from resources.skill_utils import get_skill_id, get_or_make_skill
+from app.resources.skill_utils import get_skill_id, get_or_make_skill
 
 CAPABILITIES = {
     ('cap:advocacy', 'Advocacy and Public Policy'): [

@@ -2,13 +2,13 @@ from flask_restful import Resource, request
 from flask_login import login_required
 import json
 
-from resources.skill_utils import get_skill_id
+from app.resources.skill_utils import get_skill_id
 
-from models.base_model import db
-from models.contact_model import Contact, ContactSchema, ContactStage
-from models.program_app_model import ProgramApp, ProgramAppSchema
-from models.skill_item_model import ContactSkill
-from models.profile_model import (
+from app.models.base_model import db
+from app.models.contact_model import Contact, ContactSchema, ContactStage
+from app.models.program_app_model import ProgramApp, ProgramAppSchema
+from app.models.skill_item_model import ContactSkill
+from app.models.profile_model import (
     Profile,
     Race,
     RoleChoice,
@@ -22,7 +22,7 @@ from models.profile_model import (
 from marshmallow import Schema, fields, EXCLUDE, ValidationError
 from marshmallow_enum import EnumField
 
-from auth import (
+from app.auth import (
     refresh_session,
     is_authorized_view,
     is_authorized_write,

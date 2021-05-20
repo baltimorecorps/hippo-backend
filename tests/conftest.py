@@ -4,7 +4,7 @@ import pytest
 from testing.postgresql import Postgresql
 
 from run import create_app
-from models.base_model import db
+from app.models.base_model import db
 from tests.populate_db import populate
 
 collect_ignore = ["integrations/trello_integration_test.py"]

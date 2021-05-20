@@ -1,15 +1,8 @@
 from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 
-from app.schemas import (
-    ContactShortSchema,
-    ResumeSnapshotSchema,
-)
-from app.models import (
-    ApplicationStage,
-    OpportunityApp,
-    ResumeSnapshotSchema,
-)
+from app.schemas import ContactShortSchema, ResumeSnapshotSchema
+from app.models import ApplicationStage, OpportunityStage
 
 
 class OpportunityAppSchema(Schema):

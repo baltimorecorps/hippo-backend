@@ -3,10 +3,10 @@ import unicodedata
 import base64
 from hashlib import blake2b
 
-from models.skill_model import Skill
-from resources.skill_list import SKILL_LIST
-from models.skill_item_model import ContactSkill
-from models.skill_model import (
+from app.models.skill_model import Skill
+from app.resources.skill_list import SKILL_LIST
+from app.models.skill_item_model import ContactSkill
+from app.models.skill_model import (
     Capability,
     CapabilitySchema,
     CapabilitySkillSuggestion,

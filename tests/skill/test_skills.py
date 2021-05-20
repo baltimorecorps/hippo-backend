@@ -1,6 +1,6 @@
 import pytest
 
-from resources.skill_utils import normalize_skill_name, get_skill_id, Autocomplete
+from app.resources.skill_utils import normalize_skill_name, get_skill_id, Autocomplete
 
 @pytest.mark.parametrize(
     "arg,expected",

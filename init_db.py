@@ -1,5 +1,5 @@
 from app import create_app
-from models.base_model import db
+from app.models.base_model import db
 
 def init_db():
     app = create_app()

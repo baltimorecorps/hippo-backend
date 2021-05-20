@@ -10,8 +10,8 @@ from flask_login import current_user
 from flask import current_app, request
 from jose import jwt
 
-from models.base_model import db
-from models.session_model import UserSession
+from app.models.base_model import db
+from app.models.session_model import UserSession
 
 AUTH0_DOMAIN = 'baltimore-corps.auth0.com'
 ALGORITHMS = ["RS256"]

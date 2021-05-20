@@ -1,29 +1,34 @@
 from collections import defaultdict
 
 from flask_restful import Resource, request
-from models.base_model import db
-from models.contact_model import Contact
-from models.skill_model import (
-    Capability,
-    CapabilitySchema,
-    CapabilitySkillSuggestion,
-    Skill,
-    SkillSchema,
-    SkillRecommendationSchema
-)
-from models.skill_item_model import ContactSkill
-from resources.Skills import delete_skill
-from resources.skill_utils import get_or_make_skill, dump_skill_with_capabilities
-from sqlalchemy.sql.expression import and_
-
 from flask_login import login_required
-from auth import (
+from sqlalchemy.sql.expression import and_
+from marshmallow import ValidationError
+
+from app.models (
+    db,
+    Contact,
+    Capability,
+    CapabilitySkillSuggestion,
+    ContactSkill,
+    Skill,
+    SkillRecommendationSchema,
+)
+from app.schemas import (
+    CapabilitySchema,
+    SkillSchema,
+)
+from app.resources.Skills import delete_skill
+from app.resources.skill_utils import (
+    get_or_make_skill,
+    dump_skill_with_capabilities,
+)
+from app.auth import (
     refresh_session,
     is_authorized_view,
     is_authorized_write,
-    unauthorized
+    unauthorized,
 )
-from marshmallow import ValidationError
 
 
 capability_schema = CapabilitySchema()
@@ -33,6 +38,8 @@ capability_names_schema = CapabilitySchema(only=('id','name'), many=True)
 skill_schema = SkillSchema()
 skill_names_schema = SkillSchema(only=('id', 'name'), many=True)
 skill_recs_schema = SkillRecommendationSchema(many=True)
+
+
 class CapabilityRecommended(Resource):
     def get(self):
         capabilities = Capability.query.all()

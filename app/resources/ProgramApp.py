@@ -1,12 +1,12 @@
 from flask_restful import Resource, request
-from models.program_model import Program, ProgramSchema
-from models.contact_model import Contact, ContactSchema
-from models.program_app_model import ProgramApp
-from models.base_model import db
+from app.models.program_model import Program, ProgramSchema
+from app.models.contact_model import Contact, ContactSchema
+from app.models.program_app_model import ProgramApp
+from app.models.base_model import db
 from marshmallow import ValidationError
 
 from flask_login import login_required
-from auth import (
+from app.auth import (
     refresh_session,
     is_authorized_view,
     is_authorized_write,

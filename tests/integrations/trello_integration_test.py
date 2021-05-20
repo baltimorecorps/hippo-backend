@@ -3,15 +3,15 @@ import json
 
 import pytest
 
-from models.contact_model import Contact
-from models.experience_model import Experience, Month
-from models.session_model import UserSession
-from models.base_model import db
+from app.models.contact_model import Contact
+from app.models.experience_model import Experience, Month
+from app.models.session_model import UserSession
+from app.models.base_model import db
 
 from tests.api_tests.test_api import post_request, POSTS
 
 # This only works because the script is at the top level
-from resources.trello_utils import (
+from app.resources.trello_utils import (
     query_board_data,
     Board,
     BoardList,

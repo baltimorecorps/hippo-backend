@@ -2,6 +2,7 @@ from marshmallow import Schema, fields, EXCLUDE
 from marshmallow_enum import EnumField
 
 from app.schemas import AchievementSchema, SkillSchema
+from app.models import Month, ExpType
 
 
 class ExperienceSchema(Schema):
@@ -20,7 +21,7 @@ class ExperienceSchema(Schema):
     end_year = fields.Integer(required=True)
     length_year = fields.Integer(dump_only=True)
     length_month = fields.Integer(dump_only=True)
-    type = EnumField(Type, by_value=True)
+    type = EnumField(ExpType, by_value=True)
     contact_id = fields.Integer(required=True)
     location = fields.String(allow_none=True)
     achievements = fields.Nested(AchievementSchema, many=True)

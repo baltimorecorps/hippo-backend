@@ -1,169 +1,128 @@
 from flask import Blueprint
 from flask_restful import Api
-from resources.Contacts import (
-    ContactAll,
-    ContactOne,
-    ContactAccount,
-    ContactShort,
-    ContactFull,
-    ContactApproveMany
-)
-from resources.Experience import ExperienceAll, ExperienceOne
-from resources.Skills import ContactSkills, ContactSkillOne, AutocompleteSkill
-from resources.Capability import (
-    CapabilityRecommended,
-    ContactCapabilities,
-    ContactCapabilitySuggestions,
-    ContactCapabilitySuggestionOne,
-)
-from resources.Session import Session
-from resources.ProgramApp import (
-    ContactProgramAppsOne,
-    ContactProgramAppsAll,
-    ContactProgramAppsInterested
-)
-from resources.Opportunity import (
-    OpportunityAll,
-    OpportunityAllInternal,
-    OpportunityOne,
-    OpportunityOneOrg,
-    OpportunityDeactivate,
-    OpportunityActivate,
-)
-from resources.OpportunityApp import (
-    OpportunityAppReject,
-    OpportunityAppAll,
-    OpportunityAppOne,
-    OpportunityAppSubmit,
-    OpportunityAppRecommend,
-    OpportunityAppReopen,
-    OpportunityAppInterview,
-    OpportunityAppConsider,
-)
-from resources.Profile import ProfileOne, ContactInstructions, ProfileSubmit
-from resources.Program import ProgramAll
-from resources.Filter import Filter
+
+from app import resources
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)
 
 # Route
-api.add_resource(ContactAll,
+api.add_resource(resources.ContactAll,
                  '/contacts/',
                  '/contacts',
                  '/')
-api.add_resource(ContactOne,
+api.add_resource(resources.ContactOne,
                  '/contacts/<int:contact_id>',
                  '/contacts/<int:contact_id>/')
-api.add_resource(ContactAccount,
+api.add_resource(resources.ContactAccount,
                  '/contacts/me',
                  '/contacts/me/')
-api.add_resource(ContactShort,
+api.add_resource(resources.ContactShort,
                  '/contacts/short',
                  '/contacts/short/',
                  '/contacts',
                  '/contacts/')
-api.add_resource(ContactApproveMany,
+api.add_resource(resources.ContactApproveMany,
                  '/contacts/approve',
                  '/contacts/approve/')
-api.add_resource(ContactSkills,
+api.add_resource(resources.ContactSkills,
                  '/contacts/<int:contact_id>/skills',
                  '/contacts/<int:contact_id>/skills/')
-api.add_resource(ContactSkillOne,
+api.add_resource(resources.ContactSkillOne,
                  '/contacts/<int:contact_id>/skills/<string:skill_id>',
                  '/contacts/<int:contact_id>/skills/<string:skill_id>/')
-api.add_resource(ContactCapabilities,
+api.add_resource(resources.ContactCapabilities,
                  '/contacts/<int:contact_id>/capabilities/',
                  '/contacts/<int:contact_id>/capabilities/')
-api.add_resource(ContactCapabilitySuggestions,
+api.add_resource(resources.ContactCapabilitySuggestions,
                  '/contacts/<int:contact_id>/capabilities/<string:capability_id>/suggestion',
                  '/contacts/<int:contact_id>/capabilities/<string:capability_id>/suggestion/')
-api.add_resource(ContactCapabilitySuggestionOne,
+api.add_resource(resources.ContactCapabilitySuggestionOne,
                  '/contacts/<int:contact_id>/capabilities/<string:capability_id>/suggestion/<string:skill_id>',
                  '/contacts/<int:contact_id>/capabilities/<string:capability_id>/suggestion/<string:skill_id>/')
-api.add_resource(CapabilityRecommended,
+api.add_resource(resources.CapabilityRecommended,
                  '/capabilities',
                  '/capabilities/')
-api.add_resource(AutocompleteSkill,
+api.add_resource(resources.AutocompleteSkill,
                  '/skills/autocomplete',
                  '/skills/autocomplete/')
-api.add_resource(ExperienceAll,
+api.add_resource(resources.ExperienceAll,
                  '/contacts/<int:contact_id>/experiences/',
                  '/contacts/<int:contact_id>/experiences')
-api.add_resource(ExperienceOne,
+api.add_resource(resources.ExperienceOne,
                  '/experiences/<int:experience_id>',
                  '/experiences/<int:experience_id>/')
-api.add_resource(OpportunityAppOne,
+api.add_resource(resources.OpportunityAppOne,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/')
-api.add_resource(OpportunityAppSubmit,
+api.add_resource(resources.OpportunityAppSubmit,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/submit',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/submit/')
-api.add_resource(OpportunityAppReject,
+api.add_resource(resources.OpportunityAppReject,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/not-a-fit/')
-api.add_resource(OpportunityAppInterview,
+api.add_resource(resources.OpportunityAppInterview,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/interview',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/interview/')
-api.add_resource(OpportunityAppConsider,
+api.add_resource(resources.OpportunityAppConsider,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/consider',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/consider/')
-api.add_resource(OpportunityAppAll,
+api.add_resource(resources.OpportunityAppAll,
                  '/contacts/<int:contact_id>/app',
                  '/contacts/<int:contact_id>/app/')
-api.add_resource(OpportunityAppRecommend,
+api.add_resource(resources.OpportunityAppRecommend,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/recommend',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/recommend/')
-api.add_resource(OpportunityAppReopen,
+api.add_resource(resources.OpportunityAppReopen,
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen',
                  '/contacts/<int:contact_id>/app/<string:opportunity_id>/reopen/')
-api.add_resource(Session,
+api.add_resource(resources.Session,
                  '/session/',
                  '/session')
-api.add_resource(OpportunityAll,
+api.add_resource(resources.OpportunityAll,
                  '/opportunity',
                  '/opportunity/')
-api.add_resource(OpportunityAllInternal,
+api.add_resource(resources.OpportunityAllInternal,
                  '/internal/opportunities/',
                  '/internal/opportunities')
-api.add_resource(OpportunityOne,
+api.add_resource(resources.OpportunityOne,
                  '/opportunity/<string:opportunity_id>',
                  '/opportunity/<string:opportunity_id>/')
-api.add_resource(OpportunityOneOrg,
+api.add_resource(resources.OpportunityOneOrg,
                  '/org/opportunities/<string:opportunity_id>',
                  '/org/opportunities/<string:opportunity_id>/')
-api.add_resource(OpportunityDeactivate,
+api.add_resource(resources.OpportunityDeactivate,
                  '/opportunity/<string:opportunity_id>/deactivate',
                  '/opportunity/<string:opportunity_id>/deactivate/')
-api.add_resource(OpportunityActivate,
+api.add_resource(resources.OpportunityActivate,
                  '/opportunity/<string:opportunity_id>/activate',
                  '/opportunity/<string:opportunity_id>/activate/')
-api.add_resource(ProfileOne,
+api.add_resource(resources.ProfileOne,
                  '/contacts/<int:contact_id>/about-me',
                  '/contacts/<int:contact_id>/about-me/')
-api.add_resource(ContactProgramAppsOne,
+api.add_resource(resources.ContactProgramAppsOne,
                  '/contacts/<int:contact_id>/program-apps',
                  '/contacts/<int:contact_id>/program-apps/')
-api.add_resource(ContactProgramAppsAll,
+api.add_resource(resources.ContactProgramAppsAll,
                  '/contacts/program-apps',
                  '/contacts/program-apps/')
-api.add_resource(ContactProgramAppsInterested,
+api.add_resource(resources.ContactProgramAppsInterested,
                  '/contacts/<int:contact_id>/program-apps/interested',
                  '/contacts/<int:contact_id>/program-apps/interested/')
-api.add_resource(ContactInstructions,
+api.add_resource(resources.ContactInstructions,
                  '/contacts/<int:contact_id>/instructions',
                  '/contacts/<int:contact_id>/instructions/')
-api.add_resource(ProfileSubmit,
+api.add_resource(resources.ProfileSubmit,
                  '/contacts/<int:contact_id>/submit',
                  '/contacts/<int:contact_id>/submit/',
                  '/contacts/<int:contact_id>/profile/submit',
                  '/contacts/<int:contact_id>/profile/submit/')
-api.add_resource(ProgramAll,
+api.add_resource(resources.ProgramAll,
                  '/programs',
                  '/programs/')
-api.add_resource(ContactFull,
+api.add_resource(resources.ContactFull,
                  '/contacts/<int:contact_id>/profile',
                  '/contacts/<int:contact_id>/profile/')
-api.add_resource(Filter,
+api.add_resource(resources.Filter,
                  '/contacts/filter',
                  '/contacts/filter/')

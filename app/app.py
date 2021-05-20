@@ -3,9 +3,9 @@ import os.path
 from flask import Flask, jsonify, g, request
 from flask_cors import CORS
 from flask_login import LoginManager
-from api import api_bp
-from auth import AuthError
-from models.session_model import UserSession
+from app.api import api_bp
+from app.auth import AuthError
+from app.models.session_model import UserSession
 
 def load_from_dev(app):
     if os.path.isfile('secrets/dev.cfg'):
@@ -94,6 +94,6 @@ def create_app(env=None):
         return None
 
 
-    from models.base_model import db
+    from app.models.base_model import db
     db.init_app(app)
     return app

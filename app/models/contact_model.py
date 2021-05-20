@@ -1,19 +1,13 @@
-
 import enum
+
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from models.base_model import db
-from models.experience_model import Experience, ExperienceSchema, Type
-from models.email_model import Email, EmailSchema
-from models.achievement_model import Achievement
-from models.skill_model import Skill, SkillSchema
-from models.skill_item_model import ContactSkill
-from models.program_app_model import ProgramAppSchema, ProgramApp
-from models.profile_model import ProfileSchema, ContactAddress
+from app.models import db, ContactSkill, ProgramApp, ContactAddress, Email
 
 UPDATE_FIELDS = [
     'first_name', 'last_name', 'email', 'phone_primary', 'stage', 'card_id'
 ]
+
 
 def add_skill_error(_):
     assert False, "use contact.add_skill instead of contact.skills.append"

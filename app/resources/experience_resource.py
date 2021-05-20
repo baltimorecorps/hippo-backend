@@ -1,16 +1,16 @@
 from flask_restful import Resource, request
-from models.experience_model import Experience, ExperienceSchema, Type
-from models.achievement_model import Achievement, AchievementSchema
-from models.base_model import db
+from app.models.experience_model import Experience, ExperienceSchema, Type
+from app.models.achievement_model import Achievement, AchievementSchema
+from app.models.base_model import db
 import datetime as dt
 from operator import attrgetter
 from marshmallow import ValidationError
 
-from models.skill_model import Skill, Capability
-from resources.skill_utils import get_skill_id, get_or_make_skill
+from app.models.skill_model import Skill, Capability
+from app.resources.skill_utils import get_skill_id, get_or_make_skill
 
 from flask_login import login_required
-from auth import (
+from app.auth import (
     refresh_session,
     is_authorized_view,
     is_authorized_write,

@@ -1,42 +1,42 @@
 import datetime as dt
 
 # imports models related to the contact
-from models.contact_model import Contact
-from models.email_model import Email, Type as EmailType
+from app.models.contact_model import Contact
+from app.models.email_model import Email, Type as EmailType
 
 # imports models related to experiences
-from models.experience_model import (
+from app.models.experience_model import (
     Experience,
     Degree,
     Type as ExpType,
     Month,
 )
-from models.achievement_model import Achievement
+from app.models.achievement_model import Achievement
 
 # imports models related to skills
-from models.skill_model import (
+from app.models.skill_model import (
     Skill,
     Capability,
     SkillRecommendation,
     CapabilitySkillSuggestion
 )
-from models.skill_item_model import ContactSkill
-from resources.skill_utils import (
+from app.models.skill_item_model import ContactSkill
+from app.resources.skill_utils import (
     get_skill_id,
     get_contact_skill,
     make_skill,
 )
 
 # imports models related to the resume
-from models.resume_model import ResumeSnapshot
+from app.models.resume_model import ResumeSnapshot
 
 # imports models related to the program and cycle
-from models.program_model import Program
-from models.program_app_model import ProgramApp
-from models.opportunity_model import Opportunity
-from models.opportunity_app_model import OpportunityApp
-from models.session_model import UserSession
-from models.profile_model import (
+from app.models.program_model import Program
+from app.models.program_app_model import ProgramApp
+from app.models.opportunity_model import Opportunity
+from app.models.opportunity_app_model import OpportunityApp
+from app.models.session_model import UserSession
+from app.models.profile_model import (
     Profile,
     Race,
     ContactAddress,

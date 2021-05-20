@@ -5,18 +5,18 @@ from flask_restful import Resource, request
 from flask_login import login_required
 from marshmallow import ValidationError
 
-from models.base_model import db
+from app.models.base_model import db
 
-from auth import (
+from app.auth import (
     is_authorized_view,
     is_authorized_write,
     unauthorized,
     refresh_session,
     is_authorized_with_permission
 )
-from models.opportunity_app_model import OpportunityApp, ApplicationStage
-from models.opportunity_model import OpportunityAppSchema
-from models.resume_model import ResumeSnapshot
+from app.models.opportunity_app_model import OpportunityApp, ApplicationStage
+from app.models.opportunity_model import OpportunityAppSchema
+from app.models.resume_model import ResumeSnapshot
 
 opportunity_app_schema = OpportunityAppSchema()
 opportunity_app_schema_many = OpportunityAppSchema(many=True)
