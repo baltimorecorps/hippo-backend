@@ -1,9 +1,10 @@
-import configparser
-import requests
 import operator as op
+
+import requests
 from flask import current_app
 
 CARD_FIELDS = 'id,name,idMembers,idList,isTemplate,labels,closed,desc,attachments'
+
 
 # general methods
 def get_creds(func):

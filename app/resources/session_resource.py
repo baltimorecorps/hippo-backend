@@ -5,12 +5,16 @@ from functools import wraps
 
 from flask_restful import Resource, request
 from flask_login import current_user, login_required, login_user, logout_user
-from flask import current_app 
+from flask import current_app
 
-from app.auth import validate_jwt, create_session, delete_session, refresh_session
-from app.models.base_model import db
-from app.models.session_model import UserSessionSchema
-from app.models.contact_model import Contact
+from app.schemas import UserSessionSchema
+from app.models import db, Contact
+from app.auth import (
+    validate_jwt,
+    create_session,
+    delete_session,
+    refresh_session,
+)
 
 session_schema = UserSessionSchema()
 class Session(Resource):
@@ -32,12 +36,10 @@ class Session(Resource):
 
         user_session = create_session(contact.id, request.jwt)
         login_user(user_session)
-        
+
         result = session_schema.dump(user_session)
         return {'status': 'success', 'data': result}, 201
 
     def delete(self):
         delete_session(current_user)
         logout_user()
-
-

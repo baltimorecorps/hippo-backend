@@ -4,15 +4,19 @@ import uuid
 from flask_restful import Resource, request
 from flask_login import login_required
 from flask import current_app
-
-from app.auth import refresh_session
-
-from app.models.base_model import db
-from app.models.opportunity_model import Opportunity, OpportunitySchema, OpportunityAppSchema
-from app.models.program_model import Program
 from marshmallow import ValidationError
 
-from app.auth import is_authorized_with_permission, unauthorized
+from app.schemas import OpportunitySchema, OpportunityAppSchema
+from app.models import (
+    db,
+    Opportunity,
+    Program,
+)
+from app.auth import (
+    refresh_session,
+    is_authorized_with_permission,
+    unauthorized,
+)
 
 
 def create_new_opportunity(opportunity_data):

@@ -1,10 +1,9 @@
 from flask_restful import Resource, request
-from app.models.contact_model import Contact
-from app.models.skill_model import Skill, SkillSchema
-from app.models.skill_item_model import ContactSkill
-from app.models.base_model import db
+from flask_login import login_required
 from marshmallow import ValidationError
 
+from app.schemas import SkillSchema
+from app.models import db, Contact, Skill
 from app.resources.skill_utils import (
     get_skill_id,
     get_or_make_skill,
@@ -12,8 +11,6 @@ from app.resources.skill_utils import (
     complete_skill,
     dump_skill_with_capabilities,
 )
-
-from flask_login import login_required
 from app.auth import (
     refresh_session,
     is_authorized_view,

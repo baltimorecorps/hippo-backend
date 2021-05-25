@@ -5,20 +5,20 @@ from flask_login import login_required
 from sqlalchemy.sql.expression import and_
 from marshmallow import ValidationError
 
-from app.models (
+from app.models import (
     db,
     Contact,
     Capability,
     CapabilitySkillSuggestion,
     ContactSkill,
     Skill,
-    SkillRecommendationSchema,
 )
 from app.schemas import (
     CapabilitySchema,
     SkillSchema,
+    SkillRecommendationSchema,
 )
-from app.resources.Skills import delete_skill
+from app.resources.skill_resource import delete_skill
 from app.resources.skill_utils import (
     get_or_make_skill,
     dump_skill_with_capabilities,

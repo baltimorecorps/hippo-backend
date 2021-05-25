@@ -1,6 +1,7 @@
 from flask_restful import Resource, request
 
-from app.models.program_model import Program, ProgramSchema
+from app.models import Program
+from app.schemas import ProgramSchema
 
 program_schema = ProgramSchema(many=True)
 

@@ -27,7 +27,7 @@ from app.auth import (
     unauthorized,
 )
 from app.resources.skill_utils import get_skill_id, get_or_make_skill
-from app.resources.Profile import create_profile
+from app.resources.profile_resource import create_profile
 
 
 contact_schema = ContactSchema(exclude=['instructions',

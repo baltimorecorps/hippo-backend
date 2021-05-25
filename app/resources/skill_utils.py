@@ -3,16 +3,18 @@ import unicodedata
 import base64
 from hashlib import blake2b
 
-from app.models.skill_model import Skill
 from app.resources.skill_list import SKILL_LIST
-from app.models.skill_item_model import ContactSkill
-from app.models.skill_model import (
-    Capability,
+from app.schemas import (
     CapabilitySchema,
+    SkillSchema,
+    SkillRecommendationSchema,
+)
+from app.models import (
+    Skill,
+    ContactSkill,
+    Capability,
     CapabilitySkillSuggestion,
     Skill,
-    SkillSchema,
-    SkillRecommendationSchema
 )
 
 TO_WHITESPACE = str.maketrans('-/_()', '     ')

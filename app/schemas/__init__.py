@@ -20,4 +20,8 @@ from app.schemas.achievement_schema import (
 from app.schemas.experience_schema import ExperienceSchema
 from app.schemas.contact_schema import ContactSchema, ContactShortSchema
 from app.schemas.session_schema import UserSessionSchema
-from app.schemas.opportunity_schema import OpportunityAppSchema, OpportunitySchema
+from app.schemas.opportunity_schema import (
+    OpportunityAppSchema,
+    OpportunitySchema,
+)
+from app.schemas.filter_schema import FilterInputSchema

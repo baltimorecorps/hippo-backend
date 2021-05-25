@@ -5,8 +5,13 @@ from flask_restful import Resource, request
 from flask_login import login_required
 from marshmallow import ValidationError
 
-from app.models.base_model import db
-
+from app.schemas import OpportunityAppSchema
+from app.models import (
+    db,
+    OpportunityApp,
+    ApplicationStage,
+    ResumeSnapshot,
+)
 from app.auth import (
     is_authorized_view,
     is_authorized_write,
@@ -14,12 +19,10 @@ from app.auth import (
     refresh_session,
     is_authorized_with_permission
 )
-from app.models.opportunity_app_model import OpportunityApp, ApplicationStage
-from app.models.opportunity_model import OpportunityAppSchema
-from app.models.resume_model import ResumeSnapshot
 
 opportunity_app_schema = OpportunityAppSchema()
 opportunity_app_schema_many = OpportunityAppSchema(many=True)
+
 
 # TODO: Change this so it returns all applications instead of just submitted ones
 class OpportunityAppAll(Resource):

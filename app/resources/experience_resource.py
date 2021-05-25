@@ -1,15 +1,20 @@
-from flask_restful import Resource, request
-from app.models.experience_model import Experience, ExperienceSchema, Type
-from app.models.achievement_model import Achievement, AchievementSchema
-from app.models.base_model import db
 import datetime as dt
 from operator import attrgetter
+
+from flask_restful import Resource, request
+from flask_login import login_required
 from marshmallow import ValidationError
 
-from app.models.skill_model import Skill, Capability
+from app.schemas import ExperienceSchema
+from app.models import (
+    db,
+    Experience,
+    ExpType,
+    Achievement,
+    Skill,
+    Capability
+)
 from app.resources.skill_utils import get_skill_id, get_or_make_skill
-
-from flask_login import login_required
 from app.auth import (
     refresh_session,
     is_authorized_view,
@@ -17,11 +22,10 @@ from app.auth import (
     unauthorized
 )
 
-
-
 experience_schema = ExperienceSchema()
 experiences_schema = ExperienceSchema(many=True)
-type_list = [m for m in Type.__members__.keys()]
+type_list = [m for m in ExpType.__members__.keys()]
+
 
 def add_achievements(achievements, experience):
     for achievement in achievements:
@@ -68,12 +72,12 @@ class ExperienceAll(Resource):
 
         type_arg = request.args.get('type')
         if type_arg:
-            if type_arg not in Type.__members__:
+            if type_arg not in ExpType.__members__:
                 return {'message':
                         f'No such experience type, '
                         f'choose an option from this list: {type_list}'}, 400
             exp = (Experience.query.filter_by(contact_id=contact_id,
-                                              type=Type[type_arg]))
+                                              type=ExpType[type_arg]))
         else:
             exp = (Experience.query.filter_by(contact_id=contact_id))
         exp_sorted = sorted(exp,

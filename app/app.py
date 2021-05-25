@@ -1,11 +1,14 @@
 import os
 import os.path
+
 from flask import Flask, jsonify, g, request
 from flask_cors import CORS
 from flask_login import LoginManager
+
 from app.api import api_bp
 from app.auth import AuthError
-from app.models.session_model import UserSession
+from app.models import UserSession
+from app.defaultcfg import Config
 
 def load_from_dev(app):
     if os.path.isfile('secrets/dev.cfg'):
@@ -57,7 +60,7 @@ def create_app(env=None):
 
 
     # Initialize app config
-    app.config.from_object('defaultcfg')
+    app.config.from_object(Config)
     load_config(app, env)
 
     # CORS setup

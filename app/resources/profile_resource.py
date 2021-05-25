@@ -1,15 +1,17 @@
 from flask_restful import Resource, request
 from flask_login import login_required
+from marshmallow import ValidationError
 
-from app.models.base_model import db
-from app.models.program_model import Program
-from app.models.contact_model import Contact, ContactSchema
-from app.models.profile_model import (
+from app.schemas import ContactSchema
+from app.models import (
+    db,
+    Program,
+    Contact,
     Profile,
     Race,
     ContactAddress,
     RoleChoice,
-    ProgramsCompleted
+    ProgramsCompleted,
 )
 from app.resources.trello_utils import (
     query_board_data,
@@ -18,9 +20,6 @@ from app.resources.trello_utils import (
     Card,
     BoardList
 )
-
-from marshmallow import ValidationError
-
 from app.auth import (
     refresh_session,
     is_authorized_view,

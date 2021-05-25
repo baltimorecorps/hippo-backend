@@ -1,27 +1,22 @@
-from flask_restful import Resource, request
-from flask_login import login_required
 import json
 
-from app.resources.skill_utils import get_skill_id
+from flask_login import login_required
+from flask_restful import Resource, request
 
-from app.models.base_model import db
-from app.models.contact_model import Contact, ContactSchema, ContactStage
-from app.models.program_app_model import ProgramApp, ProgramAppSchema
-from app.models.skill_item_model import ContactSkill
-from app.models.profile_model import (
+from app.resources.skill_utils import get_skill_id
+from app.schemas import FilterInputSchema
+from app.models import (
+    db,
+    Contact,
+    ContactStage,
+    ProgramApp,
+    ContactSkill,
     Profile,
     Race,
     RoleChoice,
     ProgramsCompleted,
     ContactAddress,
-    ProfileSchema,
-    RoleChoiceSchema,
-    ProgramsCompletedSchema,
 )
-
-from marshmallow import Schema, fields, EXCLUDE, ValidationError
-from marshmallow_enum import EnumField
-
 from app.auth import (
     refresh_session,
     is_authorized_view,
@@ -31,46 +26,7 @@ from app.auth import (
 )
 
 
-class FilterInputSchema(Schema):
-    status = fields.List(fields.String(),allow_none=True)
-    years_exp = fields.List(fields.String(), allow_none=True)
-    job_search_status = fields.List(fields.String(), allow_none=True)
-    current_job_status = fields.List(fields.String(), allow_none=True)
-    current_edu_status = fields.List(fields.String(), allow_none=True)
-    previous_bcorps_program = fields.List(fields.String(), allow_none=True)
-    skills = fields.List(fields.String(), allow_none=True)
-    hear_about_us = fields.List(fields.String(), allow_none=True)
-    roles = fields.Nested(RoleChoiceSchema, allow_none=True)
-    programs_completed = fields.Nested(ProgramsCompletedSchema, allow_none=True)
-    program_apps = fields.Nested(ProgramAppSchema,
-                                 many=True,
-                                 allow_none=True)
-
-    class Meta:
-        unknown = EXCLUDE
-
-class FilterOutputSchema(Schema):
-    id = fields.Integer(dump_only=True)
-    first_name = fields.String(dump_only=True)
-    last_name = fields.String(dump_only=True)
-    email = fields.String(dump_only=True)
-    status = EnumField(ContactStage, dump_only=True)
-    phone_primary = fields.String(dump_only=True)
-    years_exp = fields.Pluck(ProfileSchema,
-                             'years_exp',
-                             attribute='profile',
-                             dump_only=True)
-    job_search_status = fields.Pluck(ProfileSchema,
-                                     'job_search_status',
-                                     attribute='profile',
-                                     dump_only=True)
-    programs_interested = fields.Pluck(ProgramAppSchema,
-                                       'program_name',
-                                       many=True,
-                                       data_key='programs')
-
 input_schema = FilterInputSchema()
-output_schema = FilterOutputSchema(many=True)
 
 def format_row(row):
     fields = [
