@@ -1,0 +1,52 @@
+version: "3.8"
+services:
+  postgres:
+    container_name: postgres
+    restart: always
+    image: postgres
+    environment:
+      - POSTGRES_USER=testusr
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=testdb
+    volumes:
+      - hippo-local-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  postgrestest:
+    container_name: postgrestest
+    restart: always
+    image: postgres
+    environment:
+      - POSTGRES_USER=unittest
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST=postgrestest
+      - POSTGRES_DB=testdb
+    volumes:
+      - hippo-test-db:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+  app:
+    container_name: app
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://testusr:password@postgres:5432/testdb
+      - UNITTEST_DB=postgresql://unittest:password@postgrestest:5432/testdb
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/app
+    depends_on:
+      - postgres
+      - postgrestest
+    entrypoint: ["python3", "run.py"]
+
+volumes:
+  hippo-test-db:
+    name: hippo-test-db
+  hippo-local-db:
+    name: hippo-local-db
