@@ -88,6 +88,7 @@ billy_profile.addresses.append(billy_address)
 billy.addresses.append(billy_address)
 
 billy_race = Race(**RACE['billy'])
+billy_race.race_all = 'White'
 billy_profile.race = billy_race
 billy.race = billy_race
 
