@@ -4,7 +4,7 @@ import base64
 from hashlib import blake2b
 
 from models.skill_model import Skill
-from .skill_list import SKILL_LIST
+from resources.skill_list import SKILL_LIST
 from models.skill_item_model import ContactSkill
 from models.skill_model import (
     Capability,

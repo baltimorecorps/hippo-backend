@@ -11,7 +11,7 @@ from models.profile_model import (
     RoleChoice,
     ProgramsCompleted
 )
-from .trello_utils import (
+from resources.trello_utils import (
     query_board_data,
     update_card,
     Board,
@@ -200,6 +200,8 @@ class ProfileSubmit(Resource):
                 f"{roles_str}\n\n---\n\n"
                 f"**Programs/Services they are interested in:**\n\n"
                 f"{programs_str}\n\n---\n\n"
+                f"**Currently a student:**\n\n"
+                f"{profile.current_edu_status}\n\n---\n\n"
             )
         }
         fields_data = {

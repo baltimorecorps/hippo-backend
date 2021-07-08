@@ -15,8 +15,8 @@ from models.base_model import db
 from models.program_model import Program
 from models.skill_model import Skill
 
-from .skill_utils import get_skill_id, get_or_make_skill
-from .Profile import create_profile
+from resources.skill_utils import get_skill_id, get_or_make_skill
+from resources.Profile import create_profile
 
 from auth import (
     validate_jwt,

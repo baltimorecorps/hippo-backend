@@ -7,7 +7,7 @@ from operator import attrgetter
 from marshmallow import ValidationError
 
 from models.skill_model import Skill, Capability
-from .skill_utils import get_skill_id, get_or_make_skill
+from resources.skill_utils import get_skill_id, get_or_make_skill
 
 from flask_login import login_required
 from auth import (

@@ -44,22 +44,22 @@ from models.profile_model import (
     ProgramsCompleted
 )
 
-from .data.contact_data import CONTACTS_DATABASE, EMAILS_DATABASE
-from .data.opportunity_data import (
+from tests.contact.contact_data import CONTACTS_DATABASE, EMAILS_DATABASE
+from tests.opportunity.opportunity_data import (
     OPPS_DATABASE,
     OPP_APPS_DATABASE,
     RESUME_SNAPSHOTS
 )
-from .data.program_data import (
+from tests.program.program_data import (
     PROGRAMS_DATABASE,
     PROGRAM_APPS_DATABASE
 )
-from .data.skill_data import SKILLS_NAMES
-from .data.experience_data import (
+from tests.skill.skill_data import SKILLS_NAMES
+from tests.experience.experience_data import (
     EXPERIENCES_DATABASE,
     ACHIEVEMENTS_DATABASE
 )
-from .data.profile_data import (
+from tests.profile.profile_data import (
     ADDRESSES,
     PROGRAMS_COMPLETED,
     RACE,
