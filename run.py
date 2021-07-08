@@ -11,7 +11,7 @@ def create_local_app():
     with app.app_context():
         db.drop_all()  # Drop existing tables
         db.create_all()  # Create sql tables for our data models
-        populate()  # populates a local db with test data
+        populate(db)  # populates a local db with test data
 
     return app
 

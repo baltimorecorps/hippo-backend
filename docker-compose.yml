@@ -13,19 +13,6 @@ services:
       - hippo-local-db:/var/lib/postgresql/data
     ports:
       - 5432:5432
-  postgrestest:
-    container_name: postgrestest
-    restart: always
-    image: postgres
-    environment:
-      - POSTGRES_USER=unittest
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_HOST=postgrestest
-      - POSTGRES_DB=testdb
-    volumes:
-      - hippo-test-db:/var/lib/postgresql/data
-    ports:
-      - 5433:5432
   app:
     container_name: app
     restart: always
@@ -42,11 +29,8 @@ services:
       - .:/app
     depends_on:
       - postgres
-      - postgrestest
     entrypoint: ["python3", "run.py"]
 
 volumes:
-  hippo-test-db:
-    name: hippo-test-db
   hippo-local-db:
     name: hippo-local-db
