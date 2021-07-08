@@ -3,7 +3,7 @@ from flask_login import login_required
 from marshmallow import ValidationError
 
 from app.schemas import SkillSchema
-from app.models import db, Contact, Skill
+from app.models import db, Contact, Skill, ContactSkill
 from app.resources.skill_utils import (
     get_skill_id,
     get_or_make_skill,

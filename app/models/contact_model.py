@@ -2,7 +2,14 @@ import enum
 
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from app.models import db, ContactSkill, ProgramApp, ContactAddress, Email
+from app.models import (
+    db,
+    ContactSkill,
+    ProgramApp,
+    ContactAddress,
+    Email,
+    ExpType,
+)
 
 UPDATE_FIELDS = [
     'first_name', 'last_name', 'email', 'phone_primary', 'stage', 'card_id'
@@ -116,7 +123,7 @@ class Contact(db.Model):
     @hybrid_property
     def add_experience_complete(self):
         complete_experience = [exp for exp in self.experiences
-                               if exp.type == Type('Work')
+                               if exp.type == ExpType('Work')
                                and exp.tag_skills_complete
                                and exp.add_achievements_complete]
         status = (len(complete_experience) >= 1)
@@ -132,13 +139,13 @@ class Contact(db.Model):
     @hybrid_property
     def add_education_complete(self):
         complete_education = [exp for exp in self.experiences
-                              if exp.type == Type('Education')]
+                              if exp.type == ExpType('Education')]
         return (len(complete_education) >= 1)
 
     @hybrid_property
     def add_portfolio_complete(self):
         complete_portfolio = [exp for exp in self.experiences
-                             if exp.type == Type('Accomplishment')]
+                             if exp.type == ExpType('Accomplishment')]
         return (len(complete_portfolio) >= 1)
 
     @hybrid_property
