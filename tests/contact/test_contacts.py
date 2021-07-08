@@ -2,8 +2,8 @@ import json
 import pytest
 from pprint import pprint
 
-from models.contact_model import Contact, ContactStage
-from models.session_model import UserSession
+from app.models.contact_model import Contact, ContactStage
+from app.models.session_model import UserSession
 
 # imports test data
 from tests.contact.contact_data import CONTACTS_API, INSTRUCTIONS_API, EMAILS_API

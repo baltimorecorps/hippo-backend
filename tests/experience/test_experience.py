@@ -3,9 +3,9 @@ import pytest
 from pprint import pprint
 
 
-from models.base_model import db
-from models.experience_model import Experience, Month, Type as ExpType
-from models.skill_item_model import (
+from app.models.base_model import db
+from app.models.experience_model import Experience, Month, Type as ExpType
+from app.models.skill_item_model import (
     ContactSkill,
     ExperienceSkill,
     AchievementSkill,
@@ -298,5 +298,3 @@ class TestExperienceOne:
             assert response.status_code == 200
             assert old_id() is not None, "Item to update should still exist"
             assert new_id() is None, "New id should not exist after test"
-
-

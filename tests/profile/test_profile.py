@@ -6,10 +6,10 @@ from pprint import pprint
 from tests.profile.profile_data import PROFILES_API
 from tests.contact.contact_data import INSTRUCTIONS_API
 
-from models.base_model import db
-from models.profile_model import Profile
-from models.contact_model import Contact
-from models.experience_model import Type as ExpType
+from app.models.base_model import db
+from app.models.profile_model import Profile
+from app.models.contact_model import Contact
+from app.models.experience_model import Type as ExpType
 
 # imports testing utils
 from tests.utils import (

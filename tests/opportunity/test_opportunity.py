@@ -3,9 +3,9 @@ import pytest
 import unittest
 from pprint import pprint
 
-from models.base_model import db
-from models.opportunity_model import Opportunity
-from models.opportunity_app_model import OpportunityApp, ApplicationStage
+from app.models.base_model import db
+from app.models.opportunity_model import Opportunity
+from app.models.opportunity_app_model import OpportunityApp, ApplicationStage
 #imports test data
 from tests.opportunity.opportunity_data import OPPS_API, OPP_APPS_API, OPPS_INTERNAL_API
 

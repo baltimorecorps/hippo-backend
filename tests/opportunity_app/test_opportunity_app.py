@@ -5,8 +5,8 @@ import pytest
 import math
 import copy
 
-from models.base_model import db
-from models.opportunity_app_model import OpportunityApp, ApplicationStage
+from app.models.base_model import db
+from app.models.opportunity_app_model import OpportunityApp, ApplicationStage
 
 #imports test data
 from tests.opportunity.opportunity_data import OPPS_API, OPP_APPS_API, OPPS_INTERNAL_API
@@ -288,4 +288,3 @@ class TestOpportunityAppConsider:
             assert response.status_code == 200
             assert OpportunityApp.query.get('a1').stage == ApplicationStage.considered_for_role.value
             assert OpportunityApp.query.get('a1').is_active == True
-
