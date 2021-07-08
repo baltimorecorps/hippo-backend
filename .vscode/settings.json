@@ -1,3 +1,5 @@
 {
-    "python.pythonPath": "env/bin/python3"
+    "workbench.preferredLightColorTheme": "Solarized Light",
+    "workbench.colorTheme": "Solarized Light",
+    "workbench.editor.showIcons": false
 }
