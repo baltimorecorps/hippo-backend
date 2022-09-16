@@ -12,7 +12,7 @@ Flask-RESTful==0.3.7
 Flask-SQLAlchemy==2.4.1
 itsdangerous==1.1.0
 Jinja2>=2.10.1
-Mako==1.0.7
+Mako==1.2.2
 MarkupSafe==1.1.0
 marshmallow==3.5.0
 marshmallow-enum==1.5.1
